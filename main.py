@@ -147,4 +147,4 @@ def index():
     # TODO: 不明原因导致直接跳转报错，暂时避开该问题，等待修复
     # put_button("点击进入", color="success", onclick=lambda:go_app(URLSchemeCoverter, new_window=False))
 
-start_server([index, UserAssetsViewer, URLSchemeCoverter], port=8501, debug=True)
+start_server([index, UserAssetsViewer, URLSchemeCoverter], port=8602)
