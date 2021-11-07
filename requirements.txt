@@ -1,3 +1,0 @@
-JianshuResearchTools==1.4.0
-streamlit==0.82.0
-matplotlib==3.4.2
