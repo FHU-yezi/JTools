@@ -1,4 +1,4 @@
-from os import remove
+import os
 
 import plotly.graph_objs as go
 from JianshuResearchTools.article import (GetArticleAuthorName,
@@ -17,11 +17,10 @@ from JianshuResearchTools.convert import (ArticleUrlToArticleUrlScheme,
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.user import (GetUserAssetsCount, GetUserFPCount,
                                        GetUserFTNCount, GetUserName)
-from pywebio.session import download
 from pywebio import pin, start_server
 from pywebio.input import *
 from pywebio.output import *
-from pywebio.session import go_app
+from pywebio.session import download, go_app
 from qrcode import make as make_qrcode
 
 __version__ = "0.2.0"
@@ -47,17 +46,18 @@ def UserAssetsViewer():
         toast("数据获取成功", color="success")
         if FTN < 0 and assets >= 10000:
             put_warning("该用户简书贝占比过少，简书贝信息可能出错")
-            
-        put_markdown(f"""
-        # {user_name} 的资产信息
-        简书钻：{FP}
-        简书贝：{FTN}
-        总资产：{assets}
-        钻贝比：{round(FP / FTN, 2)}
-        """, lstrip=True)
         
-        fig = go.Figure(data=[go.Pie(labels=["简书钻（FP）", "简书贝（FTN）"], values=[FP, FTN], title="用户资产占比")])
-        put_html(fig.to_html(include_plotlyjs="require", full_html=False))  # 获取 HTML 并展示
+        with use_scope("output", if_exist="replace"):
+            put_markdown(f"""
+            # {user_name} 的资产信息
+            简书钻：{FP}
+            简书贝：{FTN}
+            总资产：{assets}
+            钻贝比：{round(FP / FTN, 2)}
+            """, lstrip=True)
+            
+            fig = go.Figure(data=[go.Pie(labels=["简书钻（FP）", "简书贝（FTN）"], values=[FP, FTN], title="用户资产占比")])
+            put_html(fig.to_html(include_plotlyjs="require", full_html=False))  # 获取 HTML 并展示
         
     
     put_markdown("""
@@ -150,8 +150,7 @@ def ArticleDownloader():
         with open(filename, "rb") as f:
             download(filename, f.read())  # 向浏览器发送文件下载请求
         
-        remove(filename)  # 删除临时文件
-        
+        os.remove(filename)
     
     put_markdown("""
     # 文章下载工具
@@ -166,9 +165,10 @@ def ArticleDownloader():
     put_button("下载 Markdown 格式", onclick=lambda: download_content("markdown"))
 
 def index():
+    """简书小工具集"""
     put_markdown(f"""
     # 简书小工具集
-    为简友提供高效便捷的科技工具。
+    让技术工具更平常。
     
     Made with [JRT](https://github.com/FHU-yezi/JianshuResearchTools) and ♥
     Version：{__version__}
