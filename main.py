@@ -1,5 +1,7 @@
-from os import remove
+import os
+from collections import Counter
 
+import jieba
 import plotly.graph_objs as go
 from JianshuResearchTools.article import (GetArticleAuthorName,
                                           GetArticleMarkdown, GetArticleText,
@@ -17,16 +19,22 @@ from JianshuResearchTools.convert import (ArticleUrlToArticleUrlScheme,
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.user import (GetUserAssetsCount, GetUserFPCount,
                                        GetUserFTNCount, GetUserName)
-from pywebio.session import download
+from PIL import Image
 from pywebio import pin, start_server
 from pywebio.input import *
 from pywebio.output import *
-from pywebio.session import go_app
+from pywebio.session import download, go_app
 from qrcode import make as make_qrcode
+from wordcloud import WordCloud
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 host = "120.27.239.120"
 port = "8602"
+
+jieba.setLogLevel(jieba.logging.ERROR)  # 关闭 jieba 的日志输出
+
+stopwords = [word for word in open("stopwords.txt", encoding="utf-8")]  # 预加载停用词词库
+[jieba.add_word(word) for word in open("hotwords.txt", encoding="utf-8")]  # 将热点词加入词库
 
 def UserAssetsViewer():
     """简书小工具集：用户资产查询工具"""
@@ -109,11 +117,8 @@ def URLSchemeCoverter():
             put_markdown("**转换结果**：")
             put_link(name=result, url=result)
             
-            # TODO: 避免保存临时文件
-            make_qrcode(result).save("temp.png")
-            with open("temp.png", "rb") as f:
-                put_image(f.read())
-            remove("temp.png")
+            img = make_qrcode(result)._img
+            put_image(img)
     
     put_markdown("""
     # URL Scheme 转换工具
@@ -165,6 +170,35 @@ def ArticleDownloader():
     put_button("下载纯文本格式", onclick=lambda: download_content("txt"))
     put_button("下载 Markdown 格式", onclick=lambda: download_content("markdown"))
 
+def ArticleWordcloudGenerator():
+    """文章词云图生成工具"""
+    
+    def GeneratorWordcloud():
+        try:
+            AssertArticleUrl(pin.pin["url"])
+        except InputError:
+            toast("输入的 URL 无效，请检查", color="error")
+            return # 发生错误，不再运行后续逻辑
+        
+        text = GetArticleText(pin.pin["url"])
+        cutted_text = jieba.cut(text)
+        cutted_text = [word for word in cutted_text if len(word) > 1 and word not in stopwords]
+        wordcloud = WordCloud(font_path="font.otf", width=1280, 
+                              height=720, background_color="white")
+        img = wordcloud.generate_from_frequencies(Counter(cutted_text))
+        img = Image.fromarray(img.to_array())
+        put_image(img)
+        
+
+    put_markdown("""
+    # 文章词云图生成工具
+    本工具可生成简书文章的词云图。
+    """, lstrip=True)
+    
+    pin.put_input("url", type=TEXT, label="文章链接")
+    put_button("生成词云图", GeneratorWordcloud)
+            
+
 def index():
     put_markdown(f"""
     # 简书小工具集
@@ -202,6 +236,16 @@ def index():
     """, lstrip=True)
     put_link("点击进入", url=f"http://{host}:{port}/?app=ArticleDownloader")
     # TODO: 不明原因导致直接跳转报错，暂时避开该问题，等待修复
-    # put_button("点击进入", color="success", onclick=lambda:go_app(URLSchemeCoverter, new_window=False))
+    # put_button("点击进入", color="success", onclick=lambda:go_app(ArticleDownloader, new_window=False))
 
-start_server([index, UserAssetsViewer, URLSchemeCoverter, ArticleDownloader], port=8602)
+    put_markdown("""
+    ## 文章词云图生成工具
+    将简书文章内容生成词云图。
+    
+    服务状态：<font color=#008700>**正常运行**</font>
+    """, lstrip=True)
+    put_link("点击进入", url=f"http://{host}:{port}/?app=ArticleWordcloudGenerator")
+    # TODO: 不明原因导致直接跳转报错，暂时避开该问题，等待修复
+    # put_button("点击进入", color="success", onclick=lambda:go_app(ArticleWordcloudGenerator, new_window=False))
+    
+start_server([index, UserAssetsViewer, URLSchemeCoverter, ArticleDownloader, ArticleWordcloudGenerator], port=8602)
