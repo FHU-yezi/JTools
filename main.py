@@ -1,6 +1,11 @@
 import os
 from collections import Counter
 
+try:
+    import simplejson as json
+except ImportError:
+    import json
+
 import jieba
 import plotly.graph_objs as go
 from JianshuResearchTools.article import (GetArticleAuthorName,
@@ -27,9 +32,21 @@ from pywebio.session import download, go_app
 from qrcode import make as make_qrcode
 from wordcloud import WordCloud
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 host = "120.27.239.120"
 port = "8602"
+
+status_to_text = {
+        -1: "暂停服务", 
+        0: "正常运行", 
+        1: "降级运行"
+    }
+
+status_to_color = {
+        -1: "#FF2D10", 
+        0: "#008700", 
+        1: "#FF8C00"
+    }
 
 jieba.setLogLevel(jieba.logging.ERROR)  # 关闭 jieba 的日志输出
 
@@ -189,7 +206,6 @@ def ArticleWordcloudGenerator():
         img = Image.fromarray(img.to_array())
         put_image(img)
         
-
     put_markdown("""
     # 文章词云图生成工具
     本工具可生成简书文章的词云图。
@@ -197,55 +213,41 @@ def ArticleWordcloudGenerator():
     
     pin.put_input("url", type=TEXT, label="文章链接")
     put_button("生成词云图", GeneratorWordcloud)
-            
 
 def index():
     put_markdown(f"""
     # 简书小工具集
     为简友提供高效便捷的科技工具。
-    
     Made with [JRT](https://github.com/FHU-yezi/JianshuResearchTools) and ♥
     Version：{__version__}
     """, lstrip=True)
     
-    put_markdown("""
-    ## 用户资产查询工具
-    查询用户的钻贝情况。
+    with open("config.json", "r", encoding="utf-8") as f:
+        config = json.load(f)
+    config.sort(key=lambda x: x["on_top"], reverse=True)  # 置顶的服务排在前面
     
-    服务状态：<font color=#008700>**正常运行**</font>
-    """, lstrip=True)
-    put_link("点击进入", url=f"http://{host}:{port}/?app=UserAssetsViewer")
-    # TODO: 不明原因导致直接跳转报错，暂时避开该问题，等待修复
-    # put_button("点击进入", color="success", onclick=lambda:go_app(UserAssetsViewer, new_window=False))
-    
-    put_markdown("""
-    ## URL Scheme 转换工具
-    将简书网页端 URL 转换成 URL Scheme 以实现一键跳转
-    
-    服务状态：<font color=#008700>**正常运行**</font>
-    """, lstrip=True)
-    put_link("点击进入", url=f"http://{host}:{port}/?app=URLSchemeCoverter")
-    # TODO: 不明原因导致直接跳转报错，暂时避开该问题，等待修复
-    # put_button("点击进入", color="success", onclick=lambda:go_app(URLSchemeCoverter, new_window=False))
-    
-    put_markdown("""
-    ## 文章下载工具
-    下载简书中的文章内容，并将其保存至本地。
-    
-    服务状态：<font color=#008700>**正常运行**</font>
-    """, lstrip=True)
-    put_link("点击进入", url=f"http://{host}:{port}/?app=ArticleDownloader")
-    # TODO: 不明原因导致直接跳转报错，暂时避开该问题，等待修复
-    # put_button("点击进入", color="success", onclick=lambda:go_app(ArticleDownloader, new_window=False))
+    for service in config:
+        put_markdown(f"## {service['title']}")
+        
+        if service["on_top"]:
+            put_button("置顶", color="success", small=True, onclick=lambda:None)  # 显示置顶标签，点击无效果
+        
+        if service["status"] == 1:  # 降级运行状态
+            put_warning("该服务处于降级运行状态，其性能可能受到影响，我们将尽力恢复其正常运行，感谢您的谅解")
+        
+        if service["notification"]:
+            put_info(service["notification"])
+            
+        put_markdown(f"""
+        {service["description"]}
+        
+        服务状态：<font color={status_to_color[service["status"]]}>**{status_to_text[service["status"]]}**</font>
+        """, lstrip=True)
 
-    put_markdown("""
-    ## 文章词云图生成工具
-    将简书文章内容生成词云图。
-    
-    服务状态：<font color=#008700>**正常运行**</font>
-    """, lstrip=True)
-    put_link("点击进入", url=f"http://{host}:{port}/?app=ArticleWordcloudGenerator")
-    # TODO: 不明原因导致直接跳转报错，暂时避开该问题，等待修复
-    # put_button("点击进入", color="success", onclick=lambda:go_app(ArticleWordcloudGenerator, new_window=False))
-    
-start_server([index, UserAssetsViewer, URLSchemeCoverter, ArticleDownloader, ArticleWordcloudGenerator], port=8602)
+        if service["status"] >= 0:  # 只有服务正常运行时才允许跳转
+            put_link("点击进入", url=f"http://{host}:{port}/?app={service['service_func_name']}")
+            # TODO: 不明原因导致直接跳转报错，暂时避开该问题，等待修复
+            # put_button("点击进入", color="success", onclick=lambda:go_app(app_name, new_window=False))
+        
+start_server([index, UserAssetsViewer, URLSchemeCoverter, 
+              ArticleDownloader, ArticleWordcloudGenerator], port=8602)
