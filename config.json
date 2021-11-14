@@ -19,7 +19,7 @@
         "title": "文章下载工具",
         "description": "下载简书中的文章内容，并将其保存至本地。",
         "service_func_name": "ArticleDownloader",
-        "status": -1,
+        "status": 0,
         "notification": null,
         "on_top": false
     },
@@ -27,7 +27,7 @@
         "title": "文章词云图生成工具",
         "description": "将简书文章内容生成词云图。",
         "service_func_name": "ArticleWordcloudGenerator",
-        "status": 1,
+        "status": 0,
         "notification": null,
         "on_top": false
     }
