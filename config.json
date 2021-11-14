@@ -1,0 +1,34 @@
+[
+    {
+        "title": "用户资产查询工具",
+        "description": "查询用户的钻贝情况。",
+        "service_func_name": "UserAssetsViewer",
+        "status": 0,
+        "notification": null,
+        "on_top": false
+    },
+    {
+        "title": "URL Scheme 转换工具",
+        "description": "将简书网页端 URL 转换成 URL Scheme 以实现一键跳转。",
+        "service_func_name": "URLSchemeCoverter",
+        "status": 0,
+        "notification": null,
+        "on_top": false
+    },
+    {
+        "title": "文章下载工具",
+        "description": "下载简书中的文章内容，并将其保存至本地。",
+        "service_func_name": "ArticleDownloader",
+        "status": -1,
+        "notification": null,
+        "on_top": false
+    },
+    {
+        "title": "文章词云图生成工具",
+        "description": "将简书文章内容生成词云图。",
+        "service_func_name": "ArticleWordcloudGenerator",
+        "status": 1,
+        "notification": null,
+        "on_top": false
+    }
+]
