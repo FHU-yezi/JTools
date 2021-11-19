@@ -28,13 +28,21 @@ from PIL import Image
 from pywebio import pin, start_server
 from pywebio.input import *
 from pywebio.output import *
-from pywebio.session import download, go_app
+from pywebio.session import download, go_app, run_js
 from qrcode import make as make_qrcode
 from wordcloud import WordCloud
 
 __version__ = "0.4.0"
-host = "120.27.239.120"
-port = "8602"
+
+DEBUG_MODE = True  # 调试模式
+
+if DEBUG_MODE:
+    host = "127.0.0.1"  # 本地地址
+    port = "8602"
+    print("调试模式已开启！")
+else:
+    host = "120.27.239.120"  # 服务器地址
+    port = "8602"
 
 status_to_text = {
         -1: "暂停服务", 
@@ -52,6 +60,19 @@ jieba.setLogLevel(jieba.logging.ERROR)  # 关闭 jieba 的日志输出
 
 stopwords = [word for word in open("stopwords.txt", encoding="utf-8")]  # 预加载停用词词库
 [jieba.add_word(word) for word in open("hotwords.txt", encoding="utf-8")]  # 将热点词加入词库
+
+def LinkInHTML(name: str, link: str):
+    """
+    获取 HTML 格式的链接
+    """
+    return f'<a href="{link}" style="color: #0056B3">{name}</a>'
+    
+
+def SetFooter(html: str):
+    """
+    设置底栏内容
+    """
+    run_js(f"$('footer').html('{html}')")
 
 def UserAssetsViewer():
     """简书小工具集：用户资产查询工具"""
@@ -91,6 +112,10 @@ def UserAssetsViewer():
     
     pin.put_input("user_url", label="用户主页 URL", type=TEXT)
     put_button("查询", ShowUserAssetsInfo)
+    
+    SetFooter(f"Powered By \
+        {LinkInHTML('JRT', 'https://github.com/FHU-yezi/JianshuResearchTools/')} \
+        and {LinkInHTML('PyWebIO', 'https://github.com/pywebio/PyWebIO')}")
 
 def URLSchemeCoverter():
     """简书小工具集：URL Scheme 转换工具"""
@@ -144,6 +169,10 @@ def URLSchemeCoverter():
     """, lstrip=True)
     pin.put_input("url", label="网页端 URL", type=TEXT)
     put_button("转换", onclick=Convert)
+    
+    SetFooter(f"Powered By \
+        {LinkInHTML('JRT', 'https://github.com/FHU-yezi/JianshuResearchTools/')} \
+        and {LinkInHTML('PyWebIO', 'https://github.com/pywebio/PyWebIO')}")
 
 def ArticleDownloader():
     """简书小工具集：文章下载工具"""
@@ -186,6 +215,10 @@ def ArticleDownloader():
     pin.put_checkbox("warning", options=["我已阅读以上提示并将合规使用文章内容"])
     put_button("下载纯文本格式", onclick=lambda: download_content("txt"))
     put_button("下载 Markdown 格式", onclick=lambda: download_content("markdown"))
+    
+    SetFooter(f"Powered By \
+        {LinkInHTML('JRT', 'https://github.com/FHU-yezi/JianshuResearchTools/')} \
+        and {LinkInHTML('PyWebIO', 'https://github.com/pywebio/PyWebIO')}")
 
 def ArticleWordcloudGenerator():
     """文章词云图生成工具"""
@@ -213,6 +246,10 @@ def ArticleWordcloudGenerator():
     
     pin.put_input("url", type=TEXT, label="文章链接")
     put_button("生成词云图", GeneratorWordcloud)
+    
+    SetFooter(f"Powered By \
+        {LinkInHTML('JRT', 'https://github.com/FHU-yezi/JianshuResearchTools/')} \
+        and {LinkInHTML('PyWebIO', 'https://github.com/pywebio/PyWebIO')}")
 
 def index():
     put_markdown(f"""
@@ -248,6 +285,10 @@ def index():
             put_link("点击进入", url=f"http://{host}:{port}/?app={service['service_func_name']}")
             # TODO: 不明原因导致直接跳转报错，暂时避开该问题，等待修复
             # put_button("点击进入", color="success", onclick=lambda:go_app(app_name, new_window=False))
+        
+    SetFooter(f"Version {__version__} \
+        Powered By {LinkInHTML('JRT', 'https://github.com/FHU-yezi/JianshuResearchTools/')} and \
+        {LinkInHTML('PyWebIO', 'https://github.com/pywebio/PyWebIO')}")
         
 start_server([index, UserAssetsViewer, URLSchemeCoverter, 
               ArticleDownloader, ArticleWordcloudGenerator], port=8602)
