@@ -36,7 +36,7 @@
         "description": "提供文章字数统计与建议。",
         "service_func_name": "WordageStatisticsTool",
         "status": 0,
-        "notification": null,
+        "notification": "该工具统计的字数与编辑器中显示的字数有一定差异，请以简书编辑器中显示为准。",
         "on_top": false
     }
 ]
