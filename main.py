@@ -345,6 +345,7 @@ def WordageStatisticsTool():
 
             """, lstrip=True)
             
+        scroll_to("output")
     put_markdown("""
     # 文章字数统计工具
     提供文章字数统计与建议。
