@@ -30,5 +30,13 @@
         "status": 0,
         "notification": null,
         "on_top": false
+    },
+    {
+        "title": "文章字数统计工具",
+        "description": "提供文章字数统计与建议。",
+        "service_func_name": "WordageStatisticsTool",
+        "status": 0,
+        "notification": null,
+        "on_top": false
     }
 ]
