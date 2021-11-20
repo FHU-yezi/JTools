@@ -79,7 +79,7 @@ def SetFooter(html: str):
 def UserAssetsViewer():
     """简书小工具集：用户资产查询工具"""
     def ShowUserAssetsInfo():
-        with use_scope("output", if_exist="replace"):
+        with use_scope("output", if_exist="remove"):
             try:
                 AssertUserUrl(pin.pin["user_url"])
                 AssertUserStatusNormal(pin.pin["user_url"])
@@ -143,7 +143,7 @@ def URLSchemeCoverter():
     def Convert():
         if not CheckData():
             return  # 发生错误，不再运行后续逻辑
-        with use_scope("output", if_exist="replace"):
+        with use_scope("output", if_exist="remove"):
             convert_funcs = (ArticleUrlToArticleUrlScheme,
                              CollectionUrlToCollectionUrlScheme,
                              NotebookUrlToNotebookUrlScheme,
@@ -334,7 +334,7 @@ def WordageStatisticsTool():
                             + MarkdownTextChars + RealCountCharsCount)
         
         toast("统计完成", color="success")
-        with use_scope("output", if_exist="replace"):
+        with use_scope("output", if_exist="remove"):
             put_markdown(f"""
             # 字数统计信息
             总字符数：{TotalCharsCount}
