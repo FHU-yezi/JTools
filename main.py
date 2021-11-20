@@ -34,9 +34,9 @@ from pywebio.session import download, go_app, run_js
 from qrcode import make as make_qrcode
 from wordcloud import WordCloud
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 
-DEBUG_MODE = True  # 调试模式
+DEBUG_MODE = False  # 调试模式
 
 if DEBUG_MODE:
     host = "127.0.0.1"  # 本地地址
