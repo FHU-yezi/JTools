@@ -9,6 +9,7 @@ from pywebio.output import (put_button, put_info, put_link, put_markdown,
 
 from modules.article_downloader import ArticleDownloader
 from modules.article_wordcloud_generator import ArticleWordcloudGenerator
+from modules.diszeroer_helper import DiszeroerHelper
 from modules.url_scheme_converter import URLSchemeConverter
 from modules.user_assets_viewer import UserAssetsViewer
 from modules.utils import SetFooter
@@ -16,7 +17,7 @@ from modules.wordage_statistics_tool import WordageStatisticsTool
 
 __version__ = "0.5.0"
 
-DEBUG_MODE = False  # 调试模式
+DEBUG_MODE = True  # 调试模式
 
 if DEBUG_MODE:
     host = "127.0.0.1"  # 本地地址
@@ -75,5 +76,6 @@ start_server([
              URLSchemeConverter,
              ArticleDownloader,
              ArticleWordcloudGenerator,
-             WordageStatisticsTool],
+             WordageStatisticsTool,
+             DiszeroerHelper],
              port=8602)
