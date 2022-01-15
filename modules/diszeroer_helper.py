@@ -8,6 +8,8 @@ from pywebio.input import FLOAT, NUMBER
 from pywebio.output import (put_button, put_collapse, put_column, put_link,
                             put_markdown, put_row, toast, use_scope)
 
+from .utils import LinkInHTML, SetFooter
+
 COLLECTIONS = {
     "简友广场": "https://www.jianshu.com/c/7ecac177f5a8",
     "人物": "https://www.jianshu.com/c/avQwgf",
@@ -124,3 +126,7 @@ def DiszeroerHelper():
     ], size=r"3fr 1fr 3fr")
 
     put_button("提交", color="success", onclick=main_logic)
+
+    SetFooter(f"Powered By \
+              {LinkInHTML('JRT', 'https://github.com/FHU-yezi/JianshuResearchTools/')} \
+              and {LinkInHTML('PyWebIO', 'https://github.com/pywebio/PyWebIO')}")
