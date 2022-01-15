@@ -1,0 +1,36 @@
+-   name: 用户资产查询工具
+    description: 查询用户的钻贝情况。
+    service_func_name: UserAssetsViewer
+    status: 0
+    notification: null
+    on_top: false
+-   name: URL Scheme 转换工具
+    description: 将简书网页端 URL 转换成 URL Scheme 以实现一键跳转。
+    service_func_name: URLSchemeConverter
+    status: 0
+    notification: null
+    on_top: false
+-   name: 文章下载工具
+    description: 下载简书中的文章内容，并将其保存至本地。
+    service_func_name: ArticleDownloader
+    status: 0
+    notification: null
+    on_top: false
+-   name: 文章词云图生成工具
+    description: 将简书文章内容生成词云图。
+    service_func_name: ArticleWordcloudGenerator
+    status: 0
+    notification: null
+    on_top: false
+-   name: 文章字数统计工具
+    description: 提供文章字数统计与建议。
+    service_func_name: WordageStatisticsTool
+    status: 0
+    notification: 该工具统计的字数与编辑器中显示的字数有一定差异，请以简书编辑器中显示为准。
+    on_top: false
+-   name: 消零派辅助工具
+    description: 消灭零评论，留下爱与光。
+    service_func_name: DiszeroerHelper
+    status: 0
+    notification: null
+    on_top: false

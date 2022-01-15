@@ -2,4 +2,5 @@
 *.log
 *.db
 *.pyc
+*.otf
 __pycache__/
