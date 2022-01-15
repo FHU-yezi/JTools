@@ -5,7 +5,8 @@ from JianshuResearchTools.convert import (ArticleSlugToArticleUrl,
 from pandas import DataFrame
 from pywebio.input import FLOAT, NUMBER
 from pywebio.output import (put_button, put_collapse, put_column, put_link,
-                            put_markdown, put_row, toast, use_scope)
+                            put_loading, put_markdown, put_row, toast,
+                            use_scope)
 from pywebio.pin import pin, put_checkbox, put_input
 
 from .utils import LinkInHTML, SetFooter
@@ -88,7 +89,8 @@ def ShowResult(df):
 def MainLogic():
     if not CheckData():
         return  # 有数据填写错误，不运行后续逻辑
-    df = GetProcessedData()
+    with put_loading(color="success"):  # 显示加载动画
+        df = GetProcessedData()
     toast("数据获取成功！", color="success")
     ShowResult(df)
 
