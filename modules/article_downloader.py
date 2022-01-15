@@ -1,4 +1,4 @@
-from os import remove
+from tempfile import SpooledTemporaryFile
 
 from JianshuResearchTools.article import (GetArticleAuthorName,
                                           GetArticleMarkdown, GetArticleText,
@@ -13,31 +13,31 @@ from .utils import LinkInHTML, SetFooter
 
 
 def download_content(format):
-    if format not in ["txt", "markdown"]:
+    if format not in ("txt", "markdown"):
         toast("格式无效，请检查", color="error")
         return  # 发生错误，不再运行后续逻辑
     if "我已阅读以上提示并将合规使用文章内容" not in pin.pin["warning"]:
         toast("请先勾选免责信息", color="error")
         return  # 用户未勾选免责，不再运行后续逻辑
+    url = pin.pin["url"]
     try:
-        AssertArticleUrl(pin.pin["url"])
+        AssertArticleUrl(url)
     except InputError:
         toast("输入的 URL 无效，请检查")
         return  # 发生错误，不再运行后续逻辑
-    if format == "txt":
-        filename = GetArticleTitle(pin.pin["url"]) + "_" + GetArticleAuthorName(pin.pin["url"]) + ".txt"
-        with open(filename, "w", encoding="utf-8") as f:
-            f.write(GetArticleText(pin.pin["url"]))
-    elif format == "markdown":
-        filename = GetArticleTitle(pin.pin["url"]) + "_" + GetArticleAuthorName(pin.pin["url"]) + ".md"
-        with open(filename, "w", encoding="utf-8") as f:
-            f.write(GetArticleMarkdown(pin.pin["url"]))
+    else:
+        title = GetArticleTitle(url)
+        author_name = GetArticleAuthorName(url)
+        filename = f"{title}_{author_name}.{format}"
+    with SpooledTemporaryFile(mode="wb+", max_size=1 * 1024 * 1024) as f:  # 创建临时文件
+        if format == "txt":
+            f.write(bytes(GetArticleText(url), encoding="utf-8"))
+        elif format == "markdown":
+            f.write(bytes(GetArticleMarkdown(url), encoding="utf-8"))
 
-    toast("文章内容获取成功", color="success")
-    with open(filename, "rb") as f:
+        toast("文章内容获取成功", color="success")
+        f.seek(0)  # 将内容指针放到文件开头
         download(filename, f.read())  # 向浏览器发送文件下载请求
-
-    remove(filename)  # 删除临时文件
 
 
 def ArticleDownloader():
