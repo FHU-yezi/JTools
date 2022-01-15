@@ -35,7 +35,7 @@ def index():
     为简友提供高效便捷的科技工具。
     Made with [JRT](https://github.com/FHU-yezi/JianshuResearchTools) and ♥
     Version：{__version__}
-    """, lstrip=True)
+    """)
 
     with open("config.yaml", "r", encoding="utf-8") as f:
         config = yaml_load(f, SafeLoader)
@@ -57,7 +57,7 @@ def index():
         {service["description"]}
 
         服务状态：<font color={status_to_color[service["status"]]}>**{status_to_text[service["status"]]}**</font>
-        """, lstrip=True)
+        """)
 
         if service["status"] >= 0:  # 只有服务正常运行时才允许跳转
             put_link("点击进入", url=f"http://{host}:{port}/?app={service['service_func_name']}")

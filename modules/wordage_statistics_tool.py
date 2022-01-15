@@ -1,11 +1,10 @@
 from re import findall, search, sub
 
-from pywebio import pin
 from pywebio.output import (put_button, put_markdown, scroll_to, toast,
                             use_scope)
+from pywebio.pin import pin, put_textarea
 
 from .utils import LinkInHTML, SetFooter
-
 
 # 这些字符无论输入多少次，都不计入字数统计
 NOT_COUNTING_CHARS = ("`", "~", "!", "@", "#", "$", "%", "^",
@@ -24,19 +23,19 @@ DISLIKE_CHARS = ("​", "‌", "‍", "‎", "‏")
 
 
 def StatisticsWordage():
-    text = pin.pin["text"]  # 定义局部变量引用，提高性能
-
-    while "\n" in text:
-        text = text.replace("\n", "")  # 去除换行符
+    text = pin["text"]  # 定义局部变量引用，提高性能
 
     if not text:
         toast("请输入文本", color="error")
         return  # 发生错误，不再运行后续逻辑
 
+    text = text.replace("\n", "")  # 去除换行符
+
     TotalCharsCount = len(text)
 
     MarkdownIgnoredChars = 0  # Markdown 语法中的被忽略字符数
     MarkdownTextChars = 0  # Markdown 语法中实际计入的字符数
+
     MarkdownImages = findall(r"!\[.*?\]\(.*?\)", text)  # 查找 Markdown 中的图片
     for image in MarkdownImages:
         text = text.replace(image, "")
@@ -80,10 +79,12 @@ def StatisticsWordage():
     for char in DISLIKE_CHARS:
         DislikeCharsCount += text.count(char)
 
-    WordageInJianshu = (TotalCharsCount - NotCountingCharsCount - CountingOneTimeCharsCount - MarkdownIgnoredChars + MarkdownTextChars + RealCountCharsCount)
+    WordageInJianshu = (TotalCharsCount - NotCountingCharsCount
+                        - CountingOneTimeCharsCount - MarkdownIgnoredChars
+                        + MarkdownTextChars + RealCountCharsCount)
 
     toast("统计完成", color="success")
-    with use_scope("output", if_exist="remove"):
+    with use_scope("output", clear=True):
         put_markdown(f"""
         # 字数统计信息
         总字符数：{TotalCharsCount}
@@ -91,9 +92,9 @@ def StatisticsWordage():
         仅计算一次的字符数：{CountingOneTimeCharsCount} -> {RealCountCharsCount}
         Markdown 语法字符数：{MarkdownIgnoredChars} -> {MarkdownTextChars}
         **简书内显示的字数：{WordageInJianshu}**
-        """, lstrip=True)
+        """)
 
-    scroll_to("output")
+    scroll_to("output")  # 滚动到输出区域
 
 
 def WordageStatisticsTool():
@@ -102,11 +103,11 @@ def WordageStatisticsTool():
     put_markdown("""
     # 文章字数统计工具
     提供文章字数统计与建议。
-    使用 Markdown 撰写文章，可获得更多统计维度数据。
-    """, lstrip=True)
+    使用 Markdown 撰写文章，可获得更多维度统计数据。
+    """)
 
-    pin.put_textarea("text", label="文章内容", rows=12, placeholder="在此处输入...")
-    put_button("统计", StatisticsWordage)
+    put_textarea("text", label="文章内容", rows=12, placeholder="在此处输入文章内容...")
+    put_button("统计字数信息", StatisticsWordage)
 
     SetFooter(f"Powered By \
               {LinkInHTML('JRT', 'https://github.com/FHU-yezi/JianshuResearchTools/')} \
