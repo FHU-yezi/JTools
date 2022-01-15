@@ -12,7 +12,7 @@ from modules.user_assets_viewer import UserAssetsViewer
 from modules.utils import SetFooter, GetUrl
 from modules.wordage_statistics_tool import WordageStatisticsTool
 
-__version__ = "0.5.0"
+__version__ = "1.0.0"
 
 
 STATUS_TO_TEXT = {-1: "暂停服务", 0: "正常运行", 1: "降级运行"}
