@@ -1,11 +1,8 @@
-try:
-    import ujson as json
-except ImportError:
-    import json
-
 from pywebio import start_server
 from pywebio.output import (put_button, put_info, put_link, put_markdown,
                             put_warning)
+from yaml import SafeLoader
+from yaml import load as yaml_load
 
 from modules.article_downloader import ArticleDownloader
 from modules.article_wordcloud_generator import ArticleWordcloudGenerator
@@ -40,8 +37,8 @@ def index():
     Version：{__version__}
     """, lstrip=True)
 
-    with open("config.json", "r", encoding="utf-8") as f:
-        config = json.load(f)
+    with open("config.yaml", "r", encoding="utf-8") as f:
+        config = yaml_load(f, SafeLoader)
     config.sort(key=lambda x: x["on_top"], reverse=True)  # 置顶的服务排在前面
 
     for service in config:
