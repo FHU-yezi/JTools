@@ -38,5 +38,13 @@
         "status": 0,
         "notification": "该工具统计的字数与编辑器中显示的字数有一定差异，请以简书编辑器中显示为准。",
         "on_top": false
+    },
+    {
+        "title": "消零派辅助工具",
+        "description": "消灭零评论，留下爱与光。",
+        "service_func_name": "DiszeroerHelper",
+        "status": 0,
+        "notification": null,
+        "on_top": false
     }
 ]
