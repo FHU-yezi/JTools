@@ -3,10 +3,11 @@ from tempfile import SpooledTemporaryFile
 from JianshuResearchTools.article import (GetArticleAuthorName,
                                           GetArticleMarkdown, GetArticleText,
                                           GetArticleTitle)
-from JianshuResearchTools.assert_funcs import AssertArticleUrl
-from JianshuResearchTools.exceptions import InputError
+from JianshuResearchTools.assert_funcs import (AssertArticleStatusNormal,
+                                               AssertArticleUrl)
+from JianshuResearchTools.exceptions import InputError, ResourceError
 from pywebio.input import TEXT
-from pywebio.output import download, put_button, put_markdown, toast
+from pywebio.output import download, put_buttons, put_markdown, toast
 from pywebio.pin import pin, put_checkbox, put_input
 
 from .utils import LinkInHTML, SetFooter
@@ -20,8 +21,9 @@ def DownloadContent(format):
     url = pin["url"]
     try:
         AssertArticleUrl(url)
-    except InputError:
-        toast("输入的 URL 无效，请检查")
+        AssertArticleStatusNormal(url)
+    except (InputError, ResourceError):
+        toast("输入的 URL 无效，请检查", color="error")
         return  # 发生错误，不再运行后续逻辑
     else:
         title = GetArticleTitle(url)
@@ -47,13 +49,13 @@ def ArticleDownloader():
     # 文章下载工具
     本工具可下载简书中的文章内容，并将其保存至本地。
 
-    **请注意：本工具可以下载设置为禁止转载的文章内容，您需自行承担不规范使用可能造成的版权风险。**
+    **请注意：本工具可以下载设置为禁止转载的文章内容，您需自行承担不规范使用带来的版权风险。**
     """)
 
     put_input("url", type=TEXT, label="要下载的文章链接")
     put_checkbox("warning", options=["我已阅读以上提示并将合规使用文章内容"])
-    put_button("下载纯文本格式", onclick=lambda: DownloadContent("txt"))
-    put_button("下载 Markdown 格式", onclick=lambda: DownloadContent("markdown"))
+    put_buttons(["下载纯文本格式", "下载 Markdown 格式"],
+                onclick=(lambda: DownloadContent("txt"), lambda: DownloadContent("markdown")))
 
     SetFooter(f"Powered By \
               {LinkInHTML('JRT', 'https://github.com/FHU-yezi/JianshuResearchTools/')} \
