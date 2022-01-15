@@ -31,7 +31,6 @@ def index():
     # 简书小工具集
     为简友提供高效便捷的科技工具。
 
->>>>>>> dev
     Made with [JRT](https://github.com/FHU-yezi/JianshuResearchTools) and ♥
     OpenSource On GitHub：[JianshuMicroFeatures](https://github.com/FHU-yezi/JianshuMicroFeatures)
     Version：{__version__}
