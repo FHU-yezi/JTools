@@ -34,3 +34,9 @@
     status: 0
     notification: null
     on_top: false
+-   name: 会员状态查询工具
+    description: 查询用户的 VIP 状态。
+    service_func_name: UserVIPStatusQuery
+    status: 0
+    notification: null
+    on_top: false
