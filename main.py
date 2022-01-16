@@ -5,14 +5,16 @@ from yaml import SafeLoader
 from yaml import load as yaml_load
 
 from modules.article_downloader import ArticleDownloader
+from modules.article_time_query import ArticleTimeQuery
 from modules.article_wordcloud_generator import ArticleWordcloudGenerator
 from modules.diszeroer_helper import DiszeroerHelper
 from modules.url_scheme_converter import URLSchemeConverter
 from modules.user_assets_viewer import UserAssetsViewer
-from modules.utils import SetFooter, GetUrl
+from modules.user_VIP_status_query import UserVIPStatusQuery
+from modules.utils import GetUrl, SetFooter
 from modules.wordage_statistics_tool import WordageStatisticsTool
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 
 STATUS_TO_TEXT = {-1: "暂停服务", 0: "正常运行", 1: "降级运行"}
@@ -70,5 +72,7 @@ start_server([
              ArticleDownloader,
              ArticleWordcloudGenerator,
              WordageStatisticsTool,
-             DiszeroerHelper],
+             DiszeroerHelper,
+             UserVIPStatusQuery,
+             ArticleTimeQuery],
              port=8602)

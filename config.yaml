@@ -34,3 +34,15 @@
     status: 0
     notification: null
     on_top: false
+-   name: 会员状态查询工具
+    description: 查询用户的 VIP 状态。
+    service_func_name: UserVIPStatusQuery
+    status: 0
+    notification: null
+    on_top: false
+-   name: 文章时间查询工具
+    description: 查询文章的发布时间和更新时间。
+    service_func_name: ArticleTimeQuery
+    status: 0
+    notification: null
+    on_top: false
