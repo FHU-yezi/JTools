@@ -14,7 +14,7 @@ from modules.user_VIP_status_query import UserVIPStatusQuery
 from modules.utils import GetUrl, SetFooter
 from modules.wordage_statistics_tool import WordageStatisticsTool
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 
 STATUS_TO_TEXT = {-1: "暂停服务", 0: "正常运行", 1: "降级运行"}
