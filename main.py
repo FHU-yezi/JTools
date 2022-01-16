@@ -9,7 +9,8 @@ from modules.article_wordcloud_generator import ArticleWordcloudGenerator
 from modules.diszeroer_helper import DiszeroerHelper
 from modules.url_scheme_converter import URLSchemeConverter
 from modules.user_assets_viewer import UserAssetsViewer
-from modules.utils import SetFooter, GetUrl
+from modules.user_VIP_status_query import UserVIPStatusQuery
+from modules.utils import GetUrl, SetFooter
 from modules.wordage_statistics_tool import WordageStatisticsTool
 
 __version__ = "1.0.0"
@@ -70,5 +71,6 @@ start_server([
              ArticleDownloader,
              ArticleWordcloudGenerator,
              WordageStatisticsTool,
-             DiszeroerHelper],
+             DiszeroerHelper,
+             UserVIPStatusQuery],
              port=8602)
