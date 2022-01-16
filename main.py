@@ -5,6 +5,7 @@ from yaml import SafeLoader
 from yaml import load as yaml_load
 
 from modules.article_downloader import ArticleDownloader
+from modules.article_time_query import ArticleTimeQuery
 from modules.article_wordcloud_generator import ArticleWordcloudGenerator
 from modules.diszeroer_helper import DiszeroerHelper
 from modules.url_scheme_converter import URLSchemeConverter
@@ -72,5 +73,6 @@ start_server([
              ArticleWordcloudGenerator,
              WordageStatisticsTool,
              DiszeroerHelper,
-             UserVIPStatusQuery],
+             UserVIPStatusQuery,
+             ArticleTimeQuery],
              port=8602)
