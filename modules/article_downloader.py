@@ -1,5 +1,6 @@
 from tempfile import SpooledTemporaryFile
 
+from config_manager import Config
 from JianshuResearchTools.article import (GetArticleAuthorName,
                                           GetArticleMarkdown, GetArticleText,
                                           GetArticleTitle)
@@ -10,7 +11,7 @@ from pywebio.input import TEXT
 from pywebio.output import download, put_buttons, put_markdown, toast
 from pywebio.pin import pin, put_checkbox, put_input
 
-from .utils import LinkInHTML, SetFooter
+from .utils import SetFooter
 
 
 def DownloadContent(format):
@@ -57,6 +58,4 @@ def ArticleDownloader():
     put_buttons(["下载纯文本格式", "下载 Markdown 格式"],
                 onclick=(lambda: DownloadContent("txt"), lambda: DownloadContent("markdown")))
 
-    SetFooter(f"Powered By \
-              {LinkInHTML('JRT', 'https://github.com/FHU-yezi/JianshuResearchTools/')} \
-              and {LinkInHTML('PyWebIO', 'https://github.com/pywebio/PyWebIO')}")
+    SetFooter(Config()["service_pages_footer"])

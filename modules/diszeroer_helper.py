@@ -1,3 +1,4 @@
+from config_manager import Config
 from JianshuResearchTools.collection import GetCollectionArticlesInfo
 from JianshuResearchTools.convert import (ArticleSlugToArticleUrl,
                                           ArticleUrlToArticleUrlScheme,
@@ -9,7 +10,7 @@ from pywebio.output import (put_button, put_collapse, put_column, put_link,
                             use_scope)
 from pywebio.pin import pin, put_checkbox, put_input
 
-from .utils import LinkInHTML, SetFooter
+from .utils import SetFooter
 
 COLLECTIONS = {
     "简友广场": "https://www.jianshu.com/c/7ecac177f5a8",
@@ -131,6 +132,4 @@ def DiszeroerHelper():
 
     put_button("提交", color="success", onclick=MainLogic)
 
-    SetFooter(f"Powered By \
-              {LinkInHTML('JRT', 'https://github.com/FHU-yezi/JianshuResearchTools/')} \
-              and {LinkInHTML('PyWebIO', 'https://github.com/pywebio/PyWebIO')}")
+    SetFooter(Config()["service_pages_footer"])

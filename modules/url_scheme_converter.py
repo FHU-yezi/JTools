@@ -1,3 +1,4 @@
+from config_manager import Config
 from JianshuResearchTools.assert_funcs import AssertJianshuUrl
 from JianshuResearchTools.convert import (ArticleUrlToArticleUrlScheme,
                                           CollectionUrlToCollectionUrlScheme,
@@ -10,7 +11,7 @@ from pywebio.output import (put_button, put_image, put_link, put_markdown,
 from pywebio.pin import pin, put_input
 from qrcode import make as make_qrcode
 
-from .utils import LinkInHTML, SetFooter
+from .utils import SetFooter
 
 
 def Convert():
@@ -55,6 +56,4 @@ def URLSchemeConverter():
     put_input("url", label="简书 URL", type=TEXT)
     put_button("转换", onclick=Convert)
 
-    SetFooter(f"Powered By \
-              {LinkInHTML('JRT', 'https://github.com/FHU-yezi/JianshuResearchTools/')} \
-              and {LinkInHTML('PyWebIO', 'https://github.com/pywebio/PyWebIO')}")
+    SetFooter(Config()["service_pages_footer"])
