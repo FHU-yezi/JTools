@@ -1,4 +1,5 @@
 import plotly.graph_objs as go
+from config_manager import Config
 from JianshuResearchTools.assert_funcs import (AssertUserStatusNormal,
                                                AssertUserUrl)
 from JianshuResearchTools.exceptions import InputError, ResourceError
@@ -9,7 +10,7 @@ from pywebio.output import (put_button, put_html, put_markdown, put_warning,
                             toast, use_scope)
 from pywebio.pin import pin, put_input
 
-from .utils import LinkInHTML, SetFooter
+from .utils import SetFooter
 
 
 def ShowUserAssetsInfo():
@@ -54,6 +55,4 @@ def UserAssetsViewer():
     put_input("user_url", label="用户主页 URL", type=TEXT)
     put_button("查询", ShowUserAssetsInfo)
 
-    SetFooter(f"Powered By \
-              {LinkInHTML('JRT', 'https://github.com/FHU-yezi/JianshuResearchTools/')} \
-              and {LinkInHTML('PyWebIO', 'https://github.com/pywebio/PyWebIO')}")
+    SetFooter(Config()["service_pages_footer"])

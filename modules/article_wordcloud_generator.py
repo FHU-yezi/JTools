@@ -1,6 +1,7 @@
 from collections import Counter
 
 import jieba
+from config_manager import Config
 from JianshuResearchTools.article import GetArticleText
 from JianshuResearchTools.assert_funcs import (AssertArticleStatusNormal,
                                                AssertArticleUrl)
@@ -12,7 +13,7 @@ from pywebio.output import (put_button, put_image, put_loading, put_markdown,
 from pywebio.pin import pin, put_input
 from wordcloud import WordCloud
 
-from .utils import LinkInHTML, SetFooter
+from .utils import SetFooter
 
 jieba.setLogLevel(jieba.logging.ERROR)  # 关闭 jieba 的日志输出
 
@@ -51,6 +52,4 @@ def ArticleWordcloudGenerator():
     put_input("url", type=TEXT, label="文章链接")
     put_button("生成词云图", GeneratorWordcloud)
 
-    SetFooter(f"Powered By \
-              {LinkInHTML('JRT', 'https://github.com/FHU-yezi/JianshuResearchTools/')} \
-              and {LinkInHTML('PyWebIO', 'https://github.com/pywebio/PyWebIO')}")
+    SetFooter(Config()["service_pages_footer"])

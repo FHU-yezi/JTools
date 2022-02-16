@@ -1,11 +1,12 @@
 from datetime import datetime
 
+from config_manager import Config
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.user import GetUserName, GetUserVIPInfo
 from pywebio.output import put_button, put_markdown, toast, use_scope
 from pywebio.pin import pin, put_input
 
-from .utils import LinkInHTML, SetFooter
+from .utils import SetFooter
 
 
 def TimeDeltaFormat(td_object):
@@ -70,6 +71,4 @@ def UserVIPStatusQuery():
     put_input("url", label="请输入用户 URL：")
     put_button("查询", onclick=QueryUserVIPInfo)
 
-    SetFooter(f"Powered By \
-              {LinkInHTML('JRT', 'https://github.com/FHU-yezi/JianshuResearchTools/')} \
-              and {LinkInHTML('PyWebIO', 'https://github.com/pywebio/PyWebIO')}")
+    SetFooter(Config()["service_pages_footer"])

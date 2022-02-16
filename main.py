@@ -1,9 +1,8 @@
 from pywebio import start_server
-from pywebio.output import (put_button, put_info, put_link, put_markdown,
-                            put_warning)
-from yaml import SafeLoader
-from yaml import load as yaml_load
+from pywebio.output import (popup, put_button, put_info, put_link,
+                            put_markdown, put_warning)
 
+from config_manager import Config
 from modules.article_downloader import ArticleDownloader
 from modules.article_time_query import ArticleTimeQuery
 from modules.article_wordcloud_generator import ArticleWordcloudGenerator
@@ -13,9 +12,6 @@ from modules.user_assets_viewer import UserAssetsViewer
 from modules.user_VIP_status_query import UserVIPStatusQuery
 from modules.utils import GetUrl, SetFooter
 from modules.wordage_statistics_tool import WordageStatisticsTool
-
-__version__ = "1.1.0"
-
 
 STATUS_TO_TEXT = {-1: "暂停服务", 0: "正常运行", 1: "降级运行"}
 
@@ -35,14 +31,15 @@ def index():
 
     Made with [JRT](https://github.com/FHU-yezi/JianshuResearchTools) and ♥
     OpenSource On GitHub：[JianshuMicroFeatures](https://github.com/FHU-yezi/JianshuMicroFeatures)
-    Version：{__version__}
+    Version：{Config()["version"]}
     """)
 
-    with open("config.yaml", "r", encoding="utf-8") as f:
-        config = yaml_load(f, SafeLoader)
-    config.sort(key=lambda x: x["on_top"], reverse=True)  # 置顶的服务排在前面
+    if Config()["global_notification"]:
+        popup("公告", Config()["global_notification"])
 
-    for service in config:
+    services = sorted(Config()["services"], key=lambda x: x["on_top"], reverse=True)
+
+    for service in services:
         put_markdown(f"## {service['name']}")
 
         if service["on_top"]:
@@ -62,7 +59,7 @@ def index():
         if service["status"] >= 0:  # 只有服务正常运行时才允许跳转
             put_link("点击进入", url=f"{GetUrl()}?app={service['service_func_name']}")
 
-    SetFooter(f"Version {__version__}, Made with ♥")
+    SetFooter(Config()["mainpage_footer"])
 
 
 start_server([
