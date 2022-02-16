@@ -39,9 +39,10 @@ def CheckData():
 
 
 def GetProcessedData():
-    chosen_collections_urls = []
-    for chosen_collection in pin["chosen_collections"]:
-        chosen_collections_urls.append(COLLECTIONS[chosen_collection])
+    chosen_collections_urls = [
+        COLLECTIONS[chosen_collection]
+        for chosen_collection in pin["chosen_collections"]
+    ]
     raw_data = []
     for collection_url in chosen_collections_urls:
         for page in range(1, 5):

@@ -16,7 +16,7 @@ from .utils import LinkInHTML, SetFooter
 
 jieba.setLogLevel(jieba.logging.ERROR)  # 关闭 jieba 的日志输出
 
-STOPWORDS = [word for word in open("wordcloud_assets/stopwords.txt", encoding="utf-8")]  # 预加载停用词词库
+STOPWORDS = list(open("wordcloud_assets/stopwords.txt", encoding="utf-8"))
 (jieba.add_word(word) for word in open("wordcloud_assets/hotwords.txt", encoding="utf-8"))  # 将热点词加入词库
 
 
