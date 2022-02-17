@@ -1,6 +1,7 @@
 from collections import Counter
 
 import jieba
+import jieba.posseg as pseg
 from config_manager import Config
 from JianshuResearchTools.article import GetArticleText
 from JianshuResearchTools.assert_funcs import (AssertArticleStatusNormal,
@@ -30,10 +31,16 @@ def GeneratorWordcloud():
         return  # 发生错误，不再运行后续逻辑
 
     with put_loading(color="success"):  # 显示加载动画
+        ALLOW_WORD_TYPES = ("Ag", "a", "ad", "an", "dg", "g",
+                            "i", "j", "l", "Ng", "n", "nr",
+                            "ns", "nt", "nz", "tg", "vg", "v",
+                            "vd", "vn", "un")
         text = GetArticleText(pin["url"], disable_check=True)
-        cutted_text = jieba.cut(text)
-        cutted_text = (word for word in cutted_text if len(word) > 1 and word not in STOPWORDS)
-        wordcloud = WordCloud(font_path="wordcloud_assets/font.otf", width=1920, height=1080, background_color="white")
+        cutted_text = pseg.cut(text)
+        cutted_text = (x.word for x in cutted_text if len(x.word) > 1
+                       and x.flag in ALLOW_WORD_TYPES and x.word not in STOPWORDS)
+        wordcloud = WordCloud(font_path="wordcloud_assets/font.otf", width=1920, height=1080,
+                              background_color="white", max_words=100)
         img = wordcloud.generate_from_frequencies(Counter(cutted_text))
         with use_scope("output", clear=True):
             put_markdown("---")  # 分割线
