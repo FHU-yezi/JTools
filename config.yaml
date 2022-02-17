@@ -1,3 +1,8 @@
+version: 1.2.0
+mainpage_footer: 'Made with <a href="https://github.com/FHU-yezi/JianshuResearchTools/" style="color: #0056B3">JRT</a>, <a href="https://github.com/pywebio/PyWebIO" style="color: #0056B3">PyWebIO</a> and ♥'
+service_pages_footer: 'Powered By <a href="https://github.com/FHU-yezi/JianshuResearchTools/" style="color: #0056B3">JRT</a> and <a href="https://github.com/pywebio/PyWebIO" style="color: #0056B3">PyWebIO</a>'
+global_notification: null
+services:
 -   name: 用户资产查询工具
     description: 查询用户的钻贝情况。
     service_func_name: UserAssetsViewer

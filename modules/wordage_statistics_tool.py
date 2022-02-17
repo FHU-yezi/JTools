@@ -1,10 +1,11 @@
 from re import findall, search, sub
 
+from config_manager import Config
 from pywebio.output import (put_button, put_markdown, scroll_to, toast,
                             use_scope)
 from pywebio.pin import pin, put_textarea
 
-from .utils import LinkInHTML, SetFooter
+from .utils import SetFooter
 
 # 这些字符无论输入多少次，都不计入字数统计
 NOT_COUNTING_CHARS = ("`", "~", "!", "@", "#", "$", "%", "^",
@@ -61,10 +62,7 @@ def StatisticsWordage():
                 find_result = find_result.replace(char, "")
             MarkdownTextChars += len(find_result)
 
-    NotCountingCharsCount = 0
-    for char in NOT_COUNTING_CHARS:
-        NotCountingCharsCount += text.count(char)
-
+    NotCountingCharsCount = sum(text.count(char) for char in NOT_COUNTING_CHARS)
     CountingOneTimeCharsCount = 0  # 仅计算一次的字符个数
     RealCountCharsCount = 0  # 这些字符实际计入的字符数
     text_copy = text[:]  # 创建字符串的副本
@@ -75,10 +73,7 @@ def StatisticsWordage():
     CountingOneTimeCharsCount += len("".join(find_result))  # 将查找结果进行合并，获取其长度
     RealCountCharsCount += len(find_result)
 
-    DislikeCharsCount = 0
-    for char in DISLIKE_CHARS:
-        DislikeCharsCount += text.count(char)
-
+    # DislikeCharsCount = sum(text.count(char) for char in DISLIKE_CHARS)
     WordageInJianshu = (TotalCharsCount - NotCountingCharsCount
                         - CountingOneTimeCharsCount - MarkdownIgnoredChars
                         + MarkdownTextChars + RealCountCharsCount)
@@ -109,6 +104,4 @@ def WordageStatisticsTool():
     put_textarea("text", label="文章内容", rows=12, placeholder="在此处输入文章内容...")
     put_button("统计字数信息", StatisticsWordage)
 
-    SetFooter(f"Powered By \
-              {LinkInHTML('JRT', 'https://github.com/FHU-yezi/JianshuResearchTools/')} \
-              and {LinkInHTML('PyWebIO', 'https://github.com/pywebio/PyWebIO')}")
+    SetFooter(Config()["service_pages_footer"])
