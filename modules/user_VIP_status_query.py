@@ -1,11 +1,13 @@
 from datetime import datetime
 
+from config_manager import Config
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.user import GetUserName, GetUserVIPInfo
+from JianshuResearchTools.assert_funcs import AssertUserUrl, AssertUserStatusNormal
 from pywebio.output import put_button, put_markdown, toast, use_scope
 from pywebio.pin import pin, put_input
 
-from .utils import LinkInHTML, SetFooter
+from .utils import SetFooter
 
 
 def TimeDeltaFormat(td_object):
@@ -31,11 +33,14 @@ def TimeDeltaFormat(td_object):
 def QueryUserVIPInfo():
     url = pin["url"]
     try:
-        user_name = GetUserName(url)
-        result = GetUserVIPInfo(url)
+        AssertUserUrl(url)
+        AssertUserStatusNormal(url)
     except (InputError, ResourceError):
         toast("输入的 URL 无效，请检查", color="error")
         return  # 发生错误，不再运行后续逻辑
+    else:
+        user_name = GetUserName(url, disable_check=True)
+        result = GetUserVIPInfo(url, disable_check=True)
 
     with use_scope("output", clear=True):
         put_markdown("---")  # 分割线
@@ -70,6 +75,4 @@ def UserVIPStatusQuery():
     put_input("url", label="请输入用户 URL：")
     put_button("查询", onclick=QueryUserVIPInfo)
 
-    SetFooter(f"Powered By \
-              {LinkInHTML('JRT', 'https://github.com/FHU-yezi/JianshuResearchTools/')} \
-              and {LinkInHTML('PyWebIO', 'https://github.com/pywebio/PyWebIO')}")
+    SetFooter(Config()["service_pages_footer"])

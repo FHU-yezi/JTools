@@ -1,3 +1,4 @@
+from config_manager import Config
 from JianshuResearchTools.collection import GetCollectionArticlesInfo
 from JianshuResearchTools.convert import (ArticleSlugToArticleUrl,
                                           ArticleUrlToArticleUrlScheme,
@@ -9,7 +10,7 @@ from pywebio.output import (put_button, put_collapse, put_column, put_link,
                             use_scope)
 from pywebio.pin import pin, put_checkbox, put_input
 
-from .utils import LinkInHTML, SetFooter
+from .utils import SetFooter
 
 COLLECTIONS = {
     "简友广场": "https://www.jianshu.com/c/7ecac177f5a8",
@@ -39,13 +40,14 @@ def CheckData():
 
 
 def GetProcessedData():
-    chosen_collections_urls = []
-    for chosen_collection in pin["chosen_collections"]:
-        chosen_collections_urls.append(COLLECTIONS[chosen_collection])
+    chosen_collections_urls = [
+        COLLECTIONS[chosen_collection]
+        for chosen_collection in pin["chosen_collections"]
+    ]
     raw_data = []
     for collection_url in chosen_collections_urls:
         for page in range(1, 5):
-            raw_data.extend(GetCollectionArticlesInfo(collection_url, page))  # 默认获取 5 页
+            raw_data.extend(GetCollectionArticlesInfo(collection_url, page, disable_check=True))  # 默认获取 5 页
     df = DataFrame(raw_data)
 
     df = df[df["likes_count"] <= pin["likes_limit"]]  # 根据点赞数筛选
@@ -96,13 +98,11 @@ def MainLogic():
 
 
 def DiszeroerHelper():
-    """简书消零派辅助工具
-
-    消灭零评论，留下爱与光。
+    """简书小工具集：消零派辅助工具
     """
 
     put_markdown("""
-    # 简书消零派辅助工具
+    # 消零派辅助工具
 
     **消灭零评论，留下爱与光。**
 
@@ -130,6 +130,4 @@ def DiszeroerHelper():
 
     put_button("提交", color="success", onclick=MainLogic)
 
-    SetFooter(f"Powered By \
-              {LinkInHTML('JRT', 'https://github.com/FHU-yezi/JianshuResearchTools/')} \
-              and {LinkInHTML('PyWebIO', 'https://github.com/pywebio/PyWebIO')}")
+    SetFooter(Config()["service_pages_footer"])
