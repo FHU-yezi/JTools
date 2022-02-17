@@ -30,7 +30,7 @@ def GeneratorWordcloud():
         return  # 发生错误，不再运行后续逻辑
 
     with put_loading(color="success"):  # 显示加载动画
-        text = GetArticleText(pin["url"])
+        text = GetArticleText(pin["url"], disable_check=True)
         cutted_text = jieba.cut(text)
         cutted_text = (word for word in cutted_text if len(word) > 1 and word not in STOPWORDS)
         wordcloud = WordCloud(font_path="wordcloud_assets/font.otf", width=1920, height=1080, background_color="white")

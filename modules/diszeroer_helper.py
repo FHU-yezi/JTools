@@ -47,7 +47,7 @@ def GetProcessedData():
     raw_data = []
     for collection_url in chosen_collections_urls:
         for page in range(1, 5):
-            raw_data.extend(GetCollectionArticlesInfo(collection_url, page))  # 默认获取 5 页
+            raw_data.extend(GetCollectionArticlesInfo(collection_url, page, disable_check=True))  # 默认获取 5 页
     df = DataFrame(raw_data)
 
     df = df[df["likes_count"] <= pin["likes_limit"]]  # 根据点赞数筛选
@@ -98,13 +98,11 @@ def MainLogic():
 
 
 def DiszeroerHelper():
-    """简书消零派辅助工具
-
-    消灭零评论，留下爱与光。
+    """简书小工具集：消零派辅助工具
     """
 
     put_markdown("""
-    # 简书消零派辅助工具
+    # 消零派辅助工具
 
     **消灭零评论，留下爱与光。**
 
