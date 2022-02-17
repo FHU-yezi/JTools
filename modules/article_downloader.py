@@ -27,16 +27,16 @@ def DownloadContent(format):
         toast("输入的 URL 无效，请检查", color="error")
         return  # 发生错误，不再运行后续逻辑
     else:
-        title = GetArticleTitle(url)
-        author_name = GetArticleAuthorName(url)
+        title = GetArticleTitle(url, disable_check=True)
+        author_name = GetArticleAuthorName(url, disable_check=True)
         filename = f"{title}_{author_name}.{format}"
 
     # 创建临时文件，在其大小大于 1MB 时将其写入硬盘（应该不会有这么长的文章吧）
     with SpooledTemporaryFile(mode="wb+", max_size=1 * 1024 * 1024) as f:
         if format == "txt":
-            f.write(bytes(GetArticleText(url), encoding="utf-8"))
+            f.write(bytes(GetArticleText(url, disable_check=True), encoding="utf-8"))
         elif format == "markdown":
-            f.write(bytes(GetArticleMarkdown(url), encoding="utf-8"))
+            f.write(bytes(GetArticleMarkdown(url, disable_check=True), encoding="utf-8"))
 
         toast("获取文章内容成功", color="success")
         f.seek(0)  # 将内容指针放到文件开头

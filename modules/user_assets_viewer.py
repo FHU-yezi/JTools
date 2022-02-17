@@ -21,9 +21,9 @@ def ShowUserAssetsInfo():
         toast("用户主页 URL 无效，请检查", color="error")
         return  # 发生错误，不再运行后续逻辑
 
-    user_name = GetUserName(pin["user_url"])
-    FP = GetUserFPCount(pin["user_url"])
-    assets = GetUserAssetsCount(pin["user_url"])
+    user_name = GetUserName(pin["user_url"], disable_check=True)
+    FP = GetUserFPCount(pin["user_url"], disable_check=True)
+    assets = GetUserAssetsCount(pin["user_url"], disable_check=True)
     FTN = round(assets - FP, 3)
 
     toast("数据获取成功", color="success")
