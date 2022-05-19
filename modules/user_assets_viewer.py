@@ -1,10 +1,11 @@
-import plotly.graph_objs as go
+import pyecharts.options as opts
 from config_manager import Config
 from JianshuResearchTools.assert_funcs import (AssertUserStatusNormal,
                                                AssertUserUrl)
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.user import (GetUserAssetsCount, GetUserFPCount,
                                        GetUserName)
+from pyecharts.charts import Pie
 from pywebio.input import TEXT
 from pywebio.output import (put_button, put_html, put_markdown, put_warning,
                             toast, use_scope)
@@ -40,9 +41,13 @@ def ShowUserAssetsInfo():
         钻贝比：{round(FP / FTN, 2)}
         """)
 
-        fig = go.Figure(data=[go.Pie(labels=["简书钻（FP）", "简书贝（FTN）"],
-                                     values=[FP, FTN], title="用户资产占比")])
-        put_html(fig.to_html(include_plotlyjs="require", full_html=False))  # 获取 HTML 并展示
+        figure = (
+            Pie()
+            .add("", [("简书钻（FP）", FP), ("简书贝（FTN）", FTN)])
+            .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {d}%"))
+            .set_global_opts(title_opts=opts.TitleOpts(title=f"{user_name} 的资产占比"))
+        )
+        put_html(figure.render_notebook())  # 获取 HTML 并展示
 
 
 def UserAssetsViewer():
