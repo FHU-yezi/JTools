@@ -72,4 +72,4 @@ start_server([
              DiszeroerHelper,
              UserVIPStatusQuery,
              ArticleTimeQuery],
-             port=8602)
+             port=Config()["port"])

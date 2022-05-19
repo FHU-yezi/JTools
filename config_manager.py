@@ -6,6 +6,7 @@ from yaml import load as yaml_load
 
 _DEFAULT_CONFIG = {
     "version": "0.0.0",
+    "port": "8080",
     "mainpage_footer": "",
     "service_pages_footer": "",
     "global_notification": None,
