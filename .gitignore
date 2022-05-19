@@ -3,4 +3,5 @@
 *.db
 *.pyc
 *.otf
+Pipfile.lock
 __pycache__/
