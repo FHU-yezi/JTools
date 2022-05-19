@@ -3,6 +3,6 @@
 *.db
 *.pyc
 *.otf
-Pipfile.lock
 __pycache__/
 config.yaml
+poetry.lock
