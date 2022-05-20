@@ -13,13 +13,14 @@ from pywebio.pin import pin, put_input
 from .utils import SetFooter
 
 
-def ShowUserAssetsInfo():
-    url = pin["user_url"]
+def OnQueryButtonClicked():
+    url = pin.url
+
     try:
         AssertUserUrl(url)
         AssertUserStatusNormal(url)
     except (InputError, ResourceError):
-        toast("用户主页 URL 无效，请检查", color="error")
+        toast("输入的 URL 无效，请检查", color="error")
         return  # 发生错误，不再运行后续逻辑
 
     user = User(user_url=url)
@@ -58,7 +59,7 @@ def UserAssetsViewer():
     # 用户资产查询工具
     """)
 
-    put_input("user_url", label="用户主页 URL", type=TEXT)
-    put_button("查询", ShowUserAssetsInfo)
+    put_input("user_url", label="请输入用户主页 URL：", type=TEXT)
+    put_button("查询", OnQueryButtonClicked)
 
     SetFooter(Config()["service_pages_footer"])
