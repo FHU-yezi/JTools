@@ -39,7 +39,7 @@ def OnQueryButtonClicked():
         AssertArticleStatusNormal(url)
     except (InputError, ResourceError):
         toast("输入的 URL 无效，请检查", color="error")
-        return  # 发生错误，不再运行后续逻辑
+        return
 
     article = Article(article_url=url)
     article_title = article.title
