@@ -2,7 +2,7 @@ from datetime import datetime
 
 from config_manager import Config
 from JianshuResearchTools.exceptions import InputError, ResourceError
-from JianshuResearchTools.user import GetUserName, GetUserVIPInfo
+from JianshuResearchTools.objects import User
 from JianshuResearchTools.assert_funcs import AssertUserUrl, AssertUserStatusNormal
 from pywebio.output import put_button, put_markdown, toast, use_scope
 from pywebio.pin import pin, put_input
@@ -39,8 +39,9 @@ def QueryUserVIPInfo():
         toast("输入的 URL 无效，请检查", color="error")
         return  # 发生错误，不再运行后续逻辑
     else:
-        user_name = GetUserName(url, disable_check=True)
-        result = GetUserVIPInfo(url, disable_check=True)
+        user = User(user_url=url)
+        user_name = user.name
+        result = user.VIP_info
 
     with use_scope("output", clear=True):
         put_markdown("---")  # 分割线

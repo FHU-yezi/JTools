@@ -3,10 +3,10 @@ from collections import Counter
 import jieba
 import jieba.posseg as pseg
 from config_manager import Config
-from JianshuResearchTools.article import GetArticleText
 from JianshuResearchTools.assert_funcs import (AssertArticleStatusNormal,
                                                AssertArticleUrl)
 from JianshuResearchTools.exceptions import InputError, ResourceError
+from JianshuResearchTools.objects import Article
 from PIL import Image
 from pywebio.input import TEXT
 from pywebio.output import (put_button, put_image, put_loading, put_markdown,
@@ -29,13 +29,15 @@ def GeneratorWordcloud():
     except (InputError, ResourceError):
         toast("输入的 URL 无效，请检查", color="error")
         return  # 发生错误，不再运行后续逻辑
+    else:
+        url = pin["url"]
 
     with put_loading(color="success"):  # 显示加载动画
         ALLOW_WORD_TYPES = ("Ag", "a", "ad", "an", "dg", "g",
                             "i", "j", "l", "Ng", "n", "nr",
                             "ns", "nt", "nz", "tg", "vg", "v",
                             "vd", "vn", "un")
-        text = GetArticleText(pin["url"], disable_check=True)
+        text = Article(article_url=url).text
         cutted_text = pseg.cut(text)
         cutted_text = (x.word for x in cutted_text if len(x.word) > 1
                        and x.flag in ALLOW_WORD_TYPES and x.word not in STOPWORDS)
