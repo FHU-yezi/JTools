@@ -59,9 +59,7 @@ def UserAssetsViewer():
     # 用户资产查询工具
     """)
 
-    # put_input("user_url", label="请输入用户主页 URL：", type=TEXT)
-    put_input("user_url", type=TEXT)
+    put_input("user_url", label="请输入用户主页 URL：", type=TEXT)
     put_button("查询", OnQueryButtonClicked)
-    # put_button("查询", lambda: put_html(pin.user_url))
 
     SetFooter(Config()["service_pages_footer"])
