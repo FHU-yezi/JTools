@@ -1,4 +1,4 @@
-version: 1.2.0
+version: 1.3.0
 port: 8602
 mainpage_footer: 'Made with <a href="https://github.com/FHU-yezi/JianshuResearchTools/" style="color: #0056B3">JRT</a>, <a href="https://github.com/pywebio/PyWebIO" style="color: #0056B3">PyWebIO</a> and ♥'
 service_pages_footer: 'Powered By <a href="https://github.com/FHU-yezi/JianshuResearchTools/" style="color: #0056B3">JRT</a> and <a href="https://github.com/pywebio/PyWebIO" style="color: #0056B3">PyWebIO</a>'
