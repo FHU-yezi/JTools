@@ -2,7 +2,7 @@ from datetime import datetime
 
 from config_manager import Config
 from JianshuResearchTools.exceptions import InputError, ResourceError
-from JianshuResearchTools.user import GetUserName, GetUserVIPInfo
+from JianshuResearchTools.objects import User
 from JianshuResearchTools.assert_funcs import AssertUserUrl, AssertUserStatusNormal
 from pywebio.output import put_button, put_markdown, toast, use_scope
 from pywebio.pin import pin, put_input
@@ -30,17 +30,19 @@ def TimeDeltaFormat(td_object):
     return " ".join(strings)
 
 
-def QueryUserVIPInfo():
-    url = pin["url"]
+def OnQueryButtonClicked():
+    url = pin.url
+
     try:
         AssertUserUrl(url)
         AssertUserStatusNormal(url)
     except (InputError, ResourceError):
         toast("输入的 URL 无效，请检查", color="error")
-        return  # 发生错误，不再运行后续逻辑
-    else:
-        user_name = GetUserName(url, disable_check=True)
-        result = GetUserVIPInfo(url, disable_check=True)
+        return
+
+    user = User(user_url=url)
+    user_name = user.name
+    result = user.VIP_info
 
     with use_scope("output", clear=True):
         put_markdown("---")  # 分割线
@@ -51,7 +53,7 @@ def QueryUserVIPInfo():
             作者名：{user_name}
             VIP 等级：无 VIP
             """)
-        else:
+        else:  # 有 VIP
             remaining_time = result["expire_date"] - datetime.now()
             put_markdown(f"""
             **查询结果**
@@ -73,6 +75,6 @@ def UserVIPStatusQuery():
     """)
 
     put_input("url", label="请输入用户 URL：")
-    put_button("查询", onclick=QueryUserVIPInfo)
+    put_button("查询", onclick=OnQueryButtonClicked)
 
     SetFooter(Config()["service_pages_footer"])

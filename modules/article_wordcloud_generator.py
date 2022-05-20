@@ -2,17 +2,17 @@ from collections import Counter
 
 import jieba
 import jieba.posseg as pseg
+import pyecharts.options as opts
 from config_manager import Config
-from JianshuResearchTools.article import GetArticleText
 from JianshuResearchTools.assert_funcs import (AssertArticleStatusNormal,
                                                AssertArticleUrl)
 from JianshuResearchTools.exceptions import InputError, ResourceError
-from PIL import Image
+from JianshuResearchTools.objects import Article
+from pyecharts.charts import WordCloud
 from pywebio.input import TEXT
-from pywebio.output import (put_button, put_image, put_loading, put_markdown,
+from pywebio.output import (put_button, put_html, put_loading, put_markdown,
                             toast, use_scope)
 from pywebio.pin import pin, put_input
-from wordcloud import WordCloud
 
 from .utils import SetFooter
 
@@ -21,31 +21,43 @@ jieba.setLogLevel(jieba.logging.ERROR)  # 关闭 jieba 的日志输出
 STOPWORDS = list(open("wordcloud_assets/stopwords.txt", encoding="utf-8"))
 (jieba.add_word(word) for word in open("wordcloud_assets/hotwords.txt", encoding="utf-8"))  # 将热点词加入词库
 
+ALLOW_WORD_TYPES = ("Ag", "a", "ad", "an", "dg", "g",
+                    "i", "j", "l", "Ng", "n", "nr",
+                    "ns", "nt", "nz", "tg", "vg", "v",
+                    "vd", "vn", "un")
 
-def GeneratorWordcloud():
+
+def OnGenerateButtonClicked():
+    url = pin.url
+    print(url)
+
     try:
-        AssertArticleUrl(pin["url"])
-        AssertArticleStatusNormal(pin["url"])
+        AssertArticleUrl(url)
+        AssertArticleStatusNormal(url)
     except (InputError, ResourceError):
         toast("输入的 URL 无效，请检查", color="error")
-        return  # 发生错误，不再运行后续逻辑
+        return
 
     with put_loading(color="success"):  # 显示加载动画
-        ALLOW_WORD_TYPES = ("Ag", "a", "ad", "an", "dg", "g",
-                            "i", "j", "l", "Ng", "n", "nr",
-                            "ns", "nt", "nz", "tg", "vg", "v",
-                            "vd", "vn", "un")
-        text = GetArticleText(pin["url"], disable_check=True)
+        article = Article(url)
+        title = article.title
+        text = article.text
         cutted_text = pseg.cut(text)
         cutted_text = (x.word for x in cutted_text if len(x.word) > 1
                        and x.flag in ALLOW_WORD_TYPES and x.word not in STOPWORDS)
-        wordcloud = WordCloud(font_path="wordcloud_assets/font.otf", width=1920, height=1080,
-                              background_color="white", max_words=100)
-        img = wordcloud.generate_from_frequencies(Counter(cutted_text))
+
+        wordcloud = (
+            WordCloud()
+            .add(series_name="", data_pair=Counter(cutted_text).items(), word_size_range=[15, 70])
+            .set_global_opts(
+                title_opts=opts.TitleOpts(title=f"{title} 的词云图", subtitle=f"{url}"),
+                toolbox_opts=opts.ToolboxOpts(is_show=True, feature={"saveAsImage": {}}),
+            )
+        )
         with use_scope("output", clear=True):
             put_markdown("---")  # 分割线
 
-            put_image(Image.fromarray(img.to_array()))
+            put_html(wordcloud.render_notebook())
 
 
 def ArticleWordcloudGenerator():
@@ -56,7 +68,7 @@ def ArticleWordcloudGenerator():
     本工具可生成简书文章的词云图。
     """)
 
-    put_input("url", type=TEXT, label="文章链接")
-    put_button("生成词云图", GeneratorWordcloud)
+    put_input("url", type=TEXT, label="请输入文章 URL：")
+    put_button("生成词云图", OnGenerateButtonClicked)
 
     SetFooter(Config()["service_pages_footer"])
