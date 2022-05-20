@@ -1,5 +1,11 @@
+from typing import Callable, Dict, Iterable, Tuple
+
 from config_manager import Config
-from JianshuResearchTools.assert_funcs import AssertJianshuUrl
+from JianshuResearchTools.assert_funcs import (AssertArticleUrl,
+                                               AssertCollectionUrl,
+                                               AssertJianshuUrl,
+                                               AssertNotebookUrl,
+                                               AssertUserUrl)
 from JianshuResearchTools.convert import (ArticleUrlToArticleUrlScheme,
                                           CollectionUrlToCollectionUrlScheme,
                                           NotebookUrlToNotebookUrlScheme,
@@ -13,28 +19,43 @@ from qrcode import make as make_qrcode
 
 from .utils import SetFooter
 
+ASSERT_FUNCS: Iterable[Tuple[Callable, str]] = (
+    (AssertArticleUrl, "article"),
+    (AssertCollectionUrl, "collection"),
+    (AssertNotebookUrl, "notebook"),
+    (AssertUserUrl, "user")
+)
 
-def Convert():
+CONVERT_FUNCS: Dict[str, Callable] = {
+    "article": ArticleUrlToArticleUrlScheme,
+    "collection": CollectionUrlToCollectionUrlScheme,
+    "notebook": NotebookUrlToNotebookUrlScheme,
+    "user": UserUrlToUserUrlScheme
+}
+
+
+def OnConvertButtonClicked():
+    url = pin.url
+
     try:
-        AssertJianshuUrl(pin["url"])
+        AssertJianshuUrl(url)
     except InputError:
         toast("输入的链接无效，请检查", color="error")
-        return  # 发生错误，不再运行后续逻辑
+        return
 
-    # 为提高性能，概率大的链接类型放在前面
-    convert_funcs = (UserUrlToUserUrlScheme, ArticleUrlToArticleUrlScheme,
-                     CollectionUrlToCollectionUrlScheme, NotebookUrlToNotebookUrlScheme)
-    for convert_func in convert_funcs:
+    for assert_func, scheme in ASSERT_FUNCS:
         try:
-            result = convert_func(pin["url"])
-        except InputError:
-            result = None
-        else:
+            assert_func(url)
+        except InputError:  # 类型错误
+            continue
+        else:  # 类型正确
+            url_type = scheme
             break
+    else:  # 未匹配到
+        toast("输入的链接无效或不支持此类型转换，请检查", color="error")
+        return
 
-    if not result:
-        toast("输入的链接无效，请检查", color="error")
-        return  # 发生错误，不再运行后续逻辑
+    result = CONVERT_FUNCS[url_type](url)
 
     with use_scope("output", clear=True):
         put_markdown("---")  # 分割线
@@ -53,7 +74,7 @@ def URLSchemeConverter():
 
     本工具可将简书网页端的链接转换成简书 App 端的 URL Scheme，从而实现一键跳转。
     """)
-    put_input("url", label="简书 URL", type=TEXT)
-    put_button("转换", onclick=Convert)
+    put_input("url", label="请输入简书 URL：", type=TEXT)
+    put_button("转换", onclick=OnConvertButtonClicked)
 
     SetFooter(Config()["service_pages_footer"])

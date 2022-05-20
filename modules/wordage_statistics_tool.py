@@ -23,12 +23,12 @@ TEXT_TO_REPLACE = "ꞏ"  # 只算作一个字的字符将被替换成该字符�
 DISLIKE_CHARS = ("​", "‌", "‍", "‎", "‏")
 
 
-def StatisticsWordage():
-    text = pin["text"]  # 定义局部变量引用，提高性能
+def OnStatisticsButtonClicked():
+    text = pin.text
 
     if not text:
         toast("请输入文本", color="error")
-        return  # 发生错误，不再运行后续逻辑
+        return
 
     text = text.replace("\n", "")  # 去除换行符
 
@@ -102,6 +102,6 @@ def WordageStatisticsTool():
     """)
 
     put_textarea("text", label="文章内容", rows=12, placeholder="在此处输入文章内容...")
-    put_button("统计字数信息", StatisticsWordage)
+    put_button("统计字数信息", OnStatisticsButtonClicked)
 
     SetFooter(Config()["service_pages_footer"])

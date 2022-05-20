@@ -90,7 +90,7 @@ def ShowResult(df):
 
 def MainLogic():
     if not CheckData():
-        return  # 有数据填写错误，不运行后续逻辑
+        return
     with put_loading(color="success"):  # 显示加载动画
         df = GetProcessedData()
     toast("数据获取成功！", color="success")
