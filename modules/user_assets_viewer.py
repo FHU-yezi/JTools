@@ -3,8 +3,7 @@ from config_manager import Config
 from JianshuResearchTools.assert_funcs import (AssertUserStatusNormal,
                                                AssertUserUrl)
 from JianshuResearchTools.exceptions import InputError, ResourceError
-from JianshuResearchTools.user import (GetUserAssetsCount, GetUserFPCount,
-                                       GetUserName)
+from JianshuResearchTools.objects import User
 from pyecharts.charts import Pie
 from pywebio.input import TEXT
 from pywebio.output import (put_button, put_html, put_markdown, put_warning,
@@ -15,16 +14,18 @@ from .utils import SetFooter
 
 
 def ShowUserAssetsInfo():
+    url = pin["user_url"]
     try:
-        AssertUserUrl(pin["user_url"])
-        AssertUserStatusNormal(pin["user_url"])
+        AssertUserUrl(url)
+        AssertUserStatusNormal(url)
     except (InputError, ResourceError):
         toast("用户主页 URL 无效，请检查", color="error")
         return  # 发生错误，不再运行后续逻辑
 
-    user_name = GetUserName(pin["user_url"], disable_check=True)
-    FP = GetUserFPCount(pin["user_url"], disable_check=True)
-    assets = GetUserAssetsCount(pin["user_url"], disable_check=True)
+    user = User(user_url=url)
+    user_name = user.name
+    FP = user.FP_count
+    assets = user.assets_count
     FTN = round(assets - FP, 3)
 
     toast("数据获取成功", color="success")

@@ -23,7 +23,7 @@ def Convert():
 
     # 为提高性能，概率大的链接类型放在前面
     convert_funcs = (UserUrlToUserUrlScheme, ArticleUrlToArticleUrlScheme,
-                     CollectionUrlToCollectionUrlScheme, NotebookUrlToNotebookUrlScheme, )
+                     CollectionUrlToCollectionUrlScheme, NotebookUrlToNotebookUrlScheme)
     for convert_func in convert_funcs:
         try:
             result = convert_func(pin["url"])
