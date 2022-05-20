@@ -1,12 +1,11 @@
 from tempfile import SpooledTemporaryFile
 
 from config_manager import Config
-from JianshuResearchTools.article import (GetArticleAuthorName,
-                                          GetArticleMarkdown, GetArticleText,
-                                          GetArticleTitle)
+from JianshuResearchTools.article import GetArticleMarkdown
 from JianshuResearchTools.assert_funcs import (AssertArticleStatusNormal,
                                                AssertArticleUrl)
 from JianshuResearchTools.exceptions import InputError, ResourceError
+from JianshuResearchTools.objects import Article
 from pywebio.input import TEXT
 from pywebio.output import download, put_buttons, put_markdown, toast
 from pywebio.pin import pin, put_checkbox, put_input
@@ -14,32 +13,36 @@ from pywebio.pin import pin, put_checkbox, put_input
 from .utils import SetFooter
 
 
-def DownloadContent(format):
-    if "我已阅读以上提示并将合规使用文章内容" not in pin["warning"]:
-        toast("请先勾选免责信息", color="error")
-        return  # 用户未勾选免责，不再运行后续逻辑
+def OnDownloadButtonClicked(format: str):
+    warning = pin.warning
+    url = pin.url
 
-    url = pin["url"]
+    if "我已阅读以上提示并将合规使用文章内容" not in warning:
+        toast("请先勾选免责信息", color="error")
+        return
+
     try:
         AssertArticleUrl(url)
         AssertArticleStatusNormal(url)
     except (InputError, ResourceError):
         toast("输入的 URL 无效，请检查", color="error")
-        return  # 发生错误，不再运行后续逻辑
-    else:
-        title = GetArticleTitle(url, disable_check=True)
-        author_name = GetArticleAuthorName(url, disable_check=True)
-        filename = f"{title}_{author_name}.{format}"
+        return
 
-    # 创建临时文件，在其大小大于 1MB 时将其写入硬盘（应该不会有这么长的文章吧）
+    article = Article(article_url=url)
+    title = article.title
+    author_name = article.author_name
+    filename = f"{title}_{author_name}.{format}"
+
+    # 在内存中创建临时文件，在其大小大于 1MB 时将其写入硬盘（应该不会有这么长的文章吧）
     with SpooledTemporaryFile(mode="wb+", max_size=1 * 1024 * 1024) as f:
         if format == "txt":
-            f.write(bytes(GetArticleText(url, disable_check=True), encoding="utf-8"))
-        elif format == "markdown":
+            f.write(bytes(article.text, encoding="utf-8"))
+        elif format == "md":
+            # TODO: JRT 加入 Markdown 格式文本获取后更新此处代码
             f.write(bytes(GetArticleMarkdown(url, disable_check=True), encoding="utf-8"))
 
         toast("获取文章内容成功", color="success")
-        f.seek(0)  # 将内容指针放到文件开头
+        f.seek(0)  # 将指针放到文件开头
         download(filename, f.read())  # 向浏览器发送文件下载请求
 
 
@@ -53,9 +56,8 @@ def ArticleDownloader():
     **请注意：本工具可以下载设置为禁止转载的文章内容，您需自行承担不规范使用带来的版权风险。**
     """)
 
-    put_input("url", type=TEXT, label="要下载的文章链接")
+    put_input("url", type=TEXT, label="请输入文章 URL：")
     put_checkbox("warning", options=["我已阅读以上提示并将合规使用文章内容"])
-    put_buttons(["下载纯文本格式", "下载 Markdown 格式"],
-                onclick=(lambda: DownloadContent("txt"), lambda: DownloadContent("markdown")))
+    put_buttons(["下载纯文本格式", "下载 Markdown 格式"], onclick=(lambda: OnDownloadButtonClicked("txt"), lambda: OnDownloadButtonClicked("md")))
 
     SetFooter(Config()["service_pages_footer"])

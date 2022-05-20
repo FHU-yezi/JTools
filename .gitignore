@@ -4,3 +4,5 @@
 *.pyc
 *.otf
 __pycache__/
+config.yaml
+poetry.lock

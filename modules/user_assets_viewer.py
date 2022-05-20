@@ -1,10 +1,10 @@
-import plotly.graph_objs as go
+import pyecharts.options as opts
 from config_manager import Config
 from JianshuResearchTools.assert_funcs import (AssertUserStatusNormal,
                                                AssertUserUrl)
 from JianshuResearchTools.exceptions import InputError, ResourceError
-from JianshuResearchTools.user import (GetUserAssetsCount, GetUserFPCount,
-                                       GetUserName)
+from JianshuResearchTools.objects import User
+from pyecharts.charts import Pie
 from pywebio.input import TEXT
 from pywebio.output import (put_button, put_html, put_markdown, put_warning,
                             toast, use_scope)
@@ -13,17 +13,20 @@ from pywebio.pin import pin, put_input
 from .utils import SetFooter
 
 
-def ShowUserAssetsInfo():
-    try:
-        AssertUserUrl(pin["user_url"])
-        AssertUserStatusNormal(pin["user_url"])
-    except (InputError, ResourceError):
-        toast("用户主页 URL 无效，请检查", color="error")
-        return  # 发生错误，不再运行后续逻辑
+def OnQueryButtonClicked():
+    url = pin.user_url
 
-    user_name = GetUserName(pin["user_url"], disable_check=True)
-    FP = GetUserFPCount(pin["user_url"], disable_check=True)
-    assets = GetUserAssetsCount(pin["user_url"], disable_check=True)
+    try:
+        AssertUserUrl(url)
+        AssertUserStatusNormal(url)
+    except (InputError, ResourceError):
+        toast("输入的 URL 无效，请检查", color="error")
+        return
+
+    user = User(user_url=url)
+    user_name = user.name
+    FP = user.FP_count
+    assets = user.assets_count
     FTN = round(assets - FP, 3)
 
     toast("数据获取成功", color="success")
@@ -40,9 +43,13 @@ def ShowUserAssetsInfo():
         钻贝比：{round(FP / FTN, 2)}
         """)
 
-        fig = go.Figure(data=[go.Pie(labels=["简书钻（FP）", "简书贝（FTN）"],
-                                     values=[FP, FTN], title="用户资产占比")])
-        put_html(fig.to_html(include_plotlyjs="require", full_html=False))  # 获取 HTML 并展示
+        figure = (
+            Pie()
+            .add("", [("简书钻（FP）", FP), ("简书贝（FTN）", FTN)])
+            .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {d}%"))
+            .set_global_opts(title_opts=opts.TitleOpts(title=f"{user_name} 的资产占比"))
+        )
+        put_html(figure.render_notebook())  # 获取 HTML 并展示
 
 
 def UserAssetsViewer():
@@ -52,7 +59,7 @@ def UserAssetsViewer():
     # 用户资产查询工具
     """)
 
-    put_input("user_url", label="用户主页 URL", type=TEXT)
-    put_button("查询", ShowUserAssetsInfo)
+    put_input("user_url", label="请输入用户主页 URL：", type=TEXT)
+    put_button("查询", OnQueryButtonClicked)
 
     SetFooter(Config()["service_pages_footer"])
