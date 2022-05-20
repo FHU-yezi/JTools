@@ -8,7 +8,6 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.8"
 pandas = "^1.4.2"
-wordcloud = "^1.8.1"
 pywebio = "^1.6.0"
 JianshuResearchTools = "^2.9.0"
 jieba = "^0.42.1"
