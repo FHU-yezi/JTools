@@ -15,10 +15,19 @@ from modules.utils import GetUrl, SetFooter
 from modules.wordage_statistics_tool import WordageStatisticsTool
 
 STATUS_TO_TEXT = {-1: "暂停服务", 0: "正常运行", 1: "降级运行"}
-
 STATUS_TO_BUTTON_COLOR_TEXT = {-1: "danger", 0: "success", 1: "warning"}
-
 STATUS_TO_COLOR_HEX = {-1: "#FF2D10", 0: "#008700", 1: "#FF8C00"}
+
+SERVICES_LIST = [
+    ArticleDownloader,
+    ArticleTimeQuery,
+    ArticleWordcloudGenerator,
+    DiszeroerHelper,
+    URLSchemeConverter,
+    UserAssetsViewer,
+    UserVIPStatusQuery,
+    WordageStatisticsTool
+]
 
 # TODO: 由于 JRT 面向对象封装的缓存逻辑问题，暂时全局禁用缓存功能
 jrtobjs.DISABLE_CACHE = True
@@ -66,14 +75,4 @@ def index():
     SetFooter(Config()["mainpage_footer"])
 
 
-start_server([
-             index,
-             UserAssetsViewer,
-             URLSchemeConverter,
-             ArticleDownloader,
-             ArticleWordcloudGenerator,
-             WordageStatisticsTool,
-             DiszeroerHelper,
-             UserVIPStatusQuery,
-             ArticleTimeQuery],
-             port=Config()["port"])
+start_server(SERVICES_LIST, port=Config()["port"])
