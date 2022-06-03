@@ -3,7 +3,6 @@ from datetime import datetime
 from config_manager import Config
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import User
-from JianshuResearchTools.assert_funcs import AssertUserUrl, AssertUserStatusNormal
 from pywebio.output import put_button, put_markdown, toast, use_scope
 from pywebio.pin import pin, put_input
 
@@ -14,32 +13,27 @@ def OnQueryButtonClicked():
     url = pin.url
 
     try:
-        AssertUserUrl(url)
-        AssertUserStatusNormal(url)
+        user = User.from_url(url)
     except (InputError, ResourceError):
         toast("输入的 URL 无效，请检查", color="error")
         return
 
-    user = User(user_url=url)
-    user_name = user.name
-    result = user.VIP_info
-
     with use_scope("output", clear=True):
         put_markdown("---")  # 分割线
 
-        if not result["vip_type"]:  # 没有 VIP
+        if not user.VIP_info["vip_type"]:  # 没有 VIP
             put_markdown(f"""
             **查询结果**
-            作者名：{user_name}
+            作者名：{user.name}
             VIP 等级：无 VIP
             """)
         else:  # 有 VIP
-            remaining_time = result["expire_date"] - datetime.now()
+            remaining_time = user.VIP_info["expire_date"] - datetime.now()
             put_markdown(f"""
             **查询结果**
-            作者名：{user_name}
-            VIP 等级：{result["vip_type"]}
-            VIP 到期时间：{result["expire_date"]}
+            作者名：{user.name}
+            VIP 等级：{user.VIP_info["vip_type"]}
+            VIP 到期时间：{user.VIP_info["expire_date"]}
             VIP 剩余时间：{TimeDeltaFormat(remaining_time)}
             """)
 

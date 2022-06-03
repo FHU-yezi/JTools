@@ -1,8 +1,6 @@
 from datetime import datetime
 
 from config_manager import Config
-from JianshuResearchTools.assert_funcs import (AssertArticleStatusNormal,
-                                               AssertArticleUrl)
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
 from pywebio.output import put_button, put_markdown, toast, use_scope
@@ -15,17 +13,15 @@ def OnQueryButtonClicked():
     url = pin.url
 
     try:
-        AssertArticleUrl(url)
-        AssertArticleStatusNormal(url)
+        article = Article.from_url(url)
     except (InputError, ResourceError):
         toast("输入的 URL 无效，请检查", color="error")
         return
 
-    article = Article(article_url=url)
     article_title = article.title
     publish_time = article.publish_time.replace(tzinfo=None)
     update_time = article.update_time
-    is_updateed = "是" if publish_time != update_time else "否"
+    is_updated = "是" if publish_time != update_time else "否"
     publish_timedelta = datetime.now() - publish_time.replace(tzinfo=None)
     update_timedelta = datetime.now() - update_time.replace(tzinfo=None)
 
@@ -37,7 +33,7 @@ def OnQueryButtonClicked():
         文章标题：{article_title}
         发布时间：{publish_time}
         更新时间：{update_time}
-        更新过：{is_updateed}
+        更新过：{is_updated}
         文章在 {TimeDeltaFormat(publish_timedelta)} 之前发布
         文章在 {TimeDeltaFormat(update_timedelta)} 之前更新过
         """)

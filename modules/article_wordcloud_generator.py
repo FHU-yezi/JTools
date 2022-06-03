@@ -4,8 +4,6 @@ import jieba
 import jieba.posseg as pseg
 import pyecharts.options as opts
 from config_manager import Config
-from JianshuResearchTools.assert_funcs import (AssertArticleStatusNormal,
-                                               AssertArticleUrl)
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
 from pyecharts.charts import WordCloud
@@ -29,17 +27,14 @@ ALLOW_WORD_TYPES = ("Ag", "a", "ad", "an", "dg", "g",
 
 def OnGenerateButtonClicked():
     url = pin.url
-    print(url)
 
     try:
-        AssertArticleUrl(url)
-        AssertArticleStatusNormal(url)
+        article = Article.from_url(url)
     except (InputError, ResourceError):
         toast("输入的 URL 无效，请检查", color="error")
         return
 
     with put_loading(color="success"):  # 显示加载动画
-        article = Article(url)
         title = article.title
         text = article.text
         cutted_text = pseg.cut(text)
