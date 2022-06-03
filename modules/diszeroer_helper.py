@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from config_manager import Config
+from config_manager import config
 from JianshuResearchTools.collection import GetCollectionAllArticlesInfo
 from JianshuResearchTools.convert import (ArticleSlugToArticleUrl,
                                           ArticleUrlToArticleUrlScheme,
@@ -155,4 +155,4 @@ def DiszeroerHelper():
 
     put_button("提交", color="success", onclick=OnSubmitButtonClicked)
 
-    SetFooter(Config()["service_pages_footer"])
+    SetFooter(config["service_pages_footer"])

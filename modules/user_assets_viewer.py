@@ -1,5 +1,5 @@
 import pyecharts.options as opts
-from config_manager import Config
+from config_manager import config
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import User
 from pyecharts.charts import Pie
@@ -49,4 +49,4 @@ def UserAssetsViewer():
     put_input("user_url", label="请输入用户主页 URL：", type=TEXT)
     put_button("查询", OnQueryButtonClicked)
 
-    SetFooter(Config()["service_pages_footer"])
+    SetFooter(config["service_pages_footer"])

@@ -3,7 +3,7 @@ from pywebio import start_server
 from pywebio.output import (popup, put_button, put_info, put_link,
                             put_markdown, put_warning)
 
-from config_manager import Config
+from config_manager import config
 from modules.article_downloader import ArticleDownloader
 from modules.article_time_query import ArticleTimeQuery
 from modules.article_wordcloud_generator import ArticleWordcloudGenerator
@@ -33,13 +33,13 @@ def index():
 
     Made with [JRT](https://github.com/FHU-yezi/JianshuResearchTools) and ♥
     OpenSource On GitHub：[JianshuMicroFeatures](https://github.com/FHU-yezi/JianshuMicroFeatures)
-    Version：{Config()["version"]}
+    Version：{config["version"]}
     """)
 
-    if Config()["global_notification"]:
-        popup("公告", Config()["global_notification"])
+    if config["global_notification"]:
+        popup("公告", config["global_notification"])
 
-    services = sorted(Config()["services"], key=lambda x: x["on_top"], reverse=True)
+    services = sorted(config["services"], key=lambda x: x["on_top"], reverse=True)
 
     for service in services:
         put_markdown(f"## {service['name']}")
@@ -61,7 +61,7 @@ def index():
         if service["status"] >= 0:  # 只有服务正常运行时才允许跳转
             put_link("点击进入", url=f"{GetUrl()}?app={service['service_func_name']}")
 
-    SetFooter(Config()["mainpage_footer"])
+    SetFooter(config["mainpage_footer"])
 
 
 SERVICES_LIST = [
@@ -76,4 +76,4 @@ SERVICES_LIST = [
     WordageStatisticsTool
 ]
 
-start_server(SERVICES_LIST, port=Config()["port"])
+start_server(SERVICES_LIST, port=config["port"])

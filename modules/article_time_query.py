@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from config_manager import Config
+from config_manager import config
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
 from pywebio.output import put_button, put_markdown, toast, use_scope
@@ -52,4 +52,4 @@ def ArticleTimeQuery():
     put_input("url", label="请输入文章 URL：")
     put_button("查询", onclick=OnQueryButtonClicked)
 
-    SetFooter(Config()["service_pages_footer"])
+    SetFooter(config["service_pages_footer"])
