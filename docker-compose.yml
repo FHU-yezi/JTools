@@ -1,0 +1,8 @@
+version: "3"
+services:
+  web:
+    build: .
+    ports:
+      - "8602:8602"
+    volumes:
+      - "./config.yaml:/app/config.yaml"
