@@ -1,4 +1,4 @@
-from config_manager import Config
+from config_manager import config
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
 from pywebio.input import TEXT
@@ -49,4 +49,4 @@ def ArticleDownloader():
                 onclick=(lambda: OnDownloadButtonClicked("txt"),
                          lambda: OnDownloadButtonClicked("md")))
 
-    SetFooter(Config()["service_pages_footer"])
+    SetFooter(config["service_pages_footer"])

@@ -3,7 +3,7 @@ from collections import Counter
 import jieba
 import jieba.posseg as pseg
 import pyecharts.options as opts
-from config_manager import Config
+from config_manager import config
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
 from pyecharts.charts import WordCloud
@@ -66,4 +66,4 @@ def ArticleWordcloudGenerator():
     put_input("url", type=TEXT, label="请输入文章 URL：")
     put_button("生成词云图", OnGenerateButtonClicked)
 
-    SetFooter(Config()["service_pages_footer"])
+    SetFooter(config["service_pages_footer"])
