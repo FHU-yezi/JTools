@@ -1,6 +1,6 @@
 from typing import Callable, Dict, Iterable, Tuple
 
-from config_manager import Config
+from config_manager import config
 from JianshuResearchTools.assert_funcs import (AssertArticleUrl,
                                                AssertCollectionUrl,
                                                AssertJianshuUrl,
@@ -77,4 +77,4 @@ def URLSchemeConverter():
     put_input("url", label="请输入简书 URL：", type=TEXT)
     put_button("转换", onclick=OnConvertButtonClicked)
 
-    SetFooter(Config()["service_pages_footer"])
+    SetFooter(config["service_pages_footer"])

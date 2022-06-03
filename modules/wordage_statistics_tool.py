@@ -1,6 +1,6 @@
 from re import findall, search, sub
 
-from config_manager import Config
+from config_manager import config
 from pywebio.output import (put_button, put_markdown, scroll_to, toast,
                             use_scope)
 from pywebio.pin import pin, put_textarea
@@ -104,4 +104,4 @@ def WordageStatisticsTool():
     put_textarea("text", label="文章内容", rows=12, placeholder="在此处输入文章内容...")
     put_button("统计字数信息", OnStatisticsButtonClicked)
 
-    SetFooter(Config()["service_pages_footer"])
+    SetFooter(config["service_pages_footer"])

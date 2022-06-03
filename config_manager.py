@@ -51,8 +51,8 @@ class Config():
         self.__init__()
 
 
-def InitConfig():
-    Config()  # 初始化日志文件
+def InitConfig() -> Config:
+    return Config()  # 初始化日志文件
 
 
-InitConfig()
+config = InitConfig()

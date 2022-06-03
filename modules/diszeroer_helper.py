@@ -1,9 +1,10 @@
-from config_manager import Config
+from typing import Dict, List
+
+from config_manager import config
 from JianshuResearchTools.collection import GetCollectionAllArticlesInfo
 from JianshuResearchTools.convert import (ArticleSlugToArticleUrl,
                                           ArticleUrlToArticleUrlScheme,
                                           UserSlugToUserUrl)
-from typing import List, Dict
 from pywebio.input import FLOAT, NUMBER
 from pywebio.output import (put_button, put_collapse, put_column, put_link,
                             put_loading, put_markdown, put_row, toast,
@@ -96,11 +97,12 @@ def ShowResult(data: List[Dict]):
             {item['summary']}
             """
             if enbale_URL_Scheme:
-                put_collapse(f"{item['title']}",
-                             [put_markdown(content),
-                              put_link("点击跳转到简书 App（手机端）", url=ArticleUrlToArticleUrlScheme(
-                                  ArticleSlugToArticleUrl(item['aslug'])))]
-                             )
+                put_collapse(f"{item['title']}", [
+                    put_markdown(content),
+                    put_link("点击跳转到简书 App（手机端）",
+                             url=ArticleUrlToArticleUrlScheme(
+                                 ArticleSlugToArticleUrl(item['aslug'])))
+                ])
             else:
                 put_collapse(f"{item['title']}", put_markdown(content))
 
@@ -134,17 +136,23 @@ def DiszeroerHelper():
 
     put_row([
         put_column([
-            put_input("likes_limit", label="点赞数上限", type=NUMBER, value=3, help_text="介于 1 到 10 之间"), None,
-            put_input("comments_limit", label="评论数上限", type=NUMBER, value=3, help_text="介于 1 到 10 之间"), None,
-            put_input("max_result_count", label="结果数量", type=NUMBER, value=20, help_text="介于 20 到 100 之间")
+            put_input("likes_limit", label="点赞数上限", type=NUMBER,
+                      value=3, help_text="介于 1 到 10 之间"), None,
+            put_input("comments_limit", label="评论数上限", type=NUMBER,
+                      value=3, help_text="介于 1 到 10 之间"), None,
+            put_input("max_result_count", label="结果数量", type=NUMBER,
+                      value=20, help_text="介于 20 到 100 之间")
         ]), None,
         put_column([
-            put_checkbox("chosen_collections", label="专题选择", options=COLLECTIONS.keys()),
-            put_checkbox("additional_features", label="高级选项", options=["开启 URL Scheme 跳转", "仅展示可评论的文章", "不展示付费文章"]),
-            put_input("FP_amount_limit", type=FLOAT, label="文章获钻量限制", value=0.0, help_text="介于 0.1 到 30.0 之间，0 为关闭")
+            put_checkbox("chosen_collections", label="专题选择",
+                         options=COLLECTIONS.keys()),
+            put_checkbox("additional_features", label="高级选项",
+                         options=["开启 URL Scheme 跳转", "仅展示可评论的文章", "不展示付费文章"]),
+            put_input("FP_amount_limit", type=FLOAT, label="文章获钻量限制",
+                      value=0.0, help_text="介于 0.1 到 30.0 之间，0 为关闭")
         ])
     ], size=r"3fr 1fr 3fr")
 
     put_button("提交", color="success", onclick=OnSubmitButtonClicked)
 
-    SetFooter(Config()["service_pages_footer"])
+    SetFooter(config["service_pages_footer"])
