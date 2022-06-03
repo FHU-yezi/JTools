@@ -1,13 +1,10 @@
 import pyecharts.options as opts
 from config_manager import Config
-from JianshuResearchTools.assert_funcs import (AssertUserStatusNormal,
-                                               AssertUserUrl)
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import User
 from pyecharts.charts import Pie
 from pywebio.input import TEXT
-from pywebio.output import (put_button, put_html, put_markdown, put_warning,
-                            toast, use_scope)
+from pywebio.output import put_button, put_html, put_markdown, toast, use_scope
 from pywebio.pin import pin, put_input
 
 from .utils import SetFooter
@@ -17,37 +14,27 @@ def OnQueryButtonClicked():
     url = pin.user_url
 
     try:
-        AssertUserUrl(url)
-        AssertUserStatusNormal(url)
+        user = User.from_url(url)
     except (InputError, ResourceError):
         toast("输入的 URL 无效，请检查", color="error")
         return
 
-    user = User(user_url=url)
-    user_name = user.name
-    FP = user.FP_count
-    assets = user.assets_count
-    FTN = round(assets - FP, 3)
-
     toast("数据获取成功", color="success")
 
     with use_scope("output", clear=True):
-        if FTN < 0 and assets >= 10000:
-            put_warning("该用户简书贝占比过少，简书贝信息可能存在错误")
-
         put_markdown(f"""
-        # {user_name} 的资产信息
-        简书钻：{FP}
-        简书贝：{FTN}
-        总资产：{assets}
-        钻贝比：{round(FP / FTN, 2)}
+        # {user.name} 的资产信息
+        简书钻：{user.FP_count}
+        简书贝：{user.FTN_count}
+        总资产：{user.assets_count}
+        钻贝比：{round(user.FP_count / user.FTN_count, 2)}
         """)
 
         figure = (
             Pie()
-            .add("", [("简书钻（FP）", FP), ("简书贝（FTN）", FTN)])
+            .add("", [("简书钻（FP）", user.FP_count), ("简书贝（FTN）", user.FTN_count)])
             .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {d}%"))
-            .set_global_opts(title_opts=opts.TitleOpts(title=f"{user_name} 的资产占比"))
+            .set_global_opts(title_opts=opts.TitleOpts(title=f"{user.name} 的资产占比"))
         )
         put_html(figure.render_notebook())  # 获取 HTML 并展示
 
