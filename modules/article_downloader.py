@@ -1,9 +1,4 @@
-from tempfile import SpooledTemporaryFile
-
-from config_manager import Config
-from JianshuResearchTools.article import GetArticleMarkdown
-from JianshuResearchTools.assert_funcs import (AssertArticleStatusNormal,
-                                               AssertArticleUrl)
+from config_manager import config
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
 from pywebio.input import TEXT
@@ -22,28 +17,20 @@ def OnDownloadButtonClicked(format: str):
         return
 
     try:
-        AssertArticleUrl(url)
-        AssertArticleStatusNormal(url)
+        article = Article.from_url(url)
     except (InputError, ResourceError):
         toast("输入的 URL 无效，请检查", color="error")
         return
 
-    article = Article(article_url=url)
-    title = article.title
-    author_name = article.author_name
-    filename = f"{title}_{author_name}.{format}"
+    filename = f"{article.title}_{article.author_name}.{format}"
 
-    # 在内存中创建临时文件，在其大小大于 1MB 时将其写入硬盘（应该不会有这么长的文章吧）
-    with SpooledTemporaryFile(mode="wb+", max_size=1 * 1024 * 1024) as f:
-        if format == "txt":
-            f.write(bytes(article.text, encoding="utf-8"))
-        elif format == "md":
-            # TODO: JRT 加入 Markdown 格式文本获取后更新此处代码
-            f.write(bytes(GetArticleMarkdown(url, disable_check=True), encoding="utf-8"))
+    if format == "txt":
+        content = bytes(article.text.encode("utf-8"))
+    elif format == "md":
+        content = bytes(article.markdown.encode("utf-8"))
 
-        toast("获取文章内容成功", color="success")
-        f.seek(0)  # 将指针放到文件开头
-        download(filename, f.read())  # 向浏览器发送文件下载请求
+    toast("获取文章内容成功", color="success")
+    download(filename, content)  # 向浏览器发送文件下载请求
 
 
 def ArticleDownloader():
@@ -58,6 +45,8 @@ def ArticleDownloader():
 
     put_input("url", type=TEXT, label="请输入文章 URL：")
     put_checkbox("warning", options=["我已阅读以上提示并将合规使用文章内容"])
-    put_buttons(["下载纯文本格式", "下载 Markdown 格式"], onclick=(lambda: OnDownloadButtonClicked("txt"), lambda: OnDownloadButtonClicked("md")))
+    put_buttons(["下载纯文本格式", "下载 Markdown 格式"],
+                onclick=(lambda: OnDownloadButtonClicked("txt"),
+                         lambda: OnDownloadButtonClicked("md")))
 
-    SetFooter(Config()["service_pages_footer"])
+    SetFooter(config["service_pages_footer"])

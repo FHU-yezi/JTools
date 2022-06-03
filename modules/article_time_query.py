@@ -1,51 +1,27 @@
 from datetime import datetime
 
-from config_manager import Config
-from JianshuResearchTools.assert_funcs import (AssertArticleStatusNormal,
-                                               AssertArticleUrl)
+from config_manager import config
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
 from pywebio.output import put_button, put_markdown, toast, use_scope
 from pywebio.pin import pin, put_input
 
-from .utils import SetFooter
-
-
-def TimeDeltaFormat(td_object):
-    seconds = int(td_object.total_seconds())
-    periods = (
-        ("年", 60*60*24*365),
-        ("月", 60*60*24*30),
-        ("天", 60*60*24),
-        ("小时", 60*60),
-        ("分钟", 60),
-        ("秒", 1)
-    )
-
-    strings = []
-    for period_name, period_seconds in periods:
-        if seconds > period_seconds:
-            period_value, seconds = divmod(seconds, period_seconds)
-            strings.append(f"{period_value} {period_name}")
-
-    return " ".join(strings)
+from .utils import SetFooter, TimeDeltaFormat
 
 
 def OnQueryButtonClicked():
     url = pin.url
 
     try:
-        AssertArticleUrl(url)
-        AssertArticleStatusNormal(url)
+        article = Article.from_url(url)
     except (InputError, ResourceError):
         toast("输入的 URL 无效，请检查", color="error")
         return
 
-    article = Article(article_url=url)
     article_title = article.title
     publish_time = article.publish_time.replace(tzinfo=None)
     update_time = article.update_time
-    is_updateed = "是" if publish_time != update_time else "否"
+    is_updated = "是" if publish_time != update_time else "否"
     publish_timedelta = datetime.now() - publish_time.replace(tzinfo=None)
     update_timedelta = datetime.now() - update_time.replace(tzinfo=None)
 
@@ -57,7 +33,7 @@ def OnQueryButtonClicked():
         文章标题：{article_title}
         发布时间：{publish_time}
         更新时间：{update_time}
-        更新过：{is_updateed}
+        更新过：{is_updated}
         文章在 {TimeDeltaFormat(publish_timedelta)} 之前发布
         文章在 {TimeDeltaFormat(update_timedelta)} 之前更新过
         """)
@@ -76,4 +52,4 @@ def ArticleTimeQuery():
     put_input("url", label="请输入文章 URL：")
     put_button("查询", onclick=OnQueryButtonClicked)
 
-    SetFooter(Config()["service_pages_footer"])
+    SetFooter(config["service_pages_footer"])
