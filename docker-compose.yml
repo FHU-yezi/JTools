@@ -1,7 +1,7 @@
 version: "3"
 services:
   main:
-    image: jianshumicrofeatures:1.4.0
+    image: jianshumicrofeatures:1.4.1
     build: .
     ports:
       - "8602:8602"
@@ -10,7 +10,8 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256M
+          cpus: "0.50"
+          memory: 192M
       restart_policy:
         condition: on-failure
         delay: 5s
