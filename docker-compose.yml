@@ -1,7 +1,7 @@
 version: "3"
 services:
   main:
-    image: jianshumicrofeatures:1.4.1
+    image: jianshumicrofeatures:1.4.2
     build: .
     ports:
       - "8602:8602"
@@ -16,3 +16,4 @@ services:
         condition: on-failure
         delay: 5s
         max_attempts: 3
+    stop_grace_period: 1s
