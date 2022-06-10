@@ -12,7 +12,7 @@ def GetUrl():
     """
     获取当前 URL
     """
-    return eval_js("window.location.href")
+    return eval_js("window.location.href").split("/")[0]
 
 
 def TimeDeltaFormat(td_object):
