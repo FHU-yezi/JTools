@@ -22,7 +22,7 @@ def OnDownloadButtonClicked(format: str):
         toast("输入的 URL 无效，请检查", color="error")
         return
 
-    filename = f"{article.title}_{article.author_name}.{format}"
+    filename = f"{article.title}.{format}"
 
     if format == "txt":
         content = bytes(article.text.encode("utf-8"))
