@@ -2,7 +2,6 @@ from typing import List, Optional
 
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
-from pywebio.input import TEXT
 from pywebio.output import (download, put_button, put_loading, put_markdown,
                             toast)
 from pywebio.pin import pin, put_checkbox, put_input, put_radio
@@ -54,7 +53,7 @@ def article_downloader() -> None:
     **请注意：不规范使用文章可能带来版权风险。**
     """)
 
-    put_input("url", type=TEXT, label="文章 URL")
+    put_input("url", type="text", label="文章 URL")
     put_radio(
         "download_format", label="下载格式",
         options=[

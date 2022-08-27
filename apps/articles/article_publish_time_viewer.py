@@ -2,7 +2,6 @@ from datetime import datetime
 
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
-from pywebio.input import TEXT
 from pywebio.output import (put_button, put_loading, put_markdown, toast,
                             use_scope)
 from pywebio.pin import pin, put_input
@@ -57,5 +56,5 @@ def article_publish_time_viewer() -> None:
     本工具可查询文章的发布与更新时间。
     """)
 
-    put_input("url", type=TEXT, label="文章 URL")
+    put_input("url", type="text", label="文章 URL")
     put_button("查询", color="success", onclick=on_query_button_clicked)

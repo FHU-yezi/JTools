@@ -7,7 +7,6 @@ import pyecharts.options as opts
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
 from pyecharts.charts import WordCloud
-from pywebio.input import TEXT
 from pywebio.output import (put_button, put_html, put_loading, put_markdown,
                             toast, use_scope)
 from pywebio.pin import pin, put_input
@@ -77,5 +76,5 @@ def article_wordcloud_generator() -> None:
     生成简书文章的词云图。
     """)
 
-    put_input("url", type=TEXT, label="文章 URL")
+    put_input("url", type="text", label="文章 URL")
     put_button("生成", color="success", onclick=on_generate_button_clicked)
