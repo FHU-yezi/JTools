@@ -6,7 +6,7 @@ from pywebio.output import (put_button, put_loading, put_markdown, toast,
                             use_scope)
 from pywebio.pin import pin, put_input
 
-from utils.datetime_helper import human_readable_format
+from utils.human_radable_td import human_readable_td
 from utils.html_helper import link_HTML
 
 DESCRIPTION: str = """文章发布时间查询工具"""
@@ -40,8 +40,8 @@ def on_query_button_clicked() -> None:
             文章标题：{title}
             链接：{link_HTML(url, url)}
             更新过：{is_updated}
-            发布时间：{publish_time}（{human_readable_format(publish_td, accurate=False)}前）
-            最后一次更新时间：{update_time}（{human_readable_format(update_td, accurate=False)}前）
+            发布时间：{publish_time}（{human_readable_td(publish_td, accurate=False)}前）
+            最后一次更新时间：{update_time}（{human_readable_td(update_td, accurate=False)}前）
         """
 
     with use_scope("result", clear=True):

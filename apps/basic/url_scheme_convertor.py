@@ -14,7 +14,7 @@ from pywebio.output import (put_button, put_image, put_loading, put_markdown,
                             toast, use_scope)
 from pywebio.pin import pin, put_input
 
-from utils.qrcode_helper import make_qrcode
+from utils.qrcode import make_qrcode
 
 DESCRIPTION: str = """URL Scheme 转换工具"""
 

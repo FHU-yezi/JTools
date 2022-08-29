@@ -5,7 +5,7 @@ from JianshuResearchTools.objects import Article
 from pywebio.output import (download, put_button, put_loading, put_markdown,
                             toast)
 from pywebio.pin import pin, put_checkbox, put_input, put_radio
-from utils.checkbox_helper import is_checked
+from utils.checkbox import is_checked
 
 DESCRIPTION: str = """文章下载工具"""
 

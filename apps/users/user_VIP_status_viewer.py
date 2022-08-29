@@ -4,7 +4,7 @@ from JianshuResearchTools.objects import User
 from pywebio.output import put_markdown, toast, use_scope, put_button
 from pywebio.pin import pin, put_input
 from typing import Dict, Optional
-from utils.datetime_helper import human_readable_format
+from utils.human_radable_td import human_readable_td
 
 DESCRIPTION: str = """会员状态查询工具"""
 
@@ -37,7 +37,7 @@ def on_query_button_clicked() -> None:
             用户名：{user.name}
             链接：{url}
             VIP 等级：{vip_type}
-            VIP 到期时间：{expire_time}（剩余 {human_readable_format(remain_time, accurate=False)}）
+            VIP 到期时间：{expire_time}（剩余 {human_readable_td(remain_time, accurate=False)}）
             """)
         else:
             put_markdown(f"""
