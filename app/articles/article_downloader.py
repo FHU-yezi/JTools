@@ -19,7 +19,7 @@ def on_download_button_clicked() -> None:
         toast("请输入简书文章 URL", color="error")
         return
 
-    if not is_checked("我同意合规使使该文章", warning):
+    if not is_checked("我同意合规使用该文章", warning):
         toast("请先同意合规使用文章", color="warn")
         return
 
