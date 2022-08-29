@@ -25,7 +25,7 @@ def on_query_button_clicked() -> None:
         toast("输入的不是简书文章 URL，请检查", color="error")
         return
     except ResourceError:
-        toast("文章已被删除、锁定或正在审核中，无法获取内容", color="error")
+        toast("文章已被删除、锁定或正在审核中，无法获取数据", color="error")
         return
 
     with put_loading(color="success"):
