@@ -7,6 +7,10 @@ from yaml import load as yaml_load
 _DEFAULT_CONFIG = {
     "version": "0.0.0",
     "port": "8080",
+    "db_address": "127.0.0.1",
+    "db_port": 27017,
+    "minimum_record_log_level": "DEBUG",
+    "minimum_print_log_level": "INFO",
     "mainpage_footer": "",
     "service_pages_footer": "",
     "global_notification": None,

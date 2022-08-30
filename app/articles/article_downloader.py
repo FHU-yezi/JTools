@@ -7,7 +7,9 @@ from pywebio.output import (download, put_button, put_loading, put_markdown,
 from pywebio.pin import pin, put_checkbox, put_input, put_radio
 from utils.checkbox import is_checked
 
-DESCRIPTION: str = """文章下载工具"""
+
+NAME: str = "文章下载工具"
+DESC: str = "本工具可下载简书文章内容，并将其以纯文本或 Markdown 格式保存至本地。"
 
 
 def on_download_button_clicked() -> None:
@@ -45,13 +47,7 @@ def on_download_button_clicked() -> None:
 
 
 def article_downloader() -> None:
-    put_markdown("""
-    # 文章下载工具
-
-    本工具可下载简书文章内容，并将其以纯文本或 Markdown 格式保存至本地。
-
-    **请注意：不规范使用文章可能带来版权风险。**
-    """)
+    put_markdown("**请注意：不规范使用文章可能带来版权风险。**")
 
     put_input("url", type="text", label="文章 URL")
     put_radio(

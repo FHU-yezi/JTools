@@ -1,12 +1,14 @@
-from JianshuResearchTools.exceptions import InputError, ResourceError
 from datetime import datetime, timedelta
-from JianshuResearchTools.objects import User
-from pywebio.output import put_markdown, toast, use_scope, put_button
-from pywebio.pin import pin, put_input
 from typing import Dict, Optional
+
+from JianshuResearchTools.exceptions import InputError, ResourceError
+from JianshuResearchTools.objects import User
+from pywebio.output import put_button, put_markdown, toast, use_scope
+from pywebio.pin import pin, put_input
 from utils.human_radable_td import human_readable_td
 
-DESCRIPTION: str = """会员状态查询工具"""
+NAME: str = "会员状态查询工具"
+DESC: str = "查询简书用户的会员状态与到期时间。"
 
 
 def on_query_button_clicked() -> None:
@@ -48,11 +50,5 @@ def on_query_button_clicked() -> None:
 
 
 def user_VIP_status_viewer() -> None:
-    put_markdown("""
-    # 会员状态查询工具
-
-    查询简书用户的会员状态与到期时间。
-    """)
-
     put_input("url", type="text", label="用户 URL")
     put_button("查询", color="success", onclick=on_query_button_clicked)

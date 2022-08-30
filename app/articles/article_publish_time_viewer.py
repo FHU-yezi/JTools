@@ -9,7 +9,8 @@ from pywebio.pin import pin, put_input
 from utils.human_radable_td import human_readable_td
 from utils.html_helper import link_HTML
 
-DESCRIPTION: str = """文章发布时间查询工具"""
+NAME: str = "文章发布时间查询工具"
+DESC: str = "本工具可查询文章的发布与更新时间。"
 
 
 def on_query_button_clicked() -> None:
@@ -50,11 +51,5 @@ def on_query_button_clicked() -> None:
 
 
 def article_publish_time_viewer() -> None:
-    put_markdown("""
-    # 文章发布时间查询工具
-
-    本工具可查询文章的发布与更新时间。
-    """)
-
     put_input("url", type="text", label="文章 URL")
     put_button("查询", color="success", onclick=on_query_button_clicked)
