@@ -1,79 +1,71 @@
-from JianshuResearchTools.objects import set_cache_status
+from typing import Callable, List
+
 from pywebio import start_server
-from pywebio.output import (popup, put_button, put_info, put_link,
-                            put_markdown, put_warning)
 
-from config_manager import config
-from modules.article_downloader import ArticleDownloader
-from modules.article_time_query import ArticleTimeQuery
-from modules.article_wordcloud_generator import ArticleWordcloudGenerator
-from modules.diszeroer_helper import DiszeroerHelper
-from modules.url_scheme_converter import URLSchemeConverter
-from modules.user_assets_viewer import UserAssetsViewer
-from modules.user_VIP_status_query import UserVIPStatusQuery
-from modules.utils import GetUrl, SetFooter
-from modules.wordage_statistics_tool import WordageStatisticsTool
+from utils.module_finder import get_module_info, MODULE
+from utils.monkey_patch import (patch_add_footer, patch_add_html_name_desc,
+                                patch_add_page_name_desc)
+from pywebio.output import put_markdown
+from utils.page_helper import get_current_page_url
+from yaml import load as yaml_load, SafeLoader
+from typing import Dict
+from utils.html_helper import link_HTML
 
-# 为保证数据实时性并节省内存消耗，禁用全局缓存
-set_cache_status(False)
+STRUCTURE_MAPPING: Dict[str, str] = yaml_load(
+    open("./structure.yaml", "r", encoding="utf-8"),
+    Loader=SafeLoader
+)
 
-STATUS_TO_TEXT = {-1: "暂停服务", 0: "正常运行", 1: "降级运行"}
-STATUS_TO_BUTTON_COLOR_TEXT = {-1: "danger", 0: "success", 1: "warning"}
-STATUS_TO_COLOR_HEX = {-1: "#FF2D10", 0: "#008700", 1: "#FF8C00"}
+MODULE_INFO: Dict[str, List[MODULE]] = get_module_info("./app")  # TODO: 写入配置文件
+
+modules_list: List[MODULE] = []
+for package in MODULE_INFO.values():
+    modules_list.extend(package)
 
 
-def index():
+def get_all_funcs(modules_list: List[MODULE]) -> List[Callable[[], None]]:
+    func_list: List[Callable[[], None]] = []
+    for module in modules_list:
+        page_func: Callable[[], None] = module.page_func
+        page_name: str = module.page_name
+        page_desc: str = module.page_desc
+
+        page_func = patch_add_html_name_desc(page_func, page_name, page_desc)
+        page_func = patch_add_page_name_desc(page_func, page_name, page_desc)
+        page_func = patch_add_footer(page_func, "Powerded By JRT and PyWebIO")  # TODO: 写入配置文件
+
+        func_list.append(page_func)
+
+    return func_list
+
+
+func_list: List[Callable[[], None]] = get_all_funcs(modules_list)
+
+
+def index() -> None:
     """简书小工具集
 
-    为简友提供高效便捷的科技工具
-    """
-    put_markdown(f"""
-    # 简书小工具集
     为简友提供高效便捷的科技工具。
+    """
+    put_markdown("""
+    # 简书小工具集
 
-    Made with [JRT](https://github.com/FHU-yezi/JianshuResearchTools) and ♥
-    OpenSource On GitHub：[JianshuMicroFeatures](https://github.com/FHU-yezi/JianshuMicroFeatures)
-    Version：{config["version"]}
+    为简友提供高效便捷的科技工具。
     """)
 
-    if config["global_notification"]:
-        popup("公告", config["global_notification"])
+    current_page_url: str = get_current_page_url()
 
-    services = sorted(config["services"], key=lambda x: x["on_top"], reverse=True)
+    for type_, type_name in STRUCTURE_MAPPING.items():
+        module_part: List[MODULE] = [x for x in modules_list if x.module_type == type_]
+        content: str = f"**{type_name}**\n"
 
-    for service in services:
-        put_markdown(f"## {service['name']}")
+        for module in module_part:
+            content += f"- {module.page_name}>>[点击跳转]({f'{current_page_url}/?app={module.module_name}'})\n"
 
-        if service["on_top"]:
-            put_button("置顶", color="success", small=True, onclick=lambda: None)  # 显示置顶标签，点击无效果
-
-        if service["status"] == 1:  # 降级运行状态
-            put_warning("该服务处于降级运行状态，其性能可能受到影响，我们将尽力恢复其正常运行，感谢您的谅解")
-
-        if service["notification"]:
-            put_info(service["notification"])
-
-        put_markdown(f"""
-        {service["description"]}
-
-        服务状态：<font color={STATUS_TO_COLOR_HEX[service["status"]]}>**{STATUS_TO_TEXT[service["status"]]}**</font>
-        """)
-        if service["status"] >= 0:  # 只有服务正常运行时才允许跳转
-            put_link("点击进入", url=f"{GetUrl()}?app={service['service_func_name']}")
-
-    SetFooter(config["mainpage_footer"])
+        put_markdown(content)
 
 
-SERVICES_LIST = [
-    index,
-    ArticleDownloader,
-    ArticleTimeQuery,
-    ArticleWordcloudGenerator,
-    DiszeroerHelper,
-    URLSchemeConverter,
-    UserAssetsViewer,
-    UserVIPStatusQuery,
-    WordageStatisticsTool
-]
+func_list.append(index)  # 将主页函数加入函数列表
 
-start_server(SERVICES_LIST, port=config["port"])
+start_server(func_list, host="0.0.0.0", port=8080,
+             cdn="https://ss-assets-cdn.oss-cn-hangzhou.aliyuncs.com/pywebio/v1.6.2/")
