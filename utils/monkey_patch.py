@@ -1,7 +1,7 @@
 from typing import Callable
 
 
-def patch_add_module_name_desc(func: Callable, name: str, desc: str) -> Callable:
+def patch_add_html_name_desc(func: Callable, name: str, desc: str) -> Callable:
     doc = f"""{name}
 
     {desc}
@@ -11,9 +11,9 @@ def patch_add_module_name_desc(func: Callable, name: str, desc: str) -> Callable
     return func
 
 
-def patch_add_name_desc(func: Callable, name: str, desc: str) -> Callable:
-    name = func.__name__
-    doc = func.__doc__
+def patch_add_page_name_desc(func: Callable, name: str, desc: str) -> Callable:
+    func_name = func.__name__
+    func_doc = func.__doc__
 
     def footer_patched() -> None:
         from pywebio.output import put_markdown
@@ -25,15 +25,15 @@ def patch_add_name_desc(func: Callable, name: str, desc: str) -> Callable:
 
         func()
 
-    footer_patched.__name__ = name
-    footer_patched.__doc__ = doc
+    footer_patched.__name__ = func_name
+    footer_patched.__doc__ = func_doc
 
     return footer_patched
 
 
 def patch_add_footer(func: Callable, text: str) -> Callable:
-    name = func.__name__
-    doc = func.__doc__
+    func_name = func.__name__
+    func_doc = func.__doc__
 
     def footer_patched() -> None:
         func()
@@ -41,7 +41,7 @@ def patch_add_footer(func: Callable, text: str) -> Callable:
         from utils.page_helper import set_footer
         set_footer(text)
 
-    footer_patched.__name__ = name
-    footer_patched.__doc__ = doc
+    footer_patched.__name__ = func_name
+    footer_patched.__doc__ = func_doc
 
     return footer_patched
