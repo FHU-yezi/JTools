@@ -1,7 +1,7 @@
 from typing import Callable
 
 
-def patch_add_html_name_desc(func: Callable, name: str, desc: str) -> Callable:
+def patch_add_html_name_desc(func: Callable[[], None], name: str, desc: str) -> Callable[[], None]:
     doc = f"""{name}
 
     {desc}
@@ -11,7 +11,7 @@ def patch_add_html_name_desc(func: Callable, name: str, desc: str) -> Callable:
     return func
 
 
-def patch_add_page_name_desc(func: Callable, name: str, desc: str) -> Callable:
+def patch_add_page_name_desc(func: Callable[[], None], name: str, desc: str) -> Callable[[], None]:
     func_name = func.__name__
     func_doc = func.__doc__
 
@@ -31,7 +31,7 @@ def patch_add_page_name_desc(func: Callable, name: str, desc: str) -> Callable:
     return footer_patched
 
 
-def patch_add_footer(func: Callable, text: str) -> Callable:
+def patch_add_footer(func: Callable[[], None], text: str) -> Callable[[], None]:
     func_name = func.__name__
     func_doc = func.__doc__
 

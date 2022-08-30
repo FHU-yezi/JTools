@@ -18,14 +18,14 @@ from utils.qrcode import make_qrcode
 NAME: str = "URL Scheme 转换工具"
 DESC: str = "将简书链接转换为 URL Scheme，从而在 App 端实现一键跳转。"
 
-ASSERT_FUNCS: Iterable[Tuple[Callable, str]] = (
+ASSERT_FUNCS: Iterable[Tuple[Callable[[str], None], str]] = (
     (AssertArticleUrl, "article"),
     (AssertUserUrl, "user"),
     (AssertCollectionUrl, "collection"),
     (AssertNotebookUrl, "notebook")
 )
 
-CONVERT_FUNCS: Dict[str, Callable] = {
+CONVERT_FUNCS: Dict[str, Callable[[str], str]] = {
     "article": ArticleUrlToArticleUrlScheme,
     "user": UserUrlToUserUrlScheme,
     "collection": CollectionUrlToCollectionUrlScheme,

@@ -1,5 +1,5 @@
 from os import listdir
-from typing import Any, Callable, Dict, List, Optional
+from typing import Callable, List
 
 
 def get_module_path_list(path: str) -> List[str]:
@@ -33,7 +33,7 @@ def get_module_obj(path: str):
     return __import__(get_import_path(path), fromlist=get_fromlist(path))
 
 
-def get_main_func(module_obj, path: str) -> Callable:
+def get_main_func(module_obj, path: str) -> Callable[[], None]:
     return getattr(module_obj, get_main_func_name(path))
 
 
