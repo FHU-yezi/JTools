@@ -6,7 +6,7 @@ from pywebio.output import (put_button, put_loading, put_markdown, toast,
                             use_scope)
 from pywebio.pin import pin, put_input
 
-from utils.human_radable_td import human_readable_td
+from utils.human_readable_td import human_readable_td
 from utils.html_helper import link_HTML
 
 NAME: str = "文章发布时间查询工具"

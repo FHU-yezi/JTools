@@ -10,7 +10,7 @@ from pywebio.output import (put_button, put_collapse, put_column, put_link,
                             use_scope)
 from pywebio.pin import pin, put_checkbox, put_input
 from utils.checkbox import is_checked
-from utils.human_radable_td import human_readable_td
+from utils.human_readable_td import human_readable_td
 
 NAME: str = "消零派辅助工具"
 DESC: str = "消灭零评论，留下爱与光。"

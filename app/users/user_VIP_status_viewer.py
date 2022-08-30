@@ -5,7 +5,7 @@ from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import User
 from pywebio.output import put_button, put_markdown, toast, use_scope
 from pywebio.pin import pin, put_input
-from utils.human_radable_td import human_readable_td
+from utils.human_readable_td import human_readable_td
 
 NAME: str = "会员状态查询工具"
 DESC: str = "查询简书用户的会员状态与到期时间。"
