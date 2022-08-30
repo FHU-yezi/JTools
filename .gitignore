@@ -1,7 +1,3 @@
-*.ipynb
-*.log
-*.db
-*.pyc
-*.otf
 __pycache__/
+.mypy_cache/
 config.yaml
