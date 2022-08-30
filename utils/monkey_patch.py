@@ -11,6 +11,26 @@ def patch_add_module_name_desc(func: Callable, name: str, desc: str) -> Callable
     return func
 
 
+def patch_add_name_desc(func: Callable, name: str, desc: str) -> Callable:
+    name = func.__name__
+    doc = func.__doc__
+
+    def footer_patched() -> None:
+        from pywebio.output import put_markdown
+        put_markdown(f"""
+        # {name}
+
+        {desc}
+        """)
+
+        func()
+
+    footer_patched.__name__ = name
+    footer_patched.__doc__ = doc
+
+    return footer_patched
+
+
 def patch_add_footer(func: Callable, text: str) -> Callable:
     name = func.__name__
     doc = func.__doc__
