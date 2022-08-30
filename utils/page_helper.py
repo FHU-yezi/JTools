@@ -6,4 +6,4 @@ def set_footer(html: str) -> None:
 
 
 def get_current_page_url() -> str:
-    return eval_js("window.location.href").split("/")[0]
+    return "http://" + eval_js("window.location.href").split("/")[-2]
