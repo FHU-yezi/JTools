@@ -1,5 +1,5 @@
 from os import listdir
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 
 def get_modules_path(path: str) -> Dict[str, Optional[str]]:
@@ -25,9 +25,21 @@ def get_fromlist(path) -> List[str]:
     return get_import_path(path).split(".")[:-1]
 
 
-def get_module_name(path: str) -> str:
-    return path.split("/")[-1].split(".")[0]
+def get_main_func_name(path: str) -> str:
+    return path.split("/")[-1].split(".")[0]  # 模块名与主函数名相同
 
 
-def get_func_name(path: str) -> str:
-    return get_module_name(path)  # 模块名与主函数名相同
+def get_module_obj(path: str):
+    return __import__(get_import_path(path), fromlist=get_fromlist(path))
+
+
+def get_main_func(module, path: str) -> Callable:
+    return getattr(module, get_main_func_name(path))
+
+
+def get_page_name(module) -> str:
+    return getattr(module, "NAME")
+
+
+def get_page_desc(module) -> str:
+    return getattr(module, "DESC")
