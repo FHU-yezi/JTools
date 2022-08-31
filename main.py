@@ -6,6 +6,9 @@ from yaml import SafeLoader
 from yaml import load as yaml_load
 
 from utils.config_manager import config
+from utils.html_helper import (green_text_HTML, grey_text_HTML, link_HTML,
+                               orange_link_HTML, orange_text_HTML,
+                               red_text_HTML)
 from utils.module_finder import MODULE, get_module_info
 from utils.monkey_patch import (patch_add_footer, patch_add_html_name_desc,
                                 patch_add_page_name_desc)
@@ -39,7 +42,26 @@ def get_all_funcs(modules_list: List[MODULE]) -> List[Callable[[], None]]:
     return func_list
 
 
-func_list: List[Callable[[], None]] = get_all_funcs(modules_list)
+def get_status_HTML(module_name: str) -> str:
+    status = config.status
+
+    if module_name in status.out_of_service:
+        return red_text_HTML("【暂停服务】")
+    elif module_name in status.downgrade:
+        return orange_text_HTML("【降级】")
+    else:
+        return green_text_HTML("【正常】")
+
+
+def get_jump_link(base_url: str, module_name: str) -> str:
+    status = config.status
+
+    if module_name in status.out_of_service:
+        return grey_text_HTML("无法跳转")
+    elif module_name in status.downgrade:
+        return orange_link_HTML("点击跳转>>", f"{base_url}/?app={module_name}")
+    else:
+        return link_HTML("点击跳转>>", f"{base_url}/?app={module_name}")
 
 
 def index() -> None:
@@ -47,26 +69,31 @@ def index() -> None:
 
     为简友提供高效便捷的科技工具。
     """
-    put_markdown("""
+    put_markdown(f"""
     # 简书小工具集
 
     为简友提供高效便捷的科技工具。
-    """)
 
-    current_page_url: str = get_current_page_url()
+    版本：{config.version}
+    本项目在 GitHub 上开源：https://github.com/FHU-yezi/JianshuMicroFeatures
+    """)
 
     for type_, type_name in STRUCTURE_MAPPING.items():
         module_part: List[MODULE] = [x for x in modules_list if x.module_type == type_]
-        content: str = f"**{type_name}**\n"
+        content: str = f"# {type_name}\n"
 
         for module in module_part:
-            content += f"- {module.page_name}>>[点击跳转]({f'{current_page_url}/?app={module.module_name}'})\n"
+            content += (f"**{get_status_HTML(module.module_name)}"
+                        f"{module.page_name}**   "
+                        f"{get_jump_link(get_current_page_url(), module.module_name)}\n\n"
+                        f"{module.page_desc}\n\n")
 
         put_markdown(content)
 
     set_footer(config.footer)
 
 
+func_list: List[Callable[[], None]] = get_all_funcs(modules_list)
 func_list.append(index)  # 将主页函数加入函数列表
 
 start_server(func_list, host="0.0.0.0", port=config.deploy.port, cdn=config.deploy.cdn)

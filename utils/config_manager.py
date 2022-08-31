@@ -22,6 +22,10 @@ _DEFAULT_CONFIG = {
         "minimum_record_level": "DEBUG",
         "minimum_print_level": "INFO"
     },
+    "status": {
+        "out_of_service": [],
+        "downgrade": []
+    }
 }
 
 
