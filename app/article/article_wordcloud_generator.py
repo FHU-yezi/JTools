@@ -7,8 +7,13 @@ import pyecharts.options as opts
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
 from pyecharts.charts import WordCloud
+from pyecharts.globals import CurrentConfig
 from pywebio.output import put_button, put_html, put_loading, toast, use_scope
 from pywebio.pin import pin, put_input
+from utils.config_manager import config
+
+# 设置 PyEcharts CDN
+CurrentConfig.ONLINE_HOST = config.deploy.pyecharts_cdn
 
 NAME: str = "文章词云图生成工具"
 DESC = "生成简书文章的词云图。"

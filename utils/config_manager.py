@@ -8,7 +8,8 @@ from yaml import load as yaml_load
 _DEFAULT_CONFIG = {
     "version": "v0.1.0",
     "deploy": {
-        "cdn": "",
+        "pywebio_cdn": "",
+        "pyecharts_cdn": "",
         "port": 8080
     },
     "base_path": "./app",

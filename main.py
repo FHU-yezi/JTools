@@ -100,4 +100,4 @@ modules_list.append(MODULE(
 ))
 func_list: List[Callable[[], None]] = get_all_funcs(modules_list)
 
-start_server(func_list, host="0.0.0.0", port=config.deploy.port, cdn=config.deploy.cdn)
+start_server(func_list, host="0.0.0.0", port=config.deploy.port, cdn=config.deploy.pywebio_cdn)
