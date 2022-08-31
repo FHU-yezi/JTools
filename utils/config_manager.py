@@ -46,8 +46,6 @@ class Config():
                 self._data = yaml_load(f, Loader=SafeLoader)
 
     def __getattr__(self, name: str) -> Any:
-        self.refresh()
-
         result: Any = self._data[name]
         if isinstance(result, dict):
             return ConfigNode(result)

@@ -78,6 +78,8 @@ def index() -> None:
     本项目在 GitHub 上开源：https://github.com/FHU-yezi/JianshuMicroFeatures
     """)
 
+    config.refresh()  # 刷新配置文件
+
     for type_, type_name in STRUCTURE_MAPPING.items():
         module_part: List[MODULE] = [x for x in modules_list if x.module_type == type_]
         content: str = f"## {type_name}\n"
