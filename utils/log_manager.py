@@ -1,42 +1,90 @@
 from datetime import datetime
-from typing import Literal
+from typing import Sequence
 
 from utils.config_manager import config
-from utils.db_manager import log_db
+from utils.db_manager import access_log_db, run_log_db
 
-LOG_TYPES = {"SYSTEM", "MODULE"}
-# 日志等级越大越重要
-LEVELS_TO_NUMS = {"DEBUG": 0,
-                  "INFO": 1,
-                  "WARNING": 2,
-                  "ERROR": 3,
-                  "CRITICAL": 4
-                  }
-LEVELS = set(LEVELS_TO_NUMS.keys())
+LOG_LEVELS = {
+    "DEBUG": 0,
+    "INFO": 1,
+    "WARNING": 2,
+    "ERROR": 3,
+    "CRITICAL": 4
+}
 
 
-# TODO: 用更优雅的方式实现类型标注
-def AddRunLog(type_: Literal["SYSTEM", "MODULE"],
-              level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-              content: str) -> None:
-    if type_ not in LOG_TYPES:
-        raise ValueError(f"指定的日志类型 {type_} 不存在")
-    if level not in LEVELS:
-        raise ValueError(f"指定的日志等级 {level} 不存在")
+class RunLogger():
+    def __init__(self, db, log_types: Sequence[str], minimum_record_level: str,
+                 minimum_print_level: str) -> None:
+        self._db = db
+        self._log_types = log_types
+        self._minimum_record_level = minimum_record_level
+        self._minimum_print_level = minimum_print_level
 
-    if LEVELS_TO_NUMS[level] < \
-       LEVELS_TO_NUMS[config["minimum_record_log_level"]]:
-        return  # 小于最小记录等级则不记录
+    def _log(self, level: str, type_: str, content: str) -> None:
+        if type_ not in self._log_types:
+            raise ValueError(f"指定的日志类型 {type_} 不存在")
+        if level not in LOG_LEVELS:
+            raise ValueError(f"指定的日志等级 {level} 不存在")
 
-    log_db.insert_one({
-        "time": datetime.now(),
-        "type": type_,
-        "level": level,
-        "content": content
-    })
+        if LOG_LEVELS[level] < LOG_LEVELS[self._minimum_record_level]:
+            return
 
-    if LEVELS_TO_NUMS[level] >= \
-       LEVELS_TO_NUMS[config["minimum_print_log_level"]]:
-        # 大于等于最小输出等级，输出日志
-        print(f"[{datetime.now().strftime(r'%Y-%m-%d %H:%M:%S')}] "
-              f"[{type_}] [{level}] {content}")
+        self._db.insert_one({
+            "time": datetime.now(),
+            "type": type_,
+            "level": level,
+            "content": content
+        })
+
+        if LOG_LEVELS[level] >= LOG_LEVELS[self._minimum_print_level]:
+            print(f"[{datetime.now().strftime(r'%Y-%m-%d %H:%M:%S')}] "
+                  f"[{type_}] [{level}] {content}")
+
+    def debug(self, type_: str, content: str) -> None:
+        self._log("DEBUG", type_, content)
+
+    def info(self, type_: str, content: str) -> None:
+        self._log("INFO", type_, content)
+
+    def warning(self, type_: str, content: str) -> None:
+        self._log("WARNING", type_, content)
+
+    def error(self, type_: str, content: str) -> None:
+        self._log("ERROR", type_, content)
+
+    def critical(self, type_: str, content: str) -> None:
+        self._log("CRITICAL", type_, content)
+
+
+class AccessLogger():
+    def __init__(self, db) -> None:
+        self._db = db
+
+    def log(self, module: str, ua: str, ip: str, protocol: str) -> None:
+        self._db.insert_one({
+            "time": datetime.now(),
+            "module": module,
+            "ua": ua,
+            "ip": ip,
+            "protocol": protocol
+        })
+
+    def log_from_info_obj(self, module_name: str, info_obj) -> None:
+        self.log(
+            module=module_name,
+            ua=info_obj.user_agent.ua_string,
+            ip=info_obj.user_ip,
+            protocol=info_obj.protocol
+        )
+
+
+run_logger: RunLogger = RunLogger(
+    db=run_log_db,
+    log_types=("SYSTEM", ),
+    minimum_record_level=config.log.minimum_record_level,
+    minimum_print_level=config.log.minimum_print_level
+)
+access_logger: AccessLogger = AccessLogger(
+    db=access_log_db
+)
