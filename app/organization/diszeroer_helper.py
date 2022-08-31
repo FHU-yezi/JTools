@@ -9,7 +9,7 @@ from pywebio.output import (put_button, put_collapse, put_column, put_link,
                             put_loading, put_markdown, put_row, toast,
                             use_scope)
 from pywebio.pin import pin, put_checkbox, put_input
-from utils.checkbox import is_checked
+from utils.checkbox_helper import is_checked
 from utils.human_readable_td import human_readable_td
 
 NAME: str = "消零派辅助工具"

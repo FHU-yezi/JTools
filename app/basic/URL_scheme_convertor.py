@@ -13,7 +13,7 @@ from JianshuResearchTools.exceptions import InputError
 from pywebio.output import (put_button, put_image, put_loading, put_markdown,
                             toast, use_scope)
 from pywebio.pin import pin, put_input
-from utils.qrcode import make_qrcode
+from utils.qrcode_helper import make_qrcode
 
 NAME: str = "URL Scheme 转换工具"
 DESC: str = "将简书链接转换为 URL Scheme，从而在 App 端实现一键跳转。"

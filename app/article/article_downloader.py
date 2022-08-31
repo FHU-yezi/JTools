@@ -5,8 +5,7 @@ from JianshuResearchTools.objects import Article
 from pywebio.output import (download, put_button, put_loading, put_markdown,
                             toast)
 from pywebio.pin import pin, put_checkbox, put_input, put_radio
-from utils.checkbox import is_checked
-
+from utils.checkbox_helper import is_checked
 
 NAME: str = "文章下载工具"
 DESC: str = "下载简书文章内容，并将其以纯文本或 Markdown 格式保存至本地。"
