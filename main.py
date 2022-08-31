@@ -1,22 +1,22 @@
-from typing import Callable, List
+from typing import Callable, Dict, List
 
 from pywebio import start_server
+from pywebio.output import put_markdown
+from yaml import SafeLoader
+from yaml import load as yaml_load
 
-from utils.module_finder import get_module_info, MODULE
+from utils.config_manager import config
+from utils.module_finder import MODULE, get_module_info
 from utils.monkey_patch import (patch_add_footer, patch_add_html_name_desc,
                                 patch_add_page_name_desc)
-from pywebio.output import put_markdown
-from utils.page_helper import get_current_page_url
-from yaml import load as yaml_load, SafeLoader
-from typing import Dict
-from utils.html_helper import link_HTML
+from utils.page_helper import get_current_page_url, set_footer
 
 STRUCTURE_MAPPING: Dict[str, str] = yaml_load(
     open("./structure.yaml", "r", encoding="utf-8"),
     Loader=SafeLoader
 )
 
-MODULE_INFO: Dict[str, List[MODULE]] = get_module_info("./app")  # TODO: 写入配置文件
+MODULE_INFO: Dict[str, List[MODULE]] = get_module_info(config.base_path)
 
 modules_list: List[MODULE] = []
 for package in MODULE_INFO.values():
@@ -32,7 +32,7 @@ def get_all_funcs(modules_list: List[MODULE]) -> List[Callable[[], None]]:
 
         page_func = patch_add_html_name_desc(page_func, page_name, page_desc)
         page_func = patch_add_page_name_desc(page_func, page_name, page_desc)
-        page_func = patch_add_footer(page_func, "Powerded By JRT and PyWebIO")  # TODO: 写入配置文件
+        page_func = patch_add_footer(page_func, config.footer)
 
         func_list.append(page_func)
 
@@ -64,8 +64,9 @@ def index() -> None:
 
         put_markdown(content)
 
+    set_footer(config.footer)
+
 
 func_list.append(index)  # 将主页函数加入函数列表
 
-start_server(func_list, host="0.0.0.0", port=8080,
-             cdn="https://ss-assets-cdn.oss-cn-hangzhou.aliyuncs.com/pywebio/v1.6.2/")
+start_server(func_list, host="0.0.0.0", port=config.deploy.port, cdn=config.deploy.cdn)

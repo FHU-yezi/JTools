@@ -1,12 +1,11 @@
 from pymongo import MongoClient
 
-from config_manager import config
+from utils.config_manager import config
 
 
 def init_DB():
-    connection: MongoClient = MongoClient(config["db_address"],
-                                          config["db_port"])
-    db = connection.JMFData
+    connection: MongoClient = MongoClient(config.db.host, config.db.port)
+    db = connection[config.db.main_database]
     return db
 
 

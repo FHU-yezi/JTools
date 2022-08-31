@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Literal
 
-from config_manager import config
+from utils.config_manager import config
 from utils.db_manager import log_db
 
 LOG_TYPES = {"SYSTEM", "MODULE"}
