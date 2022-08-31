@@ -1,17 +1,24 @@
 version: "3"
+
+networks:
+  mongodb:
+    external: true
+
 services:
   main:
-    image: jianshumicrofeatures:1.4.3
+    image: jianshumicrofeatures:2.0.0
     build: .
     ports:
       - "8602:8602"
     volumes:
       - "./config.yaml:/app/config.yaml"
+    networks:
+      - mongodb
     deploy:
       resources:
         limits:
-          cpus: "0.50"
-          memory: 192M
+          cpus: "1.00"
+          memory: 256M
       restart_policy:
         condition: on-failure
         delay: 5s
