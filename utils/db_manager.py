@@ -11,4 +11,5 @@ def init_DB():
 
 db = init_DB()
 
-log_db = db.log
+run_log_db = db.run_log
+access_log_db = db.access_log

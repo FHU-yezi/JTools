@@ -45,3 +45,21 @@ def patch_add_footer(func: Callable[[], None], text: str) -> Callable[[], None]:
     footer_patched.__doc__ = func_doc
 
     return footer_patched
+
+
+def patch_record_access(func: Callable[[], None], page_func_name: str) -> Callable[[], None]:
+    func_name = func.__name__
+    func_doc = func.__doc__
+
+    def log_record_patched() -> None:
+        from pywebio.session import info
+        from utils.log_manager import access_logger
+
+        access_logger.log_from_info_obj(page_func_name, info)
+
+        func()
+
+    log_record_patched.__name__ = func_name
+    log_record_patched.__doc__ = func_doc
+
+    return log_record_patched

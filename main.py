@@ -2,6 +2,7 @@ from typing import Callable, Dict, List
 
 from pywebio import start_server
 from pywebio.output import put_markdown
+from pywebio.session import info
 from yaml import SafeLoader
 from yaml import load as yaml_load
 
@@ -9,9 +10,10 @@ from utils.config_manager import config
 from utils.html_helper import (green_text_HTML, grey_text_HTML, link_HTML,
                                orange_link_HTML, orange_text_HTML,
                                red_text_HTML)
+from utils.log_manager import access_logger
 from utils.module_finder import MODULE, get_module_info
 from utils.monkey_patch import (patch_add_footer, patch_add_html_name_desc,
-                                patch_add_page_name_desc)
+                                patch_add_page_name_desc, patch_record_access)
 from utils.page_helper import get_current_page_url, set_footer
 
 STRUCTURE_MAPPING: Dict[str, str] = yaml_load(
@@ -30,12 +32,14 @@ def get_all_funcs(modules_list: List[MODULE]) -> List[Callable[[], None]]:
     func_list: List[Callable[[], None]] = []
     for module in modules_list:
         page_func: Callable[[], None] = module.page_func
+        page_func_name: str = module.page_func_name
         page_name: str = module.page_name
         page_desc: str = module.page_desc
 
-        page_func = patch_add_html_name_desc(page_func, page_name, page_desc)
         page_func = patch_add_page_name_desc(page_func, page_name, page_desc)
         page_func = patch_add_footer(page_func, config.footer)
+        page_func = patch_record_access(page_func, page_func_name)
+        page_func = patch_add_html_name_desc(page_func, page_name, page_desc)
 
         func_list.append(page_func)
 
@@ -77,6 +81,8 @@ def index() -> None:
     版本：{config.version}
     本项目在 GitHub 上开源：https://github.com/FHU-yezi/JianshuMicroFeatures
     """)
+
+    access_logger.log_from_info_obj("index", info)
 
     config.refresh()  # 刷新配置文件
 
