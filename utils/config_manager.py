@@ -6,7 +6,7 @@ from yaml import dump as yaml_dump
 from yaml import load as yaml_load
 
 _DEFAULT_CONFIG = {
-    "version": "0.1.0",
+    "version": "v0.1.0",
     "deploy": {
         "cdn": "",
         "port": 8080

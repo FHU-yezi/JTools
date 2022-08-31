@@ -80,7 +80,7 @@ def index() -> None:
 
     for type_, type_name in STRUCTURE_MAPPING.items():
         module_part: List[MODULE] = [x for x in modules_list if x.module_type == type_]
-        content: str = f"# {type_name}\n"
+        content: str = f"## {type_name}\n"
 
         for module in module_part:
             content += (f"**{get_status_HTML(module.module_name)}"
