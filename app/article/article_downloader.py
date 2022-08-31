@@ -18,7 +18,7 @@ def on_download_button_clicked() -> None:
     warning: List[Optional[str]] = pin.warning
 
     if not url:
-        toast("请输入简书文章 URL", color="error")
+        toast("请输入简书文章 URL", color="warn")
         return
 
     if not is_checked("我同意合规使用该文章", warning):
