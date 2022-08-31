@@ -2,8 +2,8 @@ from collections import namedtuple
 from os import listdir
 from typing import Callable, Dict, List, NamedTuple
 
-MODULE: NamedTuple = namedtuple("MODULE", ["full_path", "module_name", "module_type", "module_obj",
-                                           "page_func_name", "page_func", "page_name", "page_desc"])
+MODULE: NamedTuple = namedtuple("MODULE", ["module_type", "page_func_name", "page_func",
+                                           "page_name", "page_desc"])
 
 
 def get_import_path(full_path: str) -> str:
@@ -53,10 +53,7 @@ def get_module_info(base_path: str) -> Dict[str, List[MODULE]]:
             page_desc: str = get_page_desc(module_obj)
 
             result[folder].append(MODULE(
-                full_path=full_path,
-                module_name=module_name,
                 module_type=module_type,
-                module_obj=module_obj,
                 page_func_name=page_func_name,
                 page_func=page_func,
                 page_name=page_name,

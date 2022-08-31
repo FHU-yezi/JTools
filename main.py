@@ -75,13 +75,14 @@ def index() -> None:
     config.refresh()  # 刷新配置文件
 
     for type_, type_name in STRUCTURE_MAPPING.items():
-        module_part: List[MODULE] = [x for x in modules_list if x.module_type == type_]
+        module_part: List[MODULE] = [x for x in modules_list
+                                     if x.module_type == type_]
         content: str = f"## {type_name}\n"
 
         for module in module_part:
-            content += (f"**{get_status_HTML(module.module_name)}"
+            content += (f"**{get_status_HTML(module.page_name)}"
                         f"{module.page_name}**   "
-                        f"{get_jump_link(get_current_page_url(), module.module_name)}\n\n"
+                        f"{get_jump_link(get_current_page_url(), module.page_name)}\n\n"
                         f"{module.page_desc}\n\n")
 
         put_markdown(content)
@@ -89,10 +90,7 @@ def index() -> None:
 
 # 将主页函数加入列表
 modules_list.append(MODULE(
-    full_path="",
-    module_name="",
     module_type=None,
-    module_obj=None,
     page_func_name="index",
     page_func=index,
     page_name="简书小工具集",
