@@ -51,6 +51,10 @@ def get_convert_result(url: str, url_type: str) -> str:
 def on_convert_button_cilcked() -> None:
     url: str = pin.url
 
+    if not url:
+        toast("请输入简书 URL", color="warn")
+        return
+
     with put_loading(color="success"):
         try:
             AssertJianshuUrl(url)

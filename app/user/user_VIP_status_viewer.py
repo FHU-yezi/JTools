@@ -14,6 +14,10 @@ DESC: str = "查询简书用户的会员状态与到期时间。"
 def on_query_button_clicked() -> None:
     url: str = pin.url
 
+    if not url:
+        toast("请输入简书用户 URL", color="warn")
+        return
+
     try:
         user = User.from_url(url)
     except InputError:
