@@ -39,6 +39,10 @@ def get_word_freq(text: str):
 def on_generate_button_clicked() -> None:
     url: str = pin.url
 
+    if not url:
+        toast("请输入简书文章 URL", color="warn")
+        return
+
     try:
         article = Article.from_url(url)
     except InputError:
