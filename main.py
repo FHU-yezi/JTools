@@ -82,7 +82,7 @@ def index() -> None:
         for module in module_part:
             content += (f"**{get_status_HTML(module.page_name)}"
                         f"{module.page_name}**   "
-                        f"{get_jump_link(get_current_page_url(), module.page_name)}\n\n"
+                        f"{get_jump_link(get_current_page_url(), module.page_func_name)}\n\n"
                         f"{module.page_desc}\n\n")
 
         put_markdown(content)
