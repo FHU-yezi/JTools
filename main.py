@@ -2,7 +2,6 @@ from typing import Callable, Dict, List
 
 from pywebio import start_server
 from pywebio.output import put_markdown
-from pywebio.session import info
 from yaml import SafeLoader
 from yaml import load as yaml_load
 
@@ -10,11 +9,10 @@ from utils.config_manager import config
 from utils.html_helper import (green_text_HTML, grey_text_HTML, link_HTML,
                                orange_link_HTML, orange_text_HTML,
                                red_text_HTML)
-from utils.log_manager import access_logger
 from utils.module_finder import MODULE, get_module_info
 from utils.monkey_patch import (patch_add_footer, patch_add_html_name_desc,
                                 patch_add_page_name_desc, patch_record_access)
-from utils.page_helper import get_current_page_url, set_footer
+from utils.page_helper import get_current_page_url
 
 STRUCTURE_MAPPING: Dict[str, str] = yaml_load(
     open("./structure.yaml", "r", encoding="utf-8"),
@@ -69,20 +67,10 @@ def get_jump_link(base_url: str, module_name: str) -> str:
 
 
 def index() -> None:
-    """简书小工具集
-
-    为简友提供高效便捷的科技工具。
-    """
     put_markdown(f"""
-    # 简书小工具集
-
-    为简友提供高效便捷的科技工具。
-
     版本：{config.version}
     本项目在 GitHub 上开源：https://github.com/FHU-yezi/JianshuMicroFeatures
     """)
-
-    access_logger.log_from_info_obj("index", info)
 
     config.refresh()  # 刷新配置文件
 
@@ -98,10 +86,18 @@ def index() -> None:
 
         put_markdown(content)
 
-    set_footer(config.footer)
 
-
+# 将主页函数加入列表
+modules_list.append(MODULE(
+    full_path="",
+    module_name="",
+    module_type=None,
+    module_obj=None,
+    page_func_name="index",
+    page_func=index,
+    page_name="简书小工具集",
+    page_desc="为简友提供高效便捷的科技工具。"
+))
 func_list: List[Callable[[], None]] = get_all_funcs(modules_list)
-func_list.append(index)  # 将主页函数加入函数列表
 
 start_server(func_list, host="0.0.0.0", port=config.deploy.port, cdn=config.deploy.cdn)
