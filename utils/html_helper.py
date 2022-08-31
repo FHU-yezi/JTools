@@ -18,7 +18,7 @@ def red_text_HTML(text, color: str = "#FF2D10") -> str:
     return colored_text_HTML(text, color)
 
 
-def grey_text_HTML(text: str,  color: str = "#57606A") -> str:
+def grey_text_HTML(text: str, color: str = "#57606A") -> str:
     return colored_text_HTML(text, color)
 
 

@@ -9,7 +9,7 @@ from utils.checkbox import is_checked
 
 
 NAME: str = "文章下载工具"
-DESC: str = "本工具可下载简书文章内容，并将其以纯文本或 Markdown 格式保存至本地。"
+DESC: str = "下载简书文章内容，并将其以纯文本或 Markdown 格式保存至本地。"
 
 
 def on_download_button_clicked() -> None:

@@ -10,7 +10,7 @@ from utils.human_readable_td import human_readable_td
 from utils.html_helper import link_HTML
 
 NAME: str = "文章发布时间查询工具"
-DESC: str = "本工具可查询文章的发布与更新时间。"
+DESC: str = "查询文章的发布与更新时间。"
 
 
 def on_query_button_clicked() -> None:
