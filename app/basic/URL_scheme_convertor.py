@@ -41,7 +41,7 @@ def get_url_type(url: str) -> str:
             pass
         else:
             return url_type
-    raise TypeError("URL 匹配失败")
+    raise InputError("URL 匹配失败")
 
 
 def get_convert_result(url: str, url_type: str) -> str:
@@ -65,7 +65,7 @@ def on_convert_button_cilcked() -> None:
         try:
             url_type: str = get_url_type(url)
         except InputError:
-            toast("输入的链接无效户不支持该类型转换", color="error")
+            toast("输入的链接无效或不支持该类型转换", color="error")
             return
 
         result = get_convert_result(url, url_type)
