@@ -68,8 +68,8 @@ def on_query_button_clicked() -> None:
 
 def on_rank_article_viewer() -> None:
     put_markdown(f"""
-    - 数据范围：2021.09.18 - {get_data_update_time()}（每天早上 8:00 更新）
-    - 总数据量：{get_data_count()}
+    - 数据范围：2021.09.17 - {get_data_update_time()}（每天凌晨 1:00 更新）
+    - 当前数据量：{get_data_count()}
     - 昵称以上榜时为准
     - 最多展示 100 条上榜记录
     """)
