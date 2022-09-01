@@ -36,9 +36,10 @@ def on_query_button_clicked() -> None:
         publish_td = datetime.now() - publish_time.replace(tzinfo=None)
         update_td = datetime.now() - update_time.replace(tzinfo=None)
 
+        # TODO: 新窗口打开链接不生效
         data: str = f"""
             文章标题：{title}
-            链接：{link_HTML(url, url)}
+            链接：{link_HTML(url, url, new_window=True)}
             更新过：{is_updated}
             发布时间：{publish_time}（{human_readable_td(publish_td, accurate=False)}前）
             最后一次更新时间：{update_time}（{human_readable_td(update_td, accurate=False)}前）

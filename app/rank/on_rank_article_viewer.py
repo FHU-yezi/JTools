@@ -55,7 +55,7 @@ def on_query_button_clicked() -> None:
             data.append({
                 "上榜日期": str(item["date"]).split()[0],
                 "排名": item["ranking"],
-                "文章": put_link(item["article"]["title"], item["article"]["url"]),
+                "文章": put_link(item["article"]["title"], item["article"]["url"], new_window=True),
                 "获钻量": item["reward"]["to_author"]
             })
 

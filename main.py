@@ -61,6 +61,7 @@ def get_jump_link(base_url: str, module_name: str) -> str:
     if module_name in status.out_of_service:
         return grey_text_HTML("无法跳转")
     elif module_name in status.downgrade:
+        # TODO: 新窗口打开链接不生效
         return orange_link_HTML("点击跳转>>", f"{base_url}/?app={module_name}")
     else:
         return link_HTML("点击跳转>>", f"{base_url}/?app={module_name}")
