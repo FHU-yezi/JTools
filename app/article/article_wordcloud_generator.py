@@ -1,5 +1,5 @@
 from collections import Counter
-from typing import List
+from typing import List, Set
 
 import jieba
 import jieba.posseg as pseg
@@ -22,14 +22,14 @@ DESC = "生成文章词云图。"
 
 jieba.logging.disable()
 
-STOPWORDS: List[str] = [
+STOPWORDS: Set[str] = {
     x.strip() for x in
     open("wordcloud_assets/stopwords.txt", encoding="utf-8").readlines()
-]
-ALLOWED_WORD_TYPES: List[str] = [
+}
+ALLOWED_WORD_TYPES: Set[str] = {
     x.strip() for x in
     open("wordcloud_assets/allowed_word_types.txt", encoding="utf-8").readlines()
-]
+}
 (jieba.add_word(word) for word in open("wordcloud_assets/hotwords.txt", encoding="utf-8"))  # 将热点词加入词库
 
 
