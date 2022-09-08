@@ -5,10 +5,16 @@ from pywebio.output import (put_button, put_link, put_loading, put_markdown,
                             put_scrollable, put_table, toast, use_scope)
 from pywebio.pin import pin, put_input
 from utils.db_manager import article_FP_rank_db
+from utils.dict_helper import unfold
 
 NAME: str = "上榜文章查询工具"
 DESC: str = "查询用户的文章上榜历史。"
-DATA_HEADER_MAPPING: List[str] = ["上榜日期", "排名", "文章", "获钻量"]
+DATA_MAPPING: Dict[str, str] = {
+    "date": "上榜日期",
+    "ranking": "排名",
+    "article.title": "文章",
+    "reward.to_author": "获钻量"
+}
 
 
 def get_data_update_time() -> str:
@@ -18,7 +24,7 @@ def get_data_update_time() -> str:
         .sort("date", -1)
         .limit(1)
     )[0]["date"]
-    return str(result)
+    return str(result).split()[0]
 
 
 def get_data_count() -> int:
@@ -30,12 +36,23 @@ def has_record(name: str) -> bool:
 
 
 def get_record(name: str) -> List[Dict]:
-    return (
+    result: List[Dict] = (
         article_FP_rank_db
-        .find({"author.name": name})
+        .find(
+            {"author.name": name},
+            dict({"_id": 0, "article.url": 1}, **{key: 1 for key in DATA_MAPPING.keys()})
+        )
         .sort("date", -1)
         .limit(100)
     )
+    # 只有文章链接字段不在 DATA_MAPPING 中，会命中默认值
+    return [
+        {
+            DATA_MAPPING.get(k, "文章链接"): v
+            for k, v in unfold(item).items()
+        }
+        for item in result
+    ]
 
 
 def on_query_button_clicked() -> None:
@@ -52,17 +69,16 @@ def on_query_button_clicked() -> None:
     with put_loading(color="success"):
         data: List[Dict[str, Any]] = []
         for item in get_record(name):
-            data.append({
-                "上榜日期": str(item["date"]).split()[0],
-                "排名": item["ranking"],
-                "文章": put_link(item["article"]["title"], item["article"]["url"], new_window=True),
-                "获钻量": item["reward"]["to_author"]
-            })
+            # 去除日期字段中恒为 00:00:00 的时间部分
+            item["上榜日期"] = str(item["上榜日期"]).split()[0]
+            item["文章"] = put_link(item["文章"], item["文章链接"], new_window=True)
+            del item["文章链接"]
+            data.append(item)
 
     toast("数据获取成功", color="success")
     with use_scope("result", clear=True):
         put_scrollable(
-            put_table(data, header=DATA_HEADER_MAPPING)
+            put_table(data, header=list(DATA_MAPPING.values()))
         )
 
 
