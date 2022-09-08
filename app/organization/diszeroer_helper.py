@@ -108,7 +108,7 @@ def on_fetch_button_clicked() -> None:
                         content=[put_markdown(f"""
                         文章链接：[{article_URL}]({article_URL})
                         作者：[{author_name}]({author_URL})
-                        发布时间：{release_time.strftime(r"%Y-%m-%d %X")}（{human_readable_td(datetime.now() - release_time, accurate=False)}前）
+                        发布时间：{release_time.strftime(r"%Y-%m-%d %X")}（{human_readable_td(datetime.now() - release_time)}前）
 
                         {views_count} 阅读 / {likes_count} 点赞 / {comments_count} 评论
                         获钻量：{total_FP_amount}

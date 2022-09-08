@@ -2,25 +2,19 @@ from datetime import timedelta
 from typing import List, Tuple
 
 
-def human_readable_td(td_obj: timedelta, accurate: bool = True) -> str:
+def human_readable_td(td_obj: timedelta) -> str:
     PERIODS: List[Tuple[str, int]] = [
         ("年", 60 * 60 * 24 * 365),
         ("月", 60 * 60 * 24 * 30),
         ("天", 60 * 60 * 24),
-        ("小时", 60 * 60),
-        ("分钟", 60),
-        ("秒", 1)
     ]
-
-    if not accurate:
-        PERIODS = PERIODS[:3]
 
     total_seconds: int = int(td_obj.total_seconds())
 
     if total_seconds == 0:
         return "现在"
 
-    if not accurate and total_seconds < 60 * 60 * 24:  # 时间差小于一天
+    if total_seconds < 60 * 60 * 24:  # 时间差小于一天
         return "不到一天"
 
     string: List[str] = []

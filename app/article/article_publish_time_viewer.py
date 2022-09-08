@@ -40,8 +40,8 @@ def on_query_button_clicked() -> None:
             文章标题：{title}
             链接：{link_HTML(url, url, new_window=True)}
             更新过：{is_updated}
-            发布时间：{publish_time}（{human_readable_td(publish_td, accurate=False)}前）
-            最后一次更新时间：{update_time}（{human_readable_td(update_td, accurate=False)}前）
+            发布时间：{publish_time}（{human_readable_td(publish_td)}前）
+            最后一次更新时间：{update_time}（{human_readable_td(update_td)}前）
         """
 
     with use_scope("result", clear=True):
