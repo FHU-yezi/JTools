@@ -18,7 +18,7 @@ def get_data_update_time() -> str:
         .sort("date", -1)
         .limit(1)
     )[0]["date"]
-    return str(result).split()[0]
+    return str(result)
 
 
 def get_data_count() -> int:
