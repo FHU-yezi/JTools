@@ -14,6 +14,8 @@ services:
       - "./config.yaml:/app/config.yaml"
     networks:
       - mongodb
+    environment:
+      - PYTHONUNBUFFERED=1
     deploy:
       resources:
         limits:
