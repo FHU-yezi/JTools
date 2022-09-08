@@ -1,5 +1,5 @@
 from collections import Counter
-from typing import List
+from typing import List, Set
 
 import jieba
 import jieba.posseg as pseg
@@ -11,23 +11,25 @@ from pyecharts.globals import CurrentConfig
 from pywebio.output import put_button, put_html, put_loading, toast, use_scope
 from pywebio.pin import pin, put_input
 from utils.config_manager import config
+from utils.unexcepted_handler import (toast_error_and_return,
+                                      toast_warn_and_return)
 
 # 设置 PyEcharts CDN
 CurrentConfig.ONLINE_HOST = config.deploy.pyecharts_cdn
 
 NAME: str = "文章词云图生成工具"
-DESC = "生成简书文章的词云图。"
+DESC = "生成文章词云图。"
 
 jieba.logging.disable()
 
-STOPWORDS: List[str] = [
+STOPWORDS: Set[str] = {
     x.strip() for x in
     open("wordcloud_assets/stopwords.txt", encoding="utf-8").readlines()
-]
-ALLOWED_WORD_TYPES: List[str] = [
+}
+ALLOWED_WORD_TYPES: Set[str] = {
     x.strip() for x in
     open("wordcloud_assets/allowed_word_types.txt", encoding="utf-8").readlines()
-]
+}
 (jieba.add_word(word) for word in open("wordcloud_assets/hotwords.txt", encoding="utf-8"))  # 将热点词加入词库
 
 
@@ -45,17 +47,14 @@ def on_generate_button_clicked() -> None:
     url: str = pin.url
 
     if not url:
-        toast("请输入简书文章 URL", color="warn")
-        return
+        toast_warn_and_return("请输入简书文章 URL")
 
     try:
         article = Article.from_url(url)
     except InputError:
-        toast("输入的不是简书文章 URL，请检查", color="error")
-        return
+        toast_error_and_return("输入的不是简书文章 URL，请检查")
     except ResourceError:
-        toast("文章已被删除、锁定或正在审核中，无法获取内容", color="error")
-        return
+        toast_error_and_return("文章已被删除、锁定或正在审核中，无法获取内容")
 
     with put_loading(color="success"):
         title: str = article.title

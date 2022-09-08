@@ -14,6 +14,8 @@ from pywebio.output import (put_button, put_image, put_loading, put_markdown,
                             toast, use_scope)
 from pywebio.pin import pin, put_input
 from utils.qrcode_helper import make_qrcode
+from utils.unexcepted_handler import (toast_error_and_return,
+                                      toast_warn_and_return)
 
 NAME: str = "URL Scheme 转换工具"
 DESC: str = "将简书链接转换为 URL Scheme，从而在 App 端实现一键跳转。"
@@ -52,21 +54,18 @@ def on_convert_button_cilcked() -> None:
     url: str = pin.url
 
     if not url:
-        toast("请输入简书 URL", color="warn")
-        return
+        toast_warn_and_return("请输入简书 URL")
 
     with put_loading(color="success"):
         try:
             AssertJianshuUrl(url)
         except InputError:
-            toast("输入的不是简书 URL,请检查", color="error")
-            return
+            toast_error_and_return("输入的不是简书 URL，请检查")
 
         try:
             url_type: str = get_url_type(url)
         except InputError:
-            toast("输入的链接无效或不支持该类型转换", color="error")
-            return
+            toast_error_and_return("输入的链接无效或不支持该类型转换")
 
         result = get_convert_result(url, url_type)
         qr_code = make_qrcode(result)
