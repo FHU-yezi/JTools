@@ -18,7 +18,7 @@ from utils.unexcepted_handler import (toast_error_and_return,
 CurrentConfig.ONLINE_HOST = config.deploy.pyecharts_cdn
 
 NAME: str = "文章词云图生成工具"
-DESC = "生成简书文章的词云图。"
+DESC = "生成文章词云图。"
 
 jieba.logging.disable()
 

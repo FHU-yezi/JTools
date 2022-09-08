@@ -10,7 +10,7 @@ from utils.unexcepted_handler import (toast_error_and_return,
                                       toast_warn_and_return)
 
 NAME: str = "会员状态查询工具"
-DESC: str = "查询简书用户的会员状态与到期时间。"
+DESC: str = "查询用户的会员状态与到期时间。"
 
 
 def on_query_button_clicked() -> None:

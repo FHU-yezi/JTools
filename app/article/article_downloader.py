@@ -10,7 +10,7 @@ from utils.unexcepted_handler import (toast_error_and_return,
                                       toast_warn_and_return)
 
 NAME: str = "文章下载工具"
-DESC: str = "下载简书文章内容，并将其以纯文本或 Markdown 格式保存至本地。"
+DESC: str = "下载文章内容，并将其以纯文本或 Markdown 格式保存至本地。"
 
 
 def on_download_button_clicked() -> None:
