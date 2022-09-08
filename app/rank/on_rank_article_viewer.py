@@ -12,7 +12,7 @@ DESC: str = "查询用户的文章上榜历史。"
 DATA_MAPPING: Dict[str, str] = {
     "date": "上榜日期",
     "ranking": "排名",
-    "article.title": "文章",
+    "article.title": "文章标题",
     "reward.to_author": "获钻量"
 }
 
@@ -71,8 +71,18 @@ def on_query_button_clicked() -> None:
         for item in get_record(name):
             # 去除日期字段中恒为 00:00:00 的时间部分
             item["上榜日期"] = str(item["上榜日期"]).split()[0]
-            item["文章"] = put_link(item["文章"], item["文章链接"], new_window=True)
+
+            # 文章标题超过 20 字符时截断
+            item["文章标题"] = (
+                item["文章标题"][:20] + "..."
+                if len(item["文章标题"]) > 20
+                else item["文章标题"]
+            )
+
+            # 向文章标题字段添加链接
+            item["文章标题"] = put_link(item["文章标题"], item["文章链接"], new_window=True)
             del item["文章链接"]
+
             data.append(item)
 
     toast("数据获取成功", color="success")
