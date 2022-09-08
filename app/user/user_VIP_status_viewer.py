@@ -22,7 +22,7 @@ def on_query_button_clicked() -> None:
     try:
         user = User.from_url(url)
     except InputError:
-        toast_error_and_return("输入的不是简书用户")
+        toast_error_and_return("输入的不是简书用户 URL")
     except ResourceError:
         toast_error_and_return("用户已注销或被封号，无法获取数据")
 
