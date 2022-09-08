@@ -6,7 +6,7 @@ networks:
 
 services:
   main:
-    image: jianshumicrofeatures:2.1.0
+    image: jianshumicrofeatures:2.2.0
     build: .
     ports:
       - "8602:8602"
