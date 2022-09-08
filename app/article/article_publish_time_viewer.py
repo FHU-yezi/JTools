@@ -7,6 +7,8 @@ from pywebio.output import (put_button, put_loading, put_markdown, toast,
 from pywebio.pin import pin, put_input
 from utils.html_helper import link_HTML
 from utils.human_readable_td import human_readable_td
+from utils.unexcepted_handler import (toast_error_and_return,
+                                      toast_warn_and_return)
 
 NAME: str = "文章发布时间查询工具"
 DESC: str = "查询文章的发布与更新时间。"
@@ -16,17 +18,14 @@ def on_query_button_clicked() -> None:
     url: str = pin.url
 
     if not url:
-        toast("请输入简书文章 URL", color="warn")
-        return
+        toast_warn_and_return("请输入简书文章 URL")
 
     try:
         article = Article.from_url(url)
     except InputError:
-        toast("输入的不是简书文章 URL，请检查", color="error")
-        return
+        toast_error_and_return("输入的不是简书文章 URL，请检查")
     except ResourceError:
-        toast("文章已被删除、锁定或正在审核中，无法获取数据", color="error")
-        return
+        toast_error_and_return("文章已被删除、锁定或正在审核中，无法获取数据")
 
     with put_loading(color="success"):
         title = article.title

@@ -6,6 +6,8 @@ from pywebio.output import (download, put_button, put_loading, put_markdown,
                             toast)
 from pywebio.pin import pin, put_checkbox, put_input, put_radio
 from utils.checkbox_helper import is_checked
+from utils.unexcepted_handler import (toast_error_and_return,
+                                      toast_warn_and_return)
 
 NAME: str = "文章下载工具"
 DESC: str = "下载简书文章内容，并将其以纯文本或 Markdown 格式保存至本地。"
@@ -17,21 +19,17 @@ def on_download_button_clicked() -> None:
     warning: List[Optional[str]] = pin.warning
 
     if not url:
-        toast("请输入简书文章 URL", color="warn")
-        return
+        toast_warn_and_return("请输入简书文章 URL")
 
     if not is_checked("我同意合规使用该文章", warning):
-        toast("请先同意合规使用文章", color="warn")
-        return
+        toast_warn_and_return("请先同意合规使用文章")
 
     try:
         article = Article.from_url(url)
     except InputError:
-        toast("输入的不是简书文章 URL，请检查", color="error")
-        return
+        toast_error_and_return("输入的不是简书文章 URL，请检查")
     except ResourceError:
-        toast("文章已被删除、锁定或正在审核中，无法获取内容", color="error")
-        return
+        toast_error_and_return("文章已被删除、锁定或正在审核中，无法获取内容")
 
     with put_loading(color="success"):
         title = article.title

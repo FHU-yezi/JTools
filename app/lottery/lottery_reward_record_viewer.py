@@ -7,6 +7,7 @@ from pywebio.pin import pin, put_input, put_checkbox
 from utils.db_manager import lottery_db
 from JianshuResearchTools.assert_funcs import AssertUserUrl
 from JianshuResearchTools.exceptions import InputError
+from utils.unexcepted_handler import toast_error_and_return, toast_warn_and_return
 
 NAME: str = "中奖记录查询工具"
 DESC: str = "查询简书大转盘中奖记录。"
@@ -62,22 +63,18 @@ def on_query_button_clicked() -> None:
     reward_filter: List[str] = [x.replace(" ", "") for x in pin.reward_filter]
 
     if not url:
-        toast("请输入简书用户 URL", color="warn")
-        return
+        toast_warn_and_return("请输入简书用户 URL")
 
     if not reward_filter:  # 没有勾选任何奖项一定查询不到结果
-        toast("请至少勾选一个奖项", color="warn")
-        return
+        toast_warn_and_return("请至少勾选一个奖项")
 
     try:
         AssertUserUrl(url)
     except InputError:
-        toast("输入的不是简书用户 URL，请检查", color="error")
-        return
+        toast_error_and_return("输入的不是简书用户 URL，请检查")
 
     if not has_record(url):
-        toast("该用户无中奖记录", color="warn")
-        return
+        toast_warn_and_return("该用户无中奖记录")
 
     with put_loading(color="success"):
         data: List[Dict[str, Any]] = [
@@ -86,8 +83,7 @@ def on_query_button_clicked() -> None:
         ]
 
     if not data:  # 该筛选条件下无结果
-        toast("该筛选条件下无中奖记录", color="warn")
-        return
+        toast_warn_and_return("该筛选条件下无中奖记录")
 
     toast("数据获取成功", color="success")
     with use_scope("result", clear=True):

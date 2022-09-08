@@ -11,6 +11,7 @@ from pywebio.output import (put_button, put_collapse, put_column, put_link,
 from pywebio.pin import pin, put_checkbox, put_input
 from utils.checkbox_helper import is_checked
 from utils.human_readable_td import human_readable_td
+from utils.unexcepted_handler import toast_error_and_return
 
 NAME: str = "消零派辅助工具"
 DESC: str = "消灭零评论，留下爱与光。"
@@ -77,8 +78,7 @@ def on_fetch_button_clicked() -> None:
 
     user_input_ok, message = check_user_input(likes_limit, comments_limit, max_result_count, selected_collections)
     if not user_input_ok:
-        toast(message, color="error")
-        return
+        toast_error_and_return(message)
 
     showed_count: int = 0
 

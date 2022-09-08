@@ -11,6 +11,8 @@ from pyecharts.globals import CurrentConfig
 from pywebio.output import put_button, put_html, put_loading, toast, use_scope
 from pywebio.pin import pin, put_input
 from utils.config_manager import config
+from utils.unexcepted_handler import (toast_error_and_return,
+                                      toast_warn_and_return)
 
 # 设置 PyEcharts CDN
 CurrentConfig.ONLINE_HOST = config.deploy.pyecharts_cdn
@@ -45,17 +47,14 @@ def on_generate_button_clicked() -> None:
     url: str = pin.url
 
     if not url:
-        toast("请输入简书文章 URL", color="warn")
-        return
+        toast_warn_and_return("请输入简书文章 URL")
 
     try:
         article = Article.from_url(url)
     except InputError:
-        toast("输入的不是简书文章 URL，请检查", color="error")
-        return
+        toast_error_and_return("输入的不是简书文章 URL，请检查")
     except ResourceError:
-        toast("文章已被删除、锁定或正在审核中，无法获取内容", color="error")
-        return
+        toast_error_and_return("文章已被删除、锁定或正在审核中，无法获取内容")
 
     with put_loading(color="success"):
         title: str = article.title

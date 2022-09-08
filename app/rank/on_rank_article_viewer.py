@@ -6,6 +6,7 @@ from pywebio.output import (put_button, put_link, put_loading, put_markdown,
 from pywebio.pin import pin, put_input
 from utils.db_manager import article_FP_rank_db
 from utils.dict_helper import unfold
+from utils.unexcepted_handler import toast_warn_and_return
 
 NAME: str = "上榜文章查询工具"
 DESC: str = "查询用户的文章上榜历史。"
@@ -59,12 +60,10 @@ def on_query_button_clicked() -> None:
     name: str = pin.name
 
     if not name:
-        toast("请输入简书用户昵称", color="warn")
-        return
+        toast_warn_and_return("请输入简书用户昵称")
 
     if not has_record(name):
-        toast("该用户无上榜记录", color="warn")
-        return
+        toast_warn_and_return("该用户无上榜记录")
 
     with put_loading(color="success"):
         data: List[Dict[str, Any]] = []

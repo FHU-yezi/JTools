@@ -6,6 +6,8 @@ from JianshuResearchTools.objects import User
 from pywebio.output import put_button, put_markdown, toast, use_scope
 from pywebio.pin import pin, put_input
 from utils.human_readable_td import human_readable_td
+from utils.unexcepted_handler import (toast_error_and_return,
+                                      toast_warn_and_return)
 
 NAME: str = "会员状态查询工具"
 DESC: str = "查询简书用户的会员状态与到期时间。"
@@ -15,17 +17,14 @@ def on_query_button_clicked() -> None:
     url: str = pin.url
 
     if not url:
-        toast("请输入简书用户 URL", color="warn")
-        return
+        toast_warn_and_return("请输入简书用户 URL")
 
     try:
         user = User.from_url(url)
     except InputError:
-        toast("输入的不是简书用户 URL，请检查", color="error")
-        return
+        toast_error_and_return("输入的不是简书用户")
     except ResourceError:
-        toast("用户已注销或被封号，无法获取数据", color="error")
-        return
+        toast_error_and_return("用户已注销或被封号，无法获取数据")
 
     VIP_info: Dict = user.VIP_info
 
