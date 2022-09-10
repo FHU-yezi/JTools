@@ -16,6 +16,7 @@ from pywebio.pin import pin, put_input
 from utils.qrcode_helper import make_qrcode
 from utils.unexcepted_handler import (toast_error_and_return,
                                       toast_warn_and_return)
+from utils.user_input_filter import user_input_filter
 
 NAME: str = "URL Scheme 转换工具"
 DESC: str = "将简书链接转换为 URL Scheme，从而在 App 端实现一键跳转。"
@@ -51,7 +52,7 @@ def get_convert_result(url: str, url_type: str) -> str:
 
 
 def on_convert_button_cilcked() -> None:
-    url: str = pin.url
+    url: str = user_input_filter(pin.url)
 
     if not url:
         toast_warn_and_return("请输入简书 URL")

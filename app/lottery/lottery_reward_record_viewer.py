@@ -1,13 +1,15 @@
 from datetime import datetime
 from typing import Any, Dict, List
 
-from pywebio.output import (put_button, put_loading, put_markdown,
-                            put_scrollable, put_table, toast, use_scope)
-from pywebio.pin import pin, put_input, put_checkbox
-from utils.db_manager import lottery_db
 from JianshuResearchTools.assert_funcs import AssertUserUrl
 from JianshuResearchTools.exceptions import InputError
-from utils.unexcepted_handler import toast_error_and_return, toast_warn_and_return
+from pywebio.output import (put_button, put_loading, put_markdown,
+                            put_scrollable, put_table, toast, use_scope)
+from pywebio.pin import pin, put_checkbox, put_input
+from utils.db_manager import lottery_db
+from utils.unexcepted_handler import (toast_error_and_return,
+                                      toast_warn_and_return)
+from utils.user_input_filter import user_input_filter
 
 NAME: str = "中奖记录查询工具"
 DESC: str = "查询简书大转盘中奖记录。"
@@ -57,7 +59,7 @@ def get_record(url: str) -> List[Dict]:
 
 
 def on_query_button_clicked() -> None:
-    url: str = pin.url
+    url: str = user_input_filter(pin.url)
     # 为保证用户体验，奖项列表中的内容均在汉字与数字间加入了空格
     # 但数据库中的奖项字段没有做这一处理，因此在此处去掉空格，确保筛选正常进行
     reward_filter: List[str] = [x.replace(" ", "") for x in pin.reward_filter]

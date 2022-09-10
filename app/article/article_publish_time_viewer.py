@@ -9,13 +9,14 @@ from utils.html_helper import link_HTML
 from utils.human_readable_td import human_readable_td
 from utils.unexcepted_handler import (toast_error_and_return,
                                       toast_warn_and_return)
+from utils.user_input_filter import user_input_filter
 
 NAME: str = "文章发布时间查询工具"
 DESC: str = "查询文章的发布与更新时间。"
 
 
 def on_query_button_clicked() -> None:
-    url: str = pin.url
+    url: str = user_input_filter(pin.url)
 
     if not url:
         toast_warn_and_return("请输入简书文章 URL")

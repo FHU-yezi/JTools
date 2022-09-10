@@ -7,6 +7,7 @@ from pywebio.pin import pin, put_input
 from utils.db_manager import article_FP_rank_db
 from utils.dict_helper import unfold
 from utils.unexcepted_handler import toast_warn_and_return
+from utils.user_input_filter import user_input_filter
 
 NAME: str = "上榜文章查询工具"
 DESC: str = "查询用户的文章上榜历史。"
@@ -57,7 +58,7 @@ def get_record(name: str) -> List[Dict]:
 
 
 def on_query_button_clicked() -> None:
-    name: str = pin.name
+    name: str = user_input_filter(pin.name)
 
     if not name:
         toast_warn_and_return("请输入简书用户昵称")
