@@ -3,7 +3,6 @@ from typing import Set
 BANNED_CHARS: Set[str] = {
     " ",
     "\\",
-    ":",
     ";",
     "$",
     "^",
