@@ -4,9 +4,9 @@ from typing import Any, Dict, List
 from pywebio.output import (put_button, put_link, put_loading, put_markdown,
                             put_scrollable, put_table, toast, use_scope)
 from pywebio.pin import pin, put_input
-from utils.db_manager import article_FP_rank_db
+from utils.db import article_FP_rank_db
 from utils.dict_helper import unfold
-from utils.unexcepted_handler import toast_warn_and_return
+from utils.unexcepted import toast_warn_and_return
 from utils.user_input_filter import user_input_filter
 
 NAME: str = "上榜文章查询工具"

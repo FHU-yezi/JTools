@@ -11,7 +11,7 @@ from pywebio.output import (put_button, put_collapse, put_column, put_link,
 from pywebio.pin import pin, put_checkbox, put_input
 from utils.checkbox_helper import is_checked
 from utils.human_readable_td import human_readable_td
-from utils.unexcepted_handler import toast_error_and_return
+from utils.unexcepted import toast_error_and_return
 
 NAME: str = "消零派辅助工具"
 DESC: str = "消灭零评论，留下爱与光。"

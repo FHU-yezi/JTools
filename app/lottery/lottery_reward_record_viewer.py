@@ -6,9 +6,9 @@ from JianshuResearchTools.exceptions import InputError
 from pywebio.output import (put_button, put_loading, put_markdown,
                             put_scrollable, put_table, toast, use_scope)
 from pywebio.pin import pin, put_checkbox, put_input
-from utils.db_manager import lottery_db
-from utils.unexcepted_handler import (toast_error_and_return,
-                                      toast_warn_and_return)
+from utils.db import lottery_db
+from utils.unexcepted import (toast_error_and_return,
+                              toast_warn_and_return)
 from utils.user_input_filter import user_input_filter
 
 NAME: str = "中奖记录查询工具"

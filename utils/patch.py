@@ -1,7 +1,7 @@
 from functools import wraps
 from typing import Callable, List
 
-from utils.config_manager import config
+from utils.config import config
 from utils.module_finder import Module
 
 
@@ -35,7 +35,7 @@ def patch_add_footer(func: Callable[[], None], module_obj: Module) -> Callable[[
     def footer_patched() -> None:
         func()
 
-        from utils.page_helper import set_footer
+        from utils.page import set_footer
         set_footer(config.footer)
 
     return footer_patched
@@ -46,7 +46,7 @@ def patch_record_access(func: Callable[[], None], module_obj: Module) -> Callabl
     def log_record_patched() -> None:
         from pywebio.session import info
 
-        from utils.log_manager import access_logger
+        from utils.log import access_logger
 
         access_logger.log_from_info_obj(module_obj.page_func_name, info)
 

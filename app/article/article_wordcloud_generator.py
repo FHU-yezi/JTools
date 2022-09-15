@@ -10,9 +10,9 @@ from pyecharts.charts import WordCloud
 from pyecharts.globals import CurrentConfig
 from pywebio.output import put_button, put_html, put_loading, toast, use_scope
 from pywebio.pin import pin, put_input
-from utils.config_manager import config
-from utils.unexcepted_handler import (toast_error_and_return,
-                                      toast_warn_and_return)
+from utils.config import config
+from utils.unexcepted import (toast_error_and_return,
+                              toast_warn_and_return)
 from utils.user_input_filter import user_input_filter
 
 # 设置 PyEcharts CDN

@@ -6,8 +6,8 @@ from pywebio.output import (download, put_button, put_loading, put_markdown,
                             toast)
 from pywebio.pin import pin, put_checkbox, put_input, put_radio
 from utils.checkbox_helper import is_checked
-from utils.unexcepted_handler import (toast_error_and_return,
-                                      toast_warn_and_return)
+from utils.unexcepted import (toast_error_and_return,
+                              toast_warn_and_return)
 from utils.user_input_filter import user_input_filter
 
 NAME: str = "文章下载工具"
