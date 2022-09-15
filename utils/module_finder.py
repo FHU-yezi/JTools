@@ -1,10 +1,16 @@
-from collections import namedtuple
+from dataclasses import dataclass
 from os import listdir
-from typing import Callable, Dict, List, NamedTuple
+from typing import Callable, Dict, List
 from importlib import import_module
 
-MODULE: NamedTuple = namedtuple("MODULE", ["module_type", "page_func_name", "page_func",
-                                           "page_name", "page_desc"])
+
+@dataclass()
+class Module:
+    module_type: str
+    page_func_name: str
+    page_func: Callable[[], None]
+    page_name: str
+    page_desc: str
 
 
 def get_all_types(base_path: str) -> List[str]:
@@ -22,13 +28,13 @@ def get_all_modules(base_path: str, types: List[str]) -> Dict[str, List[str]]:
     return result
 
 
-def get_module_info(base_path: str, type_: str, module_name: str) -> MODULE:
+def get_module_info(base_path: str, type_: str, module_name: str) -> Module:
     module_obj = import_module(f"{base_path.split('/')[-1]}.{type_}.{module_name}")
     page_func: Callable[[], None] = getattr(module_obj, module_name)  # 页面函数名与模块名相同
     page_name: str = getattr(module_obj, "NAME")
     page_desc: str = getattr(module_obj, "DESC")
 
-    return MODULE(
+    return Module(
         module_type=type_,
         page_func_name=module_name,
         page_func=page_func,
@@ -37,8 +43,8 @@ def get_module_info(base_path: str, type_: str, module_name: str) -> MODULE:
     )
 
 
-def get_all_modules_info(base_path: str) -> List[MODULE]:
-    result: List[MODULE] = []
+def get_all_modules_info(base_path: str) -> List[Module]:
+    result: List[Module] = []
 
     types: List[str] = get_all_types(base_path)
     module_names: Dict[str, List[str]] = get_all_modules(base_path, types)
