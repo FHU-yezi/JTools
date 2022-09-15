@@ -1,63 +1,49 @@
 from collections import namedtuple
 from os import listdir
 from typing import Callable, Dict, List, NamedTuple
+from importlib import import_module
 
 MODULE: NamedTuple = namedtuple("MODULE", ["module_type", "page_func_name", "page_func",
                                            "page_name", "page_desc"])
 
 
-def get_import_path(full_path: str) -> str:
-    return ".".join(full_path.split(".")[1].split("/")[1:])
+def get_all_types(base_path: str) -> List[str]:
+    return listdir(base_path)
 
 
-def get_fromlist(full_path: str) -> List[str]:
-    return get_import_path(full_path).split(".")[:-1]
-
-
-def get_module_obj(full_path: str):
-    return __import__(get_import_path(full_path), fromlist=get_fromlist(full_path))
-
-
-def get_page_func(module_obj, page_func_name: str) -> Callable[[], None]:
-    return getattr(module_obj, page_func_name)
-
-
-def get_page_name(module_obj) -> str:
-    return getattr(module_obj, "NAME")
-
-
-def get_page_desc(module_obj) -> str:
-    return getattr(module_obj, "DESC")
-
-
-def get_module_info(base_path: str) -> Dict[str, List[MODULE]]:
-    folders: List[str] = listdir(base_path)
-    result: Dict[str, List[MODULE]] = {x: [] for x in folders}
-
-    for folder in folders:
-        modules: List[str] = [
-            x
-            for x in listdir(f"{base_path}/{folder}")
+def get_all_modules(base_path: str, types: List[str]) -> Dict[str, List[str]]:
+    result: Dict[str, List[str]] = {}
+    for type_ in types:
+        result[type_] = [
+            x.split(".")[0]
+            for x in listdir(f"{base_path}/{type_}")
             if x.endswith(".py")
         ]
+    return result
 
-        for module in modules:
-            full_path: str = f"{base_path}/{folder}/{module}"
-            module_name: str = module.split(".")[0]
-            module_type: str = full_path.split("/")[-2]
-            module_obj = get_module_obj(full_path)
 
-            page_func_name: str = module_name  # 模块名与页面函数名相同
-            page_func: Callable[[], None] = get_page_func(module_obj, page_func_name)
-            page_name: str = get_page_name(module_obj)
-            page_desc: str = get_page_desc(module_obj)
+def get_module_info(base_path: str, type_: str, module_name: str) -> MODULE:
+    module_obj = import_module(f"{base_path.split('/')[-1]}.{type_}.{module_name}")
+    page_func: Callable[[], None] = getattr(module_obj, module_name)  # 页面函数名与模块名相同
+    page_name: str = getattr(module_obj, "NAME")
+    page_desc: str = getattr(module_obj, "DESC")
 
-            result[folder].append(MODULE(
-                module_type=module_type,
-                page_func_name=page_func_name,
-                page_func=page_func,
-                page_name=page_name,
-                page_desc=page_desc
-            ))
+    return MODULE(
+        module_type=type_,
+        page_func_name=module_name,
+        page_func=page_func,
+        page_name=page_name,
+        page_desc=page_desc
+    )
+
+
+def get_all_modules_info(base_path: str) -> List[MODULE]:
+    result: List[MODULE] = []
+
+    types: List[str] = get_all_types(base_path)
+    module_names: Dict[str, List[str]] = get_all_modules(base_path, types)
+    for type_, module_names_part in module_names.items():
+        for module_name in module_names_part:
+            result.append(get_module_info(base_path, type_, module_name))
 
     return result

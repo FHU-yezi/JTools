@@ -1,5 +1,6 @@
 from typing import Callable, Dict, List
 
+from JianshuResearchTools.objects import set_cache_status
 from pywebio import start_server
 from pywebio.output import put_markdown
 from yaml import SafeLoader
@@ -9,11 +10,10 @@ from utils.config_manager import config
 from utils.html_helper import (green_text_HTML, grey_text_HTML, link_HTML,
                                orange_link_HTML, orange_text_HTML,
                                red_text_HTML)
-from utils.module_finder import MODULE, get_module_info
+from utils.module_finder import MODULE, get_all_modules_info
 from utils.monkey_patch import (patch_add_footer, patch_add_html_name_desc,
                                 patch_add_page_name_desc, patch_record_access)
 from utils.page_helper import get_current_page_url
-from JianshuResearchTools.objects import set_cache_status
 
 set_cache_status(False)  # 禁用 JRT 缓存功能
 
@@ -21,12 +21,7 @@ STRUCTURE_MAPPING: Dict[str, str] = yaml_load(
     open("./structure.yaml", "r", encoding="utf-8"),
     Loader=SafeLoader
 )
-
-MODULE_INFO: Dict[str, List[MODULE]] = get_module_info(config.base_path)
-
-modules_list: List[MODULE] = []
-for package in MODULE_INFO.values():
-    modules_list.extend(package)
+modules_list = get_all_modules_info(config.base_path)
 
 
 def get_all_funcs(modules_list: List[MODULE]) -> List[Callable[[], None]]:
