@@ -10,13 +10,12 @@ from JianshuResearchTools.convert import (ArticleUrlToArticleUrlScheme,
                                           NotebookUrlToNotebookUrlScheme,
                                           UserUrlToUserUrlScheme)
 from JianshuResearchTools.exceptions import InputError
-from pywebio.output import (put_button, put_image, put_markdown, toast,
-                            use_scope)
+from pywebio.output import put_button, put_image, put_markdown, toast
 from pywebio.pin import pin, put_input
 from utils.make_qrcode import make_qrcode
 from utils.user_input_filter import user_input_filter
 from utils.widgets import (green_loading, toast_error_and_return,
-                           toast_warn_and_return)
+                           toast_warn_and_return, use_result_scope)
 
 NAME: str = "URL Scheme 转换工具"
 DESC: str = "将简书链接转换为 URL Scheme，从而在 App 端实现一键跳转。"
@@ -72,7 +71,7 @@ def on_convert_button_cilcked() -> None:
         qr_code = make_qrcode(result)
 
     toast("转换成功", color="success")
-    with use_scope("result", clear=True):
+    with use_result_scope():
         put_markdown(f"转换结果：`{result}`")
         put_image(qr_code)
 

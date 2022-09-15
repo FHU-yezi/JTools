@@ -2,13 +2,13 @@ from datetime import datetime
 
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
-from pywebio.output import put_button, put_markdown, toast, use_scope
+from pywebio.output import put_button, put_markdown, toast
 from pywebio.pin import pin, put_input
 from utils.html import link_HTML
 from utils.human_readable_td import human_readable_td
 from utils.user_input_filter import user_input_filter
 from utils.widgets import (green_loading, toast_error_and_return,
-                           toast_warn_and_return)
+                           toast_warn_and_return, use_result_scope)
 
 NAME: str = "文章发布时间查询工具"
 DESC: str = "查询文章的发布与更新时间。"
@@ -44,7 +44,7 @@ def on_query_button_clicked() -> None:
             最后一次更新时间：{update_time}（{human_readable_td(update_td)}前）
         """
 
-    with use_scope("result", clear=True):
+    with use_result_scope():
         toast("数据获取成功", color="success")
         put_markdown(data)
 

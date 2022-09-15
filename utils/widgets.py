@@ -1,7 +1,7 @@
 from functools import partial
 from typing import Callable, NoReturn
 
-from pywebio.output import put_loading, toast
+from pywebio.output import put_loading, toast, use_scope
 
 
 def toast_warn_and_return(text: str) -> NoReturn:
@@ -15,3 +15,4 @@ def toast_error_and_return(text: str) -> NoReturn:
 
 
 green_loading: Callable = partial(put_loading, color="success")
+use_result_scope: Callable = partial(use_scope, "result", clear=True)

@@ -6,11 +6,12 @@ from JianshuResearchTools.convert import (ArticleSlugToArticleUrl,
                                           UserSlugToUserUrl)
 from JianshuResearchTools.objects import Collection
 from pywebio.output import (put_button, put_collapse, put_column, put_link,
-                            put_markdown, put_row, use_scope)
+                            put_markdown, put_row)
 from pywebio.pin import pin, put_checkbox, put_input
 from utils.checkbox_helper import is_checked
 from utils.human_readable_td import human_readable_td
-from utils.widgets import green_loading, toast_error_and_return
+from utils.widgets import (green_loading, toast_error_and_return,
+                           use_result_scope)
 
 NAME: str = "消零派辅助工具"
 DESC: str = "消灭零评论，留下爱与光。"
@@ -82,7 +83,7 @@ def on_fetch_button_clicked() -> None:
     showed_count: int = 0
 
     with green_loading():
-        with use_scope("result", clear=True):
+        with use_result_scope():
             for article, source_collection in iter_selected_collections(selected_collections):
                 article_title: str = article["title"]
                 article_URL: str = ArticleSlugToArticleUrl(article["aslug"])

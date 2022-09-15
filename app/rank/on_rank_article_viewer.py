@@ -2,12 +2,13 @@ from datetime import datetime
 from typing import Any, Dict, List
 
 from pywebio.output import (put_button, put_link, put_markdown, put_scrollable,
-                            put_table, toast, use_scope)
+                            put_table, toast)
 from pywebio.pin import pin, put_input
 from utils.db import article_FP_rank_db
 from utils.dict_helper import unfold
 from utils.user_input_filter import user_input_filter
-from utils.widgets import green_loading, toast_warn_and_return
+from utils.widgets import (green_loading, toast_warn_and_return,
+                           use_result_scope)
 
 NAME: str = "上榜文章查询工具"
 DESC: str = "查询用户的文章上榜历史。"
@@ -86,7 +87,7 @@ def on_query_button_clicked() -> None:
             data.append(item)
 
     toast("数据获取成功", color="success")
-    with use_scope("result", clear=True):
+    with use_result_scope():
         put_scrollable(
             put_table(data, header=list(DATA_MAPPING.values()))
         )

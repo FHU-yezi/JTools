@@ -3,11 +3,12 @@ from typing import Dict, Optional
 
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import User
-from pywebio.output import put_button, put_markdown, toast, use_scope
+from pywebio.output import put_button, put_markdown, toast
 from pywebio.pin import pin, put_input
 from utils.human_readable_td import human_readable_td
 from utils.user_input_filter import user_input_filter
-from utils.widgets import toast_error_and_return, toast_warn_and_return
+from utils.widgets import (toast_error_and_return, toast_warn_and_return,
+                           use_result_scope)
 
 NAME: str = "会员状态查询工具"
 DESC: str = "查询用户的会员状态与到期时间。"
@@ -36,7 +37,7 @@ def on_query_button_clicked() -> None:
 
     toast("数据获取成功", color="success")
 
-    with use_scope("result", clear=True):
+    with use_result_scope():
         if has_VIP:
             put_markdown(f"""
             用户名：{user.name}

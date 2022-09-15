@@ -8,12 +8,12 @@ from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
 from pyecharts.charts import WordCloud
 from pyecharts.globals import CurrentConfig
-from pywebio.output import put_button, put_html, toast, use_scope
+from pywebio.output import put_button, put_html, toast
 from pywebio.pin import pin, put_input
 from utils.config import config
 from utils.user_input_filter import user_input_filter
 from utils.widgets import (green_loading, toast_error_and_return,
-                           toast_warn_and_return)
+                           toast_warn_and_return, use_result_scope)
 
 # 设置 PyEcharts CDN
 CurrentConfig.ONLINE_HOST = config.deploy.pyecharts_cdn
@@ -73,7 +73,7 @@ def on_generate_button_clicked() -> None:
             )
         )
 
-        with use_scope("result", clear=True):
+        with use_result_scope():
             toast("词云图已生成", color="success")
             put_html(wordcloud.render_notebook())
 

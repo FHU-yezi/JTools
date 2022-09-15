@@ -4,12 +4,12 @@ from typing import Any, Dict, List
 from JianshuResearchTools.assert_funcs import AssertUserUrl
 from JianshuResearchTools.exceptions import InputError
 from pywebio.output import (put_button, put_markdown, put_scrollable,
-                            put_table, toast, use_scope)
+                            put_table, toast)
 from pywebio.pin import pin, put_checkbox, put_input
 from utils.db import lottery_db
 from utils.user_input_filter import user_input_filter
 from utils.widgets import (green_loading, toast_error_and_return,
-                           toast_warn_and_return)
+                           toast_warn_and_return, use_result_scope)
 
 NAME: str = "中奖记录查询工具"
 DESC: str = "查询简书大转盘中奖记录。"
@@ -88,7 +88,7 @@ def on_query_button_clicked() -> None:
         toast_warn_and_return("该筛选条件下无中奖记录")
 
     toast("数据获取成功", color="success")
-    with use_scope("result", clear=True):
+    with use_result_scope():
         put_scrollable(
             put_table(data, header=list(DATA_MAPPING.values()))
         )
