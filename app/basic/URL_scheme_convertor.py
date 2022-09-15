@@ -10,13 +10,13 @@ from JianshuResearchTools.convert import (ArticleUrlToArticleUrlScheme,
                                           NotebookUrlToNotebookUrlScheme,
                                           UserUrlToUserUrlScheme)
 from JianshuResearchTools.exceptions import InputError
-from pywebio.output import (put_button, put_image, put_loading, put_markdown,
-                            toast, use_scope)
+from pywebio.output import (put_button, put_image, put_markdown, toast,
+                            use_scope)
 from pywebio.pin import pin, put_input
 from utils.make_qrcode import make_qrcode
-from utils.unexcepted import (toast_error_and_return,
-                              toast_warn_and_return)
 from utils.user_input_filter import user_input_filter
+from utils.widgets import (green_loading, toast_error_and_return,
+                           toast_warn_and_return)
 
 NAME: str = "URL Scheme 转换工具"
 DESC: str = "将简书链接转换为 URL Scheme，从而在 App 端实现一键跳转。"
@@ -57,7 +57,7 @@ def on_convert_button_cilcked() -> None:
     if not url:
         toast_warn_and_return("请输入简书 URL")
 
-    with put_loading(color="success"):
+    with green_loading():
         try:
             AssertJianshuUrl(url)
         except InputError:

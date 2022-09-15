@@ -8,12 +8,12 @@ from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
 from pyecharts.charts import WordCloud
 from pyecharts.globals import CurrentConfig
-from pywebio.output import put_button, put_html, put_loading, toast, use_scope
+from pywebio.output import put_button, put_html, toast, use_scope
 from pywebio.pin import pin, put_input
 from utils.config import config
-from utils.unexcepted import (toast_error_and_return,
-                              toast_warn_and_return)
 from utils.user_input_filter import user_input_filter
+from utils.widgets import (green_loading, toast_error_and_return,
+                           toast_warn_and_return)
 
 # 设置 PyEcharts CDN
 CurrentConfig.ONLINE_HOST = config.deploy.pyecharts_cdn
@@ -57,7 +57,7 @@ def on_generate_button_clicked() -> None:
     except ResourceError:
         toast_error_and_return("文章已被删除、锁定或正在审核中，无法获取内容")
 
-    with put_loading(color="success"):
+    with green_loading():
         title: str = article.title
         text: str = article.text
 

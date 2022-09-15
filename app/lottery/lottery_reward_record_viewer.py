@@ -3,13 +3,13 @@ from typing import Any, Dict, List
 
 from JianshuResearchTools.assert_funcs import AssertUserUrl
 from JianshuResearchTools.exceptions import InputError
-from pywebio.output import (put_button, put_loading, put_markdown,
-                            put_scrollable, put_table, toast, use_scope)
+from pywebio.output import (put_button, put_markdown, put_scrollable,
+                            put_table, toast, use_scope)
 from pywebio.pin import pin, put_checkbox, put_input
 from utils.db import lottery_db
-from utils.unexcepted import (toast_error_and_return,
-                              toast_warn_and_return)
 from utils.user_input_filter import user_input_filter
+from utils.widgets import (green_loading, toast_error_and_return,
+                           toast_warn_and_return)
 
 NAME: str = "中奖记录查询工具"
 DESC: str = "查询简书大转盘中奖记录。"
@@ -78,7 +78,7 @@ def on_query_button_clicked() -> None:
     if not has_record(url):
         toast_warn_and_return("该用户无中奖记录")
 
-    with put_loading(color="success"):
+    with green_loading():
         data: List[Dict[str, Any]] = [
             x for x in get_record(url)
             if x["奖项"] in reward_filter
