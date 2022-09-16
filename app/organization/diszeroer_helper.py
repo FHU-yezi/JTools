@@ -5,10 +5,11 @@ from JianshuResearchTools.convert import (ArticleSlugToArticleUrl,
                                           ArticleUrlToArticleUrlScheme,
                                           UserSlugToUserUrl)
 from JianshuResearchTools.objects import Collection
-from pywebio.output import (put_button, put_collapse, put_column, put_link,
+from pywebio.output import (put_button, put_collapse, put_column, put_html,
                             put_markdown, put_row)
 from pywebio.pin import pin, put_checkbox, put_input
 from utils.checkbox_helper import is_checked
+from utils.html import link
 from utils.time_helper import human_readable_td
 from utils.widgets import (green_loading, toast_error_and_return,
                            use_result_scope)
@@ -115,7 +116,7 @@ def on_fetch_button_clicked() -> None:
 
                         内容摘要：
                         {summary}
-                        """), put_link("点击跳转到简书 App", URL_scheme) if enable_URL_scheme else ""]
+                        """), put_html(link("点击跳转到简书 App", URL_scheme) if enable_URL_scheme else "")]
                     )
 
                     if showed_count == max_result_count:

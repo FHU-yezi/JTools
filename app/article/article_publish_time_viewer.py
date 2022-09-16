@@ -2,7 +2,7 @@ from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
 from pywebio.output import put_button, put_markdown, toast
 from pywebio.pin import pin, put_input
-from utils.html import link_HTML
+from utils.html import link
 from utils.time_helper import human_readable_td_to_now, is_datetime_equal
 from utils.user_input_filter import user_input_filter
 from utils.widgets import (green_loading, toast_error_and_return,
@@ -34,7 +34,7 @@ def on_query_button_clicked() -> None:
         # TODO: 新窗口打开链接不生效
         data: str = f"""
         文章标题：{title}
-        链接：{link_HTML(url, url, new_window=True)}
+        链接：{link(url, url, new_window=True)}
         """
 
         if is_updated:

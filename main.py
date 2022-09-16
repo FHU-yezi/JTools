@@ -7,12 +7,11 @@ from yaml import SafeLoader
 from yaml import load as yaml_load
 
 from utils.config import config
-from utils.html import (green_text_HTML, grey_text_HTML, link_HTML,
-                        orange_link_HTML, orange_text_HTML,
-                        red_text_HTML)
+from utils.html import (green_text, grey_text, link, orange_link, orange_text,
+                        red_text)
 from utils.module_finder import Module, get_all_modules_info
-from utils.patch import patch_all
 from utils.page import get_current_page_url
+from utils.patch import patch_all
 
 set_cache_status(False)  # 禁用 JRT 缓存功能
 
@@ -27,29 +26,29 @@ def get_status_HTML(module_name: str) -> str:
     status = config.status
 
     if module_name in status.out_of_service:
-        return red_text_HTML("【暂停服务】")
+        return red_text("【暂停服务】")
     elif module_name in status.downgrade:
-        return orange_text_HTML("【降级】")
+        return orange_text("【降级】")
     else:
-        return green_text_HTML("【正常】")
+        return green_text("【正常】")
 
 
 def get_jump_link(base_url: str, module_name: str) -> str:
     status = config.status
 
     if module_name in status.out_of_service:
-        return grey_text_HTML("无法跳转")
+        return grey_text("无法跳转")
     elif module_name in status.downgrade:
-        # TODO: 新窗口打开链接不生效
-        return orange_link_HTML("点击跳转>>", f"{base_url}/?app={module_name}")
+        return orange_link("点击跳转>>", f"{base_url}/?app={module_name}", new_window=True)
     else:
-        return link_HTML("点击跳转>>", f"{base_url}/?app={module_name}")
+        return link("点击跳转>>", f"{base_url}/?app={module_name}", new_window=True)
 
 
 def index() -> None:
     put_markdown(f"""
     版本：{config.version}
-    本项目在 GitHub 上开源：https://github.com/FHU-yezi/JianshuMicroFeatures
+    本项目在 GitHub 上开源：{link("https://github.com/FHU-yezi/JianshuMicroFeatures",
+    "https://github.com/FHU-yezi/JianshuMicroFeatures", new_window=True)}
     """)
 
     config.refresh()  # 刷新配置文件
@@ -65,7 +64,9 @@ def index() -> None:
                         f"{get_jump_link(get_current_page_url(), module.page_func_name)}\n\n"
                         f"{module.page_desc}\n\n")
 
-        put_markdown(content)
+        # 必须传入 sanitize=False 禁用 XSS 攻击防护
+        # 否则 target="_blank" 属性会消失，无法实现新标签页打开
+        put_markdown(content, sanitize=False)
 
 
 # 将主页函数加入列表

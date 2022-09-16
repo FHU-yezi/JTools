@@ -1,11 +1,12 @@
 from datetime import datetime
 from typing import Any, Dict, List, Tuple
 
-from pywebio.output import put_button, put_link, put_markdown, put_table, toast
+from pywebio.output import put_button, put_html, put_markdown, put_table, toast
 from pywebio.pin import pin, put_input, put_select
 from utils.cache import timeout_cache
 from utils.db import article_FP_rank_db
 from utils.dict_helper import unfold
+from utils.html import link
 from utils.user_input_filter import user_input_filter
 from utils.widgets import (green_loading, toast_warn_and_return,
                            use_result_scope)
@@ -89,7 +90,7 @@ def on_query_button_clicked() -> None:
             )
 
             # 向文章标题字段添加链接
-            item["文章标题"] = put_link(item["文章标题"], item["文章链接"], new_window=True)
+            item["文章标题"] = put_html(link(item["文章标题"], item["文章链接"], new_window=True))
             del item["文章链接"]
 
             data.append(item)
