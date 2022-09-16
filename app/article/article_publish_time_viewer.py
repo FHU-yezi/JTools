@@ -1,11 +1,9 @@
-from datetime import datetime
-
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
 from pywebio.output import put_button, put_markdown, toast
 from pywebio.pin import pin, put_input
 from utils.html import link_HTML
-from utils.human_readable_td import human_readable_td
+from utils.time_helper import human_readable_td_to_now, is_datetime_equal
 from utils.user_input_filter import user_input_filter
 from utils.widgets import (green_loading, toast_error_and_return,
                            toast_warn_and_return, use_result_scope)
@@ -31,17 +29,24 @@ def on_query_button_clicked() -> None:
         title = article.title
         publish_time = article.publish_time.replace(tzinfo=None)
         update_time = article.update_time
-        is_updated = "是" if publish_time != update_time else "否"
-        publish_td = datetime.now() - publish_time.replace(tzinfo=None)
-        update_td = datetime.now() - update_time.replace(tzinfo=None)
+        is_updated = is_datetime_equal(publish_time, update_time)
 
         # TODO: 新窗口打开链接不生效
         data: str = f"""
-            文章标题：{title}
-            链接：{link_HTML(url, url, new_window=True)}
-            更新过：{is_updated}
-            发布时间：{publish_time}（{human_readable_td(publish_td)}前）
-            最后一次更新时间：{update_time}（{human_readable_td(update_td)}前）
+        文章标题：{title}
+        链接：{link_HTML(url, url, new_window=True)}
+        """
+
+        if is_updated:
+            data += f"""
+        文章被更新过。
+        发布时间：{publish_time}（{human_readable_td_to_now(publish_time)}前）
+        最后一次更新时间：{update_time}（{human_readable_td_to_now(update_time)}前）
+        """
+        else:
+            data += f"""
+        文章没有被更新过。
+        发布时间：{publish_time}（{human_readable_td_to_now(publish_time)}前）
         """
 
     with use_result_scope():

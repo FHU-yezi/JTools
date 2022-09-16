@@ -9,7 +9,7 @@ from pywebio.output import (put_button, put_collapse, put_column, put_link,
                             put_markdown, put_row)
 from pywebio.pin import pin, put_checkbox, put_input
 from utils.checkbox_helper import is_checked
-from utils.human_readable_td import human_readable_td
+from utils.time_helper import human_readable_td
 from utils.widgets import (green_loading, toast_error_and_return,
                            use_result_scope)
 

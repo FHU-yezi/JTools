@@ -5,7 +5,7 @@ from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import User
 from pywebio.output import put_button, put_markdown, toast
 from pywebio.pin import pin, put_input
-from utils.human_readable_td import human_readable_td
+from utils.time_helper import human_readable_td
 from utils.user_input_filter import user_input_filter
 from utils.widgets import (toast_error_and_return, toast_warn_and_return,
                            use_result_scope)
