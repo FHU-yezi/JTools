@@ -1,8 +1,7 @@
 from datetime import datetime
 from typing import Any, Dict, List
 
-from pywebio.output import (put_button, put_link, put_markdown, put_scrollable,
-                            put_table, toast)
+from pywebio.output import put_button, put_link, put_markdown, put_table, toast
 from pywebio.pin import pin, put_input
 from utils.db import article_FP_rank_db
 from utils.dict_helper import unfold
@@ -73,10 +72,10 @@ def on_query_button_clicked() -> None:
             # 去除日期字段中恒为 00:00:00 的时间部分
             item["上榜日期"] = str(item["上榜日期"]).split()[0]
 
-            # 文章标题超过 20 字符时截断
+            # 文章标题超过 15 字符时截断
             item["文章标题"] = (
-                item["文章标题"][:20] + "..."
-                if len(item["文章标题"]) > 20
+                item["文章标题"][:15] + "..."
+                if len(item["文章标题"]) > 15
                 else item["文章标题"]
             )
 
@@ -88,9 +87,7 @@ def on_query_button_clicked() -> None:
 
     toast("数据获取成功", color="success")
     with use_result_scope():
-        put_scrollable(
-            put_table(data, header=list(DATA_MAPPING.values()))
-        )
+        put_table(data, header=list(DATA_MAPPING.values()))
 
 
 def on_rank_article_viewer() -> None:
