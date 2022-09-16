@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Tuple
 
 from pywebio.output import put_button, put_link, put_markdown, put_table, toast
 from pywebio.pin import pin, put_input, put_select
+from utils.cache import timeout_cache
 from utils.db import article_FP_rank_db
 from utils.dict_helper import unfold
 from utils.user_input_filter import user_input_filter
@@ -24,6 +25,7 @@ SORT_KEY_MAPPING: Dict[str, Tuple[str, int]] = {
 }
 
 
+@timeout_cache(3600)
 def get_data_update_time() -> str:
     result: datetime = list(
         article_FP_rank_db
@@ -34,6 +36,7 @@ def get_data_update_time() -> str:
     return str(result).split()[0]
 
 
+@timeout_cache(3600)
 def get_data_count() -> int:
     return article_FP_rank_db.count_documents({})
 

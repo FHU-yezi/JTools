@@ -6,6 +6,7 @@ from JianshuResearchTools.exceptions import InputError
 from pywebio.output import (put_button, put_markdown, put_scrollable,
                             put_table, toast)
 from pywebio.pin import pin, put_checkbox, put_input
+from utils.cache import timeout_cache
 from utils.db import lottery_db
 from utils.user_input_filter import user_input_filter
 from utils.widgets import (green_loading, toast_error_and_return,
@@ -27,6 +28,7 @@ REWARDS: List[str] = [
 ]
 
 
+@timeout_cache(3600)
 def get_data_update_time() -> str:
     result: datetime = list(
         lottery_db
@@ -37,6 +39,7 @@ def get_data_update_time() -> str:
     return str(result)
 
 
+@timeout_cache(3600)
 def get_data_count() -> int:
     return lottery_db.count_documents({})
 
