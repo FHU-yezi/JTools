@@ -1,8 +1,8 @@
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 from pywebio.output import put_button, put_link, put_markdown, put_table, toast
-from pywebio.pin import pin, put_input
+from pywebio.pin import pin, put_input, put_select
 from utils.db import article_FP_rank_db
 from utils.dict_helper import unfold
 from utils.user_input_filter import user_input_filter
@@ -16,6 +16,11 @@ DATA_MAPPING: Dict[str, str] = {
     "ranking": "排名",
     "article.title": "文章标题",
     "reward.to_author": "获钻量"
+}
+SORT_KEY_MAPPING: Dict[str, Tuple[str, int]] = {
+    "上榜日期": ("date", -1),
+    "排名": ("ranking", 1),
+    "获钻量": ("reward.to_author", -1)
 }
 
 
@@ -37,14 +42,14 @@ def has_record(name: str) -> bool:
     return article_FP_rank_db.count_documents({"author.name": name}) != 0
 
 
-def get_record(name: str) -> List[Dict]:
+def get_record(name: str, sort_key: Tuple[str, int]) -> List[Dict]:
     result: List[Dict] = (
         article_FP_rank_db
         .find(
             {"author.name": name},
             dict({"_id": 0, "article.url": 1}, **{key: 1 for key in DATA_MAPPING.keys()})
         )
-        .sort("date", -1)
+        .sort(*sort_key)
         .limit(100)
     )
     # 只有文章链接字段不在 DATA_MAPPING 中，会命中默认值
@@ -59,6 +64,7 @@ def get_record(name: str) -> List[Dict]:
 
 def on_query_button_clicked() -> None:
     name: str = user_input_filter(pin.name)
+    sort_key: Tuple[str, int] = SORT_KEY_MAPPING[pin.sort_key]
 
     if not name:
         toast_warn_and_return("请输入简书用户昵称")
@@ -68,7 +74,7 @@ def on_query_button_clicked() -> None:
 
     with green_loading():
         data: List[Dict[str, Any]] = []
-        for item in get_record(name):
+        for item in get_record(name, sort_key):
             # 去除日期字段中恒为 00:00:00 的时间部分
             item["上榜日期"] = str(item["上榜日期"]).split()[0]
 
@@ -99,4 +105,6 @@ def on_rank_article_viewer() -> None:
     """)
 
     put_input("name", type="text", label="用户昵称")
+    put_select("sort_key", options=["上榜日期", "排名", "获钻量"],
+               label="", value="上榜日期")
     put_button("查询", color="success", onclick=on_query_button_clicked)
