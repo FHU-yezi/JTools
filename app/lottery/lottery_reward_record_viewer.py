@@ -8,7 +8,7 @@ from pywebio.output import (put_button, put_markdown, put_scrollable,
 from pywebio.pin import pin, put_checkbox, put_input
 from utils.cache import timeout_cache
 from utils.db import lottery_db
-from utils.user_input_filter import user_input_filter
+from utils.text_filter import input_filter
 from utils.widgets import (green_loading, toast_error_and_return,
                            toast_warn_and_return, use_result_scope)
 
@@ -62,7 +62,7 @@ def get_record(url: str) -> List[Dict]:
 
 
 def on_query_button_clicked() -> None:
-    url: str = user_input_filter(pin.url)
+    url: str = input_filter(pin.url)
     # 为保证用户体验，奖项列表中的内容均在汉字与数字间加入了空格
     # 但数据库中的奖项字段没有做这一处理，因此在此处去掉空格，确保筛选正常进行
     reward_filter: List[str] = [x.replace(" ", "") for x in pin.reward_filter]

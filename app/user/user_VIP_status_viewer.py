@@ -5,8 +5,8 @@ from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import User
 from pywebio.output import put_button, put_markdown, toast
 from pywebio.pin import pin, put_input
+from utils.text_filter import input_filter
 from utils.time_helper import human_readable_td
-from utils.user_input_filter import user_input_filter
 from utils.widgets import (toast_error_and_return, toast_warn_and_return,
                            use_result_scope)
 
@@ -15,7 +15,7 @@ DESC: str = "查询用户的会员状态与到期时间。"
 
 
 def on_query_button_clicked() -> None:
-    url: str = user_input_filter(pin.url)
+    url: str = input_filter(pin.url)
 
     if not url:
         toast_warn_and_return("请输入简书用户 URL")

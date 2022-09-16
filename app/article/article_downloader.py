@@ -5,7 +5,7 @@ from JianshuResearchTools.objects import Article
 from pywebio.output import download, put_button, put_markdown, toast
 from pywebio.pin import pin, put_checkbox, put_input, put_radio
 from utils.checkbox_helper import is_checked
-from utils.user_input_filter import user_input_filter
+from utils.text_filter import input_filter
 from utils.widgets import (green_loading, toast_error_and_return,
                            toast_warn_and_return)
 
@@ -14,7 +14,7 @@ DESC: str = "下载文章内容，并将其以纯文本或 Markdown 格式保存
 
 
 def on_download_button_clicked() -> None:
-    url: str = user_input_filter(pin.url)
+    url: str = input_filter(pin.url)
     download_format: str = pin.download_format
     warning: List[Optional[str]] = pin.warning
 

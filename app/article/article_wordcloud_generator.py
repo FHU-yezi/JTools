@@ -11,7 +11,7 @@ from pyecharts.globals import CurrentConfig
 from pywebio.output import put_button, put_html, toast
 from pywebio.pin import pin, put_input
 from utils.config import config
-from utils.user_input_filter import user_input_filter
+from utils.text_filter import input_filter
 from utils.widgets import (green_loading, toast_error_and_return,
                            toast_warn_and_return, use_result_scope)
 
@@ -45,7 +45,7 @@ def get_word_freq(text: str):
 
 
 def on_generate_button_clicked() -> None:
-    url: str = user_input_filter(pin.url)
+    url: str = input_filter(pin.url)
 
     if not url:
         toast_warn_and_return("请输入简书文章 URL")

@@ -13,7 +13,7 @@ from JianshuResearchTools.exceptions import InputError
 from pywebio.output import put_button, put_image, put_markdown, toast
 from pywebio.pin import pin, put_input
 from utils.make_qrcode import make_qrcode
-from utils.user_input_filter import user_input_filter
+from utils.text_filter import input_filter
 from utils.widgets import (green_loading, toast_error_and_return,
                            toast_warn_and_return, use_result_scope)
 
@@ -51,7 +51,7 @@ def get_convert_result(url: str, url_type: str) -> str:
 
 
 def on_convert_button_cilcked() -> None:
-    url: str = user_input_filter(pin.url)
+    url: str = input_filter(pin.url)
 
     if not url:
         toast_warn_and_return("请输入简书 URL")

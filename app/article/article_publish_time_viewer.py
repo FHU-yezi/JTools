@@ -3,8 +3,8 @@ from JianshuResearchTools.objects import Article
 from pywebio.output import put_button, put_markdown, toast
 from pywebio.pin import pin, put_input
 from utils.html import link
+from utils.text_filter import input_filter
 from utils.time_helper import human_readable_td_to_now, is_datetime_equal
-from utils.user_input_filter import user_input_filter
 from utils.widgets import (green_loading, toast_error_and_return,
                            toast_warn_and_return, use_result_scope)
 
@@ -13,7 +13,7 @@ DESC: str = "查询文章的发布与更新时间。"
 
 
 def on_query_button_clicked() -> None:
-    url: str = user_input_filter(pin.url)
+    url: str = input_filter(pin.url)
 
     if not url:
         toast_warn_and_return("请输入简书文章 URL")
