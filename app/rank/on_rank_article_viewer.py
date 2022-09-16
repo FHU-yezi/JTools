@@ -106,5 +106,5 @@ def on_rank_article_viewer() -> None:
 
     put_input("name", type="text", label="用户昵称")
     put_select("sort_key", options=["上榜日期", "排名", "获钻量"],
-               label="", value="上榜日期")
+               label="排序", value="上榜日期")
     put_button("查询", color="success", onclick=on_query_button_clicked)
