@@ -132,10 +132,10 @@ def on_rank_article_viewer() -> None:
     - 最多展示 100 条上榜记录
     """)
 
-    # 必须设置 datalist 参数，否则无法正常显示输入提示
-    put_input("name", type="text", label="用户昵称", datalist=[""])
     put_select("sort_key", options=SORT_KEY_MAPPING.keys(),
                label="排序", value="上榜日期")
+    # 必须设置 datalist 参数，否则无法正常显示输入提示
+    put_input("name", type="text", label="用户昵称", datalist=[""])
     put_button("查询", color="success", onclick=on_query_button_clicked)
     pin_on_change("name", onchange=on_name_input_changed)
     bind_enter_key_callback("name", on_enter_key_pressed)
