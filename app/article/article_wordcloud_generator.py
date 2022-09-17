@@ -10,6 +10,7 @@ from pyecharts.charts import WordCloud
 from pyecharts.globals import CurrentConfig
 from pywebio.output import put_button, put_html, toast
 from pywebio.pin import pin, put_input
+from utils.callback import bind_enter_key_callback
 from utils.config import config
 from utils.text_filter import input_filter
 from utils.widgets import (green_loading, toast_error_and_return,
@@ -42,6 +43,10 @@ def get_word_freq(text: str):
         and x.flag in ALLOWED_WORD_TYPES  # 剔除不符合词性要求的词
     ]
     return Counter(processed_text).items()
+
+
+def on_enter_key_pressed(_) -> None:
+    on_generate_button_clicked()
 
 
 def on_generate_button_clicked() -> None:
@@ -81,3 +86,4 @@ def on_generate_button_clicked() -> None:
 def article_wordcloud_generator() -> None:
     put_input("url", type="text", label="文章 URL")
     put_button("生成", color="success", onclick=on_generate_button_clicked)
+    bind_enter_key_callback("url", on_enter_key_pressed)

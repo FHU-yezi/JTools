@@ -4,6 +4,7 @@ from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
 from pywebio.output import download, put_button, put_markdown, toast
 from pywebio.pin import pin, put_checkbox, put_input, put_radio
+from utils.callback import bind_enter_key_callback
 from utils.checkbox_helper import is_checked
 from utils.text_filter import input_filter
 from utils.widgets import (green_loading, toast_error_and_return,
@@ -11,6 +12,10 @@ from utils.widgets import (green_loading, toast_error_and_return,
 
 NAME: str = "文章下载工具"
 DESC: str = "下载文章内容，并将其以纯文本或 Markdown 格式保存至本地。"
+
+
+def on_enter_key_pressed(_) -> None:
+    on_download_button_clicked()
 
 
 def on_download_button_clicked() -> None:
@@ -56,3 +61,4 @@ def article_downloader() -> None:
     )
     put_checkbox("warning", options=["我同意合规使用该文章"])
     put_button("下载", color="success", onclick=on_download_button_clicked)
+    bind_enter_key_callback("url", on_enter_key_pressed)

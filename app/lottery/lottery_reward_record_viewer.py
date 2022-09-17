@@ -7,6 +7,7 @@ from pywebio.output import (put_button, put_markdown, put_scrollable,
                             put_table, toast)
 from pywebio.pin import pin, put_checkbox, put_input
 from utils.cache import timeout_cache
+from utils.callback import bind_enter_key_callback
 from utils.db import lottery_db
 from utils.text_filter import input_filter
 from utils.widgets import (green_loading, toast_error_and_return,
@@ -59,6 +60,10 @@ def get_record(url: str) -> List[Dict]:
         .limit(100)
     )
     return [{DATA_MAPPING[k]: v for k, v in item.items()} for item in result]
+
+
+def on_enter_key_pressed(_) -> None:
+    on_query_button_clicked()
 
 
 def on_query_button_clicked() -> None:
@@ -114,3 +119,4 @@ def lottery_reward_record_viewer() -> None:
     put_input("url", type="text", label="用户 URL")
     put_checkbox("reward_filter", options=REWARDS, label="奖项筛选", value=REWARDS)
     put_button("查询", color="success", onclick=on_query_button_clicked)
+    bind_enter_key_callback("url", on_enter_key_pressed)

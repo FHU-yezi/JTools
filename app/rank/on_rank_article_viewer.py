@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Tuple
 from pywebio.output import put_button, put_html, put_markdown, put_table, toast
 from pywebio.pin import pin, pin_on_change, pin_update, put_input, put_select
 from utils.cache import timeout_cache
+from utils.callback import bind_enter_key_callback
 from utils.db import article_FP_rank_db
 from utils.dict_helper import unfold
 from utils.html import link
@@ -85,6 +86,10 @@ def on_name_input_changed(new_value: str) -> None:
     pin_update("name", datalist=get_similar_names(new_value))
 
 
+def on_enter_key_pressed(_) -> None:
+    on_query_button_clicked()
+
+
 def on_query_button_clicked() -> None:
     name: str = input_filter(pin.name)
     sort_key: Tuple[str, int] = SORT_KEY_MAPPING[pin.sort_key]
@@ -133,3 +138,4 @@ def on_rank_article_viewer() -> None:
                label="排序", value="上榜日期")
     put_button("查询", color="success", onclick=on_query_button_clicked)
     pin_on_change("name", onchange=on_name_input_changed)
+    bind_enter_key_callback("name", on_enter_key_pressed)

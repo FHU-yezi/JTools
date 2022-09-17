@@ -12,6 +12,7 @@ from JianshuResearchTools.convert import (ArticleUrlToArticleUrlScheme,
 from JianshuResearchTools.exceptions import InputError
 from pywebio.output import put_button, put_image, put_markdown, toast
 from pywebio.pin import pin, put_input
+from utils.callback import bind_enter_key_callback
 from utils.make_qrcode import make_qrcode
 from utils.text_filter import input_filter
 from utils.widgets import (green_loading, toast_error_and_return,
@@ -48,6 +49,10 @@ def get_url_type(url: str) -> str:
 
 def get_convert_result(url: str, url_type: str) -> str:
     return CONVERT_FUNCS[url_type](url)
+
+
+def on_enter_key_pressed(_) -> None:
+    on_convert_button_cilcked()
 
 
 def on_convert_button_cilcked() -> None:
@@ -88,3 +93,4 @@ def URL_scheme_convertor() -> None:
 
     put_input("url", type="text", label="简书 URL")
     put_button("转换", color="success", onclick=on_convert_button_cilcked)
+    bind_enter_key_callback("url", on_press=on_enter_key_pressed)

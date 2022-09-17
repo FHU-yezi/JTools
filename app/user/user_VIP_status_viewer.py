@@ -5,6 +5,7 @@ from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import User
 from pywebio.output import put_button, put_markdown, toast
 from pywebio.pin import pin, put_input
+from utils.callback import bind_enter_key_callback
 from utils.text_filter import input_filter
 from utils.time_helper import human_readable_td
 from utils.widgets import (toast_error_and_return, toast_warn_and_return,
@@ -12,6 +13,10 @@ from utils.widgets import (toast_error_and_return, toast_warn_and_return,
 
 NAME: str = "会员状态查询工具"
 DESC: str = "查询用户的会员状态与到期时间。"
+
+
+def on_enter_key_pressed(_) -> None:
+    on_query_button_clicked()
 
 
 def on_query_button_clicked() -> None:
@@ -56,3 +61,4 @@ def on_query_button_clicked() -> None:
 def user_VIP_status_viewer() -> None:
     put_input("url", type="text", label="用户 URL")
     put_button("查询", color="success", onclick=on_query_button_clicked)
+    bind_enter_key_callback("url", on_enter_key_pressed)
