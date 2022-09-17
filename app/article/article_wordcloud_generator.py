@@ -6,17 +6,13 @@ import jieba.posseg as pseg
 import pyecharts.options as opts
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
-from pyecharts.charts import WordCloud
-from pyecharts.globals import CurrentConfig
-from pywebio.output import put_button, put_html, put_loading, toast, use_scope
+from pywebio.output import put_button, put_html, toast
 from pywebio.pin import pin, put_input
-from utils.config_manager import config
-from utils.unexcepted_handler import (toast_error_and_return,
-                                      toast_warn_and_return)
-from utils.user_input_filter import user_input_filter
-
-# 设置 PyEcharts CDN
-CurrentConfig.ONLINE_HOST = config.deploy.pyecharts_cdn
+from utils.callback import bind_enter_key_callback
+from utils.chart import get_wordcloud
+from utils.text_filter import input_filter
+from utils.widgets import (green_loading, toast_error_and_return,
+                           toast_warn_and_return, use_result_scope)
 
 NAME: str = "文章词云图生成工具"
 DESC = "生成文章词云图。"
@@ -44,8 +40,12 @@ def get_word_freq(text: str):
     return Counter(processed_text).items()
 
 
+def on_enter_key_pressed(_) -> None:
+    on_generate_button_clicked()
+
+
 def on_generate_button_clicked() -> None:
-    url: str = user_input_filter(pin.url)
+    url: str = input_filter(pin.url)
 
     if not url:
         toast_warn_and_return("请输入简书文章 URL")
@@ -57,15 +57,14 @@ def on_generate_button_clicked() -> None:
     except ResourceError:
         toast_error_and_return("文章已被删除、锁定或正在审核中，无法获取内容")
 
-    with put_loading(color="success"):
+    with green_loading():
         title: str = article.title
         text: str = article.text
 
         word_freq = get_word_freq(text)
 
         wordcloud = (
-            WordCloud()
-            .add(series_name="", data_pair=word_freq, word_size_range=[20, 70])
+            get_wordcloud(word_freq, (20, 70))
             .set_global_opts(
                 title_opts=opts.TitleOpts(title=f"{title} 的词云图", subtitle=url),
                 # 支持下载到本地
@@ -73,7 +72,7 @@ def on_generate_button_clicked() -> None:
             )
         )
 
-        with use_scope("result", clear=True):
+        with use_result_scope():
             toast("词云图已生成", color="success")
             put_html(wordcloud.render_notebook())
 
@@ -81,3 +80,4 @@ def on_generate_button_clicked() -> None:
 def article_wordcloud_generator() -> None:
     put_input("url", type="text", label="文章 URL")
     put_button("生成", color="success", onclick=on_generate_button_clicked)
+    bind_enter_key_callback("url", on_enter_key_pressed)

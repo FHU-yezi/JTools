@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import Sequence
 
-from utils.config_manager import config
-from utils.db_manager import access_log_db, run_log_db
+from utils.config import config
+from utils.db import access_log_db, run_log_db
 
 LOG_LEVELS = {
     "DEBUG": 0,

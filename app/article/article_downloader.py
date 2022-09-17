@@ -2,20 +2,24 @@ from typing import List, Optional
 
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
-from pywebio.output import (download, put_button, put_loading, put_markdown,
-                            toast)
+from pywebio.output import download, put_button, put_markdown, toast
 from pywebio.pin import pin, put_checkbox, put_input, put_radio
+from utils.callback import bind_enter_key_callback
 from utils.checkbox_helper import is_checked
-from utils.unexcepted_handler import (toast_error_and_return,
-                                      toast_warn_and_return)
-from utils.user_input_filter import user_input_filter
+from utils.text_filter import input_filter
+from utils.widgets import (green_loading, toast_error_and_return,
+                           toast_warn_and_return)
 
 NAME: str = "文章下载工具"
 DESC: str = "下载文章内容，并将其以纯文本或 Markdown 格式保存至本地。"
 
 
+def on_enter_key_pressed(_) -> None:
+    on_download_button_clicked()
+
+
 def on_download_button_clicked() -> None:
-    url: str = user_input_filter(pin.url)
+    url: str = input_filter(pin.url)
     download_format: str = pin.download_format
     warning: List[Optional[str]] = pin.warning
 
@@ -32,7 +36,7 @@ def on_download_button_clicked() -> None:
     except ResourceError:
         toast_error_and_return("文章已被删除、锁定或正在审核中，无法获取内容")
 
-    with put_loading(color="success"):
+    with green_loading():
         title = article.title
         file_name = f"{title}.{download_format}"
 
@@ -57,3 +61,4 @@ def article_downloader() -> None:
     )
     put_checkbox("warning", options=["我同意合规使用该文章"])
     put_button("下载", color="success", onclick=on_download_button_clicked)
+    bind_enter_key_callback("url", on_enter_key_pressed)

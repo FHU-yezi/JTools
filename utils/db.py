@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 
-from utils.config_manager import config
+from utils.config import config
 
 
 def init_DB(db_name: str):

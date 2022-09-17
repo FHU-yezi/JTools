@@ -3,13 +3,14 @@ from typing import Any, Dict, List
 
 from JianshuResearchTools.assert_funcs import AssertUserUrl
 from JianshuResearchTools.exceptions import InputError
-from pywebio.output import (put_button, put_loading, put_markdown,
-                            put_scrollable, put_table, toast, use_scope)
+from pywebio.output import put_button, put_markdown, put_table, toast
 from pywebio.pin import pin, put_checkbox, put_input
-from utils.db_manager import lottery_db
-from utils.unexcepted_handler import (toast_error_and_return,
-                                      toast_warn_and_return)
-from utils.user_input_filter import user_input_filter
+from utils.cache import timeout_cache
+from utils.callback import bind_enter_key_callback
+from utils.db import lottery_db
+from utils.text_filter import input_filter
+from utils.widgets import (green_loading, toast_error_and_return,
+                           toast_warn_and_return, use_result_scope)
 
 NAME: str = "中奖记录查询工具"
 DESC: str = "查询简书大转盘中奖记录。"
@@ -27,6 +28,7 @@ REWARDS: List[str] = [
 ]
 
 
+@timeout_cache(3600)
 def get_data_update_time() -> str:
     result: datetime = list(
         lottery_db
@@ -37,6 +39,7 @@ def get_data_update_time() -> str:
     return str(result)
 
 
+@timeout_cache(3600)
 def get_data_count() -> int:
     return lottery_db.count_documents({})
 
@@ -58,8 +61,12 @@ def get_record(url: str) -> List[Dict]:
     return [{DATA_MAPPING[k]: v for k, v in item.items()} for item in result]
 
 
+def on_enter_key_pressed(_) -> None:
+    on_query_button_clicked()
+
+
 def on_query_button_clicked() -> None:
-    url: str = user_input_filter(pin.url)
+    url: str = input_filter(pin.url)
     # 为保证用户体验，奖项列表中的内容均在汉字与数字间加入了空格
     # 但数据库中的奖项字段没有做这一处理，因此在此处去掉空格，确保筛选正常进行
     reward_filter: List[str] = [x.replace(" ", "") for x in pin.reward_filter]
@@ -78,7 +85,7 @@ def on_query_button_clicked() -> None:
     if not has_record(url):
         toast_warn_and_return("该用户无中奖记录")
 
-    with put_loading(color="success"):
+    with green_loading():
         data: List[Dict[str, Any]] = [
             x for x in get_record(url)
             if x["奖项"] in reward_filter
@@ -88,10 +95,8 @@ def on_query_button_clicked() -> None:
         toast_warn_and_return("该筛选条件下无中奖记录")
 
     toast("数据获取成功", color="success")
-    with use_scope("result", clear=True):
-        put_scrollable(
-            put_table(data, header=list(DATA_MAPPING.values()))
-        )
+    with use_result_scope():
+        put_table(data, header=list(DATA_MAPPING.values()))
 
 
 def lottery_reward_record_viewer() -> None:
@@ -111,3 +116,4 @@ def lottery_reward_record_viewer() -> None:
     put_input("url", type="text", label="用户 URL")
     put_checkbox("reward_filter", options=REWARDS, label="奖项筛选", value=REWARDS)
     put_button("查询", color="success", onclick=on_query_button_clicked)
+    bind_enter_key_callback("url", on_enter_key_pressed)

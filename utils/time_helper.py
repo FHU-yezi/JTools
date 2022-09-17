@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import List, Tuple
 
 PERIODS: List[Tuple[str, int]] = [
@@ -37,3 +37,15 @@ def human_readable_td(td_obj: timedelta) -> str:
             string.append(f"{period_value} {period_name}")
 
     return " ".join(string)
+
+
+def is_datetime_equal(a: datetime, b: datetime, allow_delta: int = 3) -> bool:
+    td: timedelta = a - b
+    if abs(td.total_seconds()) <= allow_delta:
+        return False
+    else:
+        return True
+
+
+def human_readable_td_to_now(datetime_obj: datetime) -> str:
+    return human_readable_td(datetime.now() - datetime_obj)
