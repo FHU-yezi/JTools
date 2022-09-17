@@ -104,11 +104,13 @@ def on_fetch_button_clicked() -> None:
                 if fit_for_filter(likes_limit, comments_limit, show_commentable_only, no_paid_article,
                                   likes_count, comments_count, commentable, paid):
                     showed_count += 1
+                    # 必须传入 sanitize=False 禁用 XSS 攻击防护
+                    # 否则 target="_blank" 属性会消失，无法实现新标签页打开
                     put_collapse(
                         title=f"[ {source_collection} ] {article_title}",
                         content=[put_markdown(f"""
-                        文章链接：[{article_URL}]({article_URL})
-                        作者：[{author_name}]({author_URL})
+                        文章链接：{link(article_URL, article_URL, new_window=True)}
+                        作者：{link(author_name, author_URL, new_window=True)}
                         发布时间：{release_time.strftime(r"%Y-%m-%d %X")}（{human_readable_td(datetime.now() - release_time)}前）
 
                         {views_count} 阅读 / {likes_count} 点赞 / {comments_count} 评论
@@ -116,7 +118,7 @@ def on_fetch_button_clicked() -> None:
 
                         内容摘要：
                         {summary}
-                        """), put_html(link("点击跳转到简书 App", URL_scheme) if enable_URL_scheme else "")]
+                        """, sanitize=False), put_html(link("点击跳转到简书 App", URL_scheme) if enable_URL_scheme else "")]
                     )
 
                     if showed_count == max_result_count:
