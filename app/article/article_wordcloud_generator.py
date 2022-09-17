@@ -6,18 +6,13 @@ import jieba.posseg as pseg
 import pyecharts.options as opts
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
-from pyecharts.charts import WordCloud
-from pyecharts.globals import CurrentConfig
 from pywebio.output import put_button, put_html, toast
 from pywebio.pin import pin, put_input
 from utils.callback import bind_enter_key_callback
-from utils.config import config
+from utils.chart import get_wordcloud
 from utils.text_filter import input_filter
 from utils.widgets import (green_loading, toast_error_and_return,
                            toast_warn_and_return, use_result_scope)
-
-# 设置 PyEcharts CDN
-CurrentConfig.ONLINE_HOST = config.deploy.pyecharts_cdn
 
 NAME: str = "文章词云图生成工具"
 DESC = "生成文章词云图。"
@@ -69,8 +64,7 @@ def on_generate_button_clicked() -> None:
         word_freq = get_word_freq(text)
 
         wordcloud = (
-            WordCloud()
-            .add(series_name="", data_pair=word_freq, word_size_range=[20, 70])
+            get_wordcloud(word_freq, (20, 70))
             .set_global_opts(
                 title_opts=opts.TitleOpts(title=f"{title} 的词云图", subtitle=url),
                 # 支持下载到本地
