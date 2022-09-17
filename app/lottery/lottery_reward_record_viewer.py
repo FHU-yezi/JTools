@@ -3,8 +3,7 @@ from typing import Any, Dict, List
 
 from JianshuResearchTools.assert_funcs import AssertUserUrl
 from JianshuResearchTools.exceptions import InputError
-from pywebio.output import (put_button, put_markdown, put_scrollable,
-                            put_table, toast)
+from pywebio.output import put_button, put_markdown, put_table, toast
 from pywebio.pin import pin, put_checkbox, put_input
 from utils.cache import timeout_cache
 from utils.callback import bind_enter_key_callback
@@ -97,9 +96,7 @@ def on_query_button_clicked() -> None:
 
     toast("数据获取成功", color="success")
     with use_result_scope():
-        put_scrollable(
-            put_table(data, header=list(DATA_MAPPING.values()))
-        )
+        put_table(data, header=list(DATA_MAPPING.values()))
 
 
 def lottery_reward_record_viewer() -> None:
