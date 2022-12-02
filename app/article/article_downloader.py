@@ -18,10 +18,6 @@ NAME: str = "文章下载工具"
 DESC: str = "下载文章内容，并将其以纯文本或 Markdown 格式保存至本地。"
 
 
-def on_enter_key_pressed(_) -> None:
-    on_download_button_clicked()
-
-
 def on_download_button_clicked() -> None:
     url: str = input_filter(pin.url)
     download_format: str = pin.download_format
@@ -78,5 +74,5 @@ def article_downloader() -> None:
     )
     bind_enter_key_callback(
         "url",
-        on_enter_key_pressed,
+        on_press=lambda _: on_download_button_clicked(),
     )

@@ -93,10 +93,6 @@ def on_name_input_changed(new_value: str) -> None:
     pin_update("name", datalist=get_similar_names(new_value))
 
 
-def on_enter_key_pressed(_) -> None:
-    on_query_button_clicked()
-
-
 def on_query_button_clicked() -> None:
     name: str = input_filter(pin.name)
     sort_key: Tuple[str, int] = SORT_KEY_MAPPING[pin.sort_key]
@@ -163,5 +159,5 @@ def on_rank_article_viewer() -> None:
     )
     bind_enter_key_callback(
         "name",
-        on_enter_key_pressed,
+        on_press=lambda _: on_query_button_clicked(),
     )

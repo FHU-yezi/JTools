@@ -51,10 +51,6 @@ def get_word_freq(text: str):
     return Counter(processed_text).items()
 
 
-def on_enter_key_pressed(_) -> None:
-    on_generate_button_clicked()
-
-
 def on_generate_button_clicked() -> None:
     url: str = input_filter(pin.url)
 
@@ -104,5 +100,5 @@ def article_wordcloud_generator() -> None:
     )
     bind_enter_key_callback(
         "url",
-        on_enter_key_pressed,
+        on_press=lambda _: on_generate_button_clicked(),
     )

@@ -79,10 +79,6 @@ CHECK_ITEM_FUNC_MAPPING: Dict[str, Callable] = {
 }
 
 
-def on_enter_key_pressed(_) -> None:
-    on_check_button_clicked()
-
-
 def on_check_button_clicked() -> None:
     url: str = input_filter(pin.url)
 
@@ -148,5 +144,5 @@ def LP_recommend_checker() -> None:
     )
     bind_enter_key_callback(
         "url",
-        on_enter_key_pressed,
+        on_press=lambda _: on_check_button_clicked(),
     )

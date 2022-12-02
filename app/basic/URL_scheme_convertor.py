@@ -60,10 +60,6 @@ def get_convert_result(url: str, url_type: str) -> str:
     return CONVERT_FUNCS[url_type](url)
 
 
-def on_enter_key_pressed(_) -> None:
-    on_convert_button_cilcked()
-
-
 def on_convert_button_cilcked() -> None:
     url: str = input_filter(pin.url)
 
@@ -114,5 +110,5 @@ def URL_scheme_convertor() -> None:
     )
     bind_enter_key_callback(
         "url",
-        on_press=on_enter_key_pressed,
+        on_press=lambda _: on_convert_button_cilcked(),
     )

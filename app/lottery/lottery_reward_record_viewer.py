@@ -77,10 +77,6 @@ def get_record(url: str) -> List[Dict]:
     return [{DATA_MAPPING[k]: v for k, v in item.items()} for item in result]
 
 
-def on_enter_key_pressed(_) -> None:
-    on_query_button_clicked()
-
-
 def on_query_button_clicked() -> None:
     url: str = input_filter(pin.url)
     # 为保证用户体验，奖项列表中的内容均在汉字与数字间加入了空格
@@ -148,5 +144,5 @@ def lottery_reward_record_viewer() -> None:
     )
     bind_enter_key_callback(
         "url",
-        on_enter_key_pressed,
+        on_press=lambda _: on_query_button_clicked(),
     )

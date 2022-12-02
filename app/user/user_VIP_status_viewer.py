@@ -19,10 +19,6 @@ NAME: str = "会员状态查询工具"
 DESC: str = "查询用户的会员状态与到期时间。"
 
 
-def on_enter_key_pressed(_) -> None:
-    on_query_button_clicked()
-
-
 def on_query_button_clicked() -> None:
     url: str = input_filter(pin.url)
 
@@ -79,5 +75,5 @@ def user_VIP_status_viewer() -> None:
     )
     bind_enter_key_callback(
         "url",
-        on_enter_key_pressed,
+        on_press=lambda _: on_query_button_clicked(),
     )

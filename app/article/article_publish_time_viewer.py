@@ -18,10 +18,6 @@ NAME: str = "文章发布时间查询工具"
 DESC: str = "查询文章的发布与更新时间。"
 
 
-def on_enter_key_pressed(_) -> None:
-    on_query_button_clicked()
-
-
 def on_query_button_clicked() -> None:
     url: str = input_filter(pin.url)
 
@@ -77,5 +73,5 @@ def article_publish_time_viewer() -> None:
     )
     bind_enter_key_callback(
         "url",
-        on_enter_key_pressed,
+        on_press=lambda _: on_query_button_clicked(),
     )
