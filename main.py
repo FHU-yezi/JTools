@@ -5,6 +5,8 @@ from pywebio import start_server
 from pywebio.output import put_markdown
 from yaml import SafeLoader
 from yaml import load as yaml_load
+from signal import SIGTERM, signal
+from utils.log import run_logger, access_logger
 
 from utils.config import config
 from utils.html import (green_text, grey_text, link, orange_link, orange_text,
@@ -14,6 +16,12 @@ from utils.page import get_base_url
 from utils.patch import patch_all
 
 set_cache_status(False)  # 禁用 JRT 缓存功能
+
+# 注册信号事件回调
+# 在收到 SIGTERM 时执行日志强制刷新，之后退出
+signal(SIGTERM, lambda _, __: run_logger.force_refresh())
+signal(SIGTERM, lambda _, __: access_logger.force_refresh())
+run_logger.debug("已注册事件回调")
 
 STRUCTURE_MAPPING: Dict[str, str] = yaml_load(
     open("./structure.yaml", "r", encoding="utf-8"),
