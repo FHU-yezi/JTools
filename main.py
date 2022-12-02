@@ -8,18 +8,12 @@ from yaml import SafeLoader
 from yaml import load as yaml_load
 
 from utils.config import config
-from utils.html import (
-    green_text,
-    grey_text,
-    link,
-    orange_link,
-    orange_text,
-    red_text,
-)
+from utils.html import link
 from utils.log import access_logger, run_logger
 from utils.module_finder import Module, get_all_modules_info
 from utils.page import get_base_url
 from utils.patch import patch_all
+from widgets.card import put_app_card
 
 set_cache_status(False)  # 禁用 JRT 缓存功能
 
@@ -35,26 +29,30 @@ STRUCTURE_MAPPING: Dict[str, str] = yaml_load(
 modules_list = get_all_modules_info(config.base_path)
 
 
-def get_status_HTML(module_name: str) -> str:
+def get_status_color(module_name: str) -> str:
     status = config.status
 
     if module_name in status.out_of_service:
-        return red_text("【暂停服务】")
+        return "#FF2D10"  # 红色
     elif module_name in status.downgrade:
-        return orange_text("【降级】")
+        return "#FF8C00"  # 橙色
     else:
-        return green_text("【正常】")
+        return "#008700"  # 绿色
+
+
+def get_status_text(module_name: str) -> str:
+    status = config.status
+
+    if module_name in status.out_of_service:
+        return "暂停服务"
+    elif module_name in status.downgrade:
+        return "降级"
+    else:
+        return "正常"
 
 
 def get_jump_link(base_url: str, module_name: str) -> str:
-    status = config.status
-
-    if module_name in status.out_of_service:
-        return grey_text("无法跳转")
-    elif module_name in status.downgrade:
-        return orange_link("点击跳转>>", f"{base_url}/?app={module_name}", new_window=True)
-    else:
-        return link("点击跳转>>", f"{base_url}/?app={module_name}", new_window=True)
+    return f"{base_url}/?app={module_name}"
 
 
 def index() -> None:
@@ -70,19 +68,16 @@ def index() -> None:
 
     for type_, type_name in STRUCTURE_MAPPING.items():
         module_part: List[Module] = [x for x in modules_list if x.module_type == type_]
-        content: str = f"## {type_name}\n"
+        put_markdown(f"## {type_name}\n")
 
         for module in module_part:
-            content += (
-                f"**{get_status_HTML(module.page_name)}"
-                f"{module.page_name}**   "
-                f"{get_jump_link(get_base_url(), module.page_func_name)}\n\n"
-                f"{module.page_desc}\n\n"
+            put_app_card(
+                name=module.page_name,
+                status_color=get_status_color(module.page_name),
+                status_text=get_status_text(module.page_name),
+                url=get_jump_link(get_base_url(), module.page_func_name),
+                desc=module.page_desc,
             )
-
-        # 必须传入 sanitize=False 禁用 XSS 攻击防护
-        # 否则 target="_blank" 属性会消失，无法实现新标签页打开
-        put_markdown(content, sanitize=False)
 
 
 # 将主页函数加入列表
