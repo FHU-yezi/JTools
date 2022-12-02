@@ -65,8 +65,8 @@ class ConfigNode:
         return self._data[name]
 
 
-def InitConfig() -> Config:
+def init_config() -> Config:
     return Config()  # 初始化日志文件
 
 
-config = InitConfig()
+config = init_config()
