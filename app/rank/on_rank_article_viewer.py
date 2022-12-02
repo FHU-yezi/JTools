@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any, Dict, List, Tuple
 
-from pywebio.output import put_button, put_html, put_markdown, put_table, toast
+from pywebio.output import put_button, put_markdown, toast
 from pywebio.pin import pin, pin_on_change, pin_update, put_input, put_select
 
 from utils.cache import timeout_cache
@@ -15,6 +15,7 @@ from utils.widgets import (
     toast_warn_and_return,
     use_result_scope,
 )
+from widgets.table import put_table
 
 NAME: str = "上榜文章查询工具"
 DESC: str = "查询用户的文章上榜历史。"
@@ -115,14 +116,15 @@ def on_query_button_clicked() -> None:
             )
 
             # 向文章标题字段添加链接
-            item["文章标题"] = put_html(link(item["文章标题"], item["文章链接"], new_window=True))
+            item["文章标题"] = link(item["文章标题"], item["文章链接"], new_window=True)
             del item["文章链接"]
 
             data.append(item)
 
     toast("数据获取成功", color="success")
     with use_result_scope():
-        put_table(data, header=list(DATA_MAPPING.values()))
+        put_markdown(str(data))
+        put_table(data)
 
 
 def on_rank_article_viewer() -> None:
