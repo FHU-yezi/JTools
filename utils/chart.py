@@ -14,8 +14,10 @@ CurrentConfig.ONLINE_HOST = config.deploy.pyecharts_cdn
 def get_line_chart(x: List, y: List) -> Line:
     return (
         Line(
-            init_opts=opts.InitOpts(width=f"{get_chart_width()}px",
-                                    height=f"{get_chart_height()}px")
+            init_opts=opts.InitOpts(
+                width=f"{get_chart_width()}px",
+                height=f"{get_chart_height()}px",
+            )
         )
         .add_xaxis(x)
         .add_yaxis("y", y, is_smooth=True)
@@ -23,10 +25,13 @@ def get_line_chart(x: List, y: List) -> Line:
 
 
 def get_wordcloud(word_freq, size_range: Tuple[int, int]) -> WordCloud:
-    return (
-        WordCloud(
-            init_opts=opts.InitOpts(width=f"{get_chart_width()}px",
-                                    height=f"{get_chart_height()}px")
+    return WordCloud(
+        init_opts=opts.InitOpts(
+            width=f"{get_chart_width()}px",
+            height=f"{get_chart_height()}px",
         )
-        .add(series_name="", data_pair=word_freq, word_size_range=size_range)
+    ).add(
+        series_name="",
+        data_pair=word_freq,
+        word_size_range=size_range,
     )

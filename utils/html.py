@@ -30,5 +30,7 @@ def link(text: str, url: str, color: str = "#0366d6", new_window: bool = False) 
     return colored_link(text, url, color, new_window)
 
 
-def orange_link(text: str, url: str, color: str = "#FF8C00", new_window: bool = False) -> str:
+def orange_link(
+    text: str, url: str, color: str = "#FF8C00", new_window: bool = False
+) -> str:
     return colored_link(text, url, color, new_window)

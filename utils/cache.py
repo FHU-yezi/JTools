@@ -18,4 +18,5 @@ def timeout_cache(seconds: int) -> Callable:
             return func(*args, **kwargs)
 
         return inner
+
     return outer

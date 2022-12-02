@@ -15,7 +15,7 @@ def get_base_url() -> str:
 
 def get_chart_width() -> int:
     # 850 为宽度上限
-    return min(eval_js('document.body.clientWidth'), 850)
+    return min(eval_js("document.body.clientWidth"), 850)
 
 
 def get_chart_height() -> int:

@@ -5,43 +5,55 @@ from utils.config import config
 from utils.module_finder import Module
 
 
-def patch_add_html_name_desc(func: Callable[[], None], module_obj: Module) -> Callable[[], None]:
+def patch_add_html_name_desc(
+    func: Callable[[], None], module_obj: Module
+) -> Callable[[], None]:
     doc = f"""{module_obj.page_name}
 
-    {module_obj.page_desc}
-    """
+        {module_obj.page_desc}
+        """
 
     func.__doc__ = doc
     return func
 
 
-def patch_add_page_name_desc(func: Callable[[], None], module_obj: Module) -> Callable[[], None]:
+def patch_add_page_name_desc(
+    func: Callable[[], None], module_obj: Module
+) -> Callable[[], None]:
     @wraps(func)
     def footer_patched() -> None:
         from pywebio.output import put_markdown
-        put_markdown(f"""
-        # {module_obj.page_name}
 
-        {module_obj.page_desc}
-        """)
+        put_markdown(
+            f"""
+            # {module_obj.page_name}
+
+            {module_obj.page_desc}
+            """
+        )
 
         func()
 
     return footer_patched
 
 
-def patch_add_footer(func: Callable[[], None], module_obj: Module) -> Callable[[], None]:
+def patch_add_footer(
+    func: Callable[[], None], module_obj: Module
+) -> Callable[[], None]:
     @wraps(func)
     def footer_patched() -> None:
         func()
 
         from utils.page import set_footer
+
         set_footer(config.footer)
 
     return footer_patched
 
 
-def patch_record_access(func: Callable[[], None], module_obj: Module) -> Callable[[], None]:
+def patch_record_access(
+    func: Callable[[], None], module_obj: Module
+) -> Callable[[], None]:
     @wraps(func)
     def log_record_patched() -> None:
         from pywebio.session import info
@@ -56,9 +68,7 @@ def patch_record_access(func: Callable[[], None], module_obj: Module) -> Callabl
 
 
 PATCH_FUNCS: List[Callable] = [
-    obj
-    for name, obj in globals().items()
-    if name.startswith("patch")
+    obj for name, obj in globals().items() if name.startswith("patch")
 ]
 
 

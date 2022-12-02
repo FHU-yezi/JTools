@@ -3,14 +3,18 @@ from typing import Any, Dict, List, Tuple
 
 from pywebio.output import put_button, put_html, put_markdown, put_table, toast
 from pywebio.pin import pin, pin_on_change, pin_update, put_input, put_select
+
 from utils.cache import timeout_cache
 from utils.callback import bind_enter_key_callback
 from utils.db import article_FP_rank_db
 from utils.dict_helper import unfold
 from utils.html import link
 from utils.text_filter import has_banned_chars, input_filter
-from utils.widgets import (green_loading, toast_warn_and_return,
-                           use_result_scope)
+from utils.widgets import (
+    green_loading,
+    toast_warn_and_return,
+    use_result_scope,
+)
 
 NAME: str = "上榜文章查询工具"
 DESC: str = "查询用户的文章上榜历史。"
@@ -18,22 +22,19 @@ DATA_MAPPING: Dict[str, str] = {
     "date": "上榜日期",
     "ranking": "排名",
     "article.title": "文章标题",
-    "reward.to_author": "获钻量"
+    "reward.to_author": "获钻量",
 }
 SORT_KEY_MAPPING: Dict[str, Tuple[str, int]] = {
     "上榜日期": ("date", -1),
     "排名": ("ranking", 1),
-    "获钻量": ("reward.to_author", -1)
+    "获钻量": ("reward.to_author", -1),
 }
 
 
 @timeout_cache(3600)
 def get_data_update_time() -> str:
     result: datetime = list(
-        article_FP_rank_db
-        .find({}, {"_id": 0, "date": 1})
-        .sort("date", -1)
-        .limit(1)
+        article_FP_rank_db.find({}, {"_id": 0, "date": 1}).sort("date", -1).limit(1)
     )[0]["date"]
     return str(result).split()[0]
 
@@ -50,12 +51,17 @@ def get_similar_names(text: str) -> List[str]:
         return []
 
     return (
-        article_FP_rank_db
-        .distinct(
+        article_FP_rank_db.distinct(
             "author.name",
-            {"author.name": {"$regex": f"^{text}"}}
+            {
+                "author.name": {
+                    "$regex": f"^{text}",
+                },
+            },
         )
-    )[:5]  # 只返回前五个结果
+    )[
+        :5
+    ]  # 只返回前五个结果
 
 
 def has_record(name: str) -> bool:
@@ -64,20 +70,21 @@ def has_record(name: str) -> bool:
 
 def get_record(name: str, sort_key: Tuple[str, int]) -> List[Dict]:
     result: List[Dict] = (
-        article_FP_rank_db
-        .find(
-            {"author.name": name},
-            dict({"_id": 0, "article.url": 1}, **{key: 1 for key in DATA_MAPPING.keys()})
+        article_FP_rank_db.find(
+            {
+                "author.name": name,
+            },
+            dict(
+                {"_id": 0, "article.url": 1},
+                **{key: 1 for key in DATA_MAPPING.keys()},
+            ),
         )
         .sort(*sort_key)
         .limit(100)
     )
     # 只有文章链接字段不在 DATA_MAPPING 中，会命中默认值
     return [
-        {
-            DATA_MAPPING.get(k, "文章链接"): v
-            for k, v in unfold(item).items()
-        }
+        {DATA_MAPPING.get(k, "文章链接"): v for k, v in unfold(item).items()}
         for item in result
     ]
 
@@ -108,9 +115,7 @@ def on_query_button_clicked() -> None:
 
             # 文章标题超过 15 字符时截断
             item["文章标题"] = (
-                item["文章标题"][:15] + "..."
-                if len(item["文章标题"]) > 15
-                else item["文章标题"]
+                item["文章标题"][:15] + "..." if len(item["文章标题"]) > 15 else item["文章标题"]
             )
 
             # 向文章标题字段添加链接
@@ -125,17 +130,38 @@ def on_query_button_clicked() -> None:
 
 
 def on_rank_article_viewer() -> None:
-    put_markdown(f"""
-    - 数据范围：2021.09.17 - {get_data_update_time()}（每天凌晨 1:00 更新）
-    - 当前数据量：{get_data_count()}
-    - 昵称以上榜时为准
-    - 最多展示 100 条上榜记录
-    """)
+    put_markdown(
+        f"""
+        - 数据范围：2021.09.17 - {get_data_update_time()}（每天凌晨 1:00 更新）
+        - 当前数据量：{get_data_count()}
+        - 昵称以上榜时为准
+        - 最多展示 100 条上榜记录
+        """
+    )
 
-    put_select("sort_key", options=SORT_KEY_MAPPING.keys(),
-               label="排序", value="上榜日期")
+    put_select(
+        "sort_key",
+        options=SORT_KEY_MAPPING.keys(),
+        label="排序",
+        value="上榜日期",
+    )
     # 必须设置 datalist 参数，否则无法正常显示输入提示
-    put_input("name", type="text", label="用户昵称", datalist=[""])
-    put_button("查询", color="success", onclick=on_query_button_clicked)
-    pin_on_change("name", onchange=on_name_input_changed)
-    bind_enter_key_callback("name", on_enter_key_pressed)
+    put_input(
+        "name",
+        type="text",
+        label="用户昵称",
+        datalist=[""],
+    )
+    put_button(
+        "查询",
+        color="success",
+        onclick=on_query_button_clicked,
+    )
+    pin_on_change(
+        "name",
+        onchange=on_name_input_changed,
+    )
+    bind_enter_key_callback(
+        "name",
+        on_enter_key_pressed,
+    )

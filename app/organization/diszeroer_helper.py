@@ -1,18 +1,30 @@
 from datetime import datetime
 from typing import Dict, Generator, List, Tuple
 
-from JianshuResearchTools.convert import (ArticleSlugToArticleUrl,
-                                          ArticleUrlToArticleUrlScheme,
-                                          UserSlugToUserUrl)
+from JianshuResearchTools.convert import (
+    ArticleSlugToArticleUrl,
+    ArticleUrlToArticleUrlScheme,
+    UserSlugToUserUrl,
+)
 from JianshuResearchTools.objects import Collection
-from pywebio.output import (put_button, put_collapse, put_column, put_html,
-                            put_markdown, put_row)
+from pywebio.output import (
+    put_button,
+    put_collapse,
+    put_column,
+    put_html,
+    put_markdown,
+    put_row,
+)
 from pywebio.pin import pin, put_checkbox, put_input
+
 from utils.checkbox_helper import is_checked
 from utils.html import link
 from utils.time_helper import human_readable_td
-from utils.widgets import (green_loading, toast_error_and_return,
-                           use_result_scope)
+from utils.widgets import (
+    green_loading,
+    toast_error_and_return,
+    use_result_scope,
+)
 
 NAME: str = "消零派辅助工具"
 DESC: str = "消灭零评论，留下爱与光。"
@@ -20,12 +32,16 @@ DESC: str = "消灭零评论，留下爱与光。"
 COLLECTIONS: Dict[str, Collection] = {
     "简友广场": Collection.from_url("https://www.jianshu.com/c/7ecac177f5a8"),
     "人物": Collection.from_url("https://www.jianshu.com/c/avQwgf"),
-    "想法": Collection.from_url("https://www.jianshu.com/c/qQB2Zn")
+    "想法": Collection.from_url("https://www.jianshu.com/c/qQB2Zn"),
 }
 
 
-def check_user_input(likes_limit: int, comments_limit: int, max_result_count: int,
-                     selected_collections: List[str]) -> Tuple[bool, str]:
+def check_user_input(
+    likes_limit: int,
+    comments_limit: int,
+    max_result_count: int,
+    selected_collections: List[str],
+) -> Tuple[bool, str]:
     if not 1 <= likes_limit <= 20:
         return (False, "点赞数上限必须在 1 到 20 之间")
     if not 1 <= comments_limit <= 10:
@@ -38,8 +54,9 @@ def check_user_input(likes_limit: int, comments_limit: int, max_result_count: in
     return (True, "")
 
 
-def iter_selected_collections(selected_collections: List[str]) \
-        -> Generator[Tuple[Dict, str], None, None]:
+def iter_selected_collections(
+    selected_collections: List[str],
+) -> Generator[Tuple[Dict, str], None, None]:
     collection_objs: List[Collection] = [COLLECTIONS[x] for x in selected_collections]
     collection_now_pages: List[int] = [0] * len(collection_objs)
 
@@ -51,10 +68,16 @@ def iter_selected_collections(selected_collections: List[str]) \
             collection_now_pages[index] += 1
 
 
-def fit_for_filter(likes_limit: int, comments_limit: int,
-                   show_commentable_only: bool, no_paid_article: bool,
-                   likes_count, comments_count,
-                   commentable: bool, paid: bool) -> bool:
+def fit_for_filter(
+    likes_limit: int,
+    comments_limit: int,
+    show_commentable_only: bool,
+    no_paid_article: bool,
+    likes_count,
+    comments_count,
+    commentable: bool,
+    paid: bool,
+) -> bool:
     if likes_count > likes_limit:
         return False
     if comments_count > comments_limit:
@@ -77,7 +100,9 @@ def on_fetch_button_clicked() -> None:
     no_paid_article: bool = is_checked("不展示付费文章", pin.additional_features)
     enable_URL_scheme: bool = is_checked("开启 URL Scheme 跳转", pin.additional_features)
 
-    user_input_ok, message = check_user_input(likes_limit, comments_limit, max_result_count, selected_collections)
+    user_input_ok, message = check_user_input(
+        likes_limit, comments_limit, max_result_count, selected_collections
+    )
     if not user_input_ok:
         toast_error_and_return(message)
 
@@ -85,14 +110,21 @@ def on_fetch_button_clicked() -> None:
 
     with green_loading():
         with use_result_scope():
-            for article, source_collection in iter_selected_collections(selected_collections):
+            for article, source_collection in iter_selected_collections(
+                selected_collections
+            ):
                 article_title: str = article["title"]
                 article_URL: str = ArticleSlugToArticleUrl(article["aslug"])
                 author_name: str = article["user"]["name"]
                 author_URL: str = UserSlugToUserUrl(article["user"]["uslug"])
-                URL_scheme = (ArticleUrlToArticleUrlScheme(article_URL)
-                              if enable_URL_scheme else None)
-                release_time: datetime = article["release_time"].replace(tzinfo=None)  # 处理时区问题
+                URL_scheme = (
+                    ArticleUrlToArticleUrlScheme(article_URL)
+                    if enable_URL_scheme
+                    else None
+                )
+                release_time: datetime = article["release_time"].replace(
+                    tzinfo=None
+                )  # 处理时区问题
                 views_count: int = article["views_count"]
                 likes_count: int = article["likes_count"]
                 comments_count: int = article["comments_count"]
@@ -101,24 +133,42 @@ def on_fetch_button_clicked() -> None:
                 commentable: bool = article["commentable"]
                 paid: bool = article["paid"]
 
-                if fit_for_filter(likes_limit, comments_limit, show_commentable_only, no_paid_article,
-                                  likes_count, comments_count, commentable, paid):
+                if fit_for_filter(
+                    likes_limit,
+                    comments_limit,
+                    show_commentable_only,
+                    no_paid_article,
+                    likes_count,
+                    comments_count,
+                    commentable,
+                    paid,
+                ):
                     showed_count += 1
                     # 必须传入 sanitize=False 禁用 XSS 攻击防护
                     # 否则 target="_blank" 属性会消失，无法实现新标签页打开
                     put_collapse(
                         title=f"[ {source_collection} ] {article_title}",
-                        content=[put_markdown(f"""
-                        文章链接：{link(article_URL, article_URL, new_window=True)}
-                        作者：{link(author_name, author_URL, new_window=True)}
-                        发布时间：{release_time.strftime(r"%Y-%m-%d %X")}（{human_readable_td(datetime.now() - release_time)}前）
+                        content=[
+                            put_markdown(
+                                f"""
+                                文章链接：{link(article_URL, article_URL, new_window=True)}
+                                作者：{link(author_name, author_URL, new_window=True)}
+                                发布时间：{release_time.strftime(r"%Y-%m-%d %X")}（{human_readable_td(datetime.now() - release_time)}前）
 
-                        {views_count} 阅读 / {likes_count} 点赞 / {comments_count} 评论
-                        获钻量：{total_FP_amount}
+                                {views_count} 阅读 / {likes_count} 点赞 / {comments_count} 评论
+                                获钻量：{total_FP_amount}
 
-                        内容摘要：
-                        {summary}
-                        """, sanitize=False), put_html(link("点击跳转到简书 App", URL_scheme) if enable_URL_scheme else "")]
+                                内容摘要：
+                                {summary}
+                                """,
+                                sanitize=False,
+                            ),
+                            put_html(
+                                link("点击跳转到简书 App", URL_scheme)
+                                if enable_URL_scheme
+                                else ""
+                            ),
+                        ],
                     )
 
                     if showed_count == max_result_count:
@@ -126,29 +176,66 @@ def on_fetch_button_clicked() -> None:
 
 
 def diszeroer_helper() -> None:
-    put_markdown("""
+    put_markdown(
+        """
     数据来自简书官方接口。
 
     请调整下方选项，然后点击"获取文章列表"。
 
     ---
-    """)
+    """
+    )
 
-    put_row([
-        put_column([
-            put_input("likes_limit", label="点赞数上限", type="number",
-                      value=5, help_text="介于 1 到 20 之间，超过该限制的文章将不会展示"), None,
-            put_input("comments_limit", label="评论数上限", type="number",
-                      value=3, help_text="介于 1 到 10 之间，超过该限制的文章将不会展示"), None,
-            put_input("max_result_count", label="结果数量", type="number",
-                      value=20, help_text="介于 20 到 100 之间")
-        ]), None,
-        put_column([
-            put_checkbox("selected_collections", label="专题选择",
-                         options=COLLECTIONS.keys()),
-            put_checkbox("additional_features", label="高级选项",
-                         options=["仅展示允许评论的文章", "不展示付费文章", "开启 URL Scheme 跳转"]),
-        ])
-    ], size=r"3fr 1fr 3fr")
+    put_row(
+        [
+            put_column(
+                [
+                    put_input(
+                        "likes_limit",
+                        label="点赞数上限",
+                        type="number",
+                        value=5,
+                        help_text="介于 1 到 20 之间，超过该限制的文章将不会展示",
+                    ),
+                    None,
+                    put_input(
+                        "comments_limit",
+                        label="评论数上限",
+                        type="number",
+                        value=3,
+                        help_text="介于 1 到 10 之间，超过该限制的文章将不会展示",
+                    ),
+                    None,
+                    put_input(
+                        "max_result_count",
+                        label="结果数量",
+                        type="number",
+                        value=20,
+                        help_text="介于 20 到 100 之间",
+                    ),
+                ]
+            ),
+            None,
+            put_column(
+                [
+                    put_checkbox(
+                        "selected_collections",
+                        label="专题选择",
+                        options=COLLECTIONS.keys(),
+                    ),
+                    put_checkbox(
+                        "additional_features",
+                        label="高级选项",
+                        options=["仅展示允许评论的文章", "不展示付费文章", "开启 URL Scheme 跳转"],
+                    ),
+                ]
+            ),
+        ],
+        size=r"3fr 1fr 3fr",
+    )
 
-    put_button("获取文章列表", color="success", onclick=on_fetch_button_clicked)
+    put_button(
+        "获取文章列表",
+        color="success",
+        onclick=on_fetch_button_clicked,
+    )

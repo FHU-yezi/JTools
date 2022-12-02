@@ -10,27 +10,27 @@ _DEFAULT_CONFIG = {
     "deploy": {
         "pywebio_cdn": "",
         "pyecharts_cdn": "",
-        "port": 8080
+        "port": 8080,
     },
     "base_path": "./app",
     "footer": "",
     "db": {
         "host": "localhost",
         "port": 27017,
-        "main_database": "JMFData"
+        "main_database": "JMFData",
     },
     "log": {
         "minimum_record_level": "DEBUG",
-        "minimum_print_level": "INFO"
+        "minimum_print_level": "INFO",
     },
     "status": {
         "out_of_service": [],
-        "downgrade": []
-    }
+        "downgrade": [],
+    },
 }
 
 
-class Config():
+class Config:
     def __new__(cls) -> "Config":
         # 单例模式
         if not hasattr(cls, "_instance"):
@@ -57,7 +57,7 @@ class Config():
         self.__init__()
 
 
-class ConfigNode():
+class ConfigNode:
     def __init__(self, data: Dict[str, Any]) -> None:
         self._data: Dict[str, Any] = data
 

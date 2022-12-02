@@ -1,7 +1,7 @@
 from dataclasses import dataclass
+from importlib import import_module
 from os import listdir
 from typing import Callable, Dict, List
-from importlib import import_module
 
 
 @dataclass()
@@ -39,7 +39,7 @@ def get_module_info(base_path: str, type_: str, module_name: str) -> Module:
         page_func_name=module_name,
         page_func=page_func,
         page_name=page_name,
-        page_desc=page_desc
+        page_desc=page_desc,
     )
 
 
