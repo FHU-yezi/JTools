@@ -3,7 +3,7 @@ from pywebio.output import put_widget
 
 def put_app_card(name: str, status_color: str, status_text: str, url: str, desc: str) -> None:
     tpl: str = """
-    <div class="card" style="padding: 20px; margin-bottom: 20px; border-radius: 20px;">
+    <div class="card" style="padding: 20px; padding-bottom: 10px; margin-bottom: 20px; border-radius: 20px;">
         <b style="font-size: 20px; padding-bottom: 15px;">{{name}}</b>
         <p>状态：<font color="{{status_color}}">{{status_text}}</font></p>
         <p>{{desc}}</p>
