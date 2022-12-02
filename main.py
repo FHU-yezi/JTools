@@ -10,7 +10,7 @@ from utils.config import config
 from utils.html import (green_text, grey_text, link, orange_link, orange_text,
                         red_text)
 from utils.module_finder import Module, get_all_modules_info
-from utils.page import get_current_page_url
+from utils.page import get_base_url
 from utils.patch import patch_all
 
 set_cache_status(False)  # 禁用 JRT 缓存功能
@@ -61,7 +61,7 @@ def index() -> None:
         for module in module_part:
             content += (f"**{get_status_HTML(module.page_name)}"
                         f"{module.page_name}**   "
-                        f"{get_jump_link(get_current_page_url(), module.page_func_name)}\n\n"
+                        f"{get_jump_link(get_base_url(), module.page_func_name)}\n\n"
                         f"{module.page_desc}\n\n")
 
         # 必须传入 sanitize=False 禁用 XSS 攻击防护
