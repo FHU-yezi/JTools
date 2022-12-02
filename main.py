@@ -88,7 +88,7 @@ def index() -> None:
 # 将主页函数加入列表
 modules_list.append(
     Module(
-        module_type=None,
+        module_type="",
         page_func_name="index",
         page_func=index,
         page_name="简书小工具集",
