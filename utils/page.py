@@ -6,11 +6,11 @@ def set_footer(html: str) -> None:
 
 
 def get_current_page_url() -> str:
-    return "http://" + eval_js("window.location.href").split("/")[-2]
+    return eval_js("window.location.href").split("/")[-2]
 
 
 def get_base_url() -> str:
-    return "http://" + eval_js("window.location.href").split("?")[0][:-1]
+    return eval_js("window.location.href").split("?")[0][:-1]
 
 
 def get_chart_width() -> int:
