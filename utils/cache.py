@@ -1,31 +1,21 @@
-from datetime import datetime, timedelta
-from functools import wraps
-from typing import Any, Callable, Dict, Tuple
-
-_cached_result: Dict[str, Tuple[Any, datetime]] = {}
+from functools import lru_cache, wraps
+from time import time
+from typing import Callable
 
 
 def timeout_cache(seconds: int) -> Callable:
-    def outer(func: Callable):
-        @wraps(func)
-        def inner():
-            func_name: str = func.__name__
-            # 如果在缓存中找到了这个函数
-            if func_name in _cached_result.keys():
-                result, create_time = _cached_result[func_name]
-                # 如果缓存没有过期，返回缓存后的结果
-                if create_time + timedelta(seconds=seconds) >= datetime.now():
-                    return result
-                else:
-                    # 删除已过期的缓存
-                    del _cached_result[func_name]
+    def outer(func):
+        func = lru_cache()(func)  # 为函数添加 lru_cache 装饰器
+        func.lifetime = seconds
+        func.expire_time = time() + func.lifetime
 
-            # 执行函数
-            result = func()
-            # 将结果存入缓存
-            _cached_result[func_name] = (result, datetime.now())
-            # 返回结果
-            return result
+        @wraps(func)
+        def inner(*args, **kwargs):
+            if time() >= func.expire_time:  # 已过期
+                func.cache_clear()  # 清除缓存
+                func.expire_time = time() + func.lifetime  # 重新设置过期时间
+
+            return func(*args, **kwargs)
 
         return inner
     return outer
