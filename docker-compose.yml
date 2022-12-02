@@ -11,7 +11,7 @@ services:
     ports:
       - "8602:8602"
     volumes:
-      - "./config.yaml:/app/config.yaml"
+      - "./config.yaml:/app/config.yaml:ro"
     networks:
       - mongodb
     environment:
@@ -19,7 +19,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "1.00"
+          cpus: "0.50"
           memory: 256M
       restart_policy:
         condition: on-failure
