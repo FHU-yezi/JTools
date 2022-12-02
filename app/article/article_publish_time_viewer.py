@@ -37,7 +37,6 @@ def on_query_button_clicked() -> None:
         update_time = article.update_time
         is_updated = is_datetime_equal(publish_time, update_time)
 
-        # TODO: 新窗口打开链接不生效
         data: str = f"""
         文章标题：{title}
         链接：{link(url, url, new_window=True)}
@@ -57,7 +56,7 @@ def on_query_button_clicked() -> None:
 
     with use_result_scope():
         toast("数据获取成功", color="success")
-        put_markdown(data)
+        put_markdown(data, sanitize=False)
 
 
 def article_publish_time_viewer() -> None:
