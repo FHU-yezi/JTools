@@ -98,4 +98,5 @@ start_server(
     host="0.0.0.0",
     port=config.deploy.port,
     cdn=config.deploy.pywebio_cdn,
+    debug=config.deploy.debug,
 )
