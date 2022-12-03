@@ -1,6 +1,8 @@
 from datetime import datetime
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Literal, Tuple
 
+from JianshuResearchTools.assert_funcs import AssertUserUrl
+from JianshuResearchTools.exceptions import InputError
 from pywebio.output import put_button, put_markdown, toast
 from pywebio.pin import pin, pin_on_change, pin_update, put_input, put_select
 
@@ -65,11 +67,15 @@ def get_similar_names(text: str) -> List[str]:
     ]  # 只返回前五个结果
 
 
-def has_record(name: str) -> bool:
+def has_record_by_name(name: str) -> bool:
     return article_FP_rank_db.count_documents({"author.name": name}) != 0
 
 
-def get_record(name: str, sort_key: Tuple[str, int]) -> List[Dict]:
+def has_record_by_URL(url: str) -> bool:
+    return article_FP_rank_db.count_documents({"author.url": url}) != 0
+
+
+def get_record_by_name(name: str, sort_key: Tuple[str, int]) -> List[Dict]:
     result: List[Dict] = (
         article_FP_rank_db.find(
             {
@@ -90,23 +96,63 @@ def get_record(name: str, sort_key: Tuple[str, int]) -> List[Dict]:
     ]
 
 
+def get_record_by_URL(url: str, sort_key: Tuple[str, int]) -> List[Dict]:
+    result: List[Dict] = (
+        article_FP_rank_db.find(
+            {
+                "author.url": url,
+            },
+            dict(
+                {"_id": 0, "article.url": 1},
+                **{key: 1 for key in DATA_MAPPING.keys()},
+            ),
+        )
+        .sort(*sort_key)
+        .limit(100)
+    )
+    # 只有文章链接字段不在 DATA_MAPPING 中，会命中默认值
+    return [
+        {DATA_MAPPING.get(k, "文章链接"): v for k, v in unfold(item).items()}
+        for item in result
+    ]
+
+
 def on_name_input_changed(new_value: str) -> None:
-    pin_update("name", datalist=get_similar_names(new_value))
+    try:
+        AssertUserUrl(new_value)
+    except InputError:  # 输入的不是简书个人主页链接，展示昵称自动补全列表
+        pin_update("name", datalist=get_similar_names(new_value))
 
 
 def on_query_button_clicked() -> None:
-    name: str = input_filter(pin.name)
+    name_or_url: str = input_filter(pin.name_or_url)
     sort_key: Tuple[str, int] = SORT_KEY_MAPPING[pin.sort_key]
 
-    if not name:
-        toast_warn_and_return("请输入简书用户昵称")
+    if not name_or_url:
+        toast_warn_and_return("请输入简书用户昵称 / 个人主页 URL")
 
-    if not has_record(name):
+    try:
+        AssertUserUrl(name_or_url)
+    except InputError:  # 输入的是昵称
+        input_type: Literal["name", "url"] = "name"
+    else:  # 输入的是 URL
+        input_type: Literal["name", "url"] = "url"
+
+    if not (
+        has_record_by_name(name_or_url)
+        if input_type == "name"
+        else has_record_by_URL(name_or_url)
+    ):
         toast_warn_and_return("该用户无上榜记录")
 
     with green_loading():
         data: List[Dict[str, Any]] = []
-        for item in get_record(name, sort_key):
+        fetch_func = (
+            get_record_by_name
+            if input_type == "name"
+            else get_record_by_URL
+        )
+        for item in fetch_func(name_or_url, sort_key):
             # 去除日期字段中恒为 00:00:00 的时间部分
             item["上榜日期"] = str(item["上榜日期"]).split()[0]
 
@@ -123,7 +169,6 @@ def on_query_button_clicked() -> None:
 
     toast("数据获取成功", color="success")
     with use_result_scope():
-        put_markdown(str(data))
         put_table(data)
 
 
@@ -145,9 +190,9 @@ def on_rank_article_viewer() -> None:
     )
     # 必须设置 datalist 参数，否则无法正常显示输入提示
     put_input(
-        "name",
+        "name_or_url",
         type="text",
-        label="用户昵称",
+        label="用户昵称 / 个人主页 URL",
         datalist=[""],
     )
     put_button(
@@ -156,7 +201,7 @@ def on_rank_article_viewer() -> None:
         onclick=on_query_button_clicked,
     )
     pin_on_change(
-        "name",
+        "name_or_url",
         onchange=on_name_input_changed,
     )
     bind_enter_key_callback(
