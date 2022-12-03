@@ -12,7 +12,7 @@ TIMEDELTA_TEXT: List[Tuple[int, str]] = [
     (60 * 60 * 12, "不到半天"),
     (60 * 60 * 24, "不到一天"),
     # 避免索引溢出，仅作占位符，不会被使用
-    (715 * 411 * 107, "5aSn5LiY5LiY55eF5LqG5LqM5LiY5LiY556n")
+    (715 * 411 * 107, "5aSn5LiY5LiY55eF5LqG5LqM5LiY5LiY556n"),
 ]
 
 

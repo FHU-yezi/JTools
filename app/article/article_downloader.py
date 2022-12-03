@@ -4,18 +4,18 @@ from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
 from pywebio.output import download, put_button, put_markdown, toast
 from pywebio.pin import pin, put_checkbox, put_input, put_radio
+
 from utils.callback import bind_enter_key_callback
 from utils.checkbox_helper import is_checked
 from utils.text_filter import input_filter
-from utils.widgets import (green_loading, toast_error_and_return,
-                           toast_warn_and_return)
+from utils.widgets import (
+    green_loading,
+    toast_error_and_return,
+    toast_warn_and_return,
+)
 
 NAME: str = "文章下载工具"
 DESC: str = "下载文章内容，并将其以纯文本或 Markdown 格式保存至本地。"
-
-
-def on_enter_key_pressed(_) -> None:
-    on_download_button_clicked()
 
 
 def on_download_button_clicked() -> None:
@@ -40,8 +40,7 @@ def on_download_button_clicked() -> None:
         title = article.title
         file_name = f"{title}.{download_format}"
 
-        text = article.text if download_format == "txt" \
-            else article.markdown
+        text = article.text if download_format == "txt" else article.markdown
         bytes_flow = bytes(text.encode("utf-8"))
 
     toast("文章已开始下载", color="success")
@@ -51,14 +50,29 @@ def on_download_button_clicked() -> None:
 def article_downloader() -> None:
     put_markdown("**请注意：不规范使用文章可能带来版权风险。**")
 
-    put_input("url", type="text", label="文章 URL")
-    put_radio(
-        "download_format", label="下载格式",
-        options=[
-            ("纯文本", "txt", True),  # 默认选中
-            ("Markdown", "md")
-        ]
+    put_input(
+        "url",
+        type="text",
+        label="文章 URL",
     )
-    put_checkbox("warning", options=["我同意合规使用该文章"])
-    put_button("下载", color="success", onclick=on_download_button_clicked)
-    bind_enter_key_callback("url", on_enter_key_pressed)
+    put_radio(
+        "download_format",
+        label="下载格式",
+        options=[
+            ("纯文本", "txt", True),
+            ("Markdown", "md"),
+        ],  # 默认选中
+    )
+    put_checkbox(
+        "warning",
+        options=["我同意合规使用该文章"],
+    )
+    put_button(
+        "下载",
+        color="success",
+        onclick=on_download_button_clicked,
+    )
+    bind_enter_key_callback(
+        "url",
+        on_press=lambda _: on_download_button_clicked(),
+    )

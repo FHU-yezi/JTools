@@ -3,20 +3,26 @@ from typing import Any, Dict, List
 
 from JianshuResearchTools.assert_funcs import AssertUserUrl
 from JianshuResearchTools.exceptions import InputError
-from pywebio.output import put_button, put_markdown, put_table, toast
+from pywebio.output import put_button, put_markdown, toast
 from pywebio.pin import pin, put_checkbox, put_input
+
 from utils.cache import timeout_cache
 from utils.callback import bind_enter_key_callback
 from utils.db import lottery_db
 from utils.text_filter import input_filter
-from utils.widgets import (green_loading, toast_error_and_return,
-                           toast_warn_and_return, use_result_scope)
+from utils.widgets import (
+    green_loading,
+    toast_error_and_return,
+    toast_warn_and_return,
+    use_result_scope,
+)
+from widgets.table import put_table
 
 NAME: str = "中奖记录查询工具"
 DESC: str = "查询简书大转盘中奖记录。"
 DATA_MAPPING: Dict[str, str] = {
     "time": "中奖时间",
-    "reward_name": "奖项"
+    "reward_name": "奖项",
 }
 REWARDS: List[str] = [
     "收益加成卡 100",
@@ -24,15 +30,22 @@ REWARDS: List[str] = [
     "四叶草徽章",
     "锦鲤头像框 1 年",
     "免费开 1 次连载",
-    "招财猫头像框 1 年"
+    "招财猫头像框 1 年",
 ]
 
 
 @timeout_cache(3600)
 def get_data_update_time() -> str:
     result: datetime = list(
-        lottery_db
-        .find({}, dict({"_id": 0, "time": 1}))
+        lottery_db.find(
+            {},
+            dict(
+                {
+                    "_id": 0,
+                    "time": 1,
+                }
+            ),
+        )
         .sort("time", -1)
         .limit(1)
     )[0]["time"]
@@ -50,19 +63,19 @@ def has_record(url: str) -> bool:
 
 def get_record(url: str) -> List[Dict]:
     result: List[Dict] = (
-        lottery_db
-        .find(
-            {"user.url": url},
-            dict({"_id": 0}, **{key: 1 for key in DATA_MAPPING.keys()}),  # 合并字典
+        lottery_db.find(
+            {
+                "user.url": url,
+            },
+            dict(
+                {"_id": 0},
+                **{key: 1 for key in DATA_MAPPING.keys()},
+            ),  # 合并字典
         )
         .sort("time", -1)
         .limit(100)
     )
     return [{DATA_MAPPING[k]: v for k, v in item.items()} for item in result]
-
-
-def on_enter_key_pressed(_) -> None:
-    on_query_button_clicked()
 
 
 def on_query_button_clicked() -> None:
@@ -87,8 +100,7 @@ def on_query_button_clicked() -> None:
 
     with green_loading():
         data: List[Dict[str, Any]] = [
-            x for x in get_record(url)
-            if x["奖项"] in reward_filter
+            x for x in get_record(url) if x["奖项"] in reward_filter
         ]
 
     if not data:  # 该筛选条件下无结果
@@ -96,24 +108,42 @@ def on_query_button_clicked() -> None:
 
     toast("数据获取成功", color="success")
     with use_result_scope():
-        put_table(data, header=list(DATA_MAPPING.values()))
+        put_table(data)
 
 
 def lottery_reward_record_viewer() -> None:
-    put_markdown(f"""
-    - 数据范围：2021.12.29 - {get_data_update_time()}（每天 2:00、9:00、14:00、21:00 更新）
-    - 当前数据量：{get_data_count()}
-    - 最多展示 100 条中奖记录
-    - 仅支持查询“收益加成卡 100”以上的奖项：
-        - 收益加成卡 100
-        - 收益加成卡 1 万
-        - 四叶草徽章
-        - 锦鲤头像框 1 年
-        - 免费开 1 次连载
-        - 招财猫头像框 1 年
-    """)
+    put_markdown(
+        f"""
+        - 数据范围：2021.12.29 - {get_data_update_time()}（每天 2:00、9:00、14:00、21:00 更新）
+        - 当前数据量：{get_data_count()}
+        - 最多展示 100 条中奖记录
+        - 仅支持查询“收益加成卡 100”以上的奖项：
+            - 收益加成卡 100
+            - 收益加成卡 1 万
+            - 四叶草徽章
+            - 锦鲤头像框 1 年
+            - 免费开 1 次连载
+            - 招财猫头像框 1 年
+        """
+    )
 
-    put_input("url", type="text", label="用户 URL")
-    put_checkbox("reward_filter", options=REWARDS, label="奖项筛选", value=REWARDS)
-    put_button("查询", color="success", onclick=on_query_button_clicked)
-    bind_enter_key_callback("url", on_enter_key_pressed)
+    put_input(
+        "url",
+        type="text",
+        label="用户 URL",
+    )
+    put_checkbox(
+        "reward_filter",
+        options=REWARDS,
+        label="奖项筛选",
+        value=REWARDS,
+    )
+    put_button(
+        "查询",
+        color="success",
+        onclick=on_query_button_clicked,
+    )
+    bind_enter_key_callback(
+        "url",
+        on_press=lambda _: on_query_button_clicked(),
+    )

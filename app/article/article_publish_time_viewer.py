@@ -2,19 +2,20 @@ from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
 from pywebio.output import put_button, put_markdown, toast
 from pywebio.pin import pin, put_input
+
 from utils.callback import bind_enter_key_callback
 from utils.html import link
 from utils.text_filter import input_filter
 from utils.time_helper import human_readable_td_to_now, is_datetime_equal
-from utils.widgets import (green_loading, toast_error_and_return,
-                           toast_warn_and_return, use_result_scope)
+from utils.widgets import (
+    green_loading,
+    toast_error_and_return,
+    toast_warn_and_return,
+    use_result_scope,
+)
 
 NAME: str = "文章发布时间查询工具"
 DESC: str = "查询文章的发布与更新时间。"
-
-
-def on_enter_key_pressed(_) -> None:
-    on_query_button_clicked()
 
 
 def on_query_button_clicked() -> None:
@@ -36,7 +37,6 @@ def on_query_button_clicked() -> None:
         update_time = article.update_time
         is_updated = is_datetime_equal(publish_time, update_time)
 
-        # TODO: 新窗口打开链接不生效
         data: str = f"""
         文章标题：{title}
         链接：{link(url, url, new_window=True)}
@@ -56,10 +56,21 @@ def on_query_button_clicked() -> None:
 
     with use_result_scope():
         toast("数据获取成功", color="success")
-        put_markdown(data)
+        put_markdown(data, sanitize=False)
 
 
 def article_publish_time_viewer() -> None:
-    put_input("url", type="text", label="文章 URL")
-    put_button("查询", color="success", onclick=on_query_button_clicked)
-    bind_enter_key_callback("url", on_enter_key_pressed)
+    put_input(
+        "url",
+        type="text",
+        label="文章 URL",
+    )
+    put_button(
+        "查询",
+        color="success",
+        onclick=on_query_button_clicked,
+    )
+    bind_enter_key_callback(
+        "url",
+        on_press=lambda _: on_query_button_clicked(),
+    )

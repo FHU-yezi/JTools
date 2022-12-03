@@ -14,5 +14,12 @@ def toast_error_and_return(text: str) -> NoReturn:
     exit()
 
 
-green_loading: Callable = partial(put_loading, color="success")
-use_result_scope: Callable = partial(use_scope, "result", clear=True)
+green_loading: Callable = partial(
+    put_loading,
+    color="success",
+)
+use_result_scope: Callable = partial(
+    use_scope,
+    "result",
+    clear=True,
+)

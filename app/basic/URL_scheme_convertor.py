@@ -1,22 +1,31 @@
 from typing import Callable, Dict, Iterable, Tuple
 
-from JianshuResearchTools.assert_funcs import (AssertArticleUrl,
-                                               AssertCollectionUrl,
-                                               AssertJianshuUrl,
-                                               AssertNotebookUrl,
-                                               AssertUserUrl)
-from JianshuResearchTools.convert import (ArticleUrlToArticleUrlScheme,
-                                          CollectionUrlToCollectionUrlScheme,
-                                          NotebookUrlToNotebookUrlScheme,
-                                          UserUrlToUserUrlScheme)
+from JianshuResearchTools.assert_funcs import (
+    AssertArticleUrl,
+    AssertCollectionUrl,
+    AssertJianshuUrl,
+    AssertNotebookUrl,
+    AssertUserUrl,
+)
+from JianshuResearchTools.convert import (
+    ArticleUrlToArticleUrlScheme,
+    CollectionUrlToCollectionUrlScheme,
+    NotebookUrlToNotebookUrlScheme,
+    UserUrlToUserUrlScheme,
+)
 from JianshuResearchTools.exceptions import InputError
 from pywebio.output import put_button, put_image, put_markdown, toast
 from pywebio.pin import pin, put_input
+
 from utils.callback import bind_enter_key_callback
 from utils.make_qrcode import make_qrcode
 from utils.text_filter import input_filter
-from utils.widgets import (green_loading, toast_error_and_return,
-                           toast_warn_and_return, use_result_scope)
+from utils.widgets import (
+    green_loading,
+    toast_error_and_return,
+    toast_warn_and_return,
+    use_result_scope,
+)
 
 NAME: str = "URL Scheme 转换工具"
 DESC: str = "将简书链接转换为 URL Scheme，从而在 App 端实现一键跳转。"
@@ -25,7 +34,7 @@ ASSERT_FUNCS: Iterable[Tuple[Callable[[str], None], str]] = (
     (AssertArticleUrl, "article"),
     (AssertUserUrl, "user"),
     (AssertCollectionUrl, "collection"),
-    (AssertNotebookUrl, "notebook")
+    (AssertNotebookUrl, "notebook"),
 )
 
 CONVERT_FUNCS: Dict[str, Callable[[str], str]] = {
@@ -49,10 +58,6 @@ def get_url_type(url: str) -> str:
 
 def get_convert_result(url: str, url_type: str) -> str:
     return CONVERT_FUNCS[url_type](url)
-
-
-def on_enter_key_pressed(_) -> None:
-    on_convert_button_cilcked()
 
 
 def on_convert_button_cilcked() -> None:
@@ -82,15 +87,28 @@ def on_convert_button_cilcked() -> None:
 
 
 def URL_scheme_convertor() -> None:
-    put_markdown("""
-    目前支持转换的链接类型：
+    put_markdown(
+        """
+        目前支持转换的链接类型：
 
-    - 文章
-    - 用户
-    - 专题
-    - 文集
-    """)
+        - 文章
+        - 用户
+        - 专题
+        - 文集
+        """
+    )
 
-    put_input("url", type="text", label="简书 URL")
-    put_button("转换", color="success", onclick=on_convert_button_cilcked)
-    bind_enter_key_callback("url", on_press=on_enter_key_pressed)
+    put_input(
+        "url",
+        type="text",
+        label="简书 URL",
+    )
+    put_button(
+        "转换",
+        color="success",
+        onclick=on_convert_button_cilcked,
+    )
+    bind_enter_key_callback(
+        "url",
+        on_press=lambda _: on_convert_button_cilcked(),
+    )
