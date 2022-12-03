@@ -1,14 +1,12 @@
 from datetime import datetime, timedelta
+from functools import lru_cache
 from typing import Callable, Dict, List, Tuple
 
+from httpx import get as httpx_get
+from JianshuResearchTools.convert import UserSlugToUserUrl
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
-from pywebio.output import (
-    put_button,
-    put_collapse,
-    put_markdown,
-    use_scope,
-)
+from pywebio.output import put_button, put_collapse, put_markdown, use_scope
 from pywebio.pin import pin, put_input
 
 from utils.callback import bind_enter_key_callback
@@ -27,6 +25,13 @@ NAME: str = "LP 理事会推文检测工具"
 DESC: str = "检测文章是否符合 LP 理事会推文要求。"
 
 
+@lru_cache(10)
+def get_author_url(article_obj: Article) -> str:
+    response = httpx_get(f"https://www.jianshu.com/asimov/p/{article_obj.slug}")
+    data = response.json()
+    return UserSlugToUserUrl(data["user"]["slug"])
+
+
 def wordage_checker(article_obj: Article) -> Tuple[bool, int, int]:
     wordage: int = article_obj.wordage
     return (True if wordage >= 800 else False, 800, wordage)
@@ -38,32 +43,45 @@ def reward_checker(article_obj: Article) -> Tuple[bool, float, float]:
 
 
 def on_rank_last_7d_checker(article_obj: Article) -> Tuple[bool, int, int]:
-    url: str = article_obj.url
+    author_url: str = get_author_url(article_obj)
     on_rank_last_7d: int = article_FP_rank_db.count_documents(
-        {"article.url": url, "date": {"$gt": datetime.now() - timedelta(days=7)}}
+        {
+            "author.url": author_url,
+            "date": {
+                "$gt": datetime.now() - timedelta(days=7),
+            },
+        }
     )
     return (True if on_rank_last_7d == 0 else False, 0, on_rank_last_7d)
 
 
 def on_rank_last_10d_top30_checker(article_obj: Article) -> Tuple[bool, int, int]:
-    url: str = article_obj.url
+    author_url: str = get_author_url(article_obj)
     on_rank_last_10d_top30: int = article_FP_rank_db.count_documents(
         {
-            "article.url": url,
-            "date": {"$gt": datetime.now() - timedelta(days=10)},
-            "ranking": {"$lte": 30},
+            "author.url": author_url,
+            "date": {
+                "$gt": datetime.now() - timedelta(days=10),
+            },
+            "ranking": {
+                "$lte": 30,
+            },
         }
     )
     return (True if on_rank_last_10d_top30 == 0 else False, 0, on_rank_last_10d_top30)
 
 
 def on_rank_last_1m_top30_checker(article_obj: Article) -> Tuple[bool, int, int]:
-    url: str = article_obj.url
+    author_url: str = get_author_url(article_obj)
     on_rank_last_1m_top30: int = article_FP_rank_db.count_documents(
         {
-            "article.url": url,
-            "date": {"$gt": datetime.now() - timedelta(days=30)},
-            "ranking": {"$lte": 30},
+            "author.url": author_url,
+            "date": {
+                "$gt": datetime.now() - timedelta(days=30),
+            },
+            "ranking": {
+                "$lte": 30,
+            },
         }
     )
     return (True if on_rank_last_1m_top30 <= 3 else False, 3, on_rank_last_1m_top30)

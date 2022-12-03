@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "JianshuMicroFeatures"
-version = "2.4.0"
+version = "2.4.1"
 description = "为简友提供高效便捷的科技工具"
 authors = ["FHU-yezi <yehaowei20060411@qq.com>"]
 license = "MIT"
