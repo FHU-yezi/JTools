@@ -136,7 +136,7 @@ def on_query_button_clicked() -> None:
     except InputError:  # 输入的是昵称
         input_type: Literal["name", "url"] = "name"
     else:  # 输入的是 URL
-        input_type: Literal["name", "url"] = "url"
+        input_type: Literal["name", "url"] = "url"  # type: ignore [no-redef]
 
     if not (
         has_record_by_name(name_or_url)
