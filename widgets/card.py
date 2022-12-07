@@ -1,7 +1,17 @@
+from datetime import datetime
+
+from JianshuResearchTools.convert import (
+    ArticleUrlToArticleUrlScheme,
+    UserUrlToUserUrlScheme,
+)
 from pywebio.output import put_widget
 
+from utils.time_helper import human_readable_td_to_now
 
-def put_app_card(name: str, status_color: str, status_text: str, url: str, desc: str) -> None:
+
+def put_app_card(
+    name: str, status_color: str, status_text: str, url: str, desc: str
+) -> None:
     tpl: str = """
     <div class="card" style="padding: 20px; padding-bottom: 10px; margin-bottom: 20px; border-radius: 20px;">
         <b style="font-size: 20px; padding-bottom: 15px;">{{name}}</b>
@@ -19,5 +29,59 @@ def put_app_card(name: str, status_color: str, status_text: str, url: str, desc:
             "desc": desc,
             "url": url if status_text != "暂停服务" else "",
             "disabled": "disabled" if status_text == "暂停服务" else "",
+        },
+    )
+
+
+def put_article_detail_card(
+    source_collection: str,
+    article_title: str,
+    article_URL: str,
+    release_time: datetime,
+    views_count: int,
+    likes_count: int,
+    comments_count: int,
+    total_FP_count: float,
+    summary: str,
+    author_name: str,
+    author_URL: str,
+    enable_URL_scheme: bool,
+    is_Android: bool,
+) -> None:
+    tpl: str = """
+    <div class="card" style="padding: 20px; padding-bottom: 10px; margin-bottom: 20px; border-radius: 20px;">
+        <p>来源专题：{{source_collection}}</p>
+        <p>文章标题：{{article_title}}（<a href="{{article_URL}}" target="_blank" rel="noopener noreferer">点击跳转</a>）</p>
+        <p>作者名：{{author_name}}（<a href="{{author_URL}}" target="_blank" rel="noopener noreferer">点击跳转</a>）</p>
+        <p>发布时间：{{release_time}}（{{human_readable_release_time}}）</p>
+        <p>阅 / 赞 / 评：{{views_count}} / {{likes_count}} / {{comments_count}}</p>
+        <p>获钻量：{{total_FP_count}}</p>
+        <p>内容摘要：</p>
+        <p>{{summary}}</p>
+    </div>
+    """
+    return put_widget(
+        tpl,
+        {
+            "source_collection": source_collection,
+            "article_title": article_title,
+            "article_URL": (
+                ArticleUrlToArticleUrlScheme(article_URL)
+                if enable_URL_scheme and is_Android
+                else article_URL
+            ),
+            "release_time": release_time.strftime(r"%Y-%m-%d %X"),
+            "human_readable_release_time": human_readable_td_to_now(release_time),
+            "views_count": views_count,
+            "likes_count": likes_count,
+            "comments_count": comments_count,
+            "total_FP_count": total_FP_count,
+            "summary": summary,
+            "author_name": author_name,
+            "author_URL": (
+                UserUrlToUserUrlScheme(author_URL)
+                if enable_URL_scheme and is_Android
+                else author_URL
+            ),
         },
     )

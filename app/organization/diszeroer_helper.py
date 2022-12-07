@@ -3,28 +3,20 @@ from typing import Dict, Generator, List, Tuple
 
 from JianshuResearchTools.convert import (
     ArticleSlugToArticleUrl,
-    ArticleUrlToArticleUrlScheme,
     UserSlugToUserUrl,
 )
 from JianshuResearchTools.objects import Collection
-from pywebio.output import (
-    put_button,
-    put_collapse,
-    put_column,
-    put_html,
-    put_markdown,
-    put_row,
-)
+from pywebio.output import put_button, put_column, put_markdown, put_row
 from pywebio.pin import pin, put_checkbox, put_input
 
 from utils.checkbox_helper import is_checked
-from utils.html import link
-from utils.time_helper import human_readable_td
+from utils.page import is_Android
 from utils.widgets import (
     green_loading,
     toast_error_and_return,
     use_result_scope,
 )
+from widgets.card import put_article_detail_card
 
 NAME: str = "消零派辅助工具"
 DESC: str = "消灭零评论，留下爱与光。"
@@ -117,11 +109,6 @@ def on_fetch_button_clicked() -> None:
                 article_URL: str = ArticleSlugToArticleUrl(article["aslug"])
                 author_name: str = article["user"]["name"]
                 author_URL: str = UserSlugToUserUrl(article["user"]["uslug"])
-                URL_scheme = (
-                    ArticleUrlToArticleUrlScheme(article_URL)
-                    if enable_URL_scheme
-                    else None
-                )
                 release_time: datetime = article["release_time"].replace(
                     tzinfo=None
                 )  # 处理时区问题
@@ -144,31 +131,20 @@ def on_fetch_button_clicked() -> None:
                     paid,
                 ):
                     showed_count += 1
-                    # 必须传入 sanitize=False 禁用 XSS 攻击防护
-                    # 否则 target="_blank" 属性会消失，无法实现新标签页打开
-                    put_collapse(
-                        title=f"[ {source_collection} ] {article_title}",
-                        content=[
-                            put_markdown(
-                                f"""
-                                文章链接：{link(article_URL, article_URL, new_window=True)}
-                                作者：{link(author_name, author_URL, new_window=True)}
-                                发布时间：{release_time.strftime(r"%Y-%m-%d %X")}（{human_readable_td(datetime.now() - release_time)}前）
-
-                                {views_count} 阅读 / {likes_count} 点赞 / {comments_count} 评论
-                                获钻量：{total_FP_amount}
-
-                                内容摘要：
-                                {summary}
-                                """,
-                                sanitize=False,
-                            ),
-                            put_html(
-                                link("点击跳转到简书 App", URL_scheme)
-                                if enable_URL_scheme
-                                else ""
-                            ),
-                        ],
+                    put_article_detail_card(
+                        source_collection=source_collection,
+                        article_title=article_title,
+                        article_URL=article_URL,
+                        release_time=release_time,
+                        views_count=views_count,
+                        likes_count=likes_count,
+                        comments_count=comments_count,
+                        total_FP_count=total_FP_amount,
+                        summary=summary,
+                        author_name=author_name,
+                        author_URL=author_URL,
+                        enable_URL_scheme=enable_URL_scheme,
+                        is_Android=is_Android(),
                     )
 
                     if showed_count == max_result_count:

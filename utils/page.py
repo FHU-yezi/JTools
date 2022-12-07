@@ -1,4 +1,4 @@
-from pywebio.session import eval_js, run_js
+from pywebio.session import eval_js, info, run_js
 
 
 def set_footer(html: str) -> None:
@@ -20,3 +20,8 @@ def get_chart_width() -> int:
 
 def get_chart_height() -> int:
     return int(get_chart_width() / 1.5)
+
+
+def is_Android() -> bool:
+    # TODO
+    return "Android" in str(info.user_agent)
