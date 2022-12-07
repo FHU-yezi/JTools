@@ -121,7 +121,7 @@ def on_name_input_changed(new_value: str) -> None:
     try:
         AssertUserUrl(new_value)
     except InputError:  # 输入的不是简书个人主页链接，展示昵称自动补全列表
-        pin_update("name", datalist=get_similar_names(new_value))
+        pin_update("name_or_url", datalist=get_similar_names(new_value))
 
 
 def on_query_button_clicked() -> None:
