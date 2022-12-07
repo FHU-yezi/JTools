@@ -7,7 +7,7 @@ def put_app_card(name: str, status_color: str, status_text: str, url: str, desc:
         <b style="font-size: 20px; padding-bottom: 15px;">{{name}}</b>
         <p>状态：<font color="{{status_color}}">{{status_text}}</font></p>
         <p>{{desc}}</p>
-        <button class="btn btn-outline-secondary" style="position: absolute; right: 30px;" onclick="window.open('{{url}}', '_blank')" {{disabled}}>&gt;</button>
+        <button class="btn btn-outline-secondary" style="position: absolute; top: 16px; right: 30px;" onclick="window.open('{{url}}', '_blank')" {{disabled}}><b>&gt;</b></button>
     </div>
     """
     return put_widget(
