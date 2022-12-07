@@ -7,7 +7,7 @@ from typing import Callable, Dict, List
 @dataclass()
 class Module:
     module_type: str
-    page_func_name: str
+    module_name: str
     page_func: Callable[[], None]
     page_name: str
     page_desc: str
@@ -36,7 +36,7 @@ def get_module_info(base_path: str, type_: str, module_name: str) -> Module:
 
     return Module(
         module_type=type_,
-        page_func_name=module_name,
+        module_name=module_name,
         page_func=page_func,
         page_name=page_name,
         page_desc=page_desc,
