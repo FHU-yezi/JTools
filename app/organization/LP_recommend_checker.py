@@ -8,6 +8,7 @@ from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
 from pywebio.output import put_button, put_collapse, put_markdown, use_scope
 from pywebio.pin import pin, put_input
+from utils.cache import timeout_cache
 
 from utils.callback import bind_enter_key_callback
 from utils.db import article_FP_rank_db
@@ -30,6 +31,13 @@ def get_author_url(article_obj: Article) -> str:
     response = httpx_get(f"https://www.jianshu.com/asimov/p/{article_obj.slug}")
     data = response.json()
     return UserSlugToUserUrl(data["user"]["slug"])
+
+
+@timeout_cache(300)
+def get_article_wordage(article_obj: Article) -> str:
+    response = httpx_get(f"https://www.jianshu.com/asimov/p/{article_obj.slug}")
+    data = response.json()
+    return UserSlugToUserUrl(data["wordage"])
 
 
 def wordage_checker(article_obj: Article) -> Tuple[bool, int, int]:
@@ -88,8 +96,7 @@ def on_rank_last_1m_top30_checker(article_obj: Article) -> Tuple[bool, int, int]
 
 
 CHECK_ITEM_FUNC_MAPPING: Dict[str, Callable] = {
-    # 由于 API 不可用，暂不执行此检查
-    # "文章字数": wordage_checker,
+    "文章字数": wordage_checker,
     "文章收益": reward_checker,
     "过去 7 天上榜次数": on_rank_last_7d_checker,
     "过去 10 天前 30 名次数": on_rank_last_10d_top30_checker,
