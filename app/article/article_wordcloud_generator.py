@@ -70,7 +70,7 @@ def on_generate_button_clicked() -> None:
 
         word_freq = get_word_freq(text)
 
-        wordcloud = get_wordcloud(word_freq, (20, 70)).set_global_opts(
+        wordcloud = get_wordcloud(word_freq, (20, 70), in_tab=False).set_global_opts(
             title_opts=opts.TitleOpts(
                 title=f"{title} 的词云图",
                 subtitle=url,

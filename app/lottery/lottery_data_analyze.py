@@ -90,7 +90,9 @@ def get_period_award_name_times_data(td: Optional[timedelta] = None) -> Dict[str
 
 
 @timeout_cache(3600)
-def get_period_rewarded_times_count(reward_name: str, td: Optional[timedelta] = None) -> int:
+def get_period_rewarded_times_count(
+    reward_name: str, td: Optional[timedelta] = None
+) -> int:
     return lottery_db.count_documents(
         {
             "reward_name": reward_name,
@@ -102,7 +104,9 @@ def get_period_rewarded_times_count(reward_name: str, td: Optional[timedelta] = 
 
 
 @timeout_cache(3600)
-def get_period_rewarded_users_count(reward_name: str, td: Optional[timedelta] = None) -> int:
+def get_period_rewarded_users_count(
+    reward_name: str, td: Optional[timedelta] = None
+) -> int:
     return len(
         lottery_db.distinct(
             "user.id",
@@ -135,7 +139,10 @@ def get_period_reward_type_chart(td: Optional[timedelta] = None):
         return "<p>暂无数据</p>"
 
     return (
-        get_pie_chart(data)
+        get_pie_chart(
+            data,
+            in_tab=True,
+        )
         .set_global_opts(
             legend_opts=opts.LegendOpts(
                 is_show=False,
@@ -153,9 +160,7 @@ def get_period_reward_type_chart(td: Optional[timedelta] = None):
 def get_general_analyze_data(td: Optional[timedelta] = None) -> List[Dict]:
     award_name_times_all: Dict[str, int] = get_period_award_name_times_data(td)
     reward_percent_all: Dict[str, float] = get_award_probability(award_name_times_all)
-    award_rarity_all: Dict[str, float] = get_award_rarity(
-        reward_percent_all
-    )
+    award_rarity_all: Dict[str, float] = get_award_rarity(reward_percent_all)
 
     data: List[Dict] = []
     total_rewarded_times_count: int = 0

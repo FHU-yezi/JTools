@@ -11,11 +11,11 @@ from utils.page import get_chart_height, get_chart_width
 CurrentConfig.ONLINE_HOST = config.deploy.pyecharts_cdn
 
 
-def get_line_chart(x: List, y: List) -> Line:
+def get_line_chart(x: List, y: List, in_tab: bool = False) -> Line:
     return (
         Line(
             init_opts=opts.InitOpts(
-                width=f"{get_chart_width()}px",
+                width=f"{get_chart_width(in_tab=in_tab)}px",
                 height=f"{get_chart_height()}px",
             )
         )
@@ -24,11 +24,11 @@ def get_line_chart(x: List, y: List) -> Line:
     )
 
 
-def get_pie_chart(data: Dict[str, Union[int, float]]) -> Pie:
+def get_pie_chart(data: Dict[str, Union[int, float]], in_tab: bool = False) -> Pie:
     return (
         Pie(
             init_opts=opts.InitOpts(
-                width=f"{get_chart_width()}px",
+                width=f"{get_chart_width(in_tab=in_tab)}px",
                 height=f"{get_chart_height()}px",
             )
         )
@@ -36,10 +36,10 @@ def get_pie_chart(data: Dict[str, Union[int, float]]) -> Pie:
     )
 
 
-def get_wordcloud(word_freq, size_range: Tuple[int, int]) -> WordCloud:
+def get_wordcloud(word_freq, size_range: Tuple[int, int], in_tab: bool = False) -> WordCloud:
     return WordCloud(
         init_opts=opts.InitOpts(
-            width=f"{get_chart_width()}px",
+            width=f"{get_chart_width(in_tab=in_tab)}px",
             height=f"{get_chart_height()}px",
         )
     ).add(
