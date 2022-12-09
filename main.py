@@ -67,15 +67,15 @@ def index() -> None:
     config.refresh()  # 刷新配置文件
 
     for type_, type_name in STRUCTURE_MAPPING.items():
-        module_part: List[Module] = [x for x in modules_list if x.module_type == type_]
+        module_part = (x for x in modules_list if x.module_type == type_)
         put_markdown(f"## {type_name}\n")
 
         for module in module_part:
             put_app_card(
                 name=module.page_name,
-                status_color=get_status_color(module.page_name),
-                status_text=get_status_text(module.page_name),
-                url=get_jump_link(get_base_url(), module.page_func_name),
+                status_color=get_status_color(module.module_name),
+                status_text=get_status_text(module.module_name),
+                url=get_jump_link(get_base_url(), module.module_name),
                 desc=module.page_desc,
             )
 
@@ -84,7 +84,7 @@ def index() -> None:
 modules_list.append(
     Module(
         module_type="",
-        page_func_name="index",
+        module_name="index",
         page_func=index,
         page_name="简书小工具集",
         page_desc="为简友提供高效便捷的科技工具。",

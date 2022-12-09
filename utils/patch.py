@@ -60,7 +60,7 @@ def patch_record_access(
 
         from utils.log import access_logger
 
-        access_logger.log_from_info_obj(module_obj.page_func_name, info)
+        access_logger.log_from_info_obj(module_obj.module_name, info)
 
         func()
 

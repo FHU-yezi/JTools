@@ -1,9 +1,9 @@
 from typing import Any, Dict, List
 
-from pywebio.output import put_html
+from pywebio.output import Output, put_html
 
 
-def put_table(data: List[Dict[Any, Any]]) -> None:
+def put_table(data: List[Dict[Any, Any]]) -> Output:
     # 强制表格中的内容单行显示
     html_text: List[str] = [
         '<div class="table-responsive"><table class="table" style="white-space: nowrap;">'
@@ -26,4 +26,4 @@ def put_table(data: List[Dict[Any, Any]]) -> None:
         html_text.append("</tr>")
     html_text.append("</tbody></table></div>")
 
-    put_html("".join(html_text), sanitize=False)
+    return put_html("".join(html_text), sanitize=False)

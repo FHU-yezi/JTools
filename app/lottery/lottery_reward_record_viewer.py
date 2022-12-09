@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Set
 
 from JianshuResearchTools.assert_funcs import AssertUserUrl
 from JianshuResearchTools.exceptions import InputError
@@ -24,14 +24,14 @@ DATA_MAPPING: Dict[str, str] = {
     "time": "中奖时间",
     "reward_name": "奖项",
 }
-REWARDS: List[str] = [
+REWARDS_WITH_WHITESPACE: Set[str] = {
     "收益加成卡 100",
     "收益加成卡 1 万",
     "四叶草徽章",
     "锦鲤头像框 1 年",
     "免费开 1 次连载",
     "招财猫头像框 1 年",
-]
+}
 
 
 @timeout_cache(3600)
@@ -39,12 +39,10 @@ def get_data_update_time() -> str:
     result: datetime = list(
         lottery_db.find(
             {},
-            dict(
-                {
-                    "_id": 0,
-                    "time": 1,
-                }
-            ),
+            {
+                "_id": 0,
+                "time": 1,
+            },
         )
         .sort("time", -1)
         .limit(1)
@@ -118,13 +116,9 @@ def lottery_reward_record_viewer() -> None:
         - 当前数据量：{get_data_count()}
         - 最多展示 100 条中奖记录
         - 仅支持查询“收益加成卡 100”以上的奖项：
-            - 收益加成卡 100
-            - 收益加成卡 1 万
-            - 四叶草徽章
-            - 锦鲤头像框 1 年
-            - 免费开 1 次连载
-            - 招财猫头像框 1 年
         """
+        + "    - "
+        + "\n            - ".join(REWARDS_WITH_WHITESPACE)  # 拼接奖品字符串
     )
 
     put_input(
@@ -134,9 +128,9 @@ def lottery_reward_record_viewer() -> None:
     )
     put_checkbox(
         "reward_filter",
-        options=REWARDS,
         label="奖项筛选",
-        value=REWARDS,
+        options=list(REWARDS_WITH_WHITESPACE),
+        value=list(REWARDS_WITH_WHITESPACE),
     )
     put_button(
         "查询",
