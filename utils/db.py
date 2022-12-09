@@ -1,4 +1,4 @@
-from pymongo import MongoClient
+from pymongo import MongoClient, IndexModel
 
 from utils.config import config
 
@@ -16,3 +16,14 @@ access_log_db = db.access_log
 
 article_FP_rank_db = init_DB("JFetcherData").article_FP_rank
 lottery_db = init_DB("JFetcherData").lottery_data
+
+# 创建索引
+
+article_FP_rank_db.create_indexes([
+    IndexModel([("date", 1)]),
+    IndexModel([("ranking", 1)])
+])
+lottery_db.create_indexes([
+    IndexModel([("time", 1)]),
+    IndexModel([("reward_name", 1)]),
+])
