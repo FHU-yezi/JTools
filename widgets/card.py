@@ -4,14 +4,14 @@ from JianshuResearchTools.convert import (
     ArticleUrlToArticleUrlScheme,
     UserUrlToUserUrlScheme,
 )
-from pywebio.output import put_widget
+from pywebio.output import Output, put_widget
 
 from utils.time_helper import human_readable_td_to_now
 
 
 def put_app_card(
     name: str, status_color: str, status_text: str, url: str, desc: str
-) -> None:
+) -> Output:
     tpl: str = """
     <div class="card" style="padding: 20px; padding-bottom: 10px; margin-bottom: 20px; border-radius: 20px;">
         <b style="font-size: 20px; padding-bottom: 15px;">{{name}}</b>
@@ -47,7 +47,7 @@ def put_article_detail_card(
     author_URL: str,
     enable_URL_scheme: bool,
     is_Android: bool,
-) -> None:
+) -> Output:
     tpl: str = """
     <div class="card" style="padding: 20px; padding-bottom: 10px; margin-bottom: 20px; border-radius: 20px;">
         <p>来源专题：{{source_collection}}</p>

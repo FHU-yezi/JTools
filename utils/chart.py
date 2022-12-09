@@ -1,7 +1,7 @@
-from typing import List, Tuple
+from typing import Dict, List, Tuple, Union
 
 import pyecharts.options as opts
-from pyecharts.charts import Line, WordCloud
+from pyecharts.charts import Line, Pie, WordCloud
 from pyecharts.globals import CurrentConfig
 
 from utils.config import config
@@ -21,6 +21,18 @@ def get_line_chart(x: List, y: List) -> Line:
         )
         .add_xaxis(x)
         .add_yaxis("y", y, is_smooth=True)
+    )
+
+
+def get_pie_chart(data: Dict[str, Union[int, float]]) -> Pie:
+    return (
+        Pie(
+            init_opts=opts.InitOpts(
+                width=f"{get_chart_width()}px",
+                height=f"{get_chart_height()}px",
+            )
+        )
+        .add("", tuple(data.items()))
     )
 
 

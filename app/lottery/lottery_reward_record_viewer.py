@@ -39,12 +39,10 @@ def get_data_update_time() -> str:
     result: datetime = list(
         lottery_db.find(
             {},
-            dict(
-                {
-                    "_id": 0,
-                    "time": 1,
-                }
-            ),
+            {
+                "_id": 0,
+                "time": 1,
+            },
         )
         .sort("time", -1)
         .limit(1)
