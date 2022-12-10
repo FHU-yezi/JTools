@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Literal, Tuple
 
 from JianshuResearchTools.assert_funcs import AssertUserUrl
 from JianshuResearchTools.exceptions import InputError
-from pywebio.output import put_button, put_markdown, toast
+from pywebio.output import put_markdown, toast
 from pywebio.pin import pin, pin_on_change, pin_update, put_input, put_select
 
 from utils.cache import timeout_cache
@@ -17,6 +17,7 @@ from utils.widgets import (
     toast_warn_and_return,
     use_result_scope,
 )
+from widgets.button import put_button
 from widgets.table import put_table
 
 NAME: str = "上榜文章查询工具"
@@ -147,11 +148,7 @@ def on_query_button_clicked() -> None:
 
     with green_loading():
         data: List[Dict[str, Any]] = []
-        fetch_func = (
-            get_record_by_name
-            if input_type == "name"
-            else get_record_by_URL
-        )
+        fetch_func = get_record_by_name if input_type == "name" else get_record_by_URL
         for item in fetch_func(name_or_url, sort_key):
             # 去除日期字段中恒为 00:00:00 的时间部分
             item["上榜日期"] = str(item["上榜日期"]).split()[0]
@@ -199,12 +196,13 @@ def on_rank_article_viewer() -> None:
         "查询",
         color="success",
         onclick=on_query_button_clicked,
+        block=True,
     )
     pin_on_change(
         "name_or_url",
         onchange=on_name_input_changed,
     )
     bind_enter_key_callback(
-        "name",
+        "name_or_url",
         on_press=lambda _: on_query_button_clicked(),
     )

@@ -6,7 +6,7 @@ from JianshuResearchTools.convert import (
     UserSlugToUserUrl,
 )
 from JianshuResearchTools.objects import Collection
-from pywebio.output import put_button, put_column, put_markdown, put_row
+from pywebio.output import put_column, put_markdown, put_row
 from pywebio.pin import pin, put_checkbox, put_input
 
 from utils.checkbox_helper import is_checked
@@ -16,6 +16,7 @@ from utils.widgets import (
     toast_error_and_return,
     use_result_scope,
 )
+from widgets.button import put_button
 from widgets.card import put_article_detail_card
 
 NAME: str = "消零派辅助工具"
@@ -214,4 +215,5 @@ def diszeroer_helper() -> None:
         "获取文章列表",
         color="success",
         onclick=on_fetch_button_clicked,
+        block=True,
     )

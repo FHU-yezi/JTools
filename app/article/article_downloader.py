@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
-from pywebio.output import download, put_button, put_markdown, toast
+from pywebio.output import download, put_markdown, toast
 from pywebio.pin import pin, put_checkbox, put_input, put_radio
 
 from utils.callback import bind_enter_key_callback
@@ -13,6 +13,7 @@ from utils.widgets import (
     toast_error_and_return,
     toast_warn_and_return,
 )
+from widgets.button import put_button
 
 NAME: str = "文章下载工具"
 DESC: str = "下载文章内容，并将其以纯文本或 Markdown 格式保存至本地。"
@@ -71,6 +72,7 @@ def article_downloader() -> None:
         "下载",
         color="success",
         onclick=on_download_button_clicked,
+        block=True,
     )
     bind_enter_key_callback(
         "url",

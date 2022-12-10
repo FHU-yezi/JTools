@@ -25,18 +25,17 @@ def get_line_chart(x: List, y: List, in_tab: bool = False) -> Line:
 
 
 def get_pie_chart(data: Dict[str, Union[int, float]], in_tab: bool = False) -> Pie:
-    return (
-        Pie(
-            init_opts=opts.InitOpts(
-                width=f"{get_chart_width(in_tab=in_tab)}px",
-                height=f"{get_chart_height()}px",
-            )
+    return Pie(
+        init_opts=opts.InitOpts(
+            width=f"{get_chart_width(in_tab=in_tab)}px",
+            height=f"{get_chart_height()}px",
         )
-        .add("", tuple(data.items()))
-    )
+    ).add("", tuple(data.items()))
 
 
-def get_wordcloud(word_freq, size_range: Tuple[int, int], in_tab: bool = False) -> WordCloud:
+def get_wordcloud(
+    word_freq, size_range: Tuple[int, int], in_tab: bool = False
+) -> WordCloud:
     return WordCloud(
         init_opts=opts.InitOpts(
             width=f"{get_chart_width(in_tab=in_tab)}px",

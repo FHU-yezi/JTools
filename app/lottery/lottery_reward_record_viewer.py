@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Set
 
 from JianshuResearchTools.assert_funcs import AssertUserUrl
 from JianshuResearchTools.exceptions import InputError
-from pywebio.output import put_button, put_markdown, toast
+from pywebio.output import put_markdown, toast
 from pywebio.pin import pin, put_checkbox, put_input
 
 from utils.cache import timeout_cache
@@ -16,6 +16,7 @@ from utils.widgets import (
     toast_warn_and_return,
     use_result_scope,
 )
+from widgets.button import put_button
 from widgets.table import put_table
 
 NAME: str = "中奖记录查询工具"
@@ -136,6 +137,7 @@ def lottery_reward_record_viewer() -> None:
         "查询",
         color="success",
         onclick=on_query_button_clicked,
+        block=True,
     )
     bind_enter_key_callback(
         "url",

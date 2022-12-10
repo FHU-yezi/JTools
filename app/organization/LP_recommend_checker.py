@@ -6,12 +6,12 @@ from httpx import get as httpx_get
 from JianshuResearchTools.convert import UserSlugToUserUrl
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
-from pywebio.output import put_button, put_markdown, use_scope
+from pywebio.output import put_markdown, use_scope
 from pywebio.pin import pin, put_input
 
 from utils.cache import timeout_cache
 from utils.callback import bind_enter_key_callback
-from utils.db import article_FP_rank_db
+from utils.db import LP_collections_db, article_FP_rank_db
 from utils.html import green_text, grey_text, link, red_text
 from utils.text_filter import input_filter
 from utils.time_helper import human_readable_td_to_now
@@ -21,6 +21,7 @@ from utils.widgets import (
     toast_warn_and_return,
     use_result_scope,
 )
+from widgets.button import put_button
 
 NAME: str = "LP 理事会推文检测工具"
 DESC: str = "检测文章是否符合 LP 理事会推文要求。"
@@ -50,17 +51,17 @@ def reward_checker(article_obj: Article) -> Tuple[bool, float, float]:
     return (True if reward < 35.0 else False, 35.0, reward)
 
 
-def on_rank_last_7d_checker(article_obj: Article) -> Tuple[bool, int, int]:
+def recommend_by_LP_last_7d_checker(article_obj: Article) -> Tuple[bool, int, int]:
     author_url: str = get_author_url(article_obj)
-    on_rank_last_7d: int = article_FP_rank_db.count_documents(
+    recommend_by_LP_last_7d: int = LP_collections_db.count_documents(
         {
             "author.url": author_url,
-            "date": {
+            "fetch_date": {
                 "$gt": datetime.now() - timedelta(days=7),
             },
         }
     )
-    return (True if on_rank_last_7d == 0 else False, 0, on_rank_last_7d)
+    return (True if recommend_by_LP_last_7d == 0 else False, 0, recommend_by_LP_last_7d)
 
 
 def on_rank_last_10d_top30_checker(article_obj: Article) -> Tuple[bool, int, int]:
@@ -92,13 +93,13 @@ def on_rank_last_1m_top30_checker(article_obj: Article) -> Tuple[bool, int, int]
             },
         }
     )
-    return (True if on_rank_last_1m_top30 <= 3 else False, 3, on_rank_last_1m_top30)
+    return (True if on_rank_last_1m_top30 <= 2 else False, 2, on_rank_last_1m_top30)
 
 
 CHECK_ITEM_FUNC_MAPPING: Dict[str, Callable] = {
     "文章字数": wordage_checker,
     "文章收益": reward_checker,
-    "作者过去 7 天上榜次数": on_rank_last_7d_checker,
+    "作者过去 7 天被 LP 理事会推荐次数": recommend_by_LP_last_7d_checker,
     "作者过去 10 天前 30 名次数": on_rank_last_10d_top30_checker,
     "作者过去 1 个月前 30 名次数": on_rank_last_1m_top30_checker,
 }
@@ -169,6 +170,7 @@ def LP_recommend_checker() -> None:
         "检测",
         color="success",
         onclick=on_check_button_clicked,
+        block=True,
     )
     bind_enter_key_callback(
         "url",

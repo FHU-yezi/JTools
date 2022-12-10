@@ -3,7 +3,7 @@ from typing import Dict, Optional
 
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import User
-from pywebio.output import put_button, put_markdown, toast
+from pywebio.output import put_markdown, toast
 from pywebio.pin import pin, put_input
 
 from utils.callback import bind_enter_key_callback
@@ -14,6 +14,7 @@ from utils.widgets import (
     toast_warn_and_return,
     use_result_scope,
 )
+from widgets.button import put_button
 
 NAME: str = "会员状态查询工具"
 DESC: str = "查询用户的会员状态与到期时间。"
@@ -72,6 +73,7 @@ def user_VIP_status_viewer() -> None:
         "查询",
         color="success",
         onclick=on_query_button_clicked,
+        block=True,
     )
     bind_enter_key_callback(
         "url",
