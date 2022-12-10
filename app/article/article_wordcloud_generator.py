@@ -6,7 +6,7 @@ import jieba.posseg as pseg
 import pyecharts.options as opts
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
-from pywebio.output import put_button, put_html, toast
+from pywebio.output import put_html, toast
 from pywebio.pin import pin, put_input
 
 from utils.callback import bind_enter_key_callback
@@ -18,6 +18,7 @@ from utils.widgets import (
     toast_warn_and_return,
     use_result_scope,
 )
+from widgets.button import put_button
 
 NAME: str = "文章词云图生成工具"
 DESC = "生成文章词云图。"
@@ -97,6 +98,7 @@ def article_wordcloud_generator() -> None:
         "生成",
         color="success",
         onclick=on_generate_button_clicked,
+        block=True,
     )
     bind_enter_key_callback(
         "url",

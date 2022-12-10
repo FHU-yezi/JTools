@@ -14,7 +14,7 @@ from JianshuResearchTools.convert import (
     UserUrlToUserUrlScheme,
 )
 from JianshuResearchTools.exceptions import InputError
-from pywebio.output import put_button, put_image, put_markdown, toast
+from pywebio.output import put_image, put_markdown, toast
 from pywebio.pin import pin, put_input
 
 from utils.callback import bind_enter_key_callback
@@ -26,6 +26,7 @@ from utils.widgets import (
     toast_warn_and_return,
     use_result_scope,
 )
+from widgets.button import put_button
 
 NAME: str = "URL Scheme 转换工具"
 DESC: str = "将简书链接转换为 URL Scheme，从而在 App 端实现一键跳转。"
@@ -107,6 +108,7 @@ def URL_scheme_convertor() -> None:
         "转换",
         color="success",
         onclick=on_convert_button_cilcked,
+        block=True,
     )
     bind_enter_key_callback(
         "url",

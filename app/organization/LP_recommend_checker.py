@@ -6,7 +6,7 @@ from httpx import get as httpx_get
 from JianshuResearchTools.convert import UserSlugToUserUrl
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
-from pywebio.output import put_button, put_markdown, use_scope
+from pywebio.output import put_markdown, use_scope
 from pywebio.pin import pin, put_input
 
 from utils.cache import timeout_cache
@@ -21,6 +21,7 @@ from utils.widgets import (
     toast_warn_and_return,
     use_result_scope,
 )
+from widgets.button import put_button
 
 NAME: str = "LP 理事会推文检测工具"
 DESC: str = "检测文章是否符合 LP 理事会推文要求。"
@@ -169,6 +170,7 @@ def LP_recommend_checker() -> None:
         "检测",
         color="success",
         onclick=on_check_button_clicked,
+        block=True,
     )
     bind_enter_key_callback(
         "url",

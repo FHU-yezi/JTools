@@ -1,6 +1,6 @@
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
-from pywebio.output import put_button, put_markdown, toast
+from pywebio.output import put_markdown, toast
 from pywebio.pin import pin, put_input
 
 from utils.callback import bind_enter_key_callback
@@ -13,6 +13,7 @@ from utils.widgets import (
     toast_warn_and_return,
     use_result_scope,
 )
+from widgets.button import put_button
 
 NAME: str = "文章发布时间查询工具"
 DESC: str = "查询文章的发布与更新时间。"
@@ -69,6 +70,7 @@ def article_publish_time_viewer() -> None:
         "查询",
         color="success",
         onclick=on_query_button_clicked,
+        block=True,
     )
     bind_enter_key_callback(
         "url",
