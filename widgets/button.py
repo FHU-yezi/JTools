@@ -37,6 +37,7 @@ def put_button(
                     $("button:contains(\'%s\')")[0].className += " btn-block"
                 }
             )
-            """ % label,
+            """
+            % label,
         )
     return button
