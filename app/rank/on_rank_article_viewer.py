@@ -203,6 +203,6 @@ def on_rank_article_viewer() -> None:
         onchange=on_name_input_changed,
     )
     bind_enter_key_callback(
-        "name",
+        "name_or_url",
         on_press=lambda _: on_query_button_clicked(),
     )
