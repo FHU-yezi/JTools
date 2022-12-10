@@ -92,7 +92,7 @@ def on_rank_last_1m_top30_checker(article_obj: Article) -> Tuple[bool, int, int]
             },
         }
     )
-    return (True if on_rank_last_1m_top30 <= 3 else False, 3, on_rank_last_1m_top30)
+    return (True if on_rank_last_1m_top30 <= 2 else False, 2, on_rank_last_1m_top30)
 
 
 CHECK_ITEM_FUNC_MAPPING: Dict[str, Callable] = {
