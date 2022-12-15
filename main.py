@@ -97,6 +97,6 @@ start_server(
     func_list,
     host="0.0.0.0",
     port=config.deploy.port,
-    cdn=config.deploy.pywebio_cdn,
     debug=config.deploy.debug,
+    cdn=config.deploy.PyWebIO_CDN if config.deploy.enable_PyWebIO_CDN else False,
 )
