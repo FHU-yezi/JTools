@@ -16,7 +16,7 @@ access_log_db = db.access_log
 
 _jfetcher_data_db = init_DB("JFetcherData")
 article_FP_rank_db = _jfetcher_data_db.article_FP_rank
-lottery_db = _jfetcher_data_db.lottery_db
+lottery_db = _jfetcher_data_db.lottery_data
 LP_collections_db = _jfetcher_data_db.LP_collections
 
 # 创建索引

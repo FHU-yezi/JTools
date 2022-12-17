@@ -5,12 +5,11 @@ def set_footer(html: str) -> None:
     run_js(f"$('footer').html('{html}')")
 
 
-def get_current_page_url() -> str:
-    return eval_js("window.location.href").split("/")[-2]
-
-
 def get_base_url() -> str:
-    return eval_js("window.location.href").split("?")[0][:-1]
+    return eval_js(
+        'window.location.href.split("?")[0]'
+        '.replace(window.pathname != "/" ? window.pathname : "", "")'
+    )
 
 
 def get_chart_width(in_tab: bool = False) -> int:

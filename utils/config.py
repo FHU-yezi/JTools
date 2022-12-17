@@ -9,8 +9,9 @@ _DEFAULT_CONFIG = {
     "version": "v0.1.0",
     "deploy": {
         "debug": False,
-        "pywebio_cdn": "",
-        "pyecharts_cdn": "",
+        "enable_PyWebIO_CDN": False,
+        "PyWebIO_CDN": "",
+        "PyEcharts_CDN": "",
         "port": 8080,
     },
     "base_path": "./app",
