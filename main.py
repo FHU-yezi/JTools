@@ -52,7 +52,7 @@ def get_status_text(module_name: str) -> str:
 
 
 def get_jump_link(base_url: str, module_name: str) -> str:
-    return f"{base_url}/?app={module_name}"
+    return f"{base_url}?app={module_name}"
 
 
 def index() -> None:
