@@ -40,7 +40,7 @@ BASE_DIR: str = _get_base_dir() + "/"
 
 def _get_filename() -> Optional[str]:
     try:
-        result: str = currentframe().f_back.f_back.f_back.f_code.co_filename
+        result: str = currentframe().f_back.f_back.f_back.f_code.co_filename  # type: ignore [union-attr]
         return result.replace(BASE_DIR, "")
     except AttributeError:
         return None
@@ -48,7 +48,7 @@ def _get_filename() -> Optional[str]:
 
 def _get_line_number() -> Optional[int]:
     try:
-        return currentframe().f_back.f_back.f_back.f_lineno
+        return currentframe().f_back.f_back.f_back.f_lineno  # type: ignore [union-attr]
     except AttributeError:
         return None
 
