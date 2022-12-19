@@ -46,7 +46,7 @@ def put_article_detail_card(
     author_name: str,
     author_URL: str,
     enable_URL_scheme: bool,
-    is_Android: bool,
+    can_use_URL_Scheme: bool,
 ) -> Output:
     tpl: str = """
     <div class="card" style="padding: 20px; padding-bottom: 10px; margin-bottom: 20px; border-radius: 20px;">
@@ -67,7 +67,7 @@ def put_article_detail_card(
             "article_title": article_title,
             "article_URL": (
                 ArticleUrlToArticleUrlScheme(article_URL)
-                if enable_URL_scheme and is_Android
+                if enable_URL_scheme and can_use_URL_Scheme
                 else article_URL
             ),
             "release_time": release_time.strftime(r"%Y-%m-%d %X"),
@@ -80,7 +80,7 @@ def put_article_detail_card(
             "author_name": author_name,
             "author_URL": (
                 UserUrlToUserUrlScheme(author_URL)
-                if enable_URL_scheme and is_Android
+                if enable_URL_scheme and can_use_URL_Scheme
                 else author_URL
             ),
         },
