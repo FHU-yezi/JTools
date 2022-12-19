@@ -158,10 +158,18 @@ class AccessLogger:
         module_name: str,
         info_obj,
     ) -> None:
+        # PyWebIO 使用 Tornado 的 `request.remote_ip` 作为 `info_obj.user_ip` 的值
+        # 这在使用反向代理时会出现问题，无法记录客户端的真实 IP
+        # 因此，先检查反向代理服务器负责设置的 `X-Forwarded-For` Header，尝试将其作为请求者 IP
+        # 如该 Header 不存在，视为没有使用反向代理，回退到记录 `info_obj.user_ip`
+        ip = info_obj.request.headers.get("X-Forwarded-For")
+        if not ip:
+            ip = info_obj.user_ip
+
         self.log(
             module=module_name,
             ua=info_obj.user_agent.ua_string,
-            ip=info_obj.user_ip,
+            ip=ip,
             protocol=info_obj.protocol,
         )
 
