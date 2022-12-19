@@ -10,7 +10,7 @@ from pywebio.output import put_column, put_markdown, put_row
 from pywebio.pin import pin, put_checkbox, put_input
 
 from utils.checkbox_helper import is_checked
-from utils.page import is_Android
+from utils.page import can_use_URL_Scheme
 from utils.widgets import (
     green_loading,
     toast_error_and_return,
@@ -145,7 +145,7 @@ def on_fetch_button_clicked() -> None:
                         author_name=author_name,
                         author_URL=author_URL,
                         enable_URL_scheme=enable_URL_scheme,
-                        is_Android=is_Android(),
+                        can_use_URL_Scheme=can_use_URL_Scheme(),
                     )
 
                     if showed_count == max_result_count:

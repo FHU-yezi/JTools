@@ -1,4 +1,7 @@
 from pywebio.session import eval_js, info, run_js
+from typing import Set
+
+URL_SCHEME_ALLOW_LIST: Set = {"Android", "iPhone", "iPad"}
 
 
 def set_footer(html: str) -> None:
@@ -25,6 +28,11 @@ def get_chart_height() -> int:
     return int(get_chart_width() / 1.5)
 
 
-def is_Android() -> bool:
-    # TODO
-    return "Android" in str(info.user_agent)
+def can_use_URL_Scheme() -> bool:
+    ua: str = str(info.user_agent)
+
+    for item in URL_SCHEME_ALLOW_LIST:
+        if item in ua:
+            return True
+
+    return False
