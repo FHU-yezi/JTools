@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Literal, Optional, Set
 
 import pyecharts.options as opts
 from pywebio.output import put_html, put_markdown, put_tabs
 
 from utils.cache import timeout_cache
-from utils.chart import get_pie_chart
+from utils.chart import get_line_chart, get_pie_chart
 from utils.db import lottery_db
 from widgets.table import put_table
 
@@ -27,6 +27,9 @@ DESC_TO_TIMEDELTA: Dict[str, Optional[timedelta]] = {
     "7 天": timedelta(days=7),
     "30 天": timedelta(days=30),
     "全部": None,
+}
+DESC_TO_TIMEDELTA_WITHOUT_ALL: Dict[str, timedelta] = {
+    key: value for key, value in DESC_TO_TIMEDELTA.items() if value
 }
 
 
@@ -87,6 +90,41 @@ def get_period_award_name_times_data(td: Optional[timedelta] = None) -> Dict[str
         )
     )
     return {item["_id"]: item["reward_count"] for item in data}
+
+
+@timeout_cache(3600)
+def get_period_award_times_data(
+    unit: Literal["hour", "day"],
+    td: Optional[timedelta] = None,
+) -> Dict[datetime, int]:
+    data = lottery_db.aggregate(
+        [
+            {
+                "$match": {
+                    "time": {
+                        "$gt": get_data_start_time(td),
+                    },
+                }
+            },
+            {
+                "$group": {
+                    "_id": {
+                        "$dateTrunc": {"date": "$time", "unit": unit},
+                    },
+                    "count": {
+                        "$sum": 1,
+                    },
+                }
+            },
+            {
+                "$sort": {
+                    "_id": 1,
+                },
+            },
+        ]
+    )
+
+    return {item["_id"]: item["count"] for item in data}
 
 
 @timeout_cache(3600)
@@ -151,6 +189,39 @@ def get_period_reward_type_chart(td: Optional[timedelta] = None):
         .set_series_opts(
             label_opts=opts.LabelOpts(
                 formatter="{b}：{c} 次",
+            ),
+        )
+        .render_notebook()
+    )
+
+
+def get_period_award_times_chart(td: timedelta):
+    unit = "hour" if td <= timedelta(days=1) else "day"
+    data = get_period_award_times_data(unit, td)
+    if not data:
+        return "<p>暂无数据</p>"
+
+    x = [str(item) for item in data.keys()]
+    y = list(data.values())
+
+    if unit == "hour":
+        x = ["-".join(item.split("-")[1:]) for item in x]  # 去除年份部分
+    elif unit == "day":
+        x = [item.split()[0] for item in x]  # 去除恒为 0 的时间部分
+    return (
+        get_line_chart(
+            x,
+            y,
+            in_tab=True,
+        )
+        .set_global_opts(
+            legend_opts=opts.LegendOpts(
+                is_show=False,
+            ),
+        )
+        .set_series_opts(
+            label_opts=opts.LabelOpts(
+                is_show=False,
             ),
         )
         .render_notebook()
@@ -238,5 +309,16 @@ def lottery_data_analyze() -> None:
                 "content": put_html(get_period_reward_type_chart(value)),
             }
             for key, value in DESC_TO_TIMEDELTA.items()
+        ]
+    )
+
+    put_markdown("## 抽奖次数趋势")
+    put_tabs(
+        [
+            {
+                "title": key,
+                "content": put_html(get_period_award_times_chart(value)),
+            }
+            for key, value in DESC_TO_TIMEDELTA_WITHOUT_ALL.items()
         ]
     )
