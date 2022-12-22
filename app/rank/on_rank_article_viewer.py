@@ -37,10 +37,19 @@ SORT_KEY_MAPPING: Dict[str, Tuple[str, int]] = {
 
 @timeout_cache(3600)
 def get_data_update_time() -> str:
-    result: datetime = list(
-        article_FP_rank_db.find({}, {"_id": 0, "date": 1}).sort("date", -1).limit(1)
-    )[0]["date"]
-    return str(result).split()[0]
+    return str(
+        (
+            article_FP_rank_db.find(
+                {},
+                {
+                    "_id": 0,
+                    "date": 1,
+                },
+            )
+            .sort("date", -1)
+            .limit(1)
+        ).next()["date"]
+    )
 
 
 @timeout_cache(3600)
