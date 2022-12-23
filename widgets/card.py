@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 
 from JianshuResearchTools.convert import (
     ArticleUrlToArticleUrlScheme,
@@ -83,5 +83,31 @@ def put_article_detail_card(
                 if enable_URL_scheme and can_use_URL_Scheme
                 else author_URL
             ),
+        },
+    )
+
+
+def put_debug_project_record_card(
+    time: date, type_: str, module: str, desc: str, user_name: str, user_url: str, award: int
+) -> Output:
+    tpl: str = """
+    <div class="card", style="padding: 20px; padding-bottom: 10px; margin-bottom: 20px; border-radius: 20px;">
+        <p style="margin: 3px; font-size: 18px;"><b>{{time}} | {{type}}</b></p>
+        <p style="font-size: 14px; color: #57606A">{{module}}</p>
+        <p>描述：{{desc}}</p>
+        <p>反馈者：<a href="{{user_url}}" target="_blank" rel="noopener noreferrer">{{user_name}}</a></p>
+        <p>奖励：{{award}} 简书贝</p>
+    </div>
+    """
+    return put_widget(
+        tpl,
+        {
+            "time": str(time),
+            "type": type_,
+            "module": module,
+            "desc": desc,
+            "user_name": user_name,
+            "user_url": user_url,
+            "award": award,
         },
     )
