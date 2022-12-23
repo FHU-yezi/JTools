@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Any, Dict, List, Set
 
 from JianshuResearchTools.assert_funcs import AssertUserUrl
@@ -37,18 +36,19 @@ REWARDS_WITH_WHITESPACE: Set[str] = {
 
 @timeout_cache(3600)
 def get_data_update_time() -> str:
-    result: datetime = list(
-        lottery_db.find(
-            {},
-            {
-                "_id": 0,
-                "time": 1,
-            },
-        )
-        .sort("time", -1)
-        .limit(1)
-    )[0]["time"]
-    return str(result)
+    return str(
+        (
+            lottery_db.find(
+                {},
+                {
+                    "_id": 0,
+                    "time": 1,
+                },
+            )
+            .sort("time", -1)
+            .limit(1)
+        ).next()["time"]
+    )
 
 
 @timeout_cache(3600)
