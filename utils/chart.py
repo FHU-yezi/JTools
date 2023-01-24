@@ -1,48 +1,29 @@
-from typing import Dict, List, Tuple, Union
-
 import pyecharts.options as opts
-from pyecharts.charts import Line, Pie, WordCloud
-from pyecharts.globals import CurrentConfig
 
-from utils.config import config
-from utils.page import get_chart_height, get_chart_width
+ANIMATION_OFF = opts.AnimationOpts(
+    animation=False,
+)
 
-# 设置 PyEcharts CDN
-CurrentConfig.ONLINE_HOST = config.deploy.PyEcharts_CDN
+TOOLBOX_ONLY_SAVE_PNG_WHITE_2X = opts.ToolboxOpts(
+    pos_left="5px",
+    pos_top="5px",
+    feature=opts.ToolBoxFeatureOpts(
+        save_as_image=opts.ToolBoxFeatureSaveAsImageOpts(
+            type_="png",
+            title="下载",
+            background_color="#FFFFFF",
+            pixel_ratio=2,
+        ),
+        restore=None,
+        data_view=None,
+        data_zoom=None,
+        magic_type=None,
+        brush=None,
+    ),
+)
 
+JIANSHU_COLOR = "#ea6f5a"
 
-def get_line_chart(x: List, y: List, in_tab: bool = False) -> Line:
-    return (
-        Line(
-            init_opts=opts.InitOpts(
-                width=f"{get_chart_width(in_tab=in_tab)}px",
-                height=f"{get_chart_height()}px",
-            )
-        )
-        .add_xaxis(x)
-        .add_yaxis("y", y, is_smooth=True)
-    )
-
-
-def get_pie_chart(data: Dict[str, Union[int, float]], in_tab: bool = False) -> Pie:
-    return Pie(
-        init_opts=opts.InitOpts(
-            width=f"{get_chart_width(in_tab=in_tab)}px",
-            height=f"{get_chart_height()}px",
-        )
-    ).add("", tuple(data.items()))
-
-
-def get_wordcloud(
-    word_freq, size_range: Tuple[int, int], in_tab: bool = False
-) -> WordCloud:
-    return WordCloud(
-        init_opts=opts.InitOpts(
-            width=f"{get_chart_width(in_tab=in_tab)}px",
-            height=f"{get_chart_height()}px",
-        )
-    ).add(
-        series_name="",
-        data_pair=word_freq,
-        word_size_range=size_range,
-    )
+LEGEND_HIIDEN = opts.LegendOpts(
+    is_show=False,
+)

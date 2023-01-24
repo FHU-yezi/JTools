@@ -1,16 +1,22 @@
 from collections import Counter
-from typing import List, Set
+from typing import List, Set, Tuple
 
 import jieba
 import jieba.posseg as pseg
 import pyecharts.options as opts
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
+from pyecharts.charts import WordCloud
 from pywebio.output import put_html, toast
 from pywebio.pin import pin, put_input
 
 from utils.callback import bind_enter_key_callback
-from utils.chart import get_wordcloud
+from utils.chart import (
+    ANIMATION_OFF,
+    JIANSHU_COLOR,
+    TOOLBOX_ONLY_SAVE_PNG_WHITE_2X,
+)
+
 from utils.text_filter import input_filter
 from utils.widgets import (
     green_loading,
@@ -41,7 +47,7 @@ ALLOWED_WORD_TYPES: Set[str] = {
 )  # 将热点词加入词库
 
 
-def get_word_freq(text: str):
+def get_word_freq(text: str) -> Tuple[Tuple[str, int], ...]:
     processed_text: List[str] = [
         x.word
         for x in pseg.cut(text)
@@ -49,7 +55,7 @@ def get_word_freq(text: str):
         and x.word not in STOPWORDS  # 剔除禁用词
         and x.flag in ALLOWED_WORD_TYPES  # 剔除不符合词性要求的词
     ]
-    return Counter(processed_text).items()
+    return tuple(Counter(processed_text).items())
 
 
 def on_generate_button_clicked() -> None:
@@ -71,16 +77,33 @@ def on_generate_button_clicked() -> None:
 
         word_freq = get_word_freq(text)
 
-        wordcloud = get_wordcloud(word_freq, (20, 70), in_tab=False).set_global_opts(
-            title_opts=opts.TitleOpts(
-                title=f"{title} 的词云图",
-                subtitle=url,
-            ),
-            # 支持下载到本地
-            toolbox_opts=opts.ToolboxOpts(
-                is_show=True,
-                feature={"saveAsImage": {}},
-            ),
+        wordcloud = (
+            WordCloud(
+                init_opts=opts.InitOpts(
+                    width="800px",
+                    height="500px",
+                    animation_opts=ANIMATION_OFF,
+                )
+            )
+            .add(
+                "",
+                data_pair=word_freq,
+                word_size_range=(20, 70),
+                pos_left="center",
+                pos_top="center",
+                textstyle_opts=opts.TextStyleOpts(
+                    color=JIANSHU_COLOR,
+                ),
+            )
+            .set_global_opts(
+                title_opts=opts.TitleOpts(
+                    pos_left="30px",
+                    pos_top="5px",
+                    title=f"{title} 的词云图",
+                    subtitle=url,
+                ),
+                toolbox_opts=TOOLBOX_ONLY_SAVE_PNG_WHITE_2X,
+            )
         )
 
         with use_result_scope():

@@ -2,10 +2,16 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Literal, Optional, Set, Tuple
 
 import pyecharts.options as opts
+from pyecharts.charts import Line, Pie
 from pywebio.output import put_html, put_markdown, put_tabs
 
 from utils.cache import timeout_cache
-from utils.chart import get_line_chart, get_pie_chart
+from utils.chart import (
+    ANIMATION_OFF,
+    JIANSHU_COLOR,
+    LEGEND_HIIDEN,
+    TOOLBOX_ONLY_SAVE_PNG_WHITE_2X,
+)
 from utils.db import lottery_db
 from widgets.table import put_table
 
@@ -238,7 +244,7 @@ def get_award_rarity(reward_percent: Dict[str, float]) -> Dict[str, float]:
     return {key: round(value * scale, 3) for key, value in result.items()}
 
 
-def get_period_reward_type_pie_chart(td: Optional[timedelta] = None):
+def get_period_reward_type_pie_chart(td: Optional[timedelta] = None) -> Pie:
     """获取某一时段各奖项的中奖率饼状图
 
     Args:
@@ -249,25 +255,30 @@ def get_period_reward_type_pie_chart(td: Optional[timedelta] = None):
         return "<p>暂无数据</p>"
 
     return (
-        get_pie_chart(
-            data,
-            in_tab=True,
+        Pie(
+            init_opts=opts.InitOpts(
+                width="880px",
+                height="400px",
+                animation_opts=ANIMATION_OFF,
+            )
         )
+        .add("", tuple(data.items()))
         .set_global_opts(
-            legend_opts=opts.LegendOpts(
-                is_show=False,
+            legend_opts=LEGEND_HIIDEN,
+            title_opts=opts.TitleOpts(
+                pos_left="30px",
+                pos_top="5px",
+                title="中奖次数分布图",
             ),
+            toolbox_opts=TOOLBOX_ONLY_SAVE_PNG_WHITE_2X,
         )
         .set_series_opts(
-            label_opts=opts.LabelOpts(
-                formatter="{b}：{c} 次",
-            ),
+            label_opts=opts.LabelOpts(formatter="{b}：{c} 次"),
         )
-        .render_notebook()
     )
 
 
-def get_period_award_times_chart(td: timedelta):
+def get_period_award_times_chart(td: timedelta) -> Line:
     """获取某一时间段内的中奖次数趋势图
 
     Args:
@@ -285,22 +296,39 @@ def get_period_award_times_chart(td: timedelta):
     elif unit == "day":
         x = [item.split()[0] for item in x]  # 去除恒为 0 的时间部分
     return (
-        get_line_chart(
-            x,
-            y,
-            in_tab=True,
+        Line(
+            init_opts=opts.InitOpts(
+                width="880px",
+                height="400px",
+                animation_opts=ANIMATION_OFF,
+            )
+        )
+        .add_xaxis(
+            xaxis_data=x,
+        )
+        .add_yaxis(
+            "",
+            y_axis=y,
+            is_smooth=True,
+            linestyle_opts=opts.LineStyleOpts(
+                color=JIANSHU_COLOR,
+            ),
+            itemstyle_opts=opts.ItemStyleOpts(
+                color=JIANSHU_COLOR,
+            ),
+            label_opts=opts.LabelOpts(
+                color=JIANSHU_COLOR,
+            ),
         )
         .set_global_opts(
-            legend_opts=opts.LegendOpts(
-                is_show=False,
+            legend_opts=LEGEND_HIIDEN,
+            title_opts=opts.TitleOpts(
+                pos_left="30px",
+                pos_top="5px",
+                title="中奖次数趋势图",
             ),
+            toolbox_opts=TOOLBOX_ONLY_SAVE_PNG_WHITE_2X,
         )
-        .set_series_opts(
-            label_opts=opts.LabelOpts(
-                is_show=False,
-            ),
-        )
-        .render_notebook()
     )
 
 
@@ -387,7 +415,9 @@ def lottery_data_analyze() -> None:
         [
             {
                 "title": key,
-                "content": put_html(get_period_reward_type_pie_chart(value)),
+                "content": put_html(
+                    get_period_reward_type_pie_chart(value).render_notebook()
+                ),
             }
             for key, value in DESC_TO_TIMEDELTA.items()
         ]
@@ -398,7 +428,9 @@ def lottery_data_analyze() -> None:
         [
             {
                 "title": key,
-                "content": put_html(get_period_award_times_chart(value)),
+                "content": put_html(
+                    get_period_award_times_chart(value).render_notebook()
+                ),
             }
             for key, value in DESC_TO_TIMEDELTA_WITHOUT_ALL.items()
         ]
