@@ -7,11 +7,11 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pywebio = "^1.6.2"
+pywebio = "^1.7.0"
 JianshuResearchTools = "2.10.1"
 jieba = "^0.42.1"
 qrcode = "^7.3.1"
-pyecharts = "^1.9.1"
+pyecharts = "^2.0.0"
 PyYAML = "^6.0"
 tomd = "^0.1.3"
 Pillow = "^9.2.0"

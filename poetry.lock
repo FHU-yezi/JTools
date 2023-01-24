@@ -716,13 +716,14 @@ files = [
 
 [[package]]
 name = "pyecharts"
-version = "1.9.1"
+version = "2.0.1"
 description = "Python options, make charting easier"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "pyecharts-1.9.1-py3-none-any.whl", hash = "sha256:5a4cab66bacfc644919ef652bc9e9985f532aba832af9f2992e8e3802eb718e2"},
+    {file = "pyecharts-2.0.1-py3-none-any.whl", hash = "sha256:f86e357e01f3f2cf25084795740f143e36c76a5c6896baa19381f74b4c28e042"},
+    {file = "pyecharts-2.0.1.tar.gz", hash = "sha256:b5d6ad51f7c183ca509cd679fde8d2163114b08e4d412800b0d180d62345a9d3"},
 ]
 
 [package.dependencies]
@@ -1159,4 +1160,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "7292861c19cbf2e9d0f629d7708a106ee866090709425625d01a631cff75ae8d"
+content-hash = "977e087ceac035483af4a597ca95061f8adc19df7b1f03f9a7bc45030499c70f"
