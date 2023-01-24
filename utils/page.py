@@ -15,20 +15,11 @@ def get_base_url() -> str:
     )
 
 
-def get_chart_width(in_tab: bool = False) -> int:
-    # 880 为宽度上限
-    result: int = min(eval_js("document.body.clientWidth"), 880)
-    # Tab 两侧边距共 47
-    if in_tab:
-        result -= 47
-    return result
-
-
-def get_chart_height() -> int:
-    return int(get_chart_width() / 1.5)
-
-
 def can_use_URL_Scheme() -> bool:
     ua: str = str(info.user_agent)
 
     return any(item in ua for item in URL_SCHEME_ALLOW_LIST)
+
+
+def apply_better_tabs() -> None:
+    run_js('$("label").map(function(_, x) {console.log(x.style = "flex-grow:1; text-align: center")})')

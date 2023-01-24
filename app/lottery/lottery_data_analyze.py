@@ -13,6 +13,7 @@ from utils.chart import (
     TOOLBOX_ONLY_SAVE_PNG_WHITE_2X,
 )
 from utils.db import lottery_db
+from utils.page import apply_better_tabs
 from widgets.table import put_table
 
 NAME: str = "大转盘数据分析工具"
@@ -435,3 +436,5 @@ def lottery_data_analyze() -> None:
             for key, value in DESC_TO_TIMEDELTA_WITHOUT_ALL.items()
         ]
     )
+
+    apply_better_tabs()
