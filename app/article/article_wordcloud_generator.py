@@ -16,7 +16,6 @@ from utils.chart import (
     JIANSHU_COLOR,
     TOOLBOX_ONLY_SAVE_PNG_WHITE_2X,
 )
-
 from utils.text_filter import input_filter
 from utils.widgets import (
     green_loading,
@@ -31,10 +30,6 @@ DESC = "生成文章词云图。"
 
 jieba.logging.disable()
 
-STOPWORDS: Set[str] = {
-    x.strip()
-    for x in open("wordcloud_assets/stopwords.txt", encoding="utf-8").readlines()
-}
 ALLOWED_WORD_TYPES: Set[str] = {
     x.strip()
     for x in open(
@@ -52,7 +47,6 @@ def get_word_freq(text: str) -> Tuple[Tuple[str, int], ...]:
         x.word
         for x in pseg.cut(text)
         if len(x.word) > 1  # 剔除单字词
-        and x.word not in STOPWORDS  # 剔除禁用词
         and x.flag in ALLOWED_WORD_TYPES  # 剔除不符合词性要求的词
     ]
     return tuple(Counter(processed_text).items())
