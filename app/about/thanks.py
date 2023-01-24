@@ -47,9 +47,10 @@ def thanks():
 
     put_markdown("## 开源库")
 
-    opensource_packages_data: List[str] = []
-    for package_name, github_url in THANKS_DATA["opensource_packages"].items():
-        opensource_packages_data.append(f"- {link(package_name, github_url, new_window=True)}")
+    opensource_packages_data: List[str] = [
+        f"- {link(package_name, github_url, new_window=True)}"
+        for package_name, github_url in THANKS_DATA["opensource_packages"].items()
+    ]
     put_markdown("\n".join(opensource_packages_data))
 
     put_markdown("## 「捉虫计划」反馈记录")

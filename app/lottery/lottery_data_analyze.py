@@ -19,9 +19,9 @@ REWARDS_WITH_WHITESPACE: Set[str] = {
     "免费开 1 次连载",
     "招财猫头像框 1 年",
 }
-REWARDS_WITHOUT_WHITESPACE: Set[str] = set(
-    (x.replace(" ", "") for x in REWARDS_WITH_WHITESPACE)
-)
+REWARDS_WITHOUT_WHITESPACE: Set[str] = {
+    x.replace(" ", "") for x in REWARDS_WITH_WHITESPACE
+}
 DESC_TO_TIMEDELTA: Dict[str, Optional[timedelta]] = {
     "1 天": timedelta(days=1),
     "7 天": timedelta(days=7),
@@ -231,11 +231,10 @@ def get_award_rarity(reward_percent: Dict[str, float]) -> Dict[str, float]:
         Dict[str, float]: 键为奖品名称，值为稀有度
     """
     result = {key: 1 / value for key, value in reward_percent.items()}
-    # 修正比例
-    if result.get("收益加成卡100"):  # 如果可能，使用收益加成卡 100 的中奖率修正其它结果
-        scale: float = 1 / result["收益加成卡100"]
-    else:  # 否则不执行修正
-        scale: float = 1.0  # type: ignore [no-redef]
+
+    # 如果可能，使用收益加成卡 100 的中奖率修正其它结果
+    scale: float = 1 / result["收益加成卡100"] if result.get("收益加成卡100") else 1.0
+
     return {key: round(value * scale, 3) for key, value in result.items()}
 
 

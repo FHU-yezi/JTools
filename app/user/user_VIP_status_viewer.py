@@ -36,7 +36,7 @@ def on_query_button_clicked() -> None:
     VIP_info: Dict = user.VIP_info
 
     vip_type: Optional[str] = VIP_info["vip_type"]
-    has_VIP: bool = True if vip_type else False
+    has_VIP: bool = bool(vip_type)
     if has_VIP:
         expire_time: datetime = VIP_info["expire_date"]
         remain_time: timedelta = expire_time - datetime.now()

@@ -35,7 +35,7 @@ def _get_base_dir() -> str:
 
 
 # 获取应用根目录，加入 / 以便替换后的路径中不会出现多余的斜杠
-BASE_DIR: str = _get_base_dir() + "/"
+BASE_DIR: str = f"{_get_base_dir()}/"
 
 
 def _get_filename() -> Optional[str]:

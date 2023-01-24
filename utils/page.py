@@ -31,8 +31,4 @@ def get_chart_height() -> int:
 def can_use_URL_Scheme() -> bool:
     ua: str = str(info.user_agent)
 
-    for item in URL_SCHEME_ALLOW_LIST:
-        if item in ua:
-            return True
-
-    return False
+    return any(item in ua for item in URL_SCHEME_ALLOW_LIST)

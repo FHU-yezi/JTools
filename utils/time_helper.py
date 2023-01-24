@@ -41,10 +41,7 @@ def human_readable_td(td_obj: timedelta) -> str:
 
 def is_datetime_equal(a: datetime, b: datetime, allow_delta: int = 3) -> bool:
     td: timedelta = a - b
-    if abs(td.total_seconds()) <= allow_delta:
-        return False
-    else:
-        return True
+    return abs(td.total_seconds()) <= allow_delta
 
 
 def human_readable_td_to_now(datetime_obj: datetime) -> str:

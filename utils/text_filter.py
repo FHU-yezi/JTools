@@ -10,11 +10,7 @@ BANNED_CHARS: Set[str] = {
 
 
 def has_banned_chars(text: str) -> bool:
-    for char in text:
-        if char in BANNED_CHARS:
-            return True
-
-    return False
+    return any(char in BANNED_CHARS for char in text)
 
 
 def input_filter(text: str) -> str:

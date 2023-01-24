@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
@@ -22,7 +22,7 @@ DESC: str = "下载文章内容，并将其以纯文本或 Markdown 格式保存
 def on_download_button_clicked() -> None:
     url: str = input_filter(pin.url)
     download_format: str = pin.download_format
-    warning: List[Optional[str]] = pin.warning
+    warning: List[str] = pin.warning
 
     if not url:
         toast_warn_and_return("请输入简书文章 URL")
