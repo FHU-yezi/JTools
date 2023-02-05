@@ -18,10 +18,9 @@ Pillow = "^9.2.0"
 pymongo = "^4.2.0"
 
 [tool.poetry.group.dev.dependencies]
-flake8 = "^5.0.0"
-mypy = "^0.991"
-types-PyYAML = "^6.0.11"
 black = "^22.10.0"
+ruff = "^0.0.241"
+pyright = "^1.1.292"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
