@@ -24,7 +24,7 @@ signal(SIGTERM, lambda _, __: access_logger.force_refresh())
 run_logger.debug("已注册事件回调")
 
 STRUCTURE_MAPPING: Dict[str, str] = yaml_load(
-    open("./structure.yaml", "r", encoding="utf-8"), Loader=SafeLoader
+    open("./structure.yaml", encoding="utf-8"), Loader=SafeLoader  # noqa
 )
 modules_list = get_all_modules_info(config.base_path)
 
@@ -34,10 +34,10 @@ def get_status_color(module_name: str) -> str:
 
     if module_name in status.out_of_service:
         return "#FF2D10"  # 红色
-    elif module_name in status.downgrade:
+    if module_name in status.downgrade:
         return "#FF8C00"  # 橙色
-    else:
-        return "#008700"  # 绿色
+
+    return "#008700"  # 绿色
 
 
 def get_status_text(module_name: str) -> str:
@@ -45,10 +45,10 @@ def get_status_text(module_name: str) -> str:
 
     if module_name in status.out_of_service:
         return "暂停服务"
-    elif module_name in status.downgrade:
+    if module_name in status.downgrade:
         return "降级"
-    else:
-        return "正常"
+
+    return "正常"
 
 
 def get_jump_link(base_url: str, module_name: str) -> str:

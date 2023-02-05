@@ -6,6 +6,9 @@ from threading import Thread
 from time import sleep
 from typing import Dict, List, Optional
 
+from pymongo.collection import Collection
+from pywebio.session import _SessionInfoType
+
 from utils.config import config
 from utils.db import access_log_db, run_log_db
 
@@ -56,7 +59,7 @@ def _get_line_number() -> Optional[int]:
 class RunLogger:
     def __init__(
         self,
-        db,
+        db: Collection,
         save_interval: int,
         minimum_record_level: str,
         minimum_print_level: str,
@@ -80,7 +83,7 @@ class RunLogger:
                 data_to_save.clear()
             sleep(self._save_interval)
 
-    def force_refresh(self):
+    def force_refresh(self) -> None:
         if self._data_queue.empty():  # 没有要保存的数据
             return
         data_to_save: List[Dict] = []
@@ -128,7 +131,7 @@ class RunLogger:
 
 
 class AccessLogger:
-    def __init__(self, db, save_interval: int) -> None:
+    def __init__(self, db: Collection, save_interval: int) -> None:
         self._db = db
         self._save_interval = save_interval
         self._data_queue: Queue = Queue()
@@ -156,13 +159,13 @@ class AccessLogger:
     def log_from_info_obj(
         self,
         module_name: str,
-        info_obj,
+        info_obj: _SessionInfoType,
     ) -> None:
         # PyWebIO 使用 Tornado 的 `request.remote_ip` 作为 `info_obj.user_ip` 的值
         # 这在使用反向代理时会出现问题，无法记录客户端的真实 IP
         # 因此，先检查反向代理服务器负责设置的 `X-Forwarded-For` Header，尝试将其作为请求者 IP
         # 如该 Header 不存在，视为没有使用反向代理，回退到记录 `info_obj.user_ip`
-        ip = info_obj.request.headers.get("X-Forwarded-For")
+        ip = info_obj.request.headers.get("X-Forwarded-For")  # type: ignore
         if not ip:
             ip = info_obj.user_ip
 
@@ -173,7 +176,7 @@ class AccessLogger:
             protocol=info_obj.protocol,
         )
 
-    def _save_to_db(self):
+    def _save_to_db(self) -> None:
         while True:
             if not self._data_queue.empty():
                 data_to_save: List[Dict] = []
@@ -183,7 +186,7 @@ class AccessLogger:
                 data_to_save.clear()
             sleep(self._save_interval)
 
-    def force_refresh(self):
+    def force_refresh(self) -> None:
         if self._data_queue.empty():  # 没有要保存的数据
             return
         data_to_save: List[Dict] = []

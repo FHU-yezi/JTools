@@ -11,7 +11,7 @@ DESC: str = "本服务的贡献者和开源库列表。"
 
 
 THANKS_DATA: Dict[str, Any] = yaml_load(
-    open("./thanks.yaml", "r", encoding="utf-8"),
+    open("./thanks.yaml", encoding="utf-8"),  # noqa
 )
 USER_TO_TOTAL_AWARD: Dict[Tuple[str, str], int] = {}
 
@@ -34,7 +34,7 @@ USER_TO_TOTAL_AWARD = dict(
 )
 
 
-def thanks():
+def thanks() -> None:
     put_markdown("## 贡献者")
 
     contributors_data: List[str] = []

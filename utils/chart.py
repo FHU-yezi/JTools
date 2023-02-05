@@ -14,11 +14,11 @@ TOOLBOX_ONLY_SAVE_PNG_WHITE_2X = opts.ToolboxOpts(
             background_color="#FFFFFF",
             pixel_ratio=2,
         ),
-        restore=None,
-        data_view=None,
-        data_zoom=None,
-        magic_type=None,
-        brush=None,
+        restore=None,  # type: ignore
+        data_view=None,  # type: ignore
+        data_zoom=None,  # type: ignore
+        magic_type=None,  # type: ignore
+        brush=None,  # type: ignore
     ),
 )
 

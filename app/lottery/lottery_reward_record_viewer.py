@@ -68,20 +68,22 @@ def get_record(url: str) -> List[Dict]:
             },
             dict(
                 {"_id": 0},
-                **{key: 1 for key in DATA_MAPPING.keys()},
+                **{key: 1 for key in DATA_MAPPING},
             ),  # 合并字典
         )
         .sort("time", -1)
         .limit(100)
-    )
+    )  # type: ignore
     return [{DATA_MAPPING[k]: v for k, v in item.items()} for item in result]
 
 
 def on_query_button_clicked() -> None:
-    url: str = input_filter(pin.url)
+    url: str = input_filter(pin.url)  # type: ignore
     # 为保证用户体验，奖项列表中的内容均在汉字与数字间加入了空格
     # 但数据库中的奖项字段没有做这一处理，因此在此处去掉空格，确保筛选正常进行
-    reward_filter: List[str] = [x.replace(" ", "") for x in pin.reward_filter]
+    reward_filter: List[str] = [
+        x.replace(" ", "") for x in pin.reward_filter  # type: ignore
+    ]
 
     if not url:
         toast_warn_and_return("请输入简书用户 URL")

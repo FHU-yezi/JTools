@@ -1,27 +1,27 @@
 from pymongo import IndexModel, MongoClient
+from pymongo.database import Database
 
 from utils.config import config
 
 
-def init_DB(db_name: str):
+def init_db(db_name: str) -> Database:
     connection: MongoClient = MongoClient(config.db.host, config.db.port)
-    db = connection[db_name]
-    return db
+    return connection[db_name]
 
 
-db = init_DB(config.db.main_database)
+db = init_db(config.db.main_database)
 
 run_log_db = db.run_log
 access_log_db = db.access_log
 
-_jfetcher_data_db = init_DB("JFetcherData")
-article_FP_rank_db = _jfetcher_data_db.article_FP_rank
+_jfetcher_data_db = init_db("JFetcherData")
+article_fp_rank_db = _jfetcher_data_db.article_FP_rank
 lottery_db = _jfetcher_data_db.lottery_data
 LP_collections_db = _jfetcher_data_db.LP_collections
 
 # 创建索引
 
-article_FP_rank_db.create_indexes(
+article_fp_rank_db.create_indexes(
     [IndexModel([("date", 1)]), IndexModel([("ranking", 1)])]
 )
 lottery_db.create_indexes(

@@ -32,13 +32,13 @@ jieba.logging.disable()
 
 ALLOWED_WORD_TYPES: Set[str] = {
     x.strip()
-    for x in open(
+    for x in open(  # noqa
         "wordcloud_assets/allowed_word_types.txt", encoding="utf-8"
     ).readlines()
 }
 (
     jieba.add_word(word)
-    for word in open("wordcloud_assets/hotwords.txt", encoding="utf-8")
+    for word in open("wordcloud_assets/hotwords.txt", encoding="utf-8")  # noqa
 )  # 将热点词加入词库
 
 
@@ -53,7 +53,7 @@ def get_word_freq(text: str) -> Tuple[Tuple[str, int], ...]:
 
 
 def on_generate_button_clicked() -> None:
-    url: str = input_filter(pin.url)
+    url: str = input_filter(pin.url)  # type: ignore
 
     if not url:
         toast_warn_and_return("请输入简书文章 URL")

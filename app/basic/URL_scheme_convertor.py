@@ -62,7 +62,7 @@ def get_convert_result(url: str, url_type: str) -> str:
 
 
 def on_convert_button_cilcked() -> None:
-    url: str = input_filter(pin.url)
+    url: str = input_filter(pin.url)  # type: ignore
 
     if not url:
         toast_warn_and_return("请输入简书 URL")
@@ -87,7 +87,7 @@ def on_convert_button_cilcked() -> None:
         put_image(qr_code)
 
 
-def URL_scheme_convertor() -> None:
+def URL_scheme_convertor() -> None:  # noqa
     put_markdown(
         """
         目前支持转换的链接类型：

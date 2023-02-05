@@ -253,7 +253,7 @@ def get_period_reward_type_pie_chart(td: Optional[timedelta] = None) -> Pie:
     """
     data = get_period_award_name_times_data(td)
     if not data:
-        return "<p>暂无数据</p>"
+        return "<p>暂无数据</p>"  # type: ignore TODO
 
     return (
         Pie(
@@ -288,7 +288,7 @@ def get_period_award_times_chart(td: timedelta) -> Line:
     unit = "hour" if td <= timedelta(days=1) else "day"
     x, y = get_period_all_award_times_data(unit, td)
     if not x:
-        return "<p>暂无数据</p>"
+        return "<p>暂无数据</p>"  # type: ignore TODO
 
     x = [str(item) for item in x]
 
@@ -309,7 +309,7 @@ def get_period_award_times_chart(td: timedelta) -> Line:
         )
         .add_yaxis(
             "",
-            y_axis=y,
+            y_axis=y,  # type: ignore
             is_smooth=True,
             linestyle_opts=opts.LineStyleOpts(
                 color=JIANSHU_COLOR,

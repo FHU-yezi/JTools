@@ -20,7 +20,7 @@ DESC: str = "查询文章的发布与更新时间。"
 
 
 def on_query_button_clicked() -> None:
-    url: str = input_filter(pin.url)
+    url: str = input_filter(pin.url)  # type: ignore
 
     if not url:
         toast_warn_and_return("请输入简书文章 URL")

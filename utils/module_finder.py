@@ -32,8 +32,8 @@ def get_all_modules(base_path: str, types: List[str]) -> Dict[str, List[str]]:
 def get_module_info(base_path: str, type_: str, module_name: str) -> Module:
     module_obj = import_module(f"{base_path.split('/')[-1]}.{type_}.{module_name}")
     page_func: Callable[[], None] = getattr(module_obj, module_name)  # 页面函数名与模块名相同
-    page_name: str = getattr(module_obj, "NAME")
-    page_desc: str = getattr(module_obj, "DESC")
+    page_name: str = module_obj.NAME
+    page_desc: str = module_obj.DESC
 
     return Module(
         module_type=type_,

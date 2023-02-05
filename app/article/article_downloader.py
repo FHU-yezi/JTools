@@ -20,9 +20,9 @@ DESC: str = "下载文章内容，并将其以纯文本或 Markdown 格式保存
 
 
 def on_download_button_clicked() -> None:
-    url: str = input_filter(pin.url)
-    download_format: str = pin.download_format
-    warning: List[str] = pin.warning
+    url: str = input_filter(pin.url)  # type: ignore
+    download_format: str = pin.download_format  # type: ignore
+    warning: List[str] = pin.warning  # type: ignore
 
     if not url:
         toast_warn_and_return("请输入简书文章 URL")
