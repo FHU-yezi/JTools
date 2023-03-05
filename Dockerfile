@@ -11,8 +11,7 @@ RUN pip install \
     --no-cache-dir \
     --no-compile \
     --disable-pip-version-check \
-    --quiet \
-    -i https://mirrors.aliyun.com/pypi/simple
+    --quiet
 
 COPY . .
 
