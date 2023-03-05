@@ -45,17 +45,17 @@ class Config:
                 yaml_dump(_DEFAULT_CONFIG, f, allow_unicode=True, indent=4)
             self._data = _DEFAULT_CONFIG
         else:  # 有配置文件
-            with open("config.yaml", "r", encoding="utf-8") as f:
+            with open("config.yaml", encoding="utf-8") as f:
                 self._data = yaml_load(f, Loader=SafeLoader)
 
     def __getattr__(self, name: str) -> Any:
         result: Any = self._data[name]
         if isinstance(result, dict):
             return ConfigNode(result)
-        else:
-            return result
 
-    def refresh(self):
+        return result
+
+    def refresh(self) -> None:
         self.__init__()
 
 

@@ -1,6 +1,7 @@
 opensource_packages:
     PyWebIO: https://github.com/pywebio/PyWebIO
     JianshuResearchTools: https://github.com/FHU-yezi/JianshuResearchTools
+    sspeedup: https://github.com/FHU-yezi/sspeedup
     Jieba: https://github.com/fxsjy/jieba
     PyEcharts: https://github.com/pyecharts/pyecharts
     PyMongo: https://github.com/mongodb/mongo-python-driver

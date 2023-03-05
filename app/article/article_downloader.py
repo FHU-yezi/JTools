@@ -1,11 +1,11 @@
-from typing import List, Optional
+from typing import List
 
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
 from pywebio.output import download, put_markdown, toast
 from pywebio.pin import pin, put_checkbox, put_input, put_radio
+from sspeedup.pywebio.callbacks import on_enter_pressed
 
-from utils.callback import bind_enter_key_callback
 from utils.checkbox_helper import is_checked
 from utils.text_filter import input_filter
 from utils.widgets import (
@@ -20,9 +20,9 @@ DESC: str = "下载文章内容，并将其以纯文本或 Markdown 格式保存
 
 
 def on_download_button_clicked() -> None:
-    url: str = input_filter(pin.url)
-    download_format: str = pin.download_format
-    warning: List[Optional[str]] = pin.warning
+    url: str = input_filter(pin.url)  # type: ignore
+    download_format: str = pin.download_format  # type: ignore
+    warning: List[str] = pin.warning  # type: ignore
 
     if not url:
         toast_warn_and_return("请输入简书文章 URL")
@@ -74,7 +74,7 @@ def article_downloader() -> None:
         onclick=on_download_button_clicked,
         block=True,
     )
-    bind_enter_key_callback(
+    on_enter_pressed(
         "url",
-        on_press=lambda _: on_download_button_clicked(),
+        func=on_download_button_clicked,
     )

@@ -11,7 +11,7 @@ DESC: str = "本服务的贡献者和开源库列表。"
 
 
 THANKS_DATA: Dict[str, Any] = yaml_load(
-    open("./thanks.yaml", "r", encoding="utf-8"),
+    open("./thanks.yaml", encoding="utf-8"),  # noqa
 )
 USER_TO_TOTAL_AWARD: Dict[Tuple[str, str], int] = {}
 
@@ -34,7 +34,7 @@ USER_TO_TOTAL_AWARD = dict(
 )
 
 
-def thanks():
+def thanks() -> None:
     put_markdown("## 贡献者")
 
     contributors_data: List[str] = []
@@ -47,9 +47,10 @@ def thanks():
 
     put_markdown("## 开源库")
 
-    opensource_packages_data: List[str] = []
-    for package_name, github_url in THANKS_DATA["opensource_packages"].items():
-        opensource_packages_data.append(f"- {link(package_name, github_url, new_window=True)}")
+    opensource_packages_data: List[str] = [
+        f"- {link(package_name, github_url, new_window=True)}"
+        for package_name, github_url in THANKS_DATA["opensource_packages"].items()
+    ]
     put_markdown("\n".join(opensource_packages_data))
 
     put_markdown("## 「捉虫计划」反馈记录")

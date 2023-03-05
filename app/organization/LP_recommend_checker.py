@@ -8,13 +8,13 @@ from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
 from pywebio.output import put_markdown, use_scope
 from pywebio.pin import pin, put_input
+from sspeedup.cache.timeout import timeout_cache
+from sspeedup.pywebio.callbacks import on_enter_pressed
+from sspeedup.time_helper import human_readable_td_to_now
 
-from utils.cache import timeout_cache
-from utils.callback import bind_enter_key_callback
-from utils.db import LP_collections_db, article_FP_rank_db
+from utils.db import LP_collections_db, article_fp_rank_db
 from utils.html import green_text, grey_text, link, red_text
 from utils.text_filter import input_filter
-from utils.time_helper import human_readable_td_to_now
 from utils.widgets import (
     green_loading,
     toast_error_and_return,
@@ -43,17 +43,17 @@ def get_article_wordage(article_obj: Article) -> str:
 
 def wordage_checker(article_obj: Article) -> Tuple[bool, int, int]:
     wordage: int = article_obj.wordage
-    return (True if wordage >= 800 else False, 800, wordage)
+    return (wordage >= 800, 800, wordage)
 
 
 def reward_checker(article_obj: Article) -> Tuple[bool, float, float]:
     reward: float = article_obj.total_FP_count
-    return (True if reward < 35.0 else False, 35.0, reward)
+    return (reward < 35.0, 35.0, reward)
 
 
-def recommend_by_LP_last_7d_checker(article_obj: Article) -> Tuple[bool, int, int]:
+def recommend_by_lp_last_7d_checker(article_obj: Article) -> Tuple[bool, int, int]:
     author_url: str = get_author_url(article_obj)
-    recommend_by_LP_last_7d: int = LP_collections_db.count_documents(
+    recommend_by_lp_last_7d: int = LP_collections_db.count_documents(
         {
             "author.url": author_url,
             "fetch_date": {
@@ -61,12 +61,12 @@ def recommend_by_LP_last_7d_checker(article_obj: Article) -> Tuple[bool, int, in
             },
         }
     )
-    return (True if recommend_by_LP_last_7d == 0 else False, 0, recommend_by_LP_last_7d)
+    return (recommend_by_lp_last_7d == 0, 0, recommend_by_lp_last_7d)
 
 
 def on_rank_last_10d_top30_checker(article_obj: Article) -> Tuple[bool, int, int]:
     author_url: str = get_author_url(article_obj)
-    on_rank_last_10d_top30: int = article_FP_rank_db.count_documents(
+    on_rank_last_10d_top30: int = article_fp_rank_db.count_documents(
         {
             "author.url": author_url,
             "date": {
@@ -77,12 +77,12 @@ def on_rank_last_10d_top30_checker(article_obj: Article) -> Tuple[bool, int, int
             },
         }
     )
-    return (True if on_rank_last_10d_top30 == 0 else False, 0, on_rank_last_10d_top30)
+    return (on_rank_last_10d_top30 == 0, 0, on_rank_last_10d_top30)
 
 
 def on_rank_last_1m_top30_checker(article_obj: Article) -> Tuple[bool, int, int]:
     author_url: str = get_author_url(article_obj)
-    on_rank_last_1m_top30: int = article_FP_rank_db.count_documents(
+    on_rank_last_1m_top30: int = article_fp_rank_db.count_documents(
         {
             "author.url": author_url,
             "date": {
@@ -93,20 +93,20 @@ def on_rank_last_1m_top30_checker(article_obj: Article) -> Tuple[bool, int, int]
             },
         }
     )
-    return (True if on_rank_last_1m_top30 <= 2 else False, 2, on_rank_last_1m_top30)
+    return (on_rank_last_1m_top30 <= 2, 2, on_rank_last_1m_top30)
 
 
 CHECK_ITEM_FUNC_MAPPING: Dict[str, Callable] = {
     "文章字数": wordage_checker,
     "文章收益": reward_checker,
-    "作者过去 7 天被 LP 理事会推荐次数": recommend_by_LP_last_7d_checker,
+    "作者过去 7 天被 LP 理事会推荐次数": recommend_by_lp_last_7d_checker,
     "作者过去 10 天前 30 名次数": on_rank_last_10d_top30_checker,
     "作者过去 1 个月前 30 名次数": on_rank_last_1m_top30_checker,
 }
 
 
 def on_check_button_clicked() -> None:
-    url: str = input_filter(pin.url)
+    url: str = input_filter(pin.url)  # type: ignore
 
     if not url:
         toast_warn_and_return("请输入简书文章 URL")
@@ -160,7 +160,7 @@ def on_check_button_clicked() -> None:
             put_markdown("---")
 
 
-def LP_recommend_checker() -> None:
+def LP_recommend_checker() -> None:  # noqa
     put_input(
         "url",
         type="text",
@@ -172,7 +172,7 @@ def LP_recommend_checker() -> None:
         onclick=on_check_button_clicked,
         block=True,
     )
-    bind_enter_key_callback(
+    on_enter_pressed(
         "url",
-        on_press=lambda _: on_check_button_clicked(),
+        func=on_check_button_clicked,
     )

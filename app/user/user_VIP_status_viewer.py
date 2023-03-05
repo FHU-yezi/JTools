@@ -5,10 +5,10 @@ from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import User
 from pywebio.output import put_markdown, toast
 from pywebio.pin import pin, put_input
+from sspeedup.pywebio.callbacks import on_enter_pressed
+from sspeedup.time_helper import human_readable_td
 
-from utils.callback import bind_enter_key_callback
 from utils.text_filter import input_filter
-from utils.time_helper import human_readable_td
 from utils.widgets import (
     toast_error_and_return,
     toast_warn_and_return,
@@ -21,7 +21,7 @@ DESC: str = "查询用户的会员状态与到期时间。"
 
 
 def on_query_button_clicked() -> None:
-    url: str = input_filter(pin.url)
+    url: str = input_filter(pin.url)  # type: ignore
 
     if not url:
         toast_warn_and_return("请输入简书用户 URL")
@@ -33,18 +33,19 @@ def on_query_button_clicked() -> None:
     except ResourceError:
         toast_error_and_return("用户已注销或被封号，无法获取数据")
 
-    VIP_info: Dict = user.VIP_info
+    vip_info: Dict = user.VIP_info
 
-    vip_type: Optional[str] = VIP_info["vip_type"]
-    has_VIP: bool = True if vip_type else False
-    if has_VIP:
-        expire_time: datetime = VIP_info["expire_date"]
+    vip_type: Optional[str] = vip_info["vip_type"]
+    has_vip: bool = bool(vip_type)
+    if has_vip:
+        expire_time: datetime = vip_info["expire_date"]
         remain_time: timedelta = expire_time - datetime.now()
 
     toast("数据获取成功", color="success")
 
     with use_result_scope():
-        if has_VIP:
+        if has_vip:
+            assert expire_time and remain_time  # type: ignore  # noqa
             put_markdown(
                 f"""
                 用户名：{user.name}
@@ -63,7 +64,7 @@ def on_query_button_clicked() -> None:
             )
 
 
-def user_VIP_status_viewer() -> None:
+def user_VIP_status_viewer() -> None:  # noqa
     put_input(
         "url",
         type="text",
@@ -75,7 +76,7 @@ def user_VIP_status_viewer() -> None:
         onclick=on_query_button_clicked,
         block=True,
     )
-    bind_enter_key_callback(
+    on_enter_pressed(
         "url",
-        on_press=lambda _: on_query_button_clicked(),
+        func=on_query_button_clicked,
     )

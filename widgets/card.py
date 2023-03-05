@@ -1,12 +1,11 @@
-from datetime import datetime, date
+from datetime import date, datetime
 
 from JianshuResearchTools.convert import (
     ArticleUrlToArticleUrlScheme,
     UserUrlToUserUrlScheme,
 )
 from pywebio.output import Output, put_widget
-
-from utils.time_helper import human_readable_td_to_now
+from sspeedup.time_helper import human_readable_td_to_now
 
 
 def put_app_card(
@@ -36,17 +35,17 @@ def put_app_card(
 def put_article_detail_card(
     source_collection: str,
     article_title: str,
-    article_URL: str,
+    article_url: str,
     release_time: datetime,
     views_count: int,
     likes_count: int,
     comments_count: int,
-    total_FP_count: float,
+    total_fp_count: float,
     summary: str,
     author_name: str,
-    author_URL: str,
-    enable_URL_scheme: bool,
-    can_use_URL_Scheme: bool,
+    author_url: str,
+    enable_url_scheme: bool,
+    can_use_url_scheme: bool,
 ) -> Output:
     tpl: str = """
     <div class="card" style="padding: 20px; padding-bottom: 10px; margin-bottom: 20px; border-radius: 20px;">
@@ -66,29 +65,35 @@ def put_article_detail_card(
             "source_collection": source_collection,
             "article_title": article_title,
             "article_URL": (
-                ArticleUrlToArticleUrlScheme(article_URL)
-                if enable_URL_scheme and can_use_URL_Scheme
-                else article_URL
+                ArticleUrlToArticleUrlScheme(article_url)
+                if enable_url_scheme and can_use_url_scheme
+                else article_url
             ),
             "release_time": release_time.strftime(r"%Y-%m-%d %X"),
             "human_readable_release_time": human_readable_td_to_now(release_time),
             "views_count": views_count,
             "likes_count": likes_count,
             "comments_count": comments_count,
-            "total_FP_count": total_FP_count,
+            "total_FP_count": total_fp_count,
             "summary": summary,
             "author_name": author_name,
             "author_URL": (
-                UserUrlToUserUrlScheme(author_URL)
-                if enable_URL_scheme and can_use_URL_Scheme
-                else author_URL
+                UserUrlToUserUrlScheme(author_url)
+                if enable_url_scheme and can_use_url_scheme
+                else author_url
             ),
         },
     )
 
 
 def put_debug_project_record_card(
-    time: date, type_: str, module: str, desc: str, user_name: str, user_url: str, award: int
+    time: date,
+    type_: str,
+    module: str,
+    desc: str,
+    user_name: str,
+    user_url: str,
+    award: int,
 ) -> Output:
     tpl: str = """
     <div class="card", style="padding: 20px; padding-bottom: 10px; margin-bottom: 20px; border-radius: 20px;">

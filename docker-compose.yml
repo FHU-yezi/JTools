@@ -6,12 +6,12 @@ networks:
 
 services:
   main:
-    image: jianshumicrofeatures:2.8.0
+    image: jianshu-micro-features:2.9.0
     build: .
     ports:
-      - "8602:8602"
+      - 8602:8602
     volumes:
-      - "./config.yaml:/app/config.yaml:ro"
+      - ./config.yaml:/app/config.yaml:ro
     networks:
       - mongodb
     environment:

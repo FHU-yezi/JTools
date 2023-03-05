@@ -2,11 +2,11 @@ from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
 from pywebio.output import put_markdown, toast
 from pywebio.pin import pin, put_input
+from sspeedup.pywebio.callbacks import on_enter_pressed
+from sspeedup.time_helper import human_readable_td_to_now, is_datetime_equal
 
-from utils.callback import bind_enter_key_callback
 from utils.html import link
 from utils.text_filter import input_filter
-from utils.time_helper import human_readable_td_to_now, is_datetime_equal
 from utils.widgets import (
     green_loading,
     toast_error_and_return,
@@ -20,7 +20,7 @@ DESC: str = "查询文章的发布与更新时间。"
 
 
 def on_query_button_clicked() -> None:
-    url: str = input_filter(pin.url)
+    url: str = input_filter(pin.url)  # type: ignore
 
     if not url:
         toast_warn_and_return("请输入简书文章 URL")
@@ -72,7 +72,7 @@ def article_publish_time_viewer() -> None:
         onclick=on_query_button_clicked,
         block=True,
     )
-    bind_enter_key_callback(
+    on_enter_pressed(
         "url",
-        on_press=lambda _: on_query_button_clicked(),
+        func=on_query_button_clicked,
     )

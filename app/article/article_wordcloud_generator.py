@@ -1,16 +1,17 @@
-from collections import Counter
-from typing import List, Set
-
-import jieba
-import jieba.posseg as pseg
 import pyecharts.options as opts
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
+from pyecharts.charts import WordCloud
 from pywebio.output import put_html, toast
 from pywebio.pin import pin, put_input
+from sspeedup.pywebio.callbacks import on_enter_pressed
+from sspeedup.word_split.jieba import JiebaPossegSplitter
 
-from utils.callback import bind_enter_key_callback
-from utils.chart import get_wordcloud
+from utils.chart import (
+    ANIMATION_OFF,
+    JIANSHU_COLOR,
+    TOOLBOX_ONLY_SAVE_PNG_WHITE_2X,
+)
 from utils.text_filter import input_filter
 from utils.widgets import (
     green_loading,
@@ -23,37 +24,15 @@ from widgets.button import put_button
 NAME: str = "文章词云图生成工具"
 DESC = "生成文章词云图。"
 
-jieba.logging.disable()
 
-STOPWORDS: Set[str] = {
-    x.strip()
-    for x in open("wordcloud_assets/stopwords.txt", encoding="utf-8").readlines()
-}
-ALLOWED_WORD_TYPES: Set[str] = {
-    x.strip()
-    for x in open(
-        "wordcloud_assets/allowed_word_types.txt", encoding="utf-8"
-    ).readlines()
-}
-(
-    jieba.add_word(word)
-    for word in open("wordcloud_assets/hotwords.txt", encoding="utf-8")
-)  # 将热点词加入词库
-
-
-def get_word_freq(text: str):
-    processed_text: List[str] = [
-        x.word
-        for x in pseg.cut(text)
-        if len(x.word) > 1  # 剔除单字词
-        and x.word not in STOPWORDS  # 剔除禁用词
-        and x.flag in ALLOWED_WORD_TYPES  # 剔除不符合词性要求的词
-    ]
-    return Counter(processed_text).items()
+word_splitter = JiebaPossegSplitter(
+    hotwords_file="wordcloud_assets/hotwords.txt",
+    allowed_word_types_file="wordcloud_assets/allowed_word_types.txt",
+)
 
 
 def on_generate_button_clicked() -> None:
-    url: str = input_filter(pin.url)
+    url: str = input_filter(pin.url)  # type: ignore
 
     if not url:
         toast_warn_and_return("请输入简书文章 URL")
@@ -69,18 +48,35 @@ def on_generate_button_clicked() -> None:
         title: str = article.title
         text: str = article.text
 
-        word_freq = get_word_freq(text)
+        word_freq = word_splitter.get_word_freq(text).most_common(200)
 
-        wordcloud = get_wordcloud(word_freq, (20, 70), in_tab=False).set_global_opts(
-            title_opts=opts.TitleOpts(
-                title=f"{title} 的词云图",
-                subtitle=url,
-            ),
-            # 支持下载到本地
-            toolbox_opts=opts.ToolboxOpts(
-                is_show=True,
-                feature={"saveAsImage": {}},
-            ),
+        wordcloud = (
+            WordCloud(
+                init_opts=opts.InitOpts(
+                    width="800px",
+                    height="500px",
+                    animation_opts=ANIMATION_OFF,
+                )
+            )
+            .add(
+                "",
+                data_pair=word_freq,
+                word_size_range=(20, 70),
+                pos_left="center",
+                pos_top="center",
+                textstyle_opts=opts.TextStyleOpts(
+                    color=JIANSHU_COLOR,
+                ),
+            )
+            .set_global_opts(
+                title_opts=opts.TitleOpts(
+                    pos_left="30px",
+                    pos_top="5px",
+                    title=f"{title} 的词云图",
+                    subtitle=url,
+                ),
+                toolbox_opts=TOOLBOX_ONLY_SAVE_PNG_WHITE_2X,
+            )
         )
 
         with use_result_scope():
@@ -100,7 +96,7 @@ def article_wordcloud_generator() -> None:
         onclick=on_generate_button_clicked,
         block=True,
     )
-    bind_enter_key_callback(
+    on_enter_pressed(
         "url",
-        on_press=lambda _: on_generate_button_clicked(),
+        func=on_generate_button_clicked,
     )

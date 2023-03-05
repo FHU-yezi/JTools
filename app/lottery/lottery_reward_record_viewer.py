@@ -2,11 +2,11 @@ from typing import Any, Dict, List, Set
 
 from JianshuResearchTools.assert_funcs import AssertUserUrl
 from JianshuResearchTools.exceptions import InputError
-from pywebio.output import put_markdown, toast
+from pywebio.output import clear_scope, put_markdown, toast
 from pywebio.pin import pin, put_checkbox, put_input
+from sspeedup.cache.timeout import timeout_cache
+from sspeedup.pywebio.callbacks import on_enter_pressed
 
-from utils.cache import timeout_cache
-from utils.callback import bind_enter_key_callback
 from utils.db import lottery_db
 from utils.text_filter import input_filter
 from utils.widgets import (
@@ -68,20 +68,22 @@ def get_record(url: str) -> List[Dict]:
             },
             dict(
                 {"_id": 0},
-                **{key: 1 for key in DATA_MAPPING.keys()},
+                **{key: 1 for key in DATA_MAPPING},
             ),  # 合并字典
         )
         .sort("time", -1)
         .limit(100)
-    )
+    )  # type: ignore
     return [{DATA_MAPPING[k]: v for k, v in item.items()} for item in result]
 
 
 def on_query_button_clicked() -> None:
-    url: str = input_filter(pin.url)
+    url: str = input_filter(pin.url)  # type: ignore
     # 为保证用户体验，奖项列表中的内容均在汉字与数字间加入了空格
     # 但数据库中的奖项字段没有做这一处理，因此在此处去掉空格，确保筛选正常进行
-    reward_filter: List[str] = [x.replace(" ", "") for x in pin.reward_filter]
+    reward_filter: List[str] = [
+        x.replace(" ", "") for x in pin.reward_filter  # type: ignore
+    ]
 
     if not url:
         toast_warn_and_return("请输入简书用户 URL")
@@ -102,7 +104,8 @@ def on_query_button_clicked() -> None:
             x for x in get_record(url) if x["奖项"] in reward_filter
         ]
 
-    if not data:  # 该筛选条件下无结果
+    if not data:
+        clear_scope("result")
         toast_warn_and_return("该筛选条件下无中奖记录")
 
     toast("数据获取成功", color="success")
@@ -139,7 +142,7 @@ def lottery_reward_record_viewer() -> None:
         onclick=on_query_button_clicked,
         block=True,
     )
-    bind_enter_key_callback(
+    on_enter_pressed(
         "url",
-        on_press=lambda _: on_query_button_clicked(),
+        func=on_query_button_clicked,
     )

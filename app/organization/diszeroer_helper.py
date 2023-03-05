@@ -10,7 +10,7 @@ from pywebio.output import put_column, put_markdown, put_row
 from pywebio.pin import pin, put_checkbox, put_input
 
 from utils.checkbox_helper import is_checked
-from utils.page import can_use_URL_Scheme
+from utils.page import can_use_url_scheme
 from utils.widgets import (
     green_loading,
     toast_error_and_return,
@@ -66,8 +66,8 @@ def fit_for_filter(
     comments_limit: int,
     show_commentable_only: bool,
     no_paid_article: bool,
-    likes_count,
-    comments_count,
+    likes_count: int,
+    comments_count: int,
     commentable: bool,
     paid: bool,
 ) -> bool:
@@ -84,14 +84,23 @@ def fit_for_filter(
 
 
 def on_fetch_button_clicked() -> None:
-    likes_limit: int = pin.likes_limit
-    comments_limit: int = pin.comments_limit
-    max_result_count: int = pin.max_result_count
-    selected_collections: List[str] = pin.selected_collections
+    likes_limit: int = pin.likes_limit  # type: ignore
+    comments_limit: int = pin.comments_limit  # type: ignore
+    max_result_count: int = pin.max_result_count  # type: ignore
+    selected_collections: List[str] = pin.selected_collections  # type: ignore
 
-    show_commentable_only: bool = is_checked("仅展示允许评论的文章", pin.additional_features)
-    no_paid_article: bool = is_checked("不展示付费文章", pin.additional_features)
-    enable_URL_scheme: bool = is_checked("开启 URL Scheme 跳转", pin.additional_features)
+    show_commentable_only: bool = is_checked(
+        "仅展示允许评论的文章",
+        pin.additional_features,  # type: ignore
+    )
+    no_paid_article: bool = is_checked(
+        "不展示付费文章",
+        pin.additional_features,  # type: ignore
+    )
+    enable_url_scheme: bool = is_checked(
+        "开启 URL Scheme 跳转",
+        pin.additional_features,  # type: ignore
+    )
 
     user_input_ok, message = check_user_input(
         likes_limit, comments_limit, max_result_count, selected_collections
@@ -101,55 +110,54 @@ def on_fetch_button_clicked() -> None:
 
     showed_count: int = 0
 
-    with green_loading():
-        with use_result_scope():
-            for article, source_collection in iter_selected_collections(
-                selected_collections
+    with green_loading(), use_result_scope():
+        for article, source_collection in iter_selected_collections(
+            selected_collections
+        ):
+            article_title: str = article["title"]
+            article_url: str = ArticleSlugToArticleUrl(article["aslug"])
+            author_name: str = article["user"]["name"]
+            author_url: str = UserSlugToUserUrl(article["user"]["uslug"])
+            release_time: datetime = article["release_time"].replace(
+                tzinfo=None
+            )  # 处理时区问题
+            views_count: int = article["views_count"]
+            likes_count: int = article["likes_count"]
+            comments_count: int = article["comments_count"]
+            total_fp_amount: int = article["total_fp_amount"]
+            summary: str = article["summary"]
+            commentable: bool = article["commentable"]
+            paid: bool = article["paid"]
+
+            if fit_for_filter(
+                likes_limit,
+                comments_limit,
+                show_commentable_only,
+                no_paid_article,
+                likes_count,
+                comments_count,
+                commentable,
+                paid,
             ):
-                article_title: str = article["title"]
-                article_URL: str = ArticleSlugToArticleUrl(article["aslug"])
-                author_name: str = article["user"]["name"]
-                author_URL: str = UserSlugToUserUrl(article["user"]["uslug"])
-                release_time: datetime = article["release_time"].replace(
-                    tzinfo=None
-                )  # 处理时区问题
-                views_count: int = article["views_count"]
-                likes_count: int = article["likes_count"]
-                comments_count: int = article["comments_count"]
-                total_FP_amount: int = article["total_fp_amount"]
-                summary: str = article["summary"]
-                commentable: bool = article["commentable"]
-                paid: bool = article["paid"]
+                showed_count += 1
+                put_article_detail_card(
+                    source_collection=source_collection,
+                    article_title=article_title,
+                    article_url=article_url,
+                    release_time=release_time,
+                    views_count=views_count,
+                    likes_count=likes_count,
+                    comments_count=comments_count,
+                    total_fp_count=total_fp_amount,
+                    summary=summary,
+                    author_name=author_name,
+                    author_url=author_url,
+                    enable_url_scheme=enable_url_scheme,
+                    can_use_url_scheme=can_use_url_scheme(),
+                )
 
-                if fit_for_filter(
-                    likes_limit,
-                    comments_limit,
-                    show_commentable_only,
-                    no_paid_article,
-                    likes_count,
-                    comments_count,
-                    commentable,
-                    paid,
-                ):
-                    showed_count += 1
-                    put_article_detail_card(
-                        source_collection=source_collection,
-                        article_title=article_title,
-                        article_URL=article_URL,
-                        release_time=release_time,
-                        views_count=views_count,
-                        likes_count=likes_count,
-                        comments_count=comments_count,
-                        total_FP_count=total_FP_amount,
-                        summary=summary,
-                        author_name=author_name,
-                        author_URL=author_URL,
-                        enable_URL_scheme=enable_URL_scheme,
-                        can_use_URL_Scheme=can_use_URL_Scheme(),
-                    )
-
-                    if showed_count == max_result_count:
-                        break
+                if showed_count == max_result_count:
+                    break
 
 
 def diszeroer_helper() -> None:

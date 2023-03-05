@@ -2,11 +2,18 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Literal, Optional, Set, Tuple
 
 import pyecharts.options as opts
+from pyecharts.charts import Line, Pie
 from pywebio.output import put_html, put_markdown, put_tabs
+from sspeedup.cache.timeout import timeout_cache
 
-from utils.cache import timeout_cache
-from utils.chart import get_line_chart, get_pie_chart
+from utils.chart import (
+    ANIMATION_OFF,
+    JIANSHU_COLOR,
+    LEGEND_HIIDEN,
+    TOOLBOX_ONLY_SAVE_PNG_WHITE_2X,
+)
 from utils.db import lottery_db
+from utils.page import apply_better_tabs
 from widgets.table import put_table
 
 NAME: str = "大转盘数据分析工具"
@@ -19,9 +26,9 @@ REWARDS_WITH_WHITESPACE: Set[str] = {
     "免费开 1 次连载",
     "招财猫头像框 1 年",
 }
-REWARDS_WITHOUT_WHITESPACE: Set[str] = set(
-    (x.replace(" ", "") for x in REWARDS_WITH_WHITESPACE)
-)
+REWARDS_WITHOUT_WHITESPACE: Set[str] = {
+    x.replace(" ", "") for x in REWARDS_WITH_WHITESPACE
+}
 DESC_TO_TIMEDELTA: Dict[str, Optional[timedelta]] = {
     "1 天": timedelta(days=1),
     "7 天": timedelta(days=7),
@@ -231,15 +238,14 @@ def get_award_rarity(reward_percent: Dict[str, float]) -> Dict[str, float]:
         Dict[str, float]: 键为奖品名称，值为稀有度
     """
     result = {key: 1 / value for key, value in reward_percent.items()}
-    # 修正比例
-    if result.get("收益加成卡100"):  # 如果可能，使用收益加成卡 100 的中奖率修正其它结果
-        scale: float = 1 / result["收益加成卡100"]
-    else:  # 否则不执行修正
-        scale: float = 1.0  # type: ignore [no-redef]
+
+    # 如果可能，使用收益加成卡 100 的中奖率修正其它结果
+    scale: float = 1 / result["收益加成卡100"] if result.get("收益加成卡100") else 1.0
+
     return {key: round(value * scale, 3) for key, value in result.items()}
 
 
-def get_period_reward_type_pie_chart(td: Optional[timedelta] = None):
+def get_period_reward_type_pie_chart(td: Optional[timedelta] = None) -> Pie:
     """获取某一时段各奖项的中奖率饼状图
 
     Args:
@@ -247,28 +253,33 @@ def get_period_reward_type_pie_chart(td: Optional[timedelta] = None):
     """
     data = get_period_award_name_times_data(td)
     if not data:
-        return "<p>暂无数据</p>"
+        return "<p>暂无数据</p>"  # type: ignore TODO
 
     return (
-        get_pie_chart(
-            data,
-            in_tab=True,
+        Pie(
+            init_opts=opts.InitOpts(
+                width="880px",
+                height="400px",
+                animation_opts=ANIMATION_OFF,
+            )
         )
+        .add("", tuple(data.items()))
         .set_global_opts(
-            legend_opts=opts.LegendOpts(
-                is_show=False,
+            legend_opts=LEGEND_HIIDEN,
+            title_opts=opts.TitleOpts(
+                pos_left="30px",
+                pos_top="5px",
+                title="中奖次数分布图",
             ),
+            toolbox_opts=TOOLBOX_ONLY_SAVE_PNG_WHITE_2X,
         )
         .set_series_opts(
-            label_opts=opts.LabelOpts(
-                formatter="{b}：{c} 次",
-            ),
+            label_opts=opts.LabelOpts(formatter="{b}：{c} 次"),
         )
-        .render_notebook()
     )
 
 
-def get_period_award_times_chart(td: timedelta):
+def get_period_award_times_chart(td: timedelta) -> Line:
     """获取某一时间段内的中奖次数趋势图
 
     Args:
@@ -277,7 +288,7 @@ def get_period_award_times_chart(td: timedelta):
     unit = "hour" if td <= timedelta(days=1) else "day"
     x, y = get_period_all_award_times_data(unit, td)
     if not x:
-        return "<p>暂无数据</p>"
+        return "<p>暂无数据</p>"  # type: ignore TODO
 
     x = [str(item) for item in x]
 
@@ -286,22 +297,39 @@ def get_period_award_times_chart(td: timedelta):
     elif unit == "day":
         x = [item.split()[0] for item in x]  # 去除恒为 0 的时间部分
     return (
-        get_line_chart(
-            x,
-            y,
-            in_tab=True,
+        Line(
+            init_opts=opts.InitOpts(
+                width="880px",
+                height="400px",
+                animation_opts=ANIMATION_OFF,
+            )
+        )
+        .add_xaxis(
+            xaxis_data=x,
+        )
+        .add_yaxis(
+            "",
+            y_axis=y,  # type: ignore
+            is_smooth=True,
+            linestyle_opts=opts.LineStyleOpts(
+                color=JIANSHU_COLOR,
+            ),
+            itemstyle_opts=opts.ItemStyleOpts(
+                color=JIANSHU_COLOR,
+            ),
+            label_opts=opts.LabelOpts(
+                color=JIANSHU_COLOR,
+            ),
         )
         .set_global_opts(
-            legend_opts=opts.LegendOpts(
-                is_show=False,
+            legend_opts=LEGEND_HIIDEN,
+            title_opts=opts.TitleOpts(
+                pos_left="30px",
+                pos_top="5px",
+                title="中奖次数趋势图",
             ),
+            toolbox_opts=TOOLBOX_ONLY_SAVE_PNG_WHITE_2X,
         )
-        .set_series_opts(
-            label_opts=opts.LabelOpts(
-                is_show=False,
-            ),
-        )
-        .render_notebook()
     )
 
 
@@ -388,7 +416,9 @@ def lottery_data_analyze() -> None:
         [
             {
                 "title": key,
-                "content": put_html(get_period_reward_type_pie_chart(value)),
+                "content": put_html(
+                    get_period_reward_type_pie_chart(value).render_notebook()
+                ),
             }
             for key, value in DESC_TO_TIMEDELTA.items()
         ]
@@ -399,8 +429,12 @@ def lottery_data_analyze() -> None:
         [
             {
                 "title": key,
-                "content": put_html(get_period_award_times_chart(value)),
+                "content": put_html(
+                    get_period_award_times_chart(value).render_notebook()
+                ),
             }
             for key, value in DESC_TO_TIMEDELTA_WITHOUT_ALL.items()
         ]
     )
+
+    apply_better_tabs()
