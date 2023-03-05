@@ -51,7 +51,7 @@ def on_query_button_clicked() -> None:
                 用户名：{user.name}
                 链接：{url}
                 VIP 等级：{vip_type}
-                VIP 到期时间：{expire_time}（剩余 {human_readable_td(remain_time)}
+                VIP 到期时间：{expire_time}（剩余 {human_readable_td(remain_time)}）
                 """
             )
         else:
