@@ -4,8 +4,8 @@ from typing import Dict, List, Literal, Optional, Set, Tuple
 import pyecharts.options as opts
 from pyecharts.charts import Line, Pie
 from pywebio.output import put_html, put_markdown, put_tabs
+from sspeedup.cache.timeout import timeout_cache
 
-from utils.cache import timeout_cache
 from utils.chart import (
     ANIMATION_OFF,
     JIANSHU_COLOR,

@@ -1,16 +1,12 @@
-from collections import Counter
-from typing import List, Set, Tuple
-
-import jieba
-import jieba.posseg as pseg
 import pyecharts.options as opts
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
 from pyecharts.charts import WordCloud
 from pywebio.output import put_html, toast
 from pywebio.pin import pin, put_input
+from sspeedup.pywebio.callbacks import on_enter_pressed
+from sspeedup.word_split.jieba import JiebaPossegSplitter
 
-from utils.callback import bind_enter_key_callback
 from utils.chart import (
     ANIMATION_OFF,
     JIANSHU_COLOR,
@@ -28,28 +24,11 @@ from widgets.button import put_button
 NAME: str = "文章词云图生成工具"
 DESC = "生成文章词云图。"
 
-jieba.logging.disable()
 
-ALLOWED_WORD_TYPES: Set[str] = {
-    x.strip()
-    for x in open(  # noqa
-        "wordcloud_assets/allowed_word_types.txt", encoding="utf-8"
-    ).readlines()
-}
-(
-    jieba.add_word(word)
-    for word in open("wordcloud_assets/hotwords.txt", encoding="utf-8")  # noqa
-)  # 将热点词加入词库
-
-
-def get_word_freq(text: str) -> Tuple[Tuple[str, int], ...]:
-    processed_text: List[str] = [
-        x.word
-        for x in pseg.cut(text)
-        if len(x.word) > 1  # 剔除单字词
-        and x.flag in ALLOWED_WORD_TYPES  # 剔除不符合词性要求的词
-    ]
-    return tuple(Counter(processed_text).items())
+word_splitter = JiebaPossegSplitter(
+    hotwords_file="wordcloud_assets/hotwords.txt",
+    allowed_word_types_file="wordcloud_assets/allowed_word_types.txt",
+)
 
 
 def on_generate_button_clicked() -> None:
@@ -69,7 +48,7 @@ def on_generate_button_clicked() -> None:
         title: str = article.title
         text: str = article.text
 
-        word_freq = get_word_freq(text)
+        word_freq = tuple(word_splitter.get_word_freq(text).items())
 
         wordcloud = (
             WordCloud(
@@ -117,7 +96,7 @@ def article_wordcloud_generator() -> None:
         onclick=on_generate_button_clicked,
         block=True,
     )
-    bind_enter_key_callback(
+    on_enter_pressed(
         "url",
-        on_press=lambda _: on_generate_button_clicked(),
+        func=on_generate_button_clicked,
     )

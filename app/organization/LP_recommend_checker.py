@@ -8,13 +8,13 @@ from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
 from pywebio.output import put_markdown, use_scope
 from pywebio.pin import pin, put_input
+from sspeedup.cache.timeout import timeout_cache
+from sspeedup.pywebio.callbacks import on_enter_pressed
+from sspeedup.time_helper import human_readable_td_to_now
 
-from utils.cache import timeout_cache
-from utils.callback import bind_enter_key_callback
 from utils.db import LP_collections_db, article_fp_rank_db
 from utils.html import green_text, grey_text, link, red_text
 from utils.text_filter import input_filter
-from utils.time_helper import human_readable_td_to_now
 from utils.widgets import (
     green_loading,
     toast_error_and_return,
@@ -172,7 +172,7 @@ def LP_recommend_checker() -> None:  # noqa
         onclick=on_check_button_clicked,
         block=True,
     )
-    bind_enter_key_callback(
+    on_enter_pressed(
         "url",
-        on_press=lambda _: on_check_button_clicked(),
+        func=on_check_button_clicked,
     )

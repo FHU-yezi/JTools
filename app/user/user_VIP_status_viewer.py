@@ -5,10 +5,10 @@ from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import User
 from pywebio.output import put_markdown, toast
 from pywebio.pin import pin, put_input
+from sspeedup.pywebio.callbacks import on_enter_pressed
+from sspeedup.time_helper import human_readable_td
 
-from utils.callback import bind_enter_key_callback
 from utils.text_filter import input_filter
-from utils.time_helper import human_readable_td
 from utils.widgets import (
     toast_error_and_return,
     toast_warn_and_return,
@@ -76,7 +76,7 @@ def user_VIP_status_viewer() -> None:  # noqa
         onclick=on_query_button_clicked,
         block=True,
     )
-    bind_enter_key_callback(
+    on_enter_pressed(
         "url",
-        on_press=lambda _: on_query_button_clicked(),
+        func=on_query_button_clicked,
     )

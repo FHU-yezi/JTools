@@ -4,9 +4,9 @@ from JianshuResearchTools.assert_funcs import AssertUserUrl
 from JianshuResearchTools.exceptions import InputError
 from pywebio.output import put_markdown, toast
 from pywebio.pin import pin, put_checkbox, put_input
+from sspeedup.cache.timeout import timeout_cache
+from sspeedup.pywebio.callbacks import on_enter_pressed
 
-from utils.cache import timeout_cache
-from utils.callback import bind_enter_key_callback
 from utils.db import lottery_db
 from utils.text_filter import input_filter
 from utils.widgets import (
@@ -141,7 +141,7 @@ def lottery_reward_record_viewer() -> None:
         onclick=on_query_button_clicked,
         block=True,
     )
-    bind_enter_key_callback(
+    on_enter_pressed(
         "url",
-        on_press=lambda _: on_query_button_clicked(),
+        func=on_query_button_clicked,
     )

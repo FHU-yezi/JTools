@@ -19,7 +19,7 @@ set_cache_status(False)  # 禁用 JRT 缓存功能
 
 # 注册信号事件回调
 # 在收到 SIGTERM 时执行日志强制刷新，之后退出
-signal(SIGTERM, lambda _, __: run_logger.force_refresh())
+signal(SIGTERM, lambda _, __: run_logger.save())
 signal(SIGTERM, lambda _, __: access_logger.force_refresh())
 run_logger.debug("已注册事件回调")
 

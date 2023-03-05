@@ -16,9 +16,9 @@ from JianshuResearchTools.convert import (
 from JianshuResearchTools.exceptions import InputError
 from pywebio.output import put_image, put_markdown, toast
 from pywebio.pin import pin, put_input
+from sspeedup.make_qrcode import make_qrcode
+from sspeedup.pywebio.callbacks import on_enter_pressed
 
-from utils.callback import bind_enter_key_callback
-from utils.make_qrcode import make_qrcode
 from utils.text_filter import input_filter
 from utils.widgets import (
     green_loading,
@@ -110,7 +110,7 @@ def URL_scheme_convertor() -> None:  # noqa
         onclick=on_convert_button_cilcked,
         block=True,
     )
-    bind_enter_key_callback(
+    on_enter_pressed(
         "url",
-        on_press=lambda _: on_convert_button_cilcked(),
+        func=on_convert_button_cilcked,
     )

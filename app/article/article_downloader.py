@@ -4,8 +4,8 @@ from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article
 from pywebio.output import download, put_markdown, toast
 from pywebio.pin import pin, put_checkbox, put_input, put_radio
+from sspeedup.pywebio.callbacks import on_enter_pressed
 
-from utils.callback import bind_enter_key_callback
 from utils.checkbox_helper import is_checked
 from utils.text_filter import input_filter
 from utils.widgets import (
@@ -74,7 +74,7 @@ def article_downloader() -> None:
         onclick=on_download_button_clicked,
         block=True,
     )
-    bind_enter_key_callback(
+    on_enter_pressed(
         "url",
-        on_press=lambda _: on_download_button_clicked(),
+        func=on_download_button_clicked,
     )

@@ -4,11 +4,11 @@ from JianshuResearchTools.assert_funcs import AssertUserUrl
 from JianshuResearchTools.exceptions import InputError
 from pywebio.output import put_markdown, toast
 from pywebio.pin import pin, pin_on_change, pin_update, put_input, put_select
+from sspeedup.cache.timeout import timeout_cache
+from sspeedup.dict_helper import unfold
+from sspeedup.pywebio.callbacks import on_enter_pressed
 
-from utils.cache import timeout_cache
-from utils.callback import bind_enter_key_callback
 from utils.db import article_fp_rank_db
-from utils.dict_helper import unfold
 from utils.html import link
 from utils.text_filter import has_banned_chars, input_filter
 from utils.widgets import (
@@ -210,7 +210,7 @@ def on_rank_article_viewer() -> None:
         "name_or_url",
         onchange=on_name_input_changed,
     )
-    bind_enter_key_callback(
+    on_enter_pressed(
         "name_or_url",
-        on_press=lambda _: on_query_button_clicked(),
+        func=on_query_button_clicked,
     )

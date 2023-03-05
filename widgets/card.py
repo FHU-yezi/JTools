@@ -5,8 +5,7 @@ from JianshuResearchTools.convert import (
     UserUrlToUserUrlScheme,
 )
 from pywebio.output import Output, put_widget
-
-from utils.time_helper import human_readable_td_to_now
+from sspeedup.time_helper import human_readable_td_to_now
 
 
 def put_app_card(
