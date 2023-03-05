@@ -48,7 +48,7 @@ def on_generate_button_clicked() -> None:
         title: str = article.title
         text: str = article.text
 
-        word_freq = tuple(word_splitter.get_word_freq(text).items())
+        word_freq = word_splitter.get_word_freq(text).most_common(200)
 
         wordcloud = (
             WordCloud(
