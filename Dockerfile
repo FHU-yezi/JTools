@@ -10,8 +10,7 @@ RUN pip install \
     -r requirements.txt \
     --no-cache-dir \
     --no-compile \
-    --disable-pip-version-check \
-    --quiet
+    --disable-pip-version-check
 
 COPY . .
 
