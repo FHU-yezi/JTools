@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Set
 
 from JianshuResearchTools.assert_funcs import AssertUserUrl
 from JianshuResearchTools.exceptions import InputError
-from pywebio.output import put_markdown, toast
+from pywebio.output import clear_scope, put_markdown, toast
 from pywebio.pin import pin, put_checkbox, put_input
 from sspeedup.cache.timeout import timeout_cache
 from sspeedup.pywebio.callbacks import on_enter_pressed
@@ -104,7 +104,8 @@ def on_query_button_clicked() -> None:
             x for x in get_record(url) if x["奖项"] in reward_filter
         ]
 
-    if not data:  # 该筛选条件下无结果
+    if not data:
+        clear_scope("result")
         toast_warn_and_return("该筛选条件下无中奖记录")
 
     toast("数据获取成功", color="success")
