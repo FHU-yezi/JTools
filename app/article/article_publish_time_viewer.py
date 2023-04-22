@@ -3,16 +3,13 @@ from JianshuResearchTools.objects import Article
 from pywebio.output import put_markdown, toast
 from pywebio.pin import pin, put_input
 from sspeedup.pywebio.callbacks import on_enter_pressed
+from sspeedup.pywebio.html import link
+from sspeedup.pywebio.loading import green_loading
+from sspeedup.pywebio.scope import use_clear_scope
+from sspeedup.pywebio.toast import toast_error_and_return, toast_warn_and_return
 from sspeedup.time_helper import human_readable_td_to_now, is_datetime_equal
 
-from utils.html import link
 from utils.text_filter import input_filter
-from utils.widgets import (
-    green_loading,
-    toast_error_and_return,
-    toast_warn_and_return,
-    use_result_scope,
-)
 from widgets.button import put_button
 
 NAME: str = "文章发布时间查询工具"
@@ -55,7 +52,7 @@ def on_query_button_clicked() -> None:
         发布时间：{publish_time}（{human_readable_td_to_now(publish_time)}前）
         """
 
-    with use_result_scope():
+    with use_clear_scope("result"):
         toast("数据获取成功", color="success")
         put_markdown(data, sanitize=False)
 

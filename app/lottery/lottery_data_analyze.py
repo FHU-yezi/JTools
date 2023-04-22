@@ -5,6 +5,7 @@ import pyecharts.options as opts
 from pyecharts.charts import Line, Pie
 from pywebio.output import put_html, put_markdown, put_tabs
 from sspeedup.cache.timeout import timeout_cache
+from sspeedup.pywebio.patch import patch_better_tabs
 
 from utils.chart import (
     ANIMATION_OFF,
@@ -13,7 +14,6 @@ from utils.chart import (
     TOOLBOX_ONLY_SAVE_PNG_WHITE_2X,
 )
 from utils.db import lottery_db
-from utils.page import apply_better_tabs
 from widgets.table import put_table
 
 NAME: str = "大转盘数据分析工具"
@@ -437,4 +437,4 @@ def lottery_data_analyze() -> None:
         ]
     )
 
-    apply_better_tabs()
+    patch_better_tabs()

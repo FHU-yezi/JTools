@@ -1,9 +1,9 @@
 from typing import Any, Dict, List, Tuple
 
 from pywebio.output import put_markdown
+from sspeedup.pywebio.html import link
 from yaml import safe_load as yaml_load
 
-from utils.html import link
 from widgets.card import put_debug_project_record_card
 
 NAME: str = "鸣谢"

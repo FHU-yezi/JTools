@@ -4,14 +4,14 @@ from typing import Callable, Dict, List
 from JianshuResearchTools.objects import set_cache_status
 from pywebio import start_server
 from pywebio.output import put_markdown
+from sspeedup.pywebio.html import link
+from sspeedup.pywebio.navigation import get_base_url
 from yaml import SafeLoader
 from yaml import load as yaml_load
 
 from utils.config import config
-from utils.html import link
 from utils.log import access_logger, run_logger
 from utils.module_finder import Module, get_all_modules_info
-from utils.page import get_base_url
 from utils.patch import patch_all
 from widgets.card import put_app_card
 

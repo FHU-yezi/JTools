@@ -5,6 +5,9 @@ from pyecharts.charts import WordCloud
 from pywebio.output import put_html, toast
 from pywebio.pin import pin, put_input
 from sspeedup.pywebio.callbacks import on_enter_pressed
+from sspeedup.pywebio.loading import green_loading
+from sspeedup.pywebio.scope import use_clear_scope
+from sspeedup.pywebio.toast import toast_error_and_return, toast_warn_and_return
 from sspeedup.word_split.jieba import JiebaPossegSplitter
 
 from utils.chart import (
@@ -13,12 +16,6 @@ from utils.chart import (
     TOOLBOX_ONLY_SAVE_PNG_WHITE_2X,
 )
 from utils.text_filter import input_filter
-from utils.widgets import (
-    green_loading,
-    toast_error_and_return,
-    toast_warn_and_return,
-    use_result_scope,
-)
 from widgets.button import put_button
 
 NAME: str = "文章词云图生成工具"
@@ -79,7 +76,7 @@ def on_generate_button_clicked() -> None:
             )
         )
 
-        with use_result_scope():
+        with use_clear_scope("result"):
             toast("词云图已生成", color="success")
             put_html(wordcloud.render_notebook())
 

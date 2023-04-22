@@ -40,11 +40,13 @@ def patch_add_page_name_desc(
 def patch_add_footer(
     func: Callable[[], None], module_obj: Module
 ) -> Callable[[], None]:
+    del module_obj
+
     @wraps(func)
     def footer_patched() -> None:
         func()
 
-        from utils.page import set_footer
+        from sspeedup.pywebio.footer import set_footer
 
         set_footer(config.footer)
 
