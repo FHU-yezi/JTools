@@ -124,8 +124,8 @@ def on_check_button_clicked() -> None:
             put_markdown(
                 f"""
                 文章标题：{link(article.title, article.url, new_window=True)}
-                发布时间：{article.publish_time.replace(tzinfo=None)}（{
-                    human_readable_td_to_now(article.publish_time.replace(tzinfo=None))
+                发布时间：{article.publish_time}（{
+                    human_readable_td_to_now(article.publish_time)
                 }前）
                 """,
                 sanitize=False,

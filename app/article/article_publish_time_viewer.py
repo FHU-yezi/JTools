@@ -31,7 +31,7 @@ def on_query_button_clicked() -> None:
 
     with green_loading():
         title = article.title
-        publish_time = article.publish_time.replace(tzinfo=None)
+        publish_time = article.publish_time
         update_time = article.update_time
         is_updated = is_datetime_equal(publish_time, update_time)
 

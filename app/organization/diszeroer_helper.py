@@ -116,9 +116,7 @@ def on_fetch_button_clicked() -> None:
             article_url: str = ArticleSlugToArticleUrl(article["aslug"])
             author_name: str = article["user"]["name"]
             author_url: str = UserSlugToUserUrl(article["user"]["uslug"])
-            release_time: datetime = article["release_time"].replace(
-                tzinfo=None
-            )  # 处理时区问题
+            release_time: datetime = article["release_time"]
             views_count: int = article["views_count"]
             likes_count: int = article["likes_count"]
             comments_count: int = article["comments_count"]
