@@ -7,7 +7,7 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pywebio = "^1.7.0"
+pywebio = "^1.8.0"
 JianshuResearchTools = "2.11.0"
 qrcode = "^7.3.1"
 pyecharts = "^2.0.0"
@@ -19,7 +19,7 @@ sspeedup = {version = "^0.9.0", extras = ["logging", "pywebio", "qrcode", "abili
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"
-ruff = "^0.0.254"
+ruff = "^0.0.262"
 pyright = "^1.1.292"
 
 [build-system]
