@@ -3,6 +3,8 @@ version: "3"
 networks:
   mongodb:
     external: true
+  cutup:
+    external: true
 
 services:
   main:
@@ -14,6 +16,7 @@ services:
       - ./config.yaml:/app/config.yaml:ro
     networks:
       - mongodb
+      - cutup
     environment:
       - PYTHONUNBUFFERED=1
     deploy:

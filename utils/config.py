@@ -25,6 +25,10 @@ _DEFAULT_CONFIG = {
         "minimum_record_level": "DEBUG",
         "minimum_print_level": "INFO",
     },
+    "word_split_ability": {
+        "host": "localhost",
+        "port": 6001,
+    },
     "status": {
         "out_of_service": [],
         "downgrade": [],

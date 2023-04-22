@@ -4,17 +4,18 @@ from JianshuResearchTools.objects import Article
 from pyecharts.charts import WordCloud
 from pywebio.output import put_html, toast
 from pywebio.pin import pin, put_input
+from sspeedup.ability.word_split.jieba import AbilityJiebaPossegSplitterV1
 from sspeedup.pywebio.callbacks import on_enter_pressed
 from sspeedup.pywebio.loading import green_loading
 from sspeedup.pywebio.scope import use_clear_scope
 from sspeedup.pywebio.toast import toast_error_and_return, toast_warn_and_return
-from sspeedup.word_split.jieba import JiebaPossegSplitter
 
 from utils.chart import (
     ANIMATION_OFF,
     JIANSHU_COLOR,
     TOOLBOX_ONLY_SAVE_PNG_WHITE_2X,
 )
+from utils.config import config
 from utils.text_filter import input_filter
 from widgets.button import put_button
 
@@ -22,8 +23,9 @@ NAME: str = "文章词云图生成工具"
 DESC = "生成文章词云图。"
 
 
-word_splitter = JiebaPossegSplitter(
-    hotwords_file="wordcloud_assets/hotwords.txt",
+word_splitter = AbilityJiebaPossegSplitterV1(
+    host=config.word_split_ability.host,
+    port=config.word_split_ability.port,
     allowed_word_types_file="wordcloud_assets/allowed_word_types.txt",
 )
 
