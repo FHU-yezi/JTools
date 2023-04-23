@@ -8,7 +8,6 @@ from JianshuResearchTools.convert import (
 from JianshuResearchTools.objects import Collection
 from pywebio.output import put_column, put_markdown, put_row
 from pywebio.pin import pin, put_checkbox, put_input
-from sspeedup.pywebio.loading import green_loading
 from sspeedup.pywebio.scope import use_clear_scope
 from sspeedup.pywebio.toast import toast_error_and_return
 
@@ -108,7 +107,7 @@ def on_fetch_button_clicked() -> None:
 
     showed_count: int = 0
 
-    with green_loading(), use_clear_scope("result"):
+    with use_clear_scope("result"):
         for article, source_collection in iter_selected_collections(
             selected_collections
         ):

@@ -11,7 +11,6 @@ from pywebio.pin import pin, put_input
 from sspeedup.cache.timeout import timeout_cache
 from sspeedup.pywebio.callbacks import on_enter_pressed
 from sspeedup.pywebio.html import green, grey, link, red
-from sspeedup.pywebio.loading import green_loading
 from sspeedup.pywebio.scope import use_clear_scope
 from sspeedup.pywebio.toast import toast_error_and_return, toast_warn_and_return
 from sspeedup.time_helper import human_readable_td_to_now
@@ -117,32 +116,31 @@ def on_check_button_clicked() -> None:
 
     failed_items: List[str] = []
 
-    with green_loading():
-        with use_clear_scope("result"):
-            # 必须传入 sanitize=False 禁用 XSS 攻击防护
-            # 否则 target="_blank" 属性会消失，无法实现新标签页打开
+    with use_clear_scope("result"):
+        # 必须传入 sanitize=False 禁用 XSS 攻击防护
+        # 否则 target="_blank" 属性会消失，无法实现新标签页打开
+        put_markdown(
+            f"""
+            文章标题：{link(article.title, article.url, new_window=True)}
+            发布时间：{article.publish_time}（{
+                human_readable_td_to_now(article.publish_time)
+            }前）
+            """,
+            sanitize=False,
+        )
+
+    with use_clear_scope("detail"):
+        for item_name, check_func in CHECK_ITEM_FUNC_MAPPING.items():
+            passed, limit, actual = check_func(article)
+            if not passed:
+                failed_items.append(item_name)
+
             put_markdown(
-                f"""
-                文章标题：{link(article.title, article.url, new_window=True)}
-                发布时间：{article.publish_time}（{
-                    human_readable_td_to_now(article.publish_time)
-                }前）
-                """,
-                sanitize=False,
+                (green("通过") if passed else red("不通过"))
+                + " | "
+                + item_name
+                + grey(f"（限制：{limit}，实际：{actual}）")
             )
-
-        with use_clear_scope("detail"):
-            for item_name, check_func in CHECK_ITEM_FUNC_MAPPING.items():
-                passed, limit, actual = check_func(article)
-                if not passed:
-                    failed_items.append(item_name)
-
-                put_markdown(
-                    (green("通过") if passed else red("不通过"))
-                    + " | "
-                    + item_name
-                    + grey(f"（限制：{limit}，实际：{actual}）")
-                )
 
     # 由于 result scope 中已有内容，这里不能使用 use_clear_scope
     # 否则会清空原有内容

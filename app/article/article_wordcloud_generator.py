@@ -78,9 +78,9 @@ def on_generate_button_clicked() -> None:
             )
         )
 
-        with use_clear_scope("result"):
-            toast("词云图已生成", color="success")
-            put_html(wordcloud.render_notebook())
+    with use_clear_scope("result"):
+        toast("词云图已生成", color="success")
+        put_html(wordcloud.render_notebook())
 
 
 def article_wordcloud_generator() -> None:
