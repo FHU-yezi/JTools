@@ -7,15 +7,13 @@ from pywebio.pin import pin, pin_on_change, pin_update, put_input, put_select
 from sspeedup.cache.timeout import timeout_cache
 from sspeedup.dict_helper import unfold
 from sspeedup.pywebio.callbacks import on_enter_pressed
+from sspeedup.pywebio.html import link
+from sspeedup.pywebio.loading import green_loading
+from sspeedup.pywebio.scope import use_clear_scope
+from sspeedup.pywebio.toast import toast_warn_and_return
 
 from utils.db import article_fp_rank_db
-from utils.html import link
 from utils.text_filter import has_banned_chars, input_filter
-from utils.widgets import (
-    green_loading,
-    toast_warn_and_return,
-    use_result_scope,
-)
 from widgets.button import put_button
 from widgets.table import put_table
 
@@ -173,7 +171,7 @@ def on_query_button_clicked() -> None:
             data.append(item)
 
     toast("数据获取成功", color="success")
-    with use_result_scope():
+    with use_clear_scope("result"):
         put_table(data)
 
 
@@ -189,7 +187,7 @@ def on_rank_article_viewer() -> None:
 
     put_select(
         "sort_key",
-        options=SORT_KEY_MAPPING.keys(),
+        options=SORT_KEY_MAPPING.keys(), # type: ignore
         label="排序",
         value="上榜日期",
     )

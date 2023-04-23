@@ -18,14 +18,11 @@ from pywebio.output import put_image, put_markdown, toast
 from pywebio.pin import pin, put_input
 from sspeedup.make_qrcode import make_qrcode
 from sspeedup.pywebio.callbacks import on_enter_pressed
+from sspeedup.pywebio.loading import green_loading
+from sspeedup.pywebio.scope import use_clear_scope
+from sspeedup.pywebio.toast import toast_error_and_return, toast_warn_and_return
 
 from utils.text_filter import input_filter
-from utils.widgets import (
-    green_loading,
-    toast_error_and_return,
-    toast_warn_and_return,
-    use_result_scope,
-)
 from widgets.button import put_button
 
 NAME: str = "URL Scheme 转换工具"
@@ -82,7 +79,7 @@ def on_convert_button_cilcked() -> None:
         qr_code = make_qrcode(result)
 
     toast("转换成功", color="success")
-    with use_result_scope():
+    with use_clear_scope("result"):
         put_markdown(f"转换结果：`{result}`")
         put_image(qr_code)
 

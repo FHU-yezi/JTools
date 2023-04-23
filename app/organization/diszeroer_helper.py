@@ -8,14 +8,11 @@ from JianshuResearchTools.convert import (
 from JianshuResearchTools.objects import Collection
 from pywebio.output import put_column, put_markdown, put_row
 from pywebio.pin import pin, put_checkbox, put_input
+from sspeedup.pywebio.scope import use_clear_scope
+from sspeedup.pywebio.toast import toast_error_and_return
 
 from utils.checkbox_helper import is_checked
 from utils.page import can_use_url_scheme
-from utils.widgets import (
-    green_loading,
-    toast_error_and_return,
-    use_result_scope,
-)
 from widgets.button import put_button
 from widgets.card import put_article_detail_card
 
@@ -110,7 +107,7 @@ def on_fetch_button_clicked() -> None:
 
     showed_count: int = 0
 
-    with green_loading(), use_result_scope():
+    with use_clear_scope("result"):
         for article, source_collection in iter_selected_collections(
             selected_collections
         ):
@@ -118,9 +115,7 @@ def on_fetch_button_clicked() -> None:
             article_url: str = ArticleSlugToArticleUrl(article["aslug"])
             author_name: str = article["user"]["name"]
             author_url: str = UserSlugToUserUrl(article["user"]["uslug"])
-            release_time: datetime = article["release_time"].replace(
-                tzinfo=None
-            )  # 处理时区问题
+            release_time: datetime = article["release_time"]
             views_count: int = article["views_count"]
             likes_count: int = article["likes_count"]
             comments_count: int = article["comments_count"]
@@ -179,7 +174,7 @@ def diszeroer_helper() -> None:
                         "likes_limit",
                         label="点赞数上限",
                         type="number",
-                        value=5,
+                        value=5, # type: ignore
                         help_text="介于 1 到 20 之间，超过该限制的文章将不会展示",
                     ),
                     None,
@@ -187,7 +182,7 @@ def diszeroer_helper() -> None:
                         "comments_limit",
                         label="评论数上限",
                         type="number",
-                        value=3,
+                        value=3, # type: ignore
                         help_text="介于 1 到 10 之间，超过该限制的文章将不会展示",
                     ),
                     None,
@@ -195,7 +190,7 @@ def diszeroer_helper() -> None:
                         "max_result_count",
                         label="结果数量",
                         type="number",
-                        value=20,
+                        value=20, # type: ignore
                         help_text="介于 20 到 100 之间",
                     ),
                 ]
@@ -206,14 +201,14 @@ def diszeroer_helper() -> None:
                     put_checkbox(
                         "selected_collections",
                         label="专题选择",
-                        options=COLLECTIONS.keys(),
+                        options=COLLECTIONS.keys(), # type: ignore
                     ),
                     put_checkbox(
                         "additional_features",
                         label="高级选项",
                         options=["仅展示允许评论的文章", "不展示付费文章", "开启 URL Scheme 跳转"],
                     ),
-                ]
+                ] # type: ignore
             ),
         ],
         size=r"3fr 1fr 3fr",

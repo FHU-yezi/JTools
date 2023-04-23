@@ -3,10 +3,12 @@ version: "3"
 networks:
   mongodb:
     external: true
+  cutup:
+    external: true
 
 services:
   main:
-    image: jianshu-micro-features:2.9.0
+    image: jianshu-micro-features:2.10.0
     build: .
     ports:
       - 8602:8602
@@ -14,13 +16,14 @@ services:
       - ./config.yaml:/app/config.yaml:ro
     networks:
       - mongodb
+      - cutup
     environment:
       - PYTHONUNBUFFERED=1
     deploy:
       resources:
         limits:
           cpus: "0.50"
-          memory: 256M
+          memory: 192M
       restart_policy:
         condition: on-failure
         delay: 5s

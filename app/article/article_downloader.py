@@ -5,14 +5,11 @@ from JianshuResearchTools.objects import Article
 from pywebio.output import download, put_markdown, toast
 from pywebio.pin import pin, put_checkbox, put_input, put_radio
 from sspeedup.pywebio.callbacks import on_enter_pressed
+from sspeedup.pywebio.loading import green_loading
+from sspeedup.pywebio.toast import toast_error_and_return, toast_warn_and_return
 
 from utils.checkbox_helper import is_checked
 from utils.text_filter import input_filter
-from utils.widgets import (
-    green_loading,
-    toast_error_and_return,
-    toast_warn_and_return,
-)
 from widgets.button import put_button
 
 NAME: str = "文章下载工具"

@@ -6,15 +6,12 @@ from pywebio.output import clear_scope, put_markdown, toast
 from pywebio.pin import pin, put_checkbox, put_input
 from sspeedup.cache.timeout import timeout_cache
 from sspeedup.pywebio.callbacks import on_enter_pressed
+from sspeedup.pywebio.loading import green_loading
+from sspeedup.pywebio.scope import use_clear_scope
+from sspeedup.pywebio.toast import toast_error_and_return, toast_warn_and_return
 
 from utils.db import lottery_db
 from utils.text_filter import input_filter
-from utils.widgets import (
-    green_loading,
-    toast_error_and_return,
-    toast_warn_and_return,
-    use_result_scope,
-)
 from widgets.button import put_button
 from widgets.table import put_table
 
@@ -109,7 +106,7 @@ def on_query_button_clicked() -> None:
         toast_warn_and_return("该筛选条件下无中奖记录")
 
     toast("数据获取成功", color="success")
-    with use_result_scope():
+    with use_clear_scope("result"):
         put_table(data)
 
 

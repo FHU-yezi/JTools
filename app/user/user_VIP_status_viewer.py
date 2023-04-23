@@ -6,14 +6,11 @@ from JianshuResearchTools.objects import User
 from pywebio.output import put_markdown, toast
 from pywebio.pin import pin, put_input
 from sspeedup.pywebio.callbacks import on_enter_pressed
+from sspeedup.pywebio.scope import use_clear_scope
+from sspeedup.pywebio.toast import toast_error_and_return, toast_warn_and_return
 from sspeedup.time_helper import human_readable_td
 
 from utils.text_filter import input_filter
-from utils.widgets import (
-    toast_error_and_return,
-    toast_warn_and_return,
-    use_result_scope,
-)
 from widgets.button import put_button
 
 NAME: str = "会员状态查询工具"
@@ -43,7 +40,7 @@ def on_query_button_clicked() -> None:
 
     toast("数据获取成功", color="success")
 
-    with use_result_scope():
+    with use_clear_scope("result"):
         if has_vip:
             assert expire_time and remain_time  # type: ignore  # noqa
             put_markdown(

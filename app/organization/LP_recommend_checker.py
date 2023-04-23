@@ -10,17 +10,13 @@ from pywebio.output import put_markdown, use_scope
 from pywebio.pin import pin, put_input
 from sspeedup.cache.timeout import timeout_cache
 from sspeedup.pywebio.callbacks import on_enter_pressed
+from sspeedup.pywebio.html import green, grey, link, red
+from sspeedup.pywebio.scope import use_clear_scope
+from sspeedup.pywebio.toast import toast_error_and_return, toast_warn_and_return
 from sspeedup.time_helper import human_readable_td_to_now
 
 from utils.db import LP_collections_db, article_fp_rank_db
-from utils.html import green_text, grey_text, link, red_text
 from utils.text_filter import input_filter
-from utils.widgets import (
-    green_loading,
-    toast_error_and_return,
-    toast_warn_and_return,
-    use_result_scope,
-)
 from widgets.button import put_button
 
 NAME: str = "LP 理事会推文检测工具"
@@ -120,42 +116,41 @@ def on_check_button_clicked() -> None:
 
     failed_items: List[str] = []
 
-    with green_loading():
-        with use_result_scope():
-            # 必须传入 sanitize=False 禁用 XSS 攻击防护
-            # 否则 target="_blank" 属性会消失，无法实现新标签页打开
+    with use_clear_scope("result"):
+        # 必须传入 sanitize=False 禁用 XSS 攻击防护
+        # 否则 target="_blank" 属性会消失，无法实现新标签页打开
+        put_markdown(
+            f"""
+            文章标题：{link(article.title, article.url, new_window=True)}
+            发布时间：{article.publish_time}（{
+                human_readable_td_to_now(article.publish_time)
+            }前）
+            """,
+            sanitize=False,
+        )
+
+    with use_clear_scope("detail"):
+        for item_name, check_func in CHECK_ITEM_FUNC_MAPPING.items():
+            passed, limit, actual = check_func(article)
+            if not passed:
+                failed_items.append(item_name)
+
             put_markdown(
-                f"""
-                文章标题：{link(article.title, article.url, new_window=True)}
-                发布时间：{article.publish_time.replace(tzinfo=None)}（{
-                    human_readable_td_to_now(article.publish_time.replace(tzinfo=None))
-                }前）
-                """,
-                sanitize=False,
+                (green("通过") if passed else red("不通过"))
+                + " | "
+                + item_name
+                + grey(f"（限制：{limit}，实际：{actual}）")
             )
 
-        with use_scope("detail", clear=True):
-            for item_name, check_func in CHECK_ITEM_FUNC_MAPPING.items():
-                passed, limit, actual = check_func(article)
-                if not passed:
-                    failed_items.append(item_name)
-
-                put_markdown(
-                    (green_text("通过") if passed else red_text("不通过"))
-                    + " | "
-                    + item_name
-                    + grey_text(f"（限制：{limit}，实际：{actual}）")
-                )
-
-    # 由于 result scope 中已有内容，这里不能使用 use_result_scope
+    # 由于 result scope 中已有内容，这里不能使用 use_clear_scope
     # 否则会清空原有内容
     with use_scope("result"):
         if not failed_items:
-            put_markdown(green_text("**该文章符合推文要求**"))
+            put_markdown(green("**该文章符合推文要求**"))
         else:
             # 构建 Markdown 格式的列表
             failed_items_text: str = "- " + "\n- ".join(failed_items)
-            put_markdown(red_text("**该文章不符合推文要求**"))
+            put_markdown(red("**该文章不符合推文要求**"))
             put_markdown(f"未通过条件：\n{failed_items_text}")
             put_markdown("---")
 
