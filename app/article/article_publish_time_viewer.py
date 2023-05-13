@@ -11,8 +11,8 @@ from sspeedup.time_helper import human_readable_td_to_now, is_datetime_equal
 from utils.text_filter import input_filter
 from widgets.button import put_button
 
-NAME: str = "文章发布时间查询工具"
-DESC: str = "查询文章的发布与更新时间。"
+NAME = "文章发布时间查询工具"
+DESC = "查询文章的发布与更新时间。"
 
 
 def on_query_button_clicked() -> None:

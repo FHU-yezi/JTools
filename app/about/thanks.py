@@ -6,8 +6,8 @@ from yaml import safe_load as yaml_load
 
 from widgets.card import put_debug_project_record_card
 
-NAME: str = "鸣谢"
-DESC: str = "本服务的贡献者和开源库列表。"
+NAME = "鸣谢"
+DESC = "本服务的贡献者和开源库列表。"
 
 
 THANKS_DATA: Dict[str, Any] = yaml_load(

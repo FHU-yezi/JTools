@@ -16,8 +16,8 @@ from utils.chart import (
 from utils.db import lottery_db
 from widgets.table import put_table
 
-NAME: str = "大转盘数据分析工具"
-DESC: str = "分析大转盘中奖率等数据。"
+NAME = "大转盘数据分析工具"
+DESC = "分析大转盘中奖率等数据。"
 REWARDS_WITH_WHITESPACE: Set[str] = {
     "收益加成卡 100",
     "收益加成卡 1 万",

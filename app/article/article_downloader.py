@@ -12,8 +12,8 @@ from utils.checkbox_helper import is_checked
 from utils.text_filter import input_filter
 from widgets.button import put_button
 
-NAME: str = "文章下载工具"
-DESC: str = "下载文章内容，并将其以纯文本或 Markdown 格式保存至本地。"
+NAME = "文章下载工具"
+DESC = "下载文章内容，并将其以纯文本或 Markdown 格式保存至本地。"
 
 
 def on_download_button_clicked() -> None:

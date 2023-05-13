@@ -17,8 +17,8 @@ from utils.text_filter import has_banned_chars, input_filter
 from widgets.button import put_button
 from widgets.table import put_table
 
-NAME: str = "上榜文章查询工具"
-DESC: str = "查询用户的文章上榜历史。"
+NAME = "上榜文章查询工具"
+DESC = "查询用户的文章上榜历史。"
 DATA_MAPPING: Dict[str, str] = {
     "date": "上榜日期",
     "ranking": "排名",

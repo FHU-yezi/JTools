@@ -15,8 +15,8 @@ from utils.text_filter import input_filter
 from widgets.button import put_button
 from widgets.table import put_table
 
-NAME: str = "中奖记录查询工具"
-DESC: str = "查询简书大转盘中奖记录。"
+NAME = "中奖记录查询工具"
+DESC = "查询简书大转盘中奖记录。"
 DATA_MAPPING: Dict[str, str] = {
     "time": "中奖时间",
     "reward_name": "奖项",

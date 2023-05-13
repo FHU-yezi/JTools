@@ -16,8 +16,8 @@ from utils.page import can_use_url_scheme
 from widgets.button import put_button
 from widgets.card import put_article_detail_card
 
-NAME: str = "消零派辅助工具"
-DESC: str = "消灭零评论，留下爱与光。"
+NAME = "消零派辅助工具"
+DESC = "消灭零评论，留下爱与光。"
 
 COLLECTIONS: Dict[str, Collection] = {
     "简友广场": Collection.from_url("https://www.jianshu.com/c/7ecac177f5a8"),
