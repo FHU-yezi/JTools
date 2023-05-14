@@ -19,7 +19,7 @@ from utils.config import config
 from utils.text_filter import input_filter
 from widgets.button import put_button
 
-NAME: str = "文章词云图生成工具"
+NAME = "文章词云图生成工具"
 DESC = "生成文章词云图。"
 
 

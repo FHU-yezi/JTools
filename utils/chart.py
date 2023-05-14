@@ -24,6 +24,14 @@ TOOLBOX_ONLY_SAVE_PNG_WHITE_2X = opts.ToolboxOpts(
 
 JIANSHU_COLOR = "#ea6f5a"
 
-LEGEND_HIIDEN = opts.LegendOpts(
+LEGEND_HIDDEN = opts.LegendOpts(
+    is_show=False,
+)
+
+TOOLTIP_HIDDEN = opts.TooltipOpts(
+    is_show=False,
+)
+
+LABEL_HIDDEN = opts.LabelOpts(
     is_show=False,
 )

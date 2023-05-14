@@ -10,14 +10,14 @@ from sspeedup.pywebio.patch import patch_better_tabs
 from utils.chart import (
     ANIMATION_OFF,
     JIANSHU_COLOR,
-    LEGEND_HIIDEN,
+    LEGEND_HIDDEN,
     TOOLBOX_ONLY_SAVE_PNG_WHITE_2X,
 )
 from utils.db import lottery_db
 from widgets.table import put_table
 
-NAME: str = "大转盘数据分析工具"
-DESC: str = "分析大转盘中奖率等数据。"
+NAME = "大转盘数据分析工具"
+DESC = "分析大转盘中奖率等数据。"
 REWARDS_WITH_WHITESPACE: Set[str] = {
     "收益加成卡 100",
     "收益加成卡 1 万",
@@ -265,7 +265,7 @@ def get_period_reward_type_pie_chart(td: Optional[timedelta] = None) -> Pie:
         )
         .add("", tuple(data.items()))
         .set_global_opts(
-            legend_opts=LEGEND_HIIDEN,
+            legend_opts=LEGEND_HIDDEN,
             title_opts=opts.TitleOpts(
                 pos_left="30px",
                 pos_top="5px",
@@ -322,7 +322,7 @@ def get_period_award_times_chart(td: timedelta) -> Line:
             ),
         )
         .set_global_opts(
-            legend_opts=LEGEND_HIIDEN,
+            legend_opts=LEGEND_HIDDEN,
             title_opts=opts.TitleOpts(
                 pos_left="30px",
                 pos_top="5px",

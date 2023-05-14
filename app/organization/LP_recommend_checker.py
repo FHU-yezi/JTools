@@ -19,8 +19,8 @@ from utils.db import LP_collections_db, article_fp_rank_db
 from utils.text_filter import input_filter
 from widgets.button import put_button
 
-NAME: str = "LP 理事会推文检测工具"
-DESC: str = "检测文章是否符合 LP 理事会推文要求。"
+NAME = "LP 理事会推文检测工具"
+DESC = "检测文章是否符合 LP 理事会推文要求。"
 
 
 @lru_cache(10)

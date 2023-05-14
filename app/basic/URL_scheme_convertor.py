@@ -25,8 +25,8 @@ from sspeedup.pywebio.toast import toast_error_and_return, toast_warn_and_return
 from utils.text_filter import input_filter
 from widgets.button import put_button
 
-NAME: str = "URL Scheme 转换工具"
-DESC: str = "将简书链接转换为 URL Scheme，从而在 App 端实现一键跳转。"
+NAME = "URL Scheme 转换工具"
+DESC = "将简书链接转换为 URL Scheme，从而在 App 端实现一键跳转。"
 
 ASSERT_FUNCS: Iterable[Tuple[Callable[[str], None], str]] = (
     (AssertArticleUrl, "article"),

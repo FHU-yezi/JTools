@@ -13,8 +13,8 @@ from sspeedup.time_helper import human_readable_td
 from utils.text_filter import input_filter
 from widgets.button import put_button
 
-NAME: str = "会员状态查询工具"
-DESC: str = "查询用户的会员状态与到期时间。"
+NAME = "会员状态查询工具"
+DESC = "查询用户的会员状态与到期时间。"
 
 
 def on_query_button_clicked() -> None:
