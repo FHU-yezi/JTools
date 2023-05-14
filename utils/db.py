@@ -18,11 +18,15 @@ _jfetcher_data_db = init_db("JFetcherData")
 article_fp_rank_db = _jfetcher_data_db.article_FP_rank
 lottery_db = _jfetcher_data_db.lottery_data
 LP_collections_db = _jfetcher_data_db.LP_collections
+JPEP_FTN_macket_db = _jfetcher_data_db.JPEP_FTN_macket
 
 # 创建索引
 
 article_fp_rank_db.create_indexes(
-    [IndexModel([("date", 1)]), IndexModel([("ranking", 1)])]
+    [
+        IndexModel([("date", 1)]),
+        IndexModel([("ranking", 1)]),
+    ]
 )
 lottery_db.create_indexes(
     [
@@ -34,5 +38,10 @@ LP_collections_db.create_indexes(
     [
         IndexModel([("fetch_date", 1)]),
         IndexModel([("article.id", 1)]),
+    ]
+)
+JPEP_FTN_macket_db.create_indexes(
+    [
+        IndexModel([("fetch_time", 1)]),
     ]
 )
