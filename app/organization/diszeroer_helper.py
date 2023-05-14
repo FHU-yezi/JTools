@@ -174,7 +174,7 @@ def diszeroer_helper() -> None:
                         "likes_limit",
                         label="点赞数上限",
                         type="number",
-                        value=5, # type: ignore
+                        value=5,  # type: ignore
                         help_text="介于 1 到 20 之间，超过该限制的文章将不会展示",
                     ),
                     None,
@@ -182,7 +182,7 @@ def diszeroer_helper() -> None:
                         "comments_limit",
                         label="评论数上限",
                         type="number",
-                        value=3, # type: ignore
+                        value=3,  # type: ignore
                         help_text="介于 1 到 10 之间，超过该限制的文章将不会展示",
                     ),
                     None,
@@ -190,7 +190,7 @@ def diszeroer_helper() -> None:
                         "max_result_count",
                         label="结果数量",
                         type="number",
-                        value=20, # type: ignore
+                        value=20,  # type: ignore
                         help_text="介于 20 到 100 之间",
                     ),
                 ]
@@ -201,14 +201,14 @@ def diszeroer_helper() -> None:
                     put_checkbox(
                         "selected_collections",
                         label="专题选择",
-                        options=COLLECTIONS.keys(), # type: ignore
+                        options=COLLECTIONS.keys(),  # type: ignore
                     ),
                     put_checkbox(
                         "additional_features",
                         label="高级选项",
                         options=["仅展示允许评论的文章", "不展示付费文章", "开启 URL Scheme 跳转"],
                     ),
-                ] # type: ignore
+                ]  # type: ignore
             ),
         ],
         size=r"3fr 1fr 3fr",

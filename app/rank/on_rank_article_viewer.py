@@ -187,7 +187,7 @@ def on_rank_article_viewer() -> None:
 
     put_select(
         "sort_key",
-        options=SORT_KEY_MAPPING.keys(), # type: ignore
+        options=SORT_KEY_MAPPING.keys(),  # type: ignore
         label="排序",
         value="上榜日期",
     )
