@@ -1,0 +1,52 @@
+version: "3"
+
+networks:
+  jtoolsinternal:
+  mongodb:
+    external: true
+  cutup:
+    external: true
+
+services:
+  web:
+    image: jtools-web:3.0.0
+    build:
+      dockerfile: Dockerfile.web
+    ports:
+      - 8606:8606
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    networks:
+      - jtoolsinternal
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 48M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+    stop_grace_period: 5s
+  api:
+    image: jtools-api:3.0.0
+    build:
+      dockerfile: Dockerfile.api
+    volumes:
+      - ./backend/config.yaml:/app/config.yaml:ro
+    networks:
+      - jtoolsinternal
+      - mongodb
+      - cutup
+    environment:
+      - PYTHONUNBUFFERED=1
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 96M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+    stop_grace_period: 5s

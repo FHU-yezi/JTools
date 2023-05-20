@@ -1,0 +1,20 @@
+{
+    # 下线宽限期
+    grace_period 3s
+
+    # 日志
+    log {
+        level INFO
+        output stdout
+        format console
+    }
+}
+
+:8602 {
+    file_server {
+        precompressed br gzip
+        root ./static
+    }
+
+    reverse_proxy /api/* api:8901
+}
