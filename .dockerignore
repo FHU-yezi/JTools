@@ -1,5 +1,0 @@
-.git
-.mypy_cache
-.pytest_cache
-__pycache__
-config.yaml
