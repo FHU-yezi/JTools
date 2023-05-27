@@ -34,7 +34,7 @@ function Main() {
       >
         <MantineProvider theme={{ colorScheme }} withGlobalStyles>
           <ErrorBoundary FallbackComponent={ErrorFallback}>
-            <Box mx="auto" mih="100vh" w="90vw" my={16} maw={896}>
+            <Box mx="auto" mih="100vh" w="90vw" mt={28} maw={896}>
               <App />
             </Box>
           </ErrorBoundary>

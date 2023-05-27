@@ -1,27 +1,17 @@
-import Tool1 from "./pages/Tool1";
-import Tool2 from "./pages/Tool2";
-import Tool3 from "./pages/Tool3";
+import ArticlePublishTimeViewer from "./pages/ArticlePublishTimeViewer";
 
-interface RouteItem {
+export interface RouteItem {
   component: any;
   path: string;
   toolName: string;
+  description: string;
 }
 
 export const routes: RouteItem[] = [
   {
-    component: Tool1,
-    path: "/tool1",
-    toolName: "工具1",
-  },
-  {
-    component: Tool2,
-    path: "/tool2",
-    toolName: "工具2",
-  },
-  {
-    component: Tool3,
-    path: "/tool3",
-    toolName: "工具3",
+    component: ArticlePublishTimeViewer,
+    path: "/article_publish_time_viewer",
+    toolName: "文章发布时间查询工具",
+    description: "查询文章的发布与更新时间。",
   },
 ];

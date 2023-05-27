@@ -20,6 +20,6 @@ export default function NotFoundPage() {
           </Link>
         </Text>
       </Stack>
-      </Center>
+    </Center>
   );
 }

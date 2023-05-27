@@ -1,14 +1,21 @@
 import { routes } from "../Routes";
-import { Link } from "wouter-preact";
+import { Title, Stack } from "@mantine/core";
+import ToolCard from "../components/ToolCard";
 
 export default function MainPage() {
   return (
     <>
-      {routes.map((item) => (
-        <div>
-          <Link href={item.path}>Go To {item.toolName}</Link>
-        </div>
-      ))}
+      <Title>简书小工具集</Title>
+      <Stack mt={32}>
+        {routes.map((item) => (
+          <ToolCard
+            toolName={item.toolName}
+            component={item.component}
+            path={item.path}
+            description={item.description}
+          />
+        ))}
+      </Stack>
     </>
   );
 }
