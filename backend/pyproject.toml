@@ -25,3 +25,11 @@ black = "^23.3.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+
+select = ["A", "ANN", "B", "C", "E", "F", "I", "N", "RET", "S", "SIM", "UP", "W"]
+
+ignore = ["ANN101", "ANN102", "ANN401", "C901", "E501", "S104"]
+
+target-version = "py38"

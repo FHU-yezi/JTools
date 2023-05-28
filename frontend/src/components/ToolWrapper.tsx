@@ -20,7 +20,7 @@ export default function ToolWrapper({ component, toolName }: Props) {
       >
         <Header toolName={toolName} />
       </header>
-      <div style={{ height: "4em" }} />
+      <div style={{ height: "3em" }} />
       {component()}
     </>
   );

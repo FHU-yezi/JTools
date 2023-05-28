@@ -15,7 +15,7 @@ import React, { render } from "preact/compat";
 import App from "./App";
 import { getBaseURL } from "./utils";
 
-axios.defaults.baseURL = getBaseURL();
+axios.defaults.baseURL = getBaseURL() + "/api";
 axios.defaults.timeout = 3000;
 axios.defaults.maxRedirects = 0;
 

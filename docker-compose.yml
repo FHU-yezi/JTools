@@ -13,7 +13,7 @@ services:
     build:
       dockerfile: Dockerfile.web
     ports:
-      - 8606:8606
+      - 8602:8602
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
     networks:

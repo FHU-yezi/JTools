@@ -54,6 +54,7 @@ export async function fetchData<TReq, TRes>(
         notifications.show({
           title: "API 请求异常",
           message: `${res.data.message}（ API ${res.data.code}）`,
+          color: "red",
         });
         return {
           status: fetchStatus.API_CODE_ERROR,

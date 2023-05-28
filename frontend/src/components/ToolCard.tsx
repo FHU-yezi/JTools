@@ -1,12 +1,5 @@
 import { RouteItem } from "../Routes";
-import {
-  Card,
-  Text,
-  Box,
-  UnstyledButton,
-  Space,
-  Group,
-} from "@mantine/core";
+import { Card, Text, Box, UnstyledButton, Space, Group } from "@mantine/core";
 import { AiOutlineArrowRight } from "react-icons/ai";
 import { useLocation } from "wouter-preact";
 
@@ -14,7 +7,7 @@ export default function ToolCard({ toolName, path, description }: RouteItem) {
   const [, setLocation] = useLocation();
   return (
     <UnstyledButton onClick={() => setLocation(path)}>
-      <Card shadow="xs" radius="lg" p={20} withBorder>
+      <Card padding="lg" shadow="xs" radius="lg" p={20} withBorder>
         <Box
           style={{
             display: "flex",
