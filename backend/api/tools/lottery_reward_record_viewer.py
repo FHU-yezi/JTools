@@ -2,11 +2,11 @@ from typing import Dict, List, Set
 
 from JianshuResearchTools.assert_funcs import AssertUserUrl
 from JianshuResearchTools.exceptions import InputError
-from pydantic import ValidationError
-from sanic import BadRequest, Blueprint, HTTPResponse, Request
+from sanic import Blueprint, HTTPResponse, Request
 from sspeedup.api import CODE, sanic_response_json
 
 from utils.db import lottery_db
+from utils.inject_data_model import inject_data_model
 from utils.pydantic_base import BaseModel
 
 REWARDS: Set[str] = {
@@ -53,16 +53,12 @@ class LotteryRecordsResponse(BaseModel):
 
 
 @lottery_reward_record_viewer_blueprint.post("/lottery_records")
-def lottery_records_handler(request: Request) -> HTTPResponse:
-    try:
-        request_data = LotteryRecordsRequest.parse_obj(request.json)
-    except BadRequest:
-        return sanic_response_json(code=CODE.UNKNOWN_DATA_FORMAT)
-    except ValidationError as e:
-        return sanic_response_json(code=CODE.BAD_ARGUMENTS, message=str(e))
+@inject_data_model(LotteryRecordsRequest)
+def lottery_records_handler(request: Request, data: LotteryRecordsRequest) -> HTTPResponse:
+    del request
 
     try:
-        AssertUserUrl(request_data.user_url)
+        AssertUserUrl(data.user_url)
     except InputError:
         return sanic_response_json(
             code=CODE.BAD_ARGUMENTS, message="user_url 不是有效的简书用户链接"
@@ -71,9 +67,9 @@ def lottery_records_handler(request: Request) -> HTTPResponse:
     result: List[Dict] = (
         lottery_db.find(
             {
-                "user.url": request_data.user_url,
+                "user.url": data.user_url,
                 "reward_name": {
-                    "$in": request_data.target_rewards,
+                    "$in": data.target_rewards,
                 },
             },
         )

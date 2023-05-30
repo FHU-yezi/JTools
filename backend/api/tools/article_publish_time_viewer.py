@@ -1,10 +1,10 @@
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.objects import Article, set_cache_status
-from pydantic import ValidationError
-from sanic import BadRequest, Blueprint, HTTPResponse, Request
+from sanic import Blueprint, HTTPResponse, Request
 from sspeedup.api import CODE, sanic_response_json
 from sspeedup.time_helper import human_readable_td_to_now, is_datetime_equal
 
+from utils.inject_data_model import inject_data_model
 from utils.pydantic_base import BaseModel
 
 set_cache_status(False)
@@ -28,19 +28,15 @@ class ArticleDataResponse(BaseModel):
 
 
 @article_publish_time_viewer_blueprint.post("/article_data")
-def hello_handler(request: Request) -> HTTPResponse:
-    try:
-        request_data = ArticleDataRequest.parse_obj(request.json)
-    except BadRequest:
-        return sanic_response_json(code=CODE.UNKNOWN_DATA_FORMAT)
-    except ValidationError as e:
-        return sanic_response_json(code=CODE.BAD_ARGUMENTS, message=str(e))
+@inject_data_model(ArticleDataRequest)
+def hello_handler(request: Request, data: ArticleDataRequest) -> HTTPResponse:
+    del request
 
-    if not request_data.article_url:
+    if not data.article_url:
         return sanic_response_json(code=CODE.BAD_ARGUMENTS, message="article_url 不能为空")
 
     try:
-        article = Article.from_url(request_data.article_url)
+        article = Article.from_url(data.article_url)
     except InputError:
         return sanic_response_json(
             code=CODE.BAD_ARGUMENTS, message="article_url 不是有效的简书文章链接"
