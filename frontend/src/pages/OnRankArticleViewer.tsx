@@ -1,5 +1,13 @@
-import { Button, Stack, Table, Text, Center } from "@mantine/core";
-import { signal, batch } from "@preact/signals";
+import {
+  Button,
+  Center,
+  Stack,
+  Table,
+  Text,
+  useMantineTheme,
+} from "@mantine/core";
+import { notifications } from "@mantine/notifications";
+import { batch, signal } from "@preact/signals";
 import JMFAutocomplete from "../components/JMFAutocomplete";
 import {
   OnRankRecordItem,
@@ -10,7 +18,6 @@ import {
   UserNameAutocompleteRequest,
   UserNameAutocompleteResponse,
 } from "../models/OnRankArticleViewer/UserNameAutocomplete";
-import { notifications } from "@mantine/notifications";
 import { fetchData, fetchStatus } from "../utils";
 
 const userURLOrUserName = signal("");
@@ -24,7 +31,6 @@ function isURL(string: string): boolean {
 }
 
 function handleCompleteItemUpdate(value: string) {
-  console.log("aaa");
   if (value.length === 0 || value.length > 15) {
     return;
   }
@@ -77,6 +83,8 @@ function handleQuery() {
 }
 
 export default function OnRankArticleViewer() {
+  const theme = useMantineTheme();
+
   return (
     <Stack>
       <JMFAutocomplete
@@ -100,7 +108,7 @@ export default function OnRankArticleViewer() {
             <thead>
               <tr>
                 <th>日期</th>
-                <th>排名</th>
+                <th style={{ "min-width": "50px" }}>排名</th>
                 <th>文章</th>
                 <th>获钻量</th>
               </tr>
@@ -115,7 +123,10 @@ export default function OnRankArticleViewer() {
                       href={item.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ color: "#0366d6", "text-decoration": "none" }}
+                      style={{
+                        color: theme.colors.blue[6],
+                        "text-decoration": "none"
+                      }}
                     >
                       {item.title}
                     </a>
