@@ -124,7 +124,7 @@ export default function LotteryRewardRecordViewer() {
             </thead>
             <tbody>
               {result.value.map((item) => (
-                <tr key={item.time}>
+                <tr>
                   <th>{new Date(item.time * 1000).toLocaleString()}</th>
                   <th>{item.reward_name}</th>
                 </tr>
