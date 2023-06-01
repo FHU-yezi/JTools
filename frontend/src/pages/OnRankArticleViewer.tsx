@@ -125,10 +125,12 @@ export default function OnRankArticleViewer() {
                       rel="noopener noreferrer"
                       style={{
                         color: theme.colors.blue[6],
-                        "text-decoration": "none"
+                        "text-decoration": "none",
                       }}
                     >
-                      {item.title}
+                      {item.title.length <= 30
+                        ? item.title
+                        : item.title.substring(0, 30) + "..."}
                     </a>
                   </th>
                   <th>{item.FP_reward_count}</th>
