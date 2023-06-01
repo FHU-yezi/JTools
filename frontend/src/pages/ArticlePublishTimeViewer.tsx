@@ -1,12 +1,12 @@
-import { Button, Stack, Card, Text, Badge } from "@mantine/core";
-import JMFTextInput from "../components/JMFTextInput";
-import { signal, batch } from "@preact/signals";
+import { Badge, Button, Card, Stack, Text } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { fetchData, fetchStatus } from "../utils";
+import { batch, signal } from "@preact/signals";
+import JMFTextInput from "../components/JMFTextInput";
 import {
   ArticleDataRequest,
   ArticleDataRqsponse,
 } from "../models/ArticlePublishTimeViewer/ArticleData";
+import { fetchData, fetchStatus, getDatetime } from "../utils";
 
 const articleURL = signal("");
 const isLoading = signal(false);
@@ -85,11 +85,11 @@ export default function ArticlePublishTimeViewer() {
             </Badge>
           </Text>
           <Text>
-            发布时间：{publishTime.value?.toLocaleDateString()}（
+            发布时间：{getDatetime(publishTime.value!)}（
             {publishTimeToNowHumanReadable.value}）
           </Text>
           <Text>
-            更新时间：{updateTime.value?.toLocaleDateString()}（
+            更新时间：{getDatetime(updateTime.value!)}（
             {updateTimeToNowHumanReadable.value}）
           </Text>
         </Card>

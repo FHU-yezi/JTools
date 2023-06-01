@@ -18,7 +18,7 @@ import {
   UserNameAutocompleteRequest,
   UserNameAutocompleteResponse,
 } from "../models/OnRankArticleViewer/UserNameAutocomplete";
-import { fetchData, fetchStatus } from "../utils";
+import { fetchData, fetchStatus, getDate } from "../utils";
 
 const userURLOrUserName = signal("");
 const completeItems = signal<string[]>([]);
@@ -116,7 +116,7 @@ export default function OnRankArticleViewer() {
             <tbody>
               {result.value.map((item) => (
                 <tr>
-                  <th>{new Date(item.date * 1000).toLocaleDateString()}</th>
+                  <th>{getDate(new Date(item.date * 1000))}</th>
                   <th>{item.ranking}</th>
                   <th>
                     <a

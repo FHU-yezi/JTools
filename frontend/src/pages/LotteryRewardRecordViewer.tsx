@@ -1,12 +1,12 @@
 import {
   Button,
+  Center,
   Chip,
   Group,
   Skeleton,
   Stack,
-  Text,
   Table,
-  Center,
+  Text,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
@@ -18,7 +18,7 @@ import {
   LotteryRecordsResponse,
 } from "../models/LotteryRewardRecordViewer/LotteryRecords";
 import { RewardResponse } from "../models/LotteryRewardRecordViewer/Rewards";
-import { fetchData, fetchStatus } from "../utils";
+import { fetchData, fetchStatus, getDatetime } from "../utils";
 
 const rewards = signal<string[]>([]);
 const userURL = signal("");
@@ -125,7 +125,7 @@ export default function LotteryRewardRecordViewer() {
             <tbody>
               {result.value.map((item) => (
                 <tr>
-                  <th>{new Date(item.time * 1000).toLocaleString()}</th>
+                  <th>{getDatetime(new Date(item.time * 1000))}</th>
                   <th>{item.reward_name}</th>
                 </tr>
               ))}
