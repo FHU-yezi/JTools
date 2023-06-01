@@ -9,6 +9,7 @@ import {
 import { AiOutlineSearch } from "react-icons/ai";
 import { BsMoonStars, BsSun } from "react-icons/bs";
 import { IoIosArrowBack } from "react-icons/io";
+import { useLocation } from "wouter-preact";
 import { umamiTrack } from "../utils";
 
 interface Props {
@@ -18,6 +19,7 @@ interface Props {
 export default function Header({ toolName }: Props) {
   const theme = useMantineTheme();
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+  const [, setLocation] = useLocation();
 
   return (
     <Group
@@ -31,9 +33,7 @@ export default function Header({ toolName }: Props) {
       }}
     >
       <Group>
-        <ActionIcon
-          onClick={() => (window.location.href = window.location.origin)}
-        >
+        <ActionIcon onClick={() => setLocation("/")}>
           <IoIosArrowBack size={22} />
         </ActionIcon>
         <Text size="lg" fw={700}>
