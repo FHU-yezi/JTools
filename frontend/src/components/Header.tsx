@@ -1,12 +1,13 @@
 import {
-  Group,
-  Text,
   ActionIcon,
+  Group,
   Switch,
+  Text,
   useMantineColorScheme,
+  useMantineTheme,
 } from "@mantine/core";
-import { BsMoonStars, BsSun } from "react-icons/all";
 import { AiOutlineSearch } from "react-icons/ai";
+import { BsMoonStars, BsSun } from "react-icons/all";
 import { IoIosArrowBack } from "react-icons/io";
 import { umamiTrack } from "../utils";
 
@@ -15,10 +16,20 @@ interface Props {
 }
 
 export default function Header({ toolName }: Props) {
+  const theme = useMantineTheme();
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 
   return (
-    <Group position="apart" style={{ width: "100%" }}>
+    <Group
+      position="apart"
+      style={{
+        width: "100%",
+        "padding-left": "5vw",
+        "padding-right": "5vw",
+        "background-color":
+          colorScheme === "light" ? theme.colors.gray[0] : theme.colors.gray[9],
+      }}
+    >
       <Group>
         <ActionIcon
           onClick={() => (window.location.href = window.location.origin)}

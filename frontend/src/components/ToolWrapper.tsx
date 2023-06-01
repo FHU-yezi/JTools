@@ -12,9 +12,9 @@ export default function ToolWrapper({ component, toolName }: Props) {
         style={{
           position: "fixed",
           top: 0,
+          left: 0,
           height: "4em",
-          width: "90vw",
-          maxWidth: "896px",
+          width: "100%",
           display: "flex",
         }}
       >
