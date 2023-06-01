@@ -7,7 +7,7 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { AiOutlineSearch } from "react-icons/ai";
-import { BsMoonStars, BsSun } from "react-icons/all";
+import { BsMoonStars, BsSun } from "react-icons/bs";
 import { IoIosArrowBack } from "react-icons/io";
 import { umamiTrack } from "../utils";
 
