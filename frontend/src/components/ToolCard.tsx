@@ -11,8 +11,8 @@ export default function ToolCard({ toolName, path, description }: RouteItem) {
         <Box
           style={{
             display: "flex",
-            "justify-content": "space-between",
-            "align-items": "center",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
           <Box>

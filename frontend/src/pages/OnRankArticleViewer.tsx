@@ -108,7 +108,7 @@ export default function OnRankArticleViewer() {
             <thead>
               <tr>
                 <th>日期</th>
-                <th style={{ "min-width": "50px" }}>排名</th>
+                <th style={{ minWidth: "50px" }}>排名</th>
                 <th>文章</th>
                 <th>获钻量</th>
               </tr>
@@ -125,7 +125,7 @@ export default function OnRankArticleViewer() {
                       rel="noopener noreferrer"
                       style={{
                         color: theme.colors.blue[6],
-                        "text-decoration": "none",
+                        textDecoration: "none",
                       }}
                     >
                       {item.title.length <= 30

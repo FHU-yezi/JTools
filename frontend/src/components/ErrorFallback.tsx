@@ -20,8 +20,8 @@ export default function ErrorFallback({ error }: Props) {
         style={{
           display: "flex",
           width: "90vw",
-          "max-width": "896px",
-          "margin-top": "20vh",
+          maxWidth: "896px",
+          marginTop: "20vh",
         }}
       >
         <BiError size={48} />

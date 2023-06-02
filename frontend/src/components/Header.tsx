@@ -26,9 +26,9 @@ export default function Header({ toolName }: Props) {
       position="apart"
       style={{
         width: "100%",
-        "padding-left": "5vw",
-        "padding-right": "5vw",
-        "background-color":
+        paddingLeft: "5vw",
+        paddingRight: "5vw",
+        backgroundColor:
           colorScheme === "light" ? theme.colors.gray[0] : theme.colors.gray[9],
       }}
     >
