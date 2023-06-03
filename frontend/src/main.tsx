@@ -2,7 +2,9 @@ import axios from "axios";
 
 import { Notifications } from "@mantine/notifications";
 import { ErrorBoundary } from "react-error-boundary";
+import { spotlightActions } from "./Routes";
 import ErrorFallback from "./components/ErrorFallback";
+import { AiOutlineSearch } from "react-icons/ai";
 
 import {
   Box,
@@ -10,6 +12,8 @@ import {
   ColorSchemeProvider,
   MantineProvider,
 } from "@mantine/core";
+import { SpotlightProvider } from "@mantine/spotlight";
+
 import { useLocalStorage } from "@mantine/hooks";
 import React, { render } from "preact/compat";
 import App from "./App";
@@ -33,12 +37,19 @@ function Main() {
         toggleColorScheme={toggleColorScheme}
       >
         <MantineProvider theme={{ colorScheme }} withGlobalStyles>
-          <ErrorBoundary FallbackComponent={ErrorFallback}>
-            <Box mx="auto" mih="100vh" w="90vw" mt={28} maw={896}>
-              <App />
-            </Box>
-          </ErrorBoundary>
-          <Notifications position="top-right" autoClose={2000} />
+          <SpotlightProvider
+            actions={spotlightActions}
+            searchIcon={<AiOutlineSearch size="1.2rem" />}
+            searchPlaceholder="查找小工具..."
+            nothingFoundMessage="无结果"
+          >
+            <ErrorBoundary FallbackComponent={ErrorFallback}>
+              <Box mx="auto" mih="100vh" w="90vw" mt={28} maw={896}>
+                <App />
+              </Box>
+            </ErrorBoundary>
+            <Notifications position="top-right" autoClose={2000} />
+          </SpotlightProvider>
         </MantineProvider>
       </ColorSchemeProvider>
     </React.StrictMode>

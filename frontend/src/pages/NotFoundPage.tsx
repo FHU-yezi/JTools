@@ -7,14 +7,14 @@ export default function NotFoundPage() {
 
   return (
     <Center>
-      <Stack 
+      <Stack
         style={{
           display: "flex",
           width: "90vw",
           maxWidth: "896px",
           marginTop: "20vh",
         }}
->
+      >
         <IoPaperPlaneSharp size={48} />
         <Title fz="xl" fw={700}>
           啊呀，没有找到这个页面

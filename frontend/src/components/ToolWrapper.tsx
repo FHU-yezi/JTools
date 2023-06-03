@@ -20,7 +20,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
           display: "flex",
         }}
       >
-        <Header toolName={toolName} />
+        <Header toolName={toolName} showBackArrow={true} />
       </header>
       <div style={{ height: "3em" }} />
       <Suspense fallback={<Loading />}>

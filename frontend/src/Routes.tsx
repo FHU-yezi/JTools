@@ -1,3 +1,4 @@
+import type { SpotlightAction } from "@mantine/spotlight";
 import { lazy } from "preact/compat";
 import { JSX } from "preact/jsx-runtime";
 
@@ -28,3 +29,9 @@ export const routes: RouteItem[] = [
     description: "查询文章上榜历史。",
   },
 ];
+
+export const spotlightActions: SpotlightAction[] = routes.map((item) => ({
+  title: item.toolName,
+  description: item.description,
+  onTrigger: () => window.open(window.location.origin + item.path, "_self"),
+}));

@@ -6,18 +6,25 @@ import NotFoundPage from "./pages/NotFoundPage";
 
 export default function App() {
   return (
-    <Switch>
-      <Route path="/">
-        <MainPage />
-      </Route>
-      {routes.map((item) => (
-        <Route path={item.path}>
-          {<ToolWrapper toolName={item.toolName} Component={item.component} />}
+    <>
+      <Switch>
+        <Route path="/">
+          <MainPage />
         </Route>
-      ))}
-      <Route>
-        <NotFoundPage />
-      </Route>
-    </Switch>
+        {routes.map((item) => (
+          <Route path={item.path}>
+            {
+              <ToolWrapper
+                toolName={item.toolName}
+                Component={item.component}
+              />
+            }
+          </Route>
+        ))}
+        <Route>
+          <NotFoundPage />
+        </Route>
+      </Switch>
+    </>
   );
 }

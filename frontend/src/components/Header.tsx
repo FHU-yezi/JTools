@@ -6,6 +6,7 @@ import {
   useMantineColorScheme,
   useMantineTheme,
 } from "@mantine/core";
+import { spotlight } from "@mantine/spotlight";
 import { AiOutlineSearch } from "react-icons/ai";
 import { BsMoonStars, BsSun } from "react-icons/bs";
 import { IoIosArrowBack } from "react-icons/io";
@@ -14,9 +15,10 @@ import { umamiTrack } from "../utils";
 
 interface Props {
   toolName: string;
+  showBackArrow: boolean;
 }
 
-export default function Header({ toolName }: Props) {
+export default function Header({ toolName, showBackArrow }: Props) {
   const theme = useMantineTheme();
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const [, setLocation] = useLocation();
@@ -33,15 +35,17 @@ export default function Header({ toolName }: Props) {
       }}
     >
       <Group>
-        <ActionIcon onClick={() => setLocation("/")}>
-          <IoIosArrowBack size={22} />
-        </ActionIcon>
+        {showBackArrow && (
+          <ActionIcon onClick={() => setLocation("/")}>
+            <IoIosArrowBack size={22} />
+          </ActionIcon>
+        )}
         <Text size="lg" fw={700}>
           {toolName}
         </Text>
       </Group>
       <Group position="right">
-        <ActionIcon>
+        <ActionIcon onClick={spotlight.open}>
           <AiOutlineSearch size={22} />
         </ActionIcon>
         <Switch
