@@ -24,7 +24,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
       </header>
       <div style={{ height: "3em" }} />
       <Suspense fallback={<Loading />}>
-      <Component />
+        <Component />
       </Suspense>
     </>
   );

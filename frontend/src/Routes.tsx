@@ -2,7 +2,7 @@ import { lazy } from "preact/compat";
 import { JSX } from "preact/jsx-runtime";
 
 export interface RouteItem {
-  component: (() => JSX.Element);
+  component: () => JSX.Element;
   path: string;
   toolName: string;
   description: string;

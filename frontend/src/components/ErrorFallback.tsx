@@ -8,12 +8,15 @@ import {
   Title,
 } from "@mantine/core";
 import { BiError } from "react-icons/bi";
+import { useLocation } from "wouter-preact";
 
 interface Props {
   error: any;
 }
 
 export default function ErrorFallback({ error }: Props) {
+  const [, setLocation] = useLocation();
+
   return (
     <Center>
       <Stack
@@ -34,6 +37,15 @@ export default function ErrorFallback({ error }: Props) {
           {error.toString()}
         </Text>
         <Button onClick={() => window.location.reload()}>刷新</Button>
+        <Button
+          variant="light"
+          onClick={() => {
+            setLocation("/");
+            window.location.reload();
+          }}
+        >
+          返回首页
+        </Button>
         <Accordion variant="contained">
           <Accordion.Item value="more-tech-info">
             <Accordion.Control>我如何提供更多技术信息？</Accordion.Control>
