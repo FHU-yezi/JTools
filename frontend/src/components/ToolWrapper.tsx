@@ -1,11 +1,13 @@
+import { Suspense } from "preact/compat";
 import Header from "./Header";
+import Loading from "./Loading";
 
 interface Props {
-  component: any;
+  Component: () => JSX.Element;
   toolName: string;
 }
 
-export default function ToolWrapper({ component, toolName }: Props) {
+export default function ToolWrapper({ Component, toolName }: Props) {
   return (
     <>
       <header
@@ -21,7 +23,9 @@ export default function ToolWrapper({ component, toolName }: Props) {
         <Header toolName={toolName} />
       </header>
       <div style={{ height: "3em" }} />
-      {component()}
+      <Suspense fallback={<Loading />}>
+      <Component />
+      </Suspense>
     </>
   );
 }

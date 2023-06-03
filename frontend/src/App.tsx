@@ -1,8 +1,8 @@
-import ToolWrapper from "./components/ToolWrapper";
 import { Route, Switch } from "wouter-preact";
-import NotFoundPage from "./pages/NotFoundPage";
-import MainPage from "./pages/MainPage";
 import { routes } from "./Routes";
+import ToolWrapper from "./components/ToolWrapper";
+import MainPage from "./pages/MainPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 export default function App() {
   return (
@@ -12,7 +12,7 @@ export default function App() {
       </Route>
       {routes.map((item) => (
         <Route path={item.path}>
-          {<ToolWrapper toolName={item.toolName} component={item.component} />}
+          {<ToolWrapper toolName={item.toolName} Component={item.component} />}
         </Route>
       ))}
       <Route>
