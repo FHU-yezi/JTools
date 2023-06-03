@@ -11,10 +11,15 @@
 }
 
 :8602 {
-    file_server {
-        precompressed br gzip
-        root ./static
+    handle {
+        root * ./static
+        try_files {path} /index.html
+        file_server {
+            precompressed br gzip
+        }
     }
 
-    reverse_proxy /api/* api:8901
+    handle /api/* {
+        reverse_proxy api:8901
+    }
 }
