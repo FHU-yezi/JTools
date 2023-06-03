@@ -33,18 +33,24 @@ export default function Header({ toolName, showBackArrow }: Props) {
         backgroundColor:
           colorScheme === "light" ? theme.colors.gray[0] : theme.colors.gray[9],
       }}
+      noWrap
     >
-      <Group>
+      <Group noWrap>
         {showBackArrow && (
           <ActionIcon onClick={() => setLocation("/")}>
             <IoIosArrowBack size={22} />
           </ActionIcon>
         )}
-        <Text size="lg" fw={700}>
+        <Text size="lg" fw={700} style={{
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          maxWidth: "calc(90vw - 150px)",
+        }} >
           {toolName}
         </Text>
       </Group>
-      <Group position="right">
+      <Group position="right" noWrap>
         <ActionIcon onClick={spotlight.open}>
           <AiOutlineSearch size={22} />
         </ActionIcon>
