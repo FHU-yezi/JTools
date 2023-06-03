@@ -18,6 +18,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
           height: "4em",
           width: "100%",
           display: "flex",
+          zIndex: 1,
         }}
       >
         <Header toolName={toolName} showBackArrow={true} />
