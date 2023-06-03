@@ -28,6 +28,12 @@ export const routes: RouteItem[] = [
     toolName: "上榜文章查询工具",
     description: "查询文章上榜历史。",
   },
+  {
+    component: lazy(() => import("./pages/URLSchemeConvertor")),
+    path: "/url_scheme_convertor",
+    toolName: "URL Scheme 转换工具",
+    description: "将简书网页链接转换成 URL Scheme，以实现跳转 App 打开。",
+  },
 ];
 
 export const spotlightActions: SpotlightAction[] = routes.map((item) => ({
