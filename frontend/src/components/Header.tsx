@@ -41,12 +41,16 @@ export default function Header({ toolName, showBackArrow }: Props) {
             <IoIosArrowBack size={22} />
           </ActionIcon>
         )}
-        <Text size="lg" fw={700} style={{
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-          maxWidth: "calc(90vw - 150px)",
-        }} >
+        <Text
+          size="lg"
+          fw={700}
+          style={{
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            maxWidth: "calc(90vw - 150px)",
+          }}
+        >
           {toolName}
         </Text>
       </Group>

@@ -1,11 +1,14 @@
 import { Autocomplete, Text } from "@mantine/core";
+import { useDebouncedValue } from "@mantine/hooks";
 import { Signal } from "@preact/signals";
+import { useEffect } from "preact/hooks";
 
 interface Props {
   label: string;
   value: Signal<string>;
   onValueChange?: (value: string) => void;
   completeItems: Signal<string[]>;
+  debounceTime?: number;
 }
 
 export default function JMFAutocomplete({
@@ -13,7 +16,14 @@ export default function JMFAutocomplete({
   value,
   onValueChange,
   completeItems,
+  debounceTime,
 }: Props) {
+  const [debouncedValue] = useDebouncedValue(value.value, debounceTime ?? 300, {
+    leading: true,
+  });
+
+  useEffect(() => onValueChange!(debouncedValue), [debouncedValue]);
+
   if (typeof onValueChange === undefined) {
     onValueChange = () => {};
   }
@@ -25,7 +35,6 @@ export default function JMFAutocomplete({
         value={value.value}
         onChange={(newValue: string) => {
           value.value = newValue;
-          onValueChange!(newValue);
         }}
         data={completeItems.value}
       />
