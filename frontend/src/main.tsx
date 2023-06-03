@@ -2,9 +2,9 @@ import axios from "axios";
 
 import { Notifications } from "@mantine/notifications";
 import { ErrorBoundary } from "react-error-boundary";
+import { AiOutlineSearch } from "react-icons/ai";
 import { spotlightActions } from "./Routes";
 import ErrorFallback from "./components/ErrorFallback";
-import { AiOutlineSearch } from "react-icons/ai";
 
 import {
   Box,
