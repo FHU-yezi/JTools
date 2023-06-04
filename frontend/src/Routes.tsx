@@ -34,6 +34,12 @@ export const routes: RouteItem[] = [
     toolName: "URL Scheme 转换工具",
     description: "将简书网页链接转换成 URL Scheme，以实现跳转 App 打开。",
   },
+  {
+    component: lazy(() => import("./pages/VIPInfoViewer")),
+    path: "/VIP_info_viewer",
+    toolName: "会员信息查询工具",
+    description: "查询简书会员等级和过期时间。",
+  },
 ];
 
 export const spotlightActions: SpotlightAction[] = routes.map((item) => ({

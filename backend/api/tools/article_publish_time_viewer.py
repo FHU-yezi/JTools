@@ -29,7 +29,7 @@ class ArticleDataResponse(BaseModel):
 
 @article_publish_time_viewer_blueprint.post("/article_data")
 @inject_data_model(ArticleDataRequest)
-def hello_handler(request: Request, data: ArticleDataRequest) -> HTTPResponse:
+def article_data_handler(request: Request, data: ArticleDataRequest) -> HTTPResponse:
     del request
 
     if not data.article_url:
