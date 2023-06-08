@@ -18,7 +18,8 @@ import {
   LotteryRecordsResponse,
 } from "../models/LotteryRewardRecordViewer/LotteryRecords";
 import { RewardResponse } from "../models/LotteryRewardRecordViewer/Rewards";
-import { fetchData, fetchStatus, getDatetime } from "../utils";
+import { fetchData, fetchStatus } from "../utils/fetchData";
+import { getDatetime } from "../utils/timeHelper";
 
 const rewards = signal<string[]>([]);
 const userURL = signal("");

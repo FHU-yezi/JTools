@@ -1,6 +1,6 @@
 import { notifications } from "@mantine/notifications";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
-import { Response } from "./models/base";
+import { Response } from "../models/base";
 
 export enum fetchStatus {
   REQUEST_ERROR = 0,
@@ -16,22 +16,6 @@ interface fetchResult<TData> {
   apiCode?: number;
   message?: string;
   data?: TData;
-}
-
-export function getBaseURL(): string {
-  return window.location.origin;
-}
-
-export function getDatetime(dateObj: Date) {
-  return dateObj.toISOString().replace("T", " ").replace(".000Z", "");
-}
-
-export function getDate(dateObj: Date) {
-  return dateObj.toISOString().split("T")[0];
-}
-
-export function getTime(dateObj: Date) {
-  return dateObj.toISOString().split("T")[1].replace(".000Z", "");
 }
 
 export async function fetchData<TReq, TRes>(
@@ -113,16 +97,4 @@ export async function fetchData<TReq, TRes>(
         return { status: fetchStatus.REQUEST_ERROR };
       }
     });
-}
-
-export function umamiTrack(
-  event_name?: string,
-  event_data?: { [key: string]: any },
-) {
-  // @ts-ignore
-  umami.track(event_name, event_data);
-}
-
-export function RoundFloat(number: number, ndigits: number) {
-  return Math.round(number * Math.pow(10, ndigits)) / Math.pow(10, ndigits);
 }

@@ -6,7 +6,8 @@ import {
   ArticleDataRequest,
   ArticleDataRqsponse,
 } from "../models/ArticlePublishTimeViewer/ArticleData";
-import { fetchData, fetchStatus, getDatetime } from "../utils";
+import { fetchData, fetchStatus } from "../utils/fetchData";
+import { getDatetime } from "../utils/timeHelper";
 
 const articleURL = signal("");
 const isLoading = signal(false);

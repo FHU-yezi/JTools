@@ -11,7 +11,7 @@ import { AiOutlineSearch } from "react-icons/ai";
 import { BsMoonStars, BsSun } from "react-icons/bs";
 import { IoIosArrowBack } from "react-icons/io";
 import { useLocation } from "wouter-preact";
-import { umamiTrack } from "../utils";
+import umamiTrack from "../utils/umamiTrack";
 
 interface Props {
   toolName: string;

@@ -38,7 +38,8 @@ import {
   RewardsWinsTrendLineDataResponse,
 } from "../models/LotteryAnalyzer/RewardWinsTrendLineData";
 import { TimeRange, TimeRangeWithoutAll } from "../models/LotteryAnalyzer/base";
-import { RoundFloat, fetchData, fetchStatus } from "../utils";
+import { fetchData, fetchStatus } from "../utils/fetchData";
+import { RoundFloat } from "../utils/numberHelper";
 
 Chart.register(
   ArcElement,

@@ -18,7 +18,8 @@ import {
   UserNameAutocompleteRequest,
   UserNameAutocompleteResponse,
 } from "../models/OnRankArticleViewer/UserNameAutocomplete";
-import { fetchData, fetchStatus, getDate } from "../utils";
+import { fetchData, fetchStatus } from "../utils/fetchData";
+import { getDate } from "../utils/timeHelper";
 
 const userURLOrUserName = signal("");
 const completeItems = signal<string[]>([]);

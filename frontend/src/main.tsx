@@ -17,7 +17,7 @@ import { SpotlightProvider } from "@mantine/spotlight";
 import { useLocalStorage } from "@mantine/hooks";
 import React, { render } from "preact/compat";
 import App from "./App";
-import { getBaseURL } from "./utils";
+import { getBaseURL } from "./utils/URLHelper";
 
 axios.defaults.baseURL = getBaseURL() + "/api";
 axios.defaults.timeout = 5000;

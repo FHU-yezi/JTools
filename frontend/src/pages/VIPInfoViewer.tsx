@@ -6,7 +6,7 @@ import {
   VIPInfoRequest,
   VIPInfoResponse,
 } from "../models/VIPInfoViewer/VIPInfo";
-import { fetchData, fetchStatus, getDatetime } from "../utils";
+import { fetchData, fetchStatus } from "../utils/fetchData";
 
 const userURL = signal("");
 const isLoading = signal(false);
