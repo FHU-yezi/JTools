@@ -21,7 +21,7 @@ import {
   Tooltip,
 } from "chart.js";
 import { useEffect } from "preact/hooks";
-import { Pie, Line } from "react-chartjs-2";
+import { Line, Pie } from "react-chartjs-2";
 import {
   PerPrizeDataItem,
   PerPrizeDataRequest,
