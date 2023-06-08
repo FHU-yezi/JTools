@@ -20,7 +20,7 @@ import App from "./App";
 import { getBaseURL } from "./utils";
 
 axios.defaults.baseURL = getBaseURL() + "/api";
-axios.defaults.timeout = 3000;
+axios.defaults.timeout = 5000;
 axios.defaults.maxRedirects = 0;
 
 function Main() {

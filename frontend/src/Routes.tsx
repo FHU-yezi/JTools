@@ -40,6 +40,12 @@ export const routes: RouteItem[] = [
     toolName: "会员信息查询工具",
     description: "查询简书会员等级和过期时间。",
   },
+  {
+    component: lazy(() => import("./pages/LotteryAnalyzer")),
+    path: "/lottery_analyzer",
+    toolName: "抽奖分析工具",
+    description: "分析简书大转盘中奖数据。",
+  },
 ];
 
 export const spotlightActions: SpotlightAction[] = routes.map((item) => ({

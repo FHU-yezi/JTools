@@ -14,7 +14,7 @@ export default function MainPage() {
           height: "4em",
           width: "100%",
           display: "flex",
-          zIndex: 1,
+          zIndex: 3,
         }}
       >
         <Header toolName="简书小工具集" showBackArrow={false} />
