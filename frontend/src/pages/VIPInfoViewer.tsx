@@ -1,8 +1,9 @@
 import {
-  Badge, Button, Stack, Text, useMantineTheme,
+  Badge, Button, Stack, Text,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
+import JMFLink from "../components/JMFLink";
 import JMFTextInput from "../components/JMFTextInput";
 import {
   VIPInfoRequest,
@@ -56,8 +57,6 @@ function handleQuery() {
 }
 
 export default function VIPInfoViewer() {
-  const theme = useMantineTheme();
-
   return (
     <Stack>
       <JMFTextInput label="用户个人主页链接" value={userURL} />
@@ -66,17 +65,7 @@ export default function VIPInfoViewer() {
         <>
           <Text>
             昵称：
-            <a
-              href={userURL.value}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                color: theme.colors.blue[6],
-                textDecoration: "none",
-              }}
-            >
-              {userName.value}
-            </a>
+            <JMFLink url={userURL.value} label={userName.value} isExternal />
           </Text>
           <Text>
             会员级别：

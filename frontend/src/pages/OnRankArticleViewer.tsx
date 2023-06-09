@@ -4,11 +4,11 @@ import {
   Stack,
   Table,
   Text,
-  useMantineTheme,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { signal } from "@preact/signals";
 import JMFAutocomplete from "../components/JMFAutocomplete";
+import JMFLink from "../components/JMFLink";
 import {
   OnRankRecordItem,
   OnRankRecordsRequest,
@@ -80,8 +80,6 @@ function handleQuery() {
 }
 
 export default function OnRankArticleViewer() {
-  const theme = useMantineTheme();
-
   return (
     <Stack>
       <JMFAutocomplete
@@ -107,24 +105,18 @@ export default function OnRankArticleViewer() {
             <tbody>
               {result.value.map((item) => (
                 <tr key={`${item.date.toString()}_${item.url}`}>
-                  <th>{getDate(new Date(item.date * 1000))}</th>
-                  <th>{item.ranking}</th>
-                  <th>
-                    <a
-                      href={item.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        color: theme.colors.blue[6],
-                        textDecoration: "none",
-                      }}
-                    >
-                      {item.title.length <= 30
+                  <td>{getDate(new Date(item.date * 1000))}</td>
+                  <td>{item.ranking}</td>
+                  <td>
+                    <JMFLink
+                      url={item.url}
+                      label={item.title.length <= 30
                         ? item.title
                         : `${item.title.substring(0, 30)}...`}
-                    </a>
-                  </th>
-                  <th>{item.FP_reward_count}</th>
+                      isExternal
+                    />
+                  </td>
+                  <td>{item.FP_reward_count}</td>
                 </tr>
               ))}
             </tbody>
