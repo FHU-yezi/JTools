@@ -10,7 +10,9 @@ export async function fetchData<TRequest, TResponse>(
   method: "GET" | "POST",
   url: string,
   data?: TRequest,
+  // eslint-disable-next-line no-shadow, no-unused-vars
   onOK?: (data: TResponse) => void,
+  // eslint-disable-next-line no-unused-vars
   onError?: (code: number, message: string) => void,
   hasResult?: Signal<boolean>,
   isLoading?: Signal<boolean>,
@@ -23,18 +25,15 @@ export async function fetchData<TRequest, TResponse>(
     // 如果数据正在加载，不再发起新的请求
     if (isLoading.value === true) {
       return;
-    } else {
-      isLoading.value = true;
     }
+    isLoading.value = true;
   }
 
-  url = baseURL + "/api" + url;
+  url = `${baseURL}/api${url}`;
   if (method === "GET" && typeof data !== "undefined") {
     const params: string[] = [];
-    Object.entries(data as object).forEach(([key, value]) =>
-      params.push(`${key}=${value}`),
-    );
-    url = url + "?" + params.join("&");
+    Object.entries(data as object).forEach(([key, value]) => params.push(`${key}=${value}`));
+    url = `${url}?${params.join("&")}`;
   }
 
   let response;
@@ -42,7 +41,7 @@ export async function fetchData<TRequest, TResponse>(
   try {
     const timeoutID = setTimeout(() => controller.abort(), timeout ?? defaultTimeout);
     response = await fetch(url, {
-      method: method,
+      method,
       headers:
         method !== "GET" ? { "Content-Type": "application/json" } : undefined,
       body: method !== "GET" ? JSON.stringify(data) : undefined,
@@ -92,10 +91,8 @@ export async function fetchData<TRequest, TResponse>(
           hasResult.value = true;
         }
       }
-    } else {
-      if (onError) {
-        onError(responseJSON.code, responseJSON.message);
-      }
+    } else if (onError) {
+      onError(responseJSON.code, responseJSON.message);
     }
     if (isLoading) {
       isLoading.value = false;

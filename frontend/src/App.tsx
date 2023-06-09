@@ -9,27 +9,23 @@ const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 
 export default function App() {
   return (
-    <>
-      <Switch>
-        <Route path="/">
-          <MainPage />
+    <Switch>
+      <Route path="/">
+        <MainPage />
+      </Route>
+      {routes.map((item) => (
+        <Route key={item.path} path={item.path}>
+          <ToolWrapper
+            toolName={item.toolName}
+            Component={item.component}
+          />
         </Route>
-        {routes.map((item) => (
-          <Route path={item.path}>
-            {
-              <ToolWrapper
-                toolName={item.toolName}
-                Component={item.component}
-              />
-            }
-          </Route>
-        ))}
-        <Route>
-          <Suspense fallback={<Loading />}>
-            <NotFoundPage />
-          </Suspense>
-        </Route>
-      </Switch>
-    </>
+      ))}
+      <Route>
+        <Suspense fallback={<Loading />}>
+          <NotFoundPage />
+        </Suspense>
+      </Route>
+    </Switch>
   );
 }

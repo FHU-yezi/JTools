@@ -140,12 +140,15 @@ function PerPrizeAnalyzeTable({ data }: PerPrizeAnalyzeTableProps) {
         </thead>
         <tbody>
           {data.value.map((item) => (
-            <tr>
+            <tr key={item.reward_name}>
               <th>{item.reward_name}</th>
               <th>{item.wins_count}</th>
               <th>{item.winners_count}</th>
               <th>{item.average_wins_count_per_winner}</th>
-              <th>{RoundFloat(item.winning_rate * 100, 3)}%</th>
+              <th>
+                {RoundFloat(item.winning_rate * 100, 3)}
+                %
+              </th>
               <th>{item.rarity}</th>
             </tr>
           ))}
@@ -156,8 +159,8 @@ function PerPrizeAnalyzeTable({ data }: PerPrizeAnalyzeTableProps) {
             <th>{totalWins}</th>
             <th>{totalWinners}</th>
             <th>{RoundFloat(totalAvagaeWinsCountPerWinner, 3)}</th>
-            <th></th>
-            <th></th>
+            <th />
+            <th />
           </tr>
         </tfoot>
       </Table>

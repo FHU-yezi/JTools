@@ -90,11 +90,11 @@ export default function OnRankArticleViewer() {
         onValueChange={handleCompleteItemUpdate}
         completeItems={completeItems}
       />
-        <Button onClick={handleQuery} loading={isLoading.value}>
-          查询
-        </Button>
-      {hasResult.value &&
-        (result.value.length !== 0 ? (
+      <Button onClick={handleQuery} loading={isLoading.value}>
+        查询
+      </Button>
+      {hasResult.value
+        && (result.value.length !== 0 ? (
           <Table captionSide="bottom">
             <thead>
               <tr>
@@ -106,7 +106,7 @@ export default function OnRankArticleViewer() {
             </thead>
             <tbody>
               {result.value.map((item) => (
-                <tr>
+                <tr key={`${item.date.toString()}_${item.url}`}>
                   <th>{getDate(new Date(item.date * 1000))}</th>
                   <th>{item.ranking}</th>
                   <th>
@@ -121,7 +121,7 @@ export default function OnRankArticleViewer() {
                     >
                       {item.title.length <= 30
                         ? item.title
-                        : item.title.substring(0, 30) + "..."}
+                        : `${item.title.substring(0, 30)}...`}
                     </a>
                   </th>
                   <th>{item.FP_reward_count}</th>

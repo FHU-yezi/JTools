@@ -1,8 +1,6 @@
 import { Notifications } from "@mantine/notifications";
 import { ErrorBoundary } from "react-error-boundary";
 import { AiOutlineSearch } from "react-icons/ai";
-import { spotlightActions } from "./Routes";
-import ErrorFallback from "./components/ErrorFallback";
 
 import {
   Box,
@@ -15,14 +13,15 @@ import { SpotlightProvider } from "@mantine/spotlight";
 import { useLocalStorage } from "@mantine/hooks";
 import React, { render } from "preact/compat";
 import App from "./App";
+import { spotlightActions } from "./Routes";
+import ErrorFallback from "./components/ErrorFallback";
 
 function Main() {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: "jtools-color-scheme",
     defaultValue: "light",
   });
-  const toggleColorScheme = () =>
-    setColorScheme(colorScheme === "dark" ? "light" : "dark");
+  const toggleColorScheme = () => setColorScheme(colorScheme === "dark" ? "light" : "dark");
   return (
     <React.StrictMode>
       <ColorSchemeProvider

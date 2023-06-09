@@ -8,15 +8,15 @@ export function commonAPIErrorHandler(
   // 参数异常，一般是用户问题
   if (code === 412) {
     notifications.show({
-      message: message,
+      message,
       color: userErrorToastColor ?? "orange",
     });
-    return
+    return;
   }
 
   notifications.show({
     title: `API 请求失败（${code}）`,
-    message: message,
+    message,
     color: "orange",
   });
 }

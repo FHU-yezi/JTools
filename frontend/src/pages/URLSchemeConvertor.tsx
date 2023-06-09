@@ -62,30 +62,33 @@ function getURLType(url: Signal<string>): JianshuURLType | "unknown" {
   if (!isJianshuURL(url)) {
     return "unknown";
   }
+
+  let splitted;
+  let perfix;
+  let slug;
   try {
-    var splitted = url.value.split("/");
-    var perfix = splitted[3];
-    var slug = splitted[4];
+    splitted = url.value.split("/");
+    [,,, perfix, slug] = splitted;
   } catch {
     return "unknown";
   }
+  // eslint-disable-next-line no-restricted-syntax
   for (const URLType of URLTypesArray) {
     if (perfix === URLType.URLPrefix) {
       if (
-        URLType.slugLengthRange.min <= slug.length &&
-        slug.length <= URLType.slugLengthRange.max
+        URLType.slugLengthRange.min <= slug.length
+        && slug.length <= URLType.slugLengthRange.max
       ) {
         return URLType;
-      } else {
-        return "unknown";
       }
+      return "unknown";
     }
   }
   return "unknown";
 }
 
 function handleConvert() {
-  let urlType = getURLType(jianshuURL);
+  const urlType = getURLType(jianshuURL);
 
   if (urlType === "unknown") {
     notifications.show({

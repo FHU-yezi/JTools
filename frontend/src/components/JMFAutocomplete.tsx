@@ -6,7 +6,8 @@ import { useEffect } from "preact/hooks";
 interface Props {
   label: string;
   value: Signal<string>;
-  onValueChange?: (value: string) => void;
+  // eslint-disable-next-line no-unused-vars
+  onValueChange: (value: string) => void;
   completeItems: Signal<string[]>;
   debounceTime?: number;
 }
@@ -16,17 +17,14 @@ export default function JMFAutocomplete({
   value,
   onValueChange,
   completeItems,
-  debounceTime,
+  debounceTime = 300,
 }: Props) {
-  const [debouncedValue] = useDebouncedValue(value.value, debounceTime ?? 300, {
+  const [debouncedValue] = useDebouncedValue(value.value, debounceTime, {
     leading: true,
   });
 
-  useEffect(() => onValueChange!(debouncedValue), [debouncedValue]);
+  useEffect(() => onValueChange(debouncedValue), [debouncedValue]);
 
-  if (typeof onValueChange === undefined) {
-    onValueChange = () => {};
-  }
   return (
     <div>
       <Text fw={600}>{label}</Text>

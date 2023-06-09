@@ -1,4 +1,4 @@
-import { Suspense } from "preact/compat";
+import { JSX, Suspense } from "preact/compat";
 import Header from "./Header";
 import Loading from "./Loading";
 
@@ -21,7 +21,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
           zIndex: 3,
         }}
       >
-        <Header toolName={toolName} showBackArrow={true} />
+        <Header toolName={toolName} showBackArrow />
       </header>
       <div style={{ height: "3em" }} />
       <Suspense fallback={<Loading />}>

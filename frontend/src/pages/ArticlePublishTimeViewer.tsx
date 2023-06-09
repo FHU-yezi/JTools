@@ -1,4 +1,6 @@
-import { Badge, Button, Card, Stack, Text } from "@mantine/core";
+import {
+  Badge, Button, Card, Stack, Text,
+} from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
 import JMFTextInput from "../components/JMFTextInput";
@@ -41,11 +43,9 @@ function handleQuery() {
           articleTitle.value = data.title;
           isUpdated.value = data.is_updated;
           publishTime.value = new Date(data.publish_time * 1000);
-          publishTimeToNowHumanReadable.value =
-            data.publish_time_to_now_human_readable;
+          publishTimeToNowHumanReadable.value = data.publish_time_to_now_human_readable;
           updateTime.value = new Date(data.update_time * 1000);
-          updateTimeToNowHumanReadable.value =
-            data.update_time_to_now_human_readable;
+          updateTimeToNowHumanReadable.value = data.update_time_to_now_human_readable;
         });
       },
       commonAPIErrorHandler,
@@ -64,7 +64,10 @@ export default function ArticlePublishTimeViewer() {
       </Button>
       {hasResult.value && (
         <Card padding="lg" shadow="xs" radius="lg" withBorder>
-          <Text>标题：{articleTitle.value}</Text>
+          <Text>
+            标题：
+            {articleTitle.value}
+          </Text>
           <Text>
             更新过：
             <Badge size="lg" color={isUpdated.value ? "orange" : "green"}>
@@ -72,12 +75,18 @@ export default function ArticlePublishTimeViewer() {
             </Badge>
           </Text>
           <Text>
-            发布时间：{getDatetime(publishTime.value!)}（
-            {publishTimeToNowHumanReadable.value}）
+            发布时间：
+            {getDatetime(publishTime.value!)}
+            （
+            {publishTimeToNowHumanReadable.value}
+            ）
           </Text>
           <Text>
-            更新时间：{getDatetime(updateTime.value!)}（
-            {updateTimeToNowHumanReadable.value}）
+            更新时间：
+            {getDatetime(updateTime.value!)}
+            （
+            {updateTimeToNowHumanReadable.value}
+            ）
           </Text>
         </Card>
       )}

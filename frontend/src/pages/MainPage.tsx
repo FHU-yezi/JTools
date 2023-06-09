@@ -23,6 +23,7 @@ export default function MainPage() {
       <Stack>
         {routes.map((item) => (
           <ToolCard
+            key={item.toolName}
             toolName={item.toolName}
             component={item.component}
             path={item.path}

@@ -57,17 +57,14 @@ function handleQuery() {
 export default function LotteryRewardRecordViewer() {
   useEffect(() => {
     try {
-      fetchData<{}, RewardResponse>(
+      fetchData<Record<string, never>, RewardResponse>(
         "GET",
         "/tools/lottery_reward_record_viewer/rewards",
         {},
-        (data) =>
-          batch(() => {
-            rewards.value = data!.rewards;
-            selectedRewards.value = data!.rewards.map((item) =>
-              item.replace(" ", ""),
-            );
-          }),
+        (data) => batch(() => {
+          rewards.value = data.rewards;
+          selectedRewards.value = data.rewards.map((item) => item.replace(" ", ""));
+        }),
         commonAPIErrorHandler,
       );
     } catch {}
@@ -86,7 +83,7 @@ export default function LotteryRewardRecordViewer() {
           >
             <Group>
               {rewards.value.map((item) => (
-                <Chip value={item.replace(" ", "")}>{item}</Chip>
+                <Chip key={item.replace(" ", "")} value={item.replace(" ", "")}>{item}</Chip>
               ))}
             </Group>
           </Chip.Group>
@@ -94,11 +91,11 @@ export default function LotteryRewardRecordViewer() {
       ) : (
         <Skeleton height={64} />
       )}
-        <Button onClick={handleQuery} loading={isLoading.value}>
-          查询
-        </Button>
-      {hasResult.value &&
-        (result.value.length !== 0 ? (
+      <Button onClick={handleQuery} loading={isLoading.value}>
+        查询
+      </Button>
+      {hasResult.value
+        && (result.value.length !== 0 ? (
           <Table captionSide="bottom">
             <thead>
               <tr>
@@ -108,7 +105,7 @@ export default function LotteryRewardRecordViewer() {
             </thead>
             <tbody>
               {result.value.map((item) => (
-                <tr>
+                <tr key={item.time}>
                   <th>{getDatetime(new Date(item.time * 1000))}</th>
                   <th>{item.reward_name}</th>
                 </tr>

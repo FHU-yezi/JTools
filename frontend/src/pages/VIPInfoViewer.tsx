@@ -1,4 +1,6 @@
-import { Badge, Button, Stack, Text, useMantineTheme } from "@mantine/core";
+import {
+  Badge, Button, Stack, Text, useMantineTheme,
+} from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
 import JMFTextInput from "../components/JMFTextInput";
@@ -38,16 +40,14 @@ function handleQuery() {
       {
         user_url: userURL.value,
       },
-      (data) =>
-        batch(() => {
-          userName.value = data!.name;
-          VIPType.value = data!.VIP_type;
-          if (typeof data!.VIP_expire_time !== "undefined") {
-            VIPExpireTime.value = new Date(data!.VIP_expire_time * 1000);
-            VIPExpireTimeToNowHumanReadable.value =
-              data!.VIP_expire_time_to_now_human_readable!;
-          }
-        }),
+      (data) => batch(() => {
+        userName.value = data.name;
+        VIPType.value = data.VIP_type;
+        if (typeof data.VIP_expire_time !== "undefined") {
+          VIPExpireTime.value = new Date(data.VIP_expire_time * 1000);
+          VIPExpireTimeToNowHumanReadable.value = data.VIP_expire_time_to_now_human_readable!;
+        }
+      }),
       commonAPIErrorHandler,
       hasResult,
       isLoading,
@@ -79,12 +79,17 @@ export default function VIPInfoViewer() {
             </a>
           </Text>
           <Text>
-            会员级别：<Badge size="lg">{VIPType.value}</Badge>
+            会员级别：
+            <Badge size="lg">{VIPType.value}</Badge>
           </Text>
           {VIPType.value !== "无会员" && (
             <Text>
-              到期时间：{getDatetime(VIPExpireTime.value!)}（剩余{" "}
-              {VIPExpireTimeToNowHumanReadable.value}）
+              到期时间：
+              {getDatetime(VIPExpireTime.value!)}
+              （剩余
+              {" "}
+              {VIPExpireTimeToNowHumanReadable.value}
+              ）
             </Text>
           )}
         </>

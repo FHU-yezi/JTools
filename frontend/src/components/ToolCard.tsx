@@ -1,4 +1,6 @@
-import { Box, Card, Group, Space, Text, UnstyledButton } from "@mantine/core";
+import {
+  Box, Card, Group, Space, Text, UnstyledButton,
+} from "@mantine/core";
 import { AiOutlineArrowRight } from "react-icons/ai";
 import { useLocation } from "wouter-preact";
 import { RouteItem } from "../Routes";
