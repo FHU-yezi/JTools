@@ -38,7 +38,8 @@ import {
   RewardsWinsTrendLineDataResponse,
 } from "../models/LotteryAnalyzer/RewardWinsTrendLineData";
 import { TimeRange, TimeRangeWithoutAll } from "../models/LotteryAnalyzer/base";
-import { fetchData, fetchStatus } from "../utils/fetchData";
+import { commonAPIErrorHandler } from "../utils/errorHandler";
+import { fetchData } from "../utils/fetchData";
 import { RoundFloat } from "../utils/numberHelper";
 
 Chart.register(
@@ -78,45 +79,45 @@ interface RewardWinsTrendLineProps {
 }
 
 function handlePerPrizeAnalayzeDataFetch() {
-  fetchData<PerPrizeDataRequest, PerPrizeDataResponse>(
-    "POST",
-    "/tools/lottery_analyzer/per_prize_data",
-    {
-      time_range: perPrizeAnalyzeTimeRange.value,
-    },
-  ).then(({ status, data }) => {
-    if (status === fetchStatus.OK) {
-      perPrizeAnalyzeData.value = data!.rewards;
-    }
-  });
+  try {
+    fetchData<PerPrizeDataRequest, PerPrizeDataResponse>(
+      "POST",
+      "/tools/lottery_analyzer/per_prize_data",
+      {
+        time_range: perPrizeAnalyzeTimeRange.value,
+      },
+      (data) => (perPrizeAnalyzeData.value = data.rewards),
+      commonAPIErrorHandler,
+    );
+  } catch {}
 }
 
 function handleRewardWinsCountPieDataFetch() {
-  fetchData<RewardsWinsCountPieDataRequest, RewardsWinsCountPieDataResponse>(
-    "POST",
-    "/tools/lottery_analyzer/reward_wins_count_pie_data",
-    {
-      time_range: RewardWinsCountPieTimeRange.value,
-    },
-  ).then(({ status, data }) => {
-    if (status === fetchStatus.OK) {
-      RewardWinsCountPieData.value = data!.pie_data;
-    }
-  });
+  try {
+    fetchData<RewardsWinsCountPieDataRequest, RewardsWinsCountPieDataResponse>(
+      "POST",
+      "/tools/lottery_analyzer/reward_wins_count_pie_data",
+      {
+        time_range: RewardWinsCountPieTimeRange.value,
+      },
+      (data) => (RewardWinsCountPieData.value = data.pie_data),
+      commonAPIErrorHandler,
+    );
+  } catch {}
 }
 
 function handleRewardWinsTrendLineDataFetch() {
-  fetchData<RewardWinsTrendLineDataRequest, RewardsWinsTrendLineDataResponse>(
-    "POST",
-    "/tools/lottery_analyzer/reward_wins_trend_line_data",
-    {
-      time_range: RewardWinsTrendLineTimeRange.value,
-    },
-  ).then(({ status, data }) => {
-    if (status === fetchStatus.OK) {
-      RewardWinsTrendLineData.value = data!.line_data;
-    }
-  });
+  try {
+    fetchData<RewardWinsTrendLineDataRequest, RewardsWinsTrendLineDataResponse>(
+      "POST",
+      "/tools/lottery_analyzer/reward_wins_trend_line_data",
+      {
+        time_range: RewardWinsTrendLineTimeRange.value,
+      },
+      (data) => (RewardWinsTrendLineData.value = data.line_data),
+      commonAPIErrorHandler,
+    );
+  } catch {}
 }
 
 function PerPrizeAnalyzeTable({ data }: PerPrizeAnalyzeTableProps) {
@@ -188,9 +189,9 @@ function RewardWinsTrendLine({ data }: RewardWinsTrendLineProps) {
         options={{
           plugins: {
             legend: {
-              display: false
-            }
-          }
+              display: false,
+            },
+          },
         }}
       />
     </Center>

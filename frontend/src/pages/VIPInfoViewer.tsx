@@ -6,12 +6,14 @@ import {
   VIPInfoRequest,
   VIPInfoResponse,
 } from "../models/VIPInfoViewer/VIPInfo";
-import { fetchData, fetchStatus } from "../utils/fetchData";
+import { commonAPIErrorHandler } from "../utils/errorHandler";
+import { fetchData } from "../utils/fetchData";
+import { getDatetime } from "../utils/timeHelper";
 
 const userURL = signal("");
-const isLoading = signal(false);
 const hasResult = signal(false);
 const userName = signal("");
+const isLoading = signal(false);
 const VIPType = signal("");
 const VIPExpireTime = signal<Date | undefined>(undefined);
 const VIPExpireTimeToNowHumanReadable = signal("");
@@ -29,32 +31,28 @@ function handleQuery() {
     return;
   }
 
-  batch(() => {
-    isLoading.value = true;
-    hasResult.value = false;
-  });
-
-  fetchData<VIPInfoRequest, VIPInfoResponse>(
-    "POST",
-    "/tools/VIP_info_viewer/VIP_info",
-    {
-      user_url: userURL.value,
-    },
-  ).then(({ status, data }) => {
-    if (status === fetchStatus.OK) {
-      batch(() => {
-        isLoading.value = false;
-        hasResult.value = true;
-        userName.value = data!.name;
-        VIPType.value = data!.VIP_type;
-        if (typeof data!.VIP_expire_time !== "undefined") {
-          VIPExpireTime.value = new Date(data!.VIP_expire_time * 1000);
-          VIPExpireTimeToNowHumanReadable.value =
-            data!.VIP_expire_time_to_now_human_readable!;
-        }
-      });
-    }
-  });
+  try {
+    fetchData<VIPInfoRequest, VIPInfoResponse>(
+      "POST",
+      "/tools/VIP_info_viewer/VIP_info",
+      {
+        user_url: userURL.value,
+      },
+      (data) =>
+        batch(() => {
+          userName.value = data!.name;
+          VIPType.value = data!.VIP_type;
+          if (typeof data!.VIP_expire_time !== "undefined") {
+            VIPExpireTime.value = new Date(data!.VIP_expire_time * 1000);
+            VIPExpireTimeToNowHumanReadable.value =
+              data!.VIP_expire_time_to_now_human_readable!;
+          }
+        }),
+      commonAPIErrorHandler,
+      hasResult,
+      isLoading,
+    );
+  } catch {}
 }
 
 export default function VIPInfoViewer() {
@@ -63,7 +61,7 @@ export default function VIPInfoViewer() {
   return (
     <Stack>
       <JMFTextInput label="用户个人主页链接" value={userURL} />
-      <Button onClick={handleQuery}>查询</Button>
+      <Button onClick={handleQuery} loading={isLoading.value}>查询</Button>
       {hasResult.value && (
         <>
           <Text>
@@ -85,7 +83,7 @@ export default function VIPInfoViewer() {
           </Text>
           {VIPType.value !== "无会员" && (
             <Text>
-              到期时间：剩余{getDatetime(VIPExpireTime.value!)}（
+              到期时间：{getDatetime(VIPExpireTime.value!)}（剩余{" "}
               {VIPExpireTimeToNowHumanReadable.value}）
             </Text>
           )}

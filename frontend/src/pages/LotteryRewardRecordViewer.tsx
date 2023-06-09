@@ -18,21 +18,18 @@ import {
   LotteryRecordsResponse,
 } from "../models/LotteryRewardRecordViewer/LotteryRecords";
 import { RewardResponse } from "../models/LotteryRewardRecordViewer/Rewards";
-import { fetchData, fetchStatus } from "../utils/fetchData";
+import { commonAPIErrorHandler } from "../utils/errorHandler";
+import { fetchData } from "../utils/fetchData";
 import { getDatetime } from "../utils/timeHelper";
 
 const rewards = signal<string[]>([]);
 const userURL = signal("");
 const selectedRewards = signal<string[]>([]);
-const isLoading = signal(false);
 const hasResult = signal(false);
+const isLoading = signal(false);
 const result = signal<LotteryRecordItem[]>([]);
 
 function handleQuery() {
-  if (isLoading.value) {
-    return;
-  }
-
   if (userURL.value.length === 0) {
     notifications.show({
       message: "请输入用户个人主页链接",
@@ -41,47 +38,39 @@ function handleQuery() {
     return;
   }
 
-  batch(() => {
-    isLoading.value = true;
-    hasResult.value = false;
-  });
-
-  fetchData<LotteryRecordsRequest, LotteryRecordsResponse>(
-    "POST",
-    "/tools/lottery_reward_record_viewer/lottery_records",
-    {
-      user_url: userURL.value,
-      target_rewards: selectedRewards.value,
-    },
-  ).then(({ status, data }) => {
-    if (status === fetchStatus.OK) {
-      batch(() => {
-        isLoading.value = false;
-        hasResult.value = true;
-        result.value = data!.records;
-      });
-    }
-  });
+  try {
+    fetchData<LotteryRecordsRequest, LotteryRecordsResponse>(
+      "POST",
+      "/tools/lottery_reward_record_viewer/lottery_records",
+      {
+        user_url: userURL.value,
+        target_rewards: selectedRewards.value,
+      },
+      (data) => (result.value = data.records),
+      commonAPIErrorHandler,
+      hasResult,
+      isLoading,
+    );
+  } catch {}
 }
 
 export default function LotteryRewardRecordViewer() {
   useEffect(() => {
-    fetchData<{}, RewardResponse>(
-      "GET",
-      "/tools/lottery_reward_record_viewer/rewards",
-      {},
-    ).then(({ status, data }) => {
-      if (status === fetchStatus.OK) {
-        batch(() => {
-          rewards.value = data!.rewards;
-          selectedRewards.value = data!.rewards.map((item) =>
-            item.replace(" ", ""),
-          );
-        });
-      } else {
-        isLoading.value = false;
-      }
-    });
+    try {
+      fetchData<{}, RewardResponse>(
+        "GET",
+        "/tools/lottery_reward_record_viewer/rewards",
+        {},
+        (data) =>
+          batch(() => {
+            rewards.value = data!.rewards;
+            selectedRewards.value = data!.rewards.map((item) =>
+              item.replace(" ", ""),
+            );
+          }),
+        commonAPIErrorHandler,
+      );
+    } catch {}
   }, []);
 
   return (
@@ -105,15 +94,9 @@ export default function LotteryRewardRecordViewer() {
       ) : (
         <Skeleton height={64} />
       )}
-      {isLoading.value ? (
-        <Button loading fullWidth>
+        <Button onClick={handleQuery} loading={isLoading.value}>
           查询
         </Button>
-      ) : (
-        <Button onClick={handleQuery} fullWidth>
-          查询
-        </Button>
-      )}
       {hasResult.value &&
         (result.value.length !== 0 ? (
           <Table captionSide="bottom">

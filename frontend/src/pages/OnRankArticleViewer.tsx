@@ -7,7 +7,7 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { batch, signal } from "@preact/signals";
+import { signal } from "@preact/signals";
 import JMFAutocomplete from "../components/JMFAutocomplete";
 import {
   OnRankRecordItem,
@@ -18,7 +18,8 @@ import {
   UserNameAutocompleteRequest,
   UserNameAutocompleteResponse,
 } from "../models/OnRankArticleViewer/UserNameAutocomplete";
-import { fetchData, fetchStatus } from "../utils/fetchData";
+import { commonAPIErrorHandler } from "../utils/errorHandler";
+import { fetchData } from "../utils/fetchData";
 import { getDate } from "../utils/timeHelper";
 
 const userURLOrUserName = signal("");
@@ -39,15 +40,17 @@ function handleCompleteItemUpdate(value: string) {
     return;
   }
 
-  fetchData<UserNameAutocompleteRequest, UserNameAutocompleteResponse>(
-    "POST",
-    "/tools/on_rank_article_viewer/user_name_autocomplete",
-    { name_part: value },
-  ).then(({ status, data }) => {
-    if (status === fetchStatus.OK) {
-      completeItems.value = data!.possible_names;
-    }
-  });
+  try {
+    fetchData<UserNameAutocompleteRequest, UserNameAutocompleteResponse>(
+      "POST",
+      "/tools/on_rank_article_viewer/user_name_autocomplete",
+      {
+        name_part: value,
+      },
+      (data) => (completeItems.value = data.possible_names),
+      commonAPIErrorHandler,
+    );
+  } catch {}
 }
 
 function handleQuery() {
@@ -59,28 +62,21 @@ function handleQuery() {
     return;
   }
 
-  batch(() => {
-    isLoading.value = true;
-    hasResult.value = false;
-  });
-
   const requestBody: OnRankRecordsRequest = isURL(userURLOrUserName.value)
     ? { user_url: userURLOrUserName.value }
     : { user_name: userURLOrUserName.value };
 
-  fetchData<OnRankRecordsRequest, OnRankRecordsResponse>(
-    "POST",
-    "/tools/on_rank_article_viewer/on_rank_records",
-    requestBody,
-  ).then(({ status, data }) => {
-    if (status === fetchStatus.OK) {
-      batch(() => {
-        isLoading.value = false;
-        hasResult.value = true;
-        result.value = data!.records;
-      });
-    }
-  });
+  try {
+    fetchData<OnRankRecordsRequest, OnRankRecordsResponse>(
+      "POST",
+      "/tools/on_rank_article_viewer/on_rank_records",
+      requestBody,
+      (data) => (result.value = data.records),
+      commonAPIErrorHandler,
+      hasResult,
+      isLoading,
+    );
+  } catch {}
 }
 
 export default function OnRankArticleViewer() {
@@ -94,15 +90,9 @@ export default function OnRankArticleViewer() {
         onValueChange={handleCompleteItemUpdate}
         completeItems={completeItems}
       />
-      {isLoading.value ? (
-        <Button loading fullWidth>
+        <Button onClick={handleQuery} loading={isLoading.value}>
           查询
         </Button>
-      ) : (
-        <Button onClick={handleQuery} fullWidth>
-          查询
-        </Button>
-      )}
       {hasResult.value &&
         (result.value.length !== 0 ? (
           <Table captionSide="bottom">

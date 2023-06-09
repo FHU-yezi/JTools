@@ -1,5 +1,3 @@
-import axios from "axios";
-
 import { Notifications } from "@mantine/notifications";
 import { ErrorBoundary } from "react-error-boundary";
 import { AiOutlineSearch } from "react-icons/ai";
@@ -17,11 +15,6 @@ import { SpotlightProvider } from "@mantine/spotlight";
 import { useLocalStorage } from "@mantine/hooks";
 import React, { render } from "preact/compat";
 import App from "./App";
-import { getBaseURL } from "./utils/URLHelper";
-
-axios.defaults.baseURL = getBaseURL() + "/api";
-axios.defaults.timeout = 5000;
-axios.defaults.maxRedirects = 0;
 
 function Main() {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({

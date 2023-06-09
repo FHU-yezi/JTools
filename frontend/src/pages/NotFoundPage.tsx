@@ -20,7 +20,7 @@ export default function NotFoundPage() {
           啊呀，没有找到这个页面
         </Title>
         <Text>您要找的小工具可能不存在或已经下线。</Text>
-        <Button fullWidth variant="light" onClick={() => setLocation("/")}>
+        <Button variant="light" onClick={() => setLocation("/")}>
           返回首页
         </Button>
       </Stack>

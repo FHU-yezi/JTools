@@ -6,12 +6,13 @@ import {
   ArticleDataRequest,
   ArticleDataRqsponse,
 } from "../models/ArticlePublishTimeViewer/ArticleData";
-import { fetchData, fetchStatus } from "../utils/fetchData";
+import { commonAPIErrorHandler } from "../utils/errorHandler";
+import { fetchData } from "../utils/fetchData";
 import { getDatetime } from "../utils/timeHelper";
 
 const articleURL = signal("");
-const isLoading = signal(false);
 const hasResult = signal(false);
+const isLoading = signal(false);
 const articleTitle = signal("");
 const isUpdated = signal<boolean | undefined>(undefined);
 const publishTime = signal<Date | undefined>(undefined);
@@ -20,10 +21,6 @@ const updateTime = signal<Date | undefined>(undefined);
 const updateTimeToNowHumanReadable = signal("");
 
 function handleQuery() {
-  if (isLoading.value) {
-    return;
-  }
-
   if (articleURL.value.length === 0) {
     notifications.show({
       message: "请输入文章链接",
@@ -32,50 +29,39 @@ function handleQuery() {
     return;
   }
 
-  batch(() => {
-    isLoading.value = true;
-    hasResult.value = false;
-  });
-
-  fetchData<ArticleDataRequest, ArticleDataRqsponse>(
-    "POST",
-    "/tools/article_publish_time_viewer/article_data",
-    {
-      article_url: articleURL.value,
-    },
-  ).then(({ status, data }) => {
-    if (status === fetchStatus.OK) {
-      batch(() => {
-        isLoading.value = false;
-        hasResult.value = true;
-        articleTitle.value = data!.title;
-        isUpdated.value = data!.is_updated;
-        publishTime.value = new Date(data!.publish_time * 1000);
-        publishTimeToNowHumanReadable.value =
-          data!.publish_time_to_now_human_readable;
-        updateTime.value = new Date(data!.update_time * 1000);
-        updateTimeToNowHumanReadable.value =
-          data!.update_time_to_now_human_readable;
-      });
-    } else {
-      isLoading.value = false;
-    }
-  });
+  try {
+    fetchData<ArticleDataRequest, ArticleDataRqsponse>(
+      "POST",
+      "/tools/article_publish_time_viewer/article_data",
+      {
+        article_url: articleURL.value,
+      },
+      (data) => {
+        batch(() => {
+          articleTitle.value = data.title;
+          isUpdated.value = data.is_updated;
+          publishTime.value = new Date(data.publish_time * 1000);
+          publishTimeToNowHumanReadable.value =
+            data.publish_time_to_now_human_readable;
+          updateTime.value = new Date(data.update_time * 1000);
+          updateTimeToNowHumanReadable.value =
+            data.update_time_to_now_human_readable;
+        });
+      },
+      commonAPIErrorHandler,
+      hasResult,
+      isLoading,
+    );
+  } catch {}
 }
 
 export default function ArticlePublishTimeViewer() {
   return (
     <Stack>
       <JMFTextInput label="文章链接" value={articleURL} />
-      {isLoading.value ? (
-        <Button loading fullWidth>
-          查询
-        </Button>
-      ) : (
-        <Button onClick={handleQuery} fullWidth>
-          查询
-        </Button>
-      )}
+      <Button onClick={handleQuery} loading={isLoading.value}>
+        查询
+      </Button>
       {hasResult.value && (
         <Card padding="lg" shadow="xs" radius="lg" withBorder>
           <Text>标题：{articleTitle.value}</Text>

@@ -1,100 +1,104 @@
 import { notifications } from "@mantine/notifications";
-import axios, { AxiosError, AxiosRequestConfig } from "axios";
+import { Signal } from "@preact/signals";
 import { Response } from "../models/base";
+import { getBaseURL } from "./URLHelper";
 
-export enum fetchStatus {
-  REQUEST_ERROR = 0,
-  NO_RESPONSE = 1,
-  HTTP_CODE_ERROR = 2,
-  API_CODE_ERROR = 3,
-  OK = 4,
-}
+const baseURL = getBaseURL();
+const defaultTimeout = 5000;
 
-interface fetchResult<TData> {
-  status: fetchStatus;
-  httpCode?: number;
-  apiCode?: number;
-  message?: string;
-  data?: TData;
-}
-
-export async function fetchData<TReq, TRes>(
+export async function fetchData<TRequest, TResponse>(
   method: "GET" | "POST",
   url: string,
-  data?: TReq,
+  data?: TRequest,
+  onOK?: (data: TResponse) => void,
+  onError?: (code: number, message: string) => void,
+  hasResult?: Signal<boolean>,
+  isLoading?: Signal<boolean>,
   timeout?: number,
-): Promise<fetchResult<TRes>> {
-  const reqConfig: AxiosRequestConfig = {
-    method: method,
-    url: url,
-    timeout: timeout,
-  };
-  if (method === "GET") {
-    reqConfig.params = data;
-  } else {
-    reqConfig.data = data;
+) {
+  if (hasResult) {
+    hasResult.value = false;
   }
-  return axios<Response<TRes>>(reqConfig)
-    .then((res) => {
-      if (res.data.ok) {
-        // 正常
-        return {
-          status: fetchStatus.OK,
-          httpCode: res.status,
-          apiCode: res.data.code,
-          message: res.data.message,
-          data: res.data.data,
-        };
-      } else {
-        // API Code 异常
-        notifications.show({
-          title: "API 请求异常",
-          message: `${res.data.message}（ API ${res.data.code}）`,
-          color: "red",
-        });
-        return {
-          status: fetchStatus.API_CODE_ERROR,
-          httpCode: res.status,
-          apiCode: res.data.code,
-          message: res.data.message,
-          data: res.data.data,
-        };
-      }
-    })
-    .catch((err: AxiosError<TRes>) => {
-      if (err.response) {
-        // HTTP 状态码异常
-        const res = err.response;
-        let errName = "未知异常";
-        if (300 <= res.status && res.status <= 399) {
-          errName = "意料外的重定向";
-        } else if (400 <= res.status && res.status <= 499) {
-          errName = "客户端错误";
-        } else if (500 <= res.status && res.status <= 599) {
-          errName = "服务端错误";
-        }
-        notifications.show({
-          title: "API 请求异常",
-          message: `${errName}（HTTP ${res.status} ${res.statusText}）`,
-          color: "red",
-        });
-        return { status: fetchStatus.HTTP_CODE_ERROR, httpCode: res.status };
-      } else if (err.request) {
-        // 请求超时
-        notifications.show({
-          title: "API 请求异常",
-          message: `请求超时（${err.message}）`,
-          color: "red",
-        });
-        return { status: fetchStatus.NO_RESPONSE };
-      } else {
-        // 请求构建失败
-        notifications.show({
-          title: "API 请求异常",
-          message: `请求发送失败（${err.message}）`,
-          color: "red",
-        });
-        return { status: fetchStatus.REQUEST_ERROR };
-      }
+  if (isLoading) {
+    // 如果数据正在加载，不再发起新的请求
+    if (isLoading.value === true) {
+      return;
+    } else {
+      isLoading.value = true;
+    }
+  }
+
+  url = baseURL + "/api" + url;
+  if (method === "GET" && typeof data !== "undefined") {
+    const params: string[] = [];
+    Object.entries(data as object).forEach(([key, value]) =>
+      params.push(`${key}=${value}`),
+    );
+    url = url + "?" + params.join("&");
+  }
+
+  let response;
+  const controller = new AbortController();
+  try {
+    const timeoutID = setTimeout(() => controller.abort(), timeout ?? defaultTimeout);
+    response = await fetch(url, {
+      method: method,
+      headers:
+        method !== "GET" ? { "Content-Type": "application/json" } : undefined,
+      body: method !== "GET" ? JSON.stringify(data) : undefined,
+      credentials: "omit",
+      redirect: "error",
+      signal: controller.signal,
     });
+    clearTimeout(timeoutID);
+  } catch (error) {
+    if (isLoading) {
+      isLoading.value = false;
+    }
+    if ((error as any).name === "AbortError") {
+      notifications.show({
+        title: `请求超时（${timeout ?? defaultTimeout}ms）`,
+        message: "请尝试刷新页面，如该问题反复出现，请向开发者反馈",
+        color: "red",
+      });
+      throw new Error("请求超时");
+    }
+    notifications.show({
+      title: "网络异常",
+      message: "请尝试刷新页面，如该问题反复出现，请向开发者反馈",
+      color: "red",
+    });
+    throw new Error("网络异常");
+  }
+
+  if (!response.ok) {
+    if (isLoading) {
+      isLoading.value = false;
+    }
+    notifications.show({
+      title: "API 请求失败",
+      message: `HTTP ${response.status}（${response.statusText}）`,
+      color: "red",
+    });
+    throw new Error(
+      `API 请求失败：HTTP ${response.status}（${response.statusText}）`,
+    );
+  } else {
+    const responseJSON = (await response.json()) as Response<TResponse>;
+    if (responseJSON.ok) {
+      if (onOK) {
+        onOK(responseJSON.data);
+        if (hasResult) {
+          hasResult.value = true;
+        }
+      }
+    } else {
+      if (onError) {
+        onError(responseJSON.code, responseJSON.message);
+      }
+    }
+    if (isLoading) {
+      isLoading.value = false;
+    }
+  }
 }

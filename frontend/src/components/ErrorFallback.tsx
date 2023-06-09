@@ -11,11 +11,13 @@ import { BiError } from "react-icons/bi";
 import { useLocation } from "wouter-preact";
 
 interface Props {
-  error: any;
+  error: Error;
 }
 
 export default function ErrorFallback({ error }: Props) {
   const [, setLocation] = useLocation();
+
+  console.error(`${error.name}: ${error.message}` + "\n" + error.stack);
 
   return (
     <Center>
