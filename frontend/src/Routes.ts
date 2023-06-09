@@ -30,7 +30,7 @@ export const routes: RouteItem[] = [
   },
   {
     component: lazy(() => import("./pages/URLSchemeConvertor")),
-    path: "/url_scheme_convertor",
+    path: "/URL_scheme_convertor",
     toolName: "URL Scheme 转换工具",
     description: "将简书网页链接转换成 URL Scheme，以实现跳转 App 打开。",
   },
@@ -45,6 +45,12 @@ export const routes: RouteItem[] = [
     path: "/lottery_analyzer",
     toolName: "抽奖分析工具",
     description: "分析简书大转盘中奖数据。",
+  },
+  {
+    component: lazy(() => import("./pages/LPRecommendChecker")),
+    path: "/LP_recommend_checker",
+    toolName: "LP 理事会推文检测工具",
+    description: "检测文章是否符合 LP 理事会推荐标准。",
   },
 ];
 
