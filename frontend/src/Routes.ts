@@ -52,6 +52,12 @@ export const routes: RouteItem[] = [
     toolName: "LP 理事会推文检测工具",
     description: "检测文章是否符合 LP 理事会推荐标准。",
   },
+  {
+    component: lazy(() => import("./pages/ArticleWordcloudGenerator")),
+    path: "/article_wordcloud_generator",
+    toolName: "文章词云图生成工具",
+    description: "生成文章词云图。",
+  },
 ];
 
 export const spotlightActions: SpotlightAction[] = routes.map((item) => ({
