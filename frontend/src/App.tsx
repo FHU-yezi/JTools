@@ -1,9 +1,11 @@
 import { Suspense, lazy } from "preact/compat";
 import { Route, Switch } from "wouter-preact";
-import { routes } from "./Routes";
 import Loading from "./components/Loading";
 import ToolWrapper from "./components/ToolWrapper";
 import MainPage from "./pages/MainPage";
+import V2UnavaliablePage from "./pages/V2UnavaliablePage";
+import V2UnimplementedPage from "./pages/V2UnimplementedPage";
+import { routes } from "./routes";
 
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 
@@ -21,6 +23,16 @@ export default function App() {
           />
         </Route>
       ))}
+      <Route path="/v2-unimplemented">
+        <Suspense fallback={<Loading />}>
+          <V2UnimplementedPage />
+        </Suspense>
+      </Route>
+      <Route path="/v2-unavaliable">
+        <Suspense fallback={<Loading />}>
+          <V2UnavaliablePage />
+        </Suspense>
+      </Route>
       <Route>
         <Suspense fallback={<Loading />}>
           <NotFoundPage />

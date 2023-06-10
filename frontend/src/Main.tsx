@@ -13,7 +13,7 @@ import { SpotlightProvider } from "@mantine/spotlight";
 import { useLocalStorage } from "@mantine/hooks";
 import React, { render } from "preact/compat";
 import App from "./App";
-import { spotlightActions } from "./Routes";
+import { spotlightActions } from "./routes";
 import ErrorFallback from "./components/ErrorFallback";
 
 function Main() {

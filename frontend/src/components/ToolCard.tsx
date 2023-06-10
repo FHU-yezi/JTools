@@ -3,7 +3,7 @@ import {
 } from "@mantine/core";
 import { AiOutlineArrowRight } from "react-icons/ai";
 import { useLocation } from "wouter-preact";
-import { RouteItem } from "../Routes";
+import { RouteItem } from "../routes";
 
 export default function ToolCard({ toolName, path, description }: RouteItem) {
   const [, setLocation] = useLocation();
