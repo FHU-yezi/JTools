@@ -11,10 +11,22 @@ export interface RouteItem {
 
 export const routes: RouteItem[] = [
   {
-    component: lazy(() => import("./pages/ArticlePublishTimeViewer")),
-    path: "/article_publish_time_viewer",
-    toolName: "文章发布时间查询工具",
-    description: "查询文章的发布与更新时间。",
+    component: lazy(() => import("./pages/LPRecommendChecker")),
+    path: "/LP_recommend_checker",
+    toolName: "LP 理事会推文检测工具",
+    description: "检测文章是否符合 LP 理事会推荐标准。",
+  },
+  {
+    component: lazy(() => import("./pages/OnRankArticleViewer")),
+    path: "/on_rank_article_viewer",
+    toolName: "上榜文章查询工具",
+    description: "查询文章上榜历史。",
+  },
+  {
+    component: lazy(() => import("./pages/JPEPFTNMacketAnalyzer")),
+    path: "/JPEP_FTN_market_analyzer",
+    toolName: "积分兑换平台贝市分析工具",
+    description: "分析简书积分兑换平台贝市数据。",
   },
   {
     component: lazy(() => import("./pages/LotteryRewardRecordViewer")),
@@ -23,10 +35,22 @@ export const routes: RouteItem[] = [
     description: "查询简书大转盘中奖记录。",
   },
   {
-    component: lazy(() => import("./pages/OnRankArticleViewer")),
-    path: "/on_rank_article_viewer",
-    toolName: "上榜文章查询工具",
-    description: "查询文章上榜历史。",
+    component: lazy(() => import("./pages/LotteryAnalyzer")),
+    path: "/lottery_analyzer",
+    toolName: "抽奖分析工具",
+    description: "分析简书大转盘中奖数据。",
+  },
+  {
+    component: lazy(() => import("./pages/ArticlePublishTimeViewer")),
+    path: "/article_publish_time_viewer",
+    toolName: "文章发布时间查询工具",
+    description: "查询文章的发布与更新时间。",
+  },
+  {
+    component: lazy(() => import("./pages/ArticleWordcloudGenerator")),
+    path: "/article_wordcloud_generator",
+    toolName: "文章词云图生成工具",
+    description: "生成文章词云图。",
   },
   {
     component: lazy(() => import("./pages/URLSchemeConvertor")),
@@ -39,30 +63,6 @@ export const routes: RouteItem[] = [
     path: "/VIP_info_viewer",
     toolName: "会员信息查询工具",
     description: "查询简书会员等级和过期时间。",
-  },
-  {
-    component: lazy(() => import("./pages/LotteryAnalyzer")),
-    path: "/lottery_analyzer",
-    toolName: "抽奖分析工具",
-    description: "分析简书大转盘中奖数据。",
-  },
-  {
-    component: lazy(() => import("./pages/LPRecommendChecker")),
-    path: "/LP_recommend_checker",
-    toolName: "LP 理事会推文检测工具",
-    description: "检测文章是否符合 LP 理事会推荐标准。",
-  },
-  {
-    component: lazy(() => import("./pages/ArticleWordcloudGenerator")),
-    path: "/article_wordcloud_generator",
-    toolName: "文章词云图生成工具",
-    description: "生成文章词云图。",
-  },
-  {
-    component: lazy(() => import("./pages/JPEPFTNMacketAnalyzer")),
-    path: "/JPEP_FTN_market_analyzer",
-    toolName: "积分兑换平台贝市分析工具",
-    description: "分析简书积分兑换平台贝市数据。",
   },
 ];
 
