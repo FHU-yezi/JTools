@@ -85,6 +85,7 @@ export default function OnRankArticleViewer() {
       <JMFAutocomplete
         label="用户昵称 / 个人主页链接"
         value={userURLOrUserName}
+        onEnter={handleQuery}
         onValueChange={handleCompleteItemUpdate}
         completeItems={completeItems}
       />

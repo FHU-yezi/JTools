@@ -59,7 +59,7 @@ function handleQuery() {
 export default function VIPInfoViewer() {
   return (
     <Stack>
-      <JMFTextInput label="用户个人主页链接" value={userURL} />
+      <JMFTextInput label="用户个人主页链接" value={userURL} onEnter={handleQuery} />
       <Button onClick={handleQuery} loading={isLoading.value}>查询</Button>
       {hasResult.value && (
         <>

@@ -72,7 +72,7 @@ export default function LotteryRewardRecordViewer() {
 
   return (
     <Stack>
-      <JMFTextInput label="用户个人主页链接" value={userURL} />
+      <JMFTextInput label="用户个人主页链接" value={userURL} onEnter={handleQuery} />
       {rewards.value.length !== 0 ? (
         <>
           <Text fw={600}>奖项筛选</Text>

@@ -55,7 +55,7 @@ function handleCheck() {
 export default function LPRecommendChecker() {
   return (
     <Stack>
-      <JMFTextInput label="文章链接" value={articleURL} />
+      <JMFTextInput label="文章链接" value={articleURL} onEnter={handleCheck} />
       <Button onClick={handleCheck} loading={isLoading.value}>查询</Button>
       {hasResult.value && (
         <>

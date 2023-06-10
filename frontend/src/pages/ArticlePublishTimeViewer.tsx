@@ -58,7 +58,7 @@ function handleQuery() {
 export default function ArticlePublishTimeViewer() {
   return (
     <Stack>
-      <JMFTextInput label="文章链接" value={articleURL} />
+      <JMFTextInput label="文章链接" value={articleURL} onEnter={handleQuery} />
       <Button onClick={handleQuery} loading={isLoading.value}>
         查询
       </Button>

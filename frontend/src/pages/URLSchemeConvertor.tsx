@@ -110,7 +110,7 @@ export default function URLSchemeConvertor() {
 
   return (
     <Stack>
-      <JMFTextInput label="简书链接" value={jianshuURL} />
+      <JMFTextInput label="简书链接" value={jianshuURL} onEnter={handleConvert} />
       <Button onClick={handleConvert}>转换</Button>
       {hasResult.value && (
         <Center>

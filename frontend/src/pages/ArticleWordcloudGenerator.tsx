@@ -75,7 +75,7 @@ function Wordcloud({ data }: WordcloudProps) {
 export default function ArticleWordcloudGenerator() {
   return (
     <Stack>
-      <JMFTextInput label="文章链接" value={articleURL} />
+      <JMFTextInput label="文章链接" value={articleURL} onEnter={handleGenerate} />
       <Button onClick={handleGenerate} loading={isLoading.value}>查询</Button>
       {hasResult.value && (
       <>

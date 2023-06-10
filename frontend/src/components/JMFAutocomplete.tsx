@@ -6,6 +6,7 @@ import { useEffect } from "preact/hooks";
 interface Props {
   label: string;
   value: Signal<string>;
+  onEnter?: () => void;
   // eslint-disable-next-line no-unused-vars
   onValueChange: (value: string) => void;
   completeItems: Signal<string[]>;
@@ -15,6 +16,7 @@ interface Props {
 export default function JMFAutocomplete({
   label,
   value,
+  onEnter,
   onValueChange,
   completeItems,
   debounceTime = 300,
@@ -34,6 +36,7 @@ export default function JMFAutocomplete({
         onChange={(newValue: string) => {
           value.value = newValue;
         }}
+        onKeyUp={onEnter ? (event: any) => (event.key === "Enter" && onEnter()) : undefined}
         data={completeItems.value}
         aria-label={label}
       />
