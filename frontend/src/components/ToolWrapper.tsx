@@ -1,4 +1,4 @@
-import { JSX, Suspense } from "preact/compat";
+import { JSX, Suspense, useEffect } from "preact/compat";
 import Header from "./Header";
 import Loading from "./Loading";
 
@@ -8,6 +8,9 @@ interface Props {
 }
 
 export default function ToolWrapper({ Component, toolName }: Props) {
+  // 处理部分情况下页面切换后不在顶部的问题
+  useEffect(() => window.scrollTo(0, 0));
+
   return (
     <>
       <header
