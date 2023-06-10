@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import Dict, List, Literal, Optional
 
 from sanic import Blueprint, HTTPResponse, Request
@@ -7,6 +7,7 @@ from sspeedup.api import CODE, sanic_response_json
 from utils.db import lottery_db
 from utils.inject_data_model import inject_data_model
 from utils.pydantic_base import BaseModel
+from utils.time_helper import get_data_start_time
 
 REWARDS: Dict[str, str] = {
     "收益加成卡100": "收益加成卡 100",
@@ -27,26 +28,6 @@ TEXT_TO_TIMEDELTA: Dict[str, Optional[timedelta]] = {
 lottery_analyzer_blueprint = Blueprint(
     "lottery_analyzer", url_prefix="/lottery_analyzer"
 )
-
-
-def get_data_start_time(td: Optional[timedelta] = None) -> datetime:
-    """根据当前时间获取数据起始时间，当参数 td 为 None 时返回 1970-1-1，代表全部数据
-
-    Args:
-        td (Optional[timedelta], optional): 与现在的时间差. Defaults to None.
-
-    Returns:
-        datetime: 数据起始时间
-    """
-    return (
-        datetime.now() - td
-        if td
-        else datetime(
-            year=1970,
-            month=1,
-            day=1,
-        )
-    )
 
 
 def get_all_rewards_wins_count(td: Optional[timedelta]) -> Dict[str, int]:

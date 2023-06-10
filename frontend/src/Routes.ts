@@ -58,6 +58,12 @@ export const routes: RouteItem[] = [
     toolName: "文章词云图生成工具",
     description: "生成文章词云图。",
   },
+  {
+    component: lazy(() => import("./pages/JPEPFTNMacketAnalyzer")),
+    path: "/JPEP_FTN_market_analyzer",
+    toolName: "积分兑换平台贝市分析工具",
+    description: "分析简书积分兑换平台贝市数据。",
+  },
 ];
 
 export const spotlightActions: SpotlightAction[] = routes.map((item) => ({

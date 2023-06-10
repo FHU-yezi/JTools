@@ -20,7 +20,7 @@ export default function MainPage() {
         <Header toolName="简书小工具集" showBackArrow={false} />
       </header>
       <div style={{ height: "4em" }} />
-      <Stack>
+      <Stack mb={32}>
         {routes.map((item) => (
           <ToolCard
             key={item.toolName}
