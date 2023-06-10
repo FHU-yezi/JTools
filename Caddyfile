@@ -12,7 +12,7 @@
 
 :8602 {
     handle {
-        header Content-Security-Policy "default-src 'self' 'unsafe-inline'"
+        header Content-Security-Policy "default-src 'self' wa.sscreator.com 'unsafe-inline'"
 
         root * ./static
         try_files {path} /index.html
