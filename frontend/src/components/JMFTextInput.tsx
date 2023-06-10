@@ -14,6 +14,7 @@ export default function JMFTextInput({ label, value }: Props) {
         mt={6}
         value={value.value}
         onChange={(event: any) => (value.value = event.currentTarget.value)}
+        aria-label={label}
       />
     </div>
   );

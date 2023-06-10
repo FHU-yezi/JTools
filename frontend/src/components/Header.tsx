@@ -37,7 +37,7 @@ export default function Header({ toolName, showBackArrow }: Props) {
     >
       <Group noWrap>
         {showBackArrow && (
-          <ActionIcon onClick={() => setLocation("/")}>
+          <ActionIcon onClick={() => setLocation("/")} aria-label="Back">
             <IoIosArrowBack size={22} />
           </ActionIcon>
         )}
@@ -55,7 +55,7 @@ export default function Header({ toolName, showBackArrow }: Props) {
         </Text>
       </Group>
       <Group position="right" noWrap>
-        <ActionIcon onClick={spotlight.open}>
+        <ActionIcon onClick={spotlight.open} aria-label="Search">
           <AiOutlineSearch size={22} />
         </ActionIcon>
         <Switch
@@ -68,6 +68,7 @@ export default function Header({ toolName, showBackArrow }: Props) {
             toggleColorScheme();
             umamiTrack("toggle-color-scheme");
           }}
+          aria-label="Toggle Color Scheme"
         />
       </Group>
     </Group>

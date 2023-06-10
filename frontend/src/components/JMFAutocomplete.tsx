@@ -35,6 +35,7 @@ export default function JMFAutocomplete({
           value.value = newValue;
         }}
         data={completeItems.value}
+        aria-label={label}
       />
     </div>
   );
