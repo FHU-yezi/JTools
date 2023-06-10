@@ -94,9 +94,7 @@ def on_rank_records_handler(
         try:
             AssertUserUrl(data.user_url)
         except InputError:
-            return sanic_response_json(
-                code=CODE.BAD_ARGUMENTS, message="user_url 不是有效的简书用户链接"
-            )
+            return sanic_response_json(code=CODE.BAD_ARGUMENTS, message="输入的用户个人主页链接无效")
 
     fliter: Dict[str, Any] = (
         {"author.name": data.user_name}

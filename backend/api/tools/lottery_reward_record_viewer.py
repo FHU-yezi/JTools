@@ -54,15 +54,15 @@ class LotteryRecordsResponse(BaseModel):
 
 @lottery_reward_record_viewer_blueprint.post("/lottery_records")
 @inject_data_model(LotteryRecordsRequest)
-def lottery_records_handler(request: Request, data: LotteryRecordsRequest) -> HTTPResponse:
+def lottery_records_handler(
+    request: Request, data: LotteryRecordsRequest
+) -> HTTPResponse:
     del request
 
     try:
         AssertUserUrl(data.user_url)
     except InputError:
-        return sanic_response_json(
-            code=CODE.BAD_ARGUMENTS, message="user_url 不是有效的简书用户链接"
-        )
+        return sanic_response_json(code=CODE.BAD_ARGUMENTS, message="输入的简书用户个人主页链接无效")
 
     result: List[Dict] = (
         lottery_db.find(

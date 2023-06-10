@@ -135,18 +135,14 @@ def check_handler(request: Request, data: CheckRequest) -> HTTPResponse:
     del request
 
     if not data.article_url:
-        return sanic_response_json(code=CODE.BAD_ARGUMENTS, message="article_url 不能为空")
+        return sanic_response_json(code=CODE.BAD_ARGUMENTS, message="请输入文章链接")
 
     try:
         article = Article.from_url(data.article_url)
     except InputError:
-        return sanic_response_json(
-            code=CODE.BAD_ARGUMENTS, message="article_url 不是有效的简书文章链接"
-        )
+        return sanic_response_json(code=CODE.BAD_ARGUMENTS, message="输入的文章链接无效")
     except ResourceError:
-        return sanic_response_json(
-            code=CODE.BAD_ARGUMENTS, message="article_url 对应的简书文章已被删除 / 锁定"
-        )
+        return sanic_response_json(code=CODE.BAD_ARGUMENTS, message="文章已被私密、锁定或删除")
 
     title = article.title
     release_time = article.publish_time

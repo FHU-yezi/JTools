@@ -36,13 +36,9 @@ def VIP_info_handler(  # noqa: N802
     try:
         user = User.from_url(data.user_url)
     except InputError:
-        return sanic_response_json(
-            code=CODE.BAD_ARGUMENTS, message="user_url 不是有效的简书用户个人主页链接"
-        )
+        return sanic_response_json(code=CODE.BAD_ARGUMENTS, message="输入的简书个人主页链接无效")
     except ResourceError:
-        return sanic_response_json(
-            code=CODE.BAD_ARGUMENTS, message="user_url 对应的简书用户不存在"
-        )
+        return sanic_response_json(code=CODE.BAD_ARGUMENTS, message="用户已注销或被封禁")
 
     name = user.name
     VIP_info = user.VIP_info  # noqa: N806
