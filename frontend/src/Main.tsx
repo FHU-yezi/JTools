@@ -1,6 +1,7 @@
 import { Notifications } from "@mantine/notifications";
 import { ErrorBoundary } from "react-error-boundary";
 import { AiOutlineSearch } from "react-icons/ai";
+import { install } from "resize-observer";
 
 import {
   Box,
@@ -13,8 +14,13 @@ import { SpotlightProvider } from "@mantine/spotlight";
 import { useLocalStorage } from "@mantine/hooks";
 import React, { render } from "preact/compat";
 import App from "./App";
-import { spotlightActions } from "./routes";
 import ErrorFallback from "./components/ErrorFallback";
+import { spotlightActions } from "./routes";
+
+// 处理 Safari 浏览器上的 ResizeObserver 兼容性问题
+if (!window.ResizeObserver) {
+  install();
+}
 
 function Main() {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
