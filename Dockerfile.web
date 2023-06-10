@@ -1,4 +1,4 @@
-FROM node:19.8-alpine3.16 AS build
+FROM node:20.3.0-alpine3.18 AS build
 
 WORKDIR /app
 
@@ -6,13 +6,13 @@ RUN npm install -g pnpm
 
 COPY frontend/package.json /app
 
-RUN pnpm install --loglevel warn
+RUN pnpm install --prod
 
 COPY frontend /app
 
-RUN pnpm build -l warn
+RUN pnpm build
 
-FROM caddy:2.6.3-alpine
+FROM caddy:2.6.4-alpine
 
 WORKDIR /app
 

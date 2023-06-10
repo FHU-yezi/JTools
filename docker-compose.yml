@@ -1,7 +1,7 @@
 version: "3"
 
 networks:
-  jtoolsinternal:
+  internal:
   mongodb:
     external: true
   cutup:
@@ -17,7 +17,7 @@ services:
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
     networks:
-      - jtoolsinternal
+      - internal
     deploy:
       resources:
         limits:
@@ -35,7 +35,7 @@ services:
     volumes:
       - ./backend/config.yaml:/app/config.yaml:ro
     networks:
-      - jtoolsinternal
+      - internal
       - mongodb
       - cutup
     environment:
