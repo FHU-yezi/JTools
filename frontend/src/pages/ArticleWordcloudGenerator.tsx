@@ -6,6 +6,7 @@ import { Signal, batch, signal } from "@preact/signals";
 import { Chart as ChartInstance, Colors, LinearScale } from "chart.js";
 import { WordCloudController, WordElement } from "chartjs-chart-wordcloud";
 import { Chart } from "react-chartjs-2";
+import ChartWrapper from "../components/ChartWrapper";
 import JMFLink from "../components/JMFLink";
 import JMFTextInput from "../components/JMFTextInput";
 import { WordFreqDataItem, WordFreqDataRequest, WordFreqDataResponse } from "../models/ArticleWordcloudGenerator/WordFreqData";
@@ -51,24 +52,20 @@ function handleGenerate() {
 
 function Wordcloud({ data }: WordcloudProps) {
   return (
-    <div style={{ overflowX: "scroll" }}>
-      <div style={{ minWidth: 800, height: 400 }}>
-        <Chart
-          type="wordCloud"
-          data={{
-            labels: Object.keys(data.value),
-            datasets: [{
-              // * 10 用来调整每个词的大小
-              data: Object.values(data.value).map((item) => item * 10),
-              color: "#EA6F5A",
-            }],
-          }}
-          options={{
-            events: [],
-          }}
-        />
-      </div>
-    </div>
+    <Chart
+      type="wordCloud"
+      data={{
+        labels: Object.keys(data.value),
+        datasets: [{
+          // * 10 用来调整每个词的大小
+          data: Object.values(data.value).map((item) => item * 10),
+          color: "#EA6F5A",
+        }],
+      }}
+      options={{
+        events: [],
+      }}
+    />
   );
 }
 
@@ -83,7 +80,9 @@ export default function ArticleWordcloudGenerator() {
           <Text>文章：</Text>
           <JMFLink url={articleURL.value} label={articleTitle.value} isExternal />
         </Center>
-        <Wordcloud data={wordFreqData} />
+        <ChartWrapper minWidth={800} height={500} allowOverflow>
+          <Wordcloud data={wordFreqData} />
+        </ChartWrapper>
       </>
       )}
     </Stack>

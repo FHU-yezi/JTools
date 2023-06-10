@@ -1,5 +1,4 @@
 import {
-  Center,
   SegmentedControl,
   Skeleton,
   Stack,
@@ -22,6 +21,7 @@ import {
 } from "chart.js";
 import { useEffect } from "preact/hooks";
 import { Line, Pie } from "react-chartjs-2";
+import ChartWrapper from "../components/ChartWrapper";
 import {
   PerPrizeDataItem,
   PerPrizeDataRequest,
@@ -170,34 +170,30 @@ function PerPrizeAnalyzeTable({ data }: PerPrizeAnalyzeTableProps) {
 
 function RewardWinsCountPie({ data }: RewardWinsCountPieProps) {
   return (
-    <Center style={{ maxHeight: 500 }}>
-      <Pie
-        data={{
-          labels: Object.keys(data.value),
-          datasets: [{ data: Object.values(data.value) }],
-        }}
-      />
-    </Center>
+    <Pie
+      data={{
+        labels: Object.keys(data.value),
+        datasets: [{ data: Object.values(data.value) }],
+      }}
+    />
   );
 }
 
 function RewardWinsTrendLine({ data }: RewardWinsTrendLineProps) {
   return (
-    <Center style={{ maxHeight: 500 }}>
-      <Line
-        data={{
-          labels: Object.keys(data.value),
-          datasets: [{ data: Object.values(data.value), cubicInterpolationMode: "monotone" }],
-        }}
-        options={{
-          plugins: {
-            legend: {
-              display: false,
-            },
+    <Line
+      data={{
+        labels: Object.keys(data.value),
+        datasets: [{ data: Object.values(data.value), cubicInterpolationMode: "monotone" }],
+      }}
+      options={{
+        plugins: {
+          legend: {
+            display: false,
           },
-        }}
-      />
-    </Center>
+        },
+      }}
+    />
   );
 }
 
@@ -244,11 +240,13 @@ export default function LotteryAnalyzer() {
         ]}
       />
       {typeof RewardWinsCountPieData.value !== "undefined" ? (
-        <RewardWinsCountPie
-          data={
+        <ChartWrapper>
+          <RewardWinsCountPie
+            data={
             RewardWinsCountPieData as unknown as Signal<RewardsWinsCountPieDataItem>
           }
-        />
+          />
+        </ChartWrapper>
       ) : (
         <Skeleton h={500} />
       )}
@@ -266,11 +264,13 @@ export default function LotteryAnalyzer() {
         ]}
       />
       {typeof RewardWinsTrendLineData.value !== "undefined" ? (
-        <RewardWinsTrendLine
-          data={
+        <ChartWrapper>
+          <RewardWinsTrendLine
+            data={
             RewardWinsTrendLineData as unknown as Signal<RewardWinsTrendLineDataItem>
           }
-        />
+          />
+        </ChartWrapper>
       ) : (
         <Skeleton h={500} />
       )}

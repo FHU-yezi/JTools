@@ -1,5 +1,5 @@
 import {
-  Center, SegmentedControl, Skeleton, Stack, Text, Title,
+  SegmentedControl, Skeleton, Stack, Text, Title,
 } from "@mantine/core";
 import { Signal, batch, signal } from "@preact/signals";
 import {
@@ -17,6 +17,7 @@ import {
 } from "chart.js";
 import { useEffect } from "preact/hooks";
 import { Line, Pie } from "react-chartjs-2";
+import ChartWrapper from "../components/ChartWrapper";
 import { DataUpdateTimeResponse } from "../models/JPEPFTNMacketAnalyzer/DataUpdateTime";
 import { PoolAmountComparePieDataResponse } from "../models/JPEPFTNMacketAnalyzer/PoolAmountComparePieData";
 import {
@@ -108,37 +109,33 @@ function handlePriceTrendLineDataFetch() {
 
 function PoolAmountComparePie({ buy, sell }: PoolAmountComparePieProps) {
   return (
-    <Center style={{ maxHeight: 500 }}>
-      <Pie
-        data={{
-          labels: ["买贝", "卖贝"],
-          datasets: [{ data: [buy.value, sell.value] }],
-        }}
-      />
-    </Center>
+    <Pie
+      data={{
+        labels: ["买贝", "卖贝"],
+        datasets: [{ data: [buy.value, sell.value] }],
+      }}
+    />
   );
 }
 
 function PriceTrendLine({ buy, sell }: PriceTrendLineProps) {
   return (
-    <Center style={{ maxHeight: 500 }}>
-      <Line
-        data={{
-          labels: Object.keys(buy.value),
-          datasets: [
-            { label: "买贝", data: Object.values(buy.value), cubicInterpolationMode: "monotone" },
-            { label: "卖贝", data: Object.values(sell.value), cubicInterpolationMode: "monotone" }],
-        }}
-        options={{
-          scales: {
-            y: {
-              suggestedMin: 0.10,
-              suggestedMax: 0.17,
-            },
+    <Line
+      data={{
+        labels: Object.keys(buy.value),
+        datasets: [
+          { label: "买贝", data: Object.values(buy.value), cubicInterpolationMode: "monotone" },
+          { label: "卖贝", data: Object.values(sell.value), cubicInterpolationMode: "monotone" }],
+      }}
+      options={{
+        scales: {
+          y: {
+            suggestedMin: 0.10,
+            suggestedMax: 0.17,
           },
-        }}
-      />
-    </Center>
+        },
+      }}
+    />
   );
 }
 
@@ -157,7 +154,9 @@ export default function JPEPFTNMarketAnalyzer() {
       </Text>
       <Title order={2}>买卖贝挂单量对比</Title>
       {buyPoolAmount.value !== 0 ? (
-        <PoolAmountComparePie buy={buyPoolAmount} sell={sellPoolAmount} />
+        <ChartWrapper>
+          <PoolAmountComparePie buy={buyPoolAmount} sell={sellPoolAmount} />
+        </ChartWrapper>
       ) : <Skeleton h={500} />}
       <Title order={2}>贝价趋势</Title>
       <SegmentedControl
@@ -174,10 +173,12 @@ export default function JPEPFTNMarketAnalyzer() {
         ]}
       />
       {typeof BuyPriceTrendLineData.value !== "undefined" ? (
-        <PriceTrendLine
-          buy={BuyPriceTrendLineData as unknown as Signal<PriceTrendLineDataItem>}
-          sell={SellPriceTrendLineData as unknown as Signal<PriceTrendLineDataItem>}
-        />
+        <ChartWrapper>
+          <PriceTrendLine
+            buy={BuyPriceTrendLineData as unknown as Signal<PriceTrendLineDataItem>}
+            sell={SellPriceTrendLineData as unknown as Signal<PriceTrendLineDataItem>}
+          />
+        </ChartWrapper>
       ) : <Skeleton h={500} />}
     </Stack>
   );
