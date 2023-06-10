@@ -12,6 +12,8 @@
 
 :8602 {
     handle {
+        header Content-Security-Policy "default-src 'self' 'unsafe-inline'"
+
         root * ./static
         try_files {path} /index.html
         file_server {
