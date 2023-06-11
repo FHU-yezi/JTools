@@ -25,7 +25,7 @@ export const routes: RouteItem[] = [
   {
     component: lazy(() => import("./pages/JPEPFTNMacketAnalyzer")),
     path: "/JPEP-FTN-market-analyzer",
-    toolName: "商城贝市场分析",
+    toolName: "商城贝市分析",
     description: "分析简书积分兑换平台贝市数据。",
   },
   {
