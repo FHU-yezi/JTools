@@ -11,6 +11,7 @@ interface Props {
   onValueChange: (value: string) => void;
   completeItems: Signal<string[]>;
   debounceTime?: number;
+  noSelectOnFocus: boolean;
 }
 
 export default function JMFAutocomplete({
@@ -20,6 +21,7 @@ export default function JMFAutocomplete({
   onValueChange,
   completeItems,
   debounceTime = 300,
+  noSelectOnFocus,
 }: Props) {
   const [debouncedValue] = useDebouncedValue(value.value, debounceTime, {
     leading: true,
@@ -37,6 +39,13 @@ export default function JMFAutocomplete({
           value.value = newValue;
         }}
         onKeyUp={onEnter ? (event: any) => (event.key === "Enter" && onEnter()) : undefined}
+        onFocus={
+          !noSelectOnFocus
+            ? (event: any) => (
+              event.currentTarget.value.length !== 0 && event.currentTarget.select()
+            )
+            : undefined
+      }
         data={completeItems.value}
         aria-label={label}
       />

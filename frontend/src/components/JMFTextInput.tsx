@@ -5,9 +5,12 @@ interface Props {
   label: string;
   value: Signal<string>;
   onEnter?: () => void;
+  noSelectOnFocus: boolean;
 }
 
-export default function JMFTextInput({ label, value, onEnter }: Props) {
+export default function JMFTextInput({
+  label, value, onEnter, noSelectOnFocus,
+}: Props) {
   return (
     <div>
       <Text fw={600}>{label}</Text>
@@ -16,6 +19,13 @@ export default function JMFTextInput({ label, value, onEnter }: Props) {
         value={value.value}
         onChange={(event: any) => (value.value = event.currentTarget.value)}
         onKeyUp={onEnter ? (event: any) => (event.key === "Enter" && onEnter()) : undefined}
+        onFocus={
+          !noSelectOnFocus
+            ? (event: any) => (
+              event.currentTarget.value.length !== 0 && event.currentTarget.select()
+            )
+            : undefined
+      }
         aria-label={label}
       />
     </div>
