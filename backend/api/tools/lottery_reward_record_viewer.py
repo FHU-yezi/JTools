@@ -81,7 +81,7 @@ def lottery_records_handler(
         code=CODE.SUCCESS,
         data=LotteryRecordsResponse(
             records=[
-                LotteryItem(time=x["time"].timestamp(), reward_name=x["reward_name"])
+                LotteryItem(time=int(x["time"].timestamp()), reward_name=x["reward_name"])
                 for x in result
             ]
         ).dict(),

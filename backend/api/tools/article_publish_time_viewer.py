@@ -54,9 +54,9 @@ def article_data_handler(request: Request, data: ArticleDataRequest) -> HTTPResp
         data=ArticleDataResponse(
             title=title,
             is_updated=is_updated,
-            publish_time=publish_time.timestamp(),
+            publish_time=int(publish_time.timestamp()),
             publish_time_to_now_human_readable=publish_time_to_now_human_readable,
-            update_time=update_time.timestamp(),
+            update_time=int(update_time.timestamp()),
             update_time_to_now_human_readable=update_time_to_now_human_readable,
         ).dict(),
     )

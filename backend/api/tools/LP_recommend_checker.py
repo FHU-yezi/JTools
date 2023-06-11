@@ -170,7 +170,7 @@ def check_handler(request: Request, data: CheckRequest) -> HTTPResponse:
         code=CODE.SUCCESS,
         data=CheckResponse(
             title=title,
-            release_time=release_time.timestamp(),
+            release_time=int(release_time.timestamp()),
             release_time_human_readable=release_time_human_readable,
             check_passed=check_passed,
             check_items=check_items,
