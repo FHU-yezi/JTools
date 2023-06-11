@@ -11,7 +11,7 @@ interface Props {
   onValueChange: (value: string) => void;
   completeItems: Signal<string[]>;
   debounceTime?: number;
-  noSelectOnFocus: boolean;
+  noSelectOnFocus?: boolean;
 }
 
 export default function JMFAutocomplete({
@@ -21,7 +21,7 @@ export default function JMFAutocomplete({
   onValueChange,
   completeItems,
   debounceTime = 300,
-  noSelectOnFocus,
+  noSelectOnFocus = false,
 }: Props) {
   const [debouncedValue] = useDebouncedValue(value.value, debounceTime, {
     leading: true,

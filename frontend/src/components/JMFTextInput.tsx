@@ -5,11 +5,11 @@ interface Props {
   label: string;
   value: Signal<string>;
   onEnter?: () => void;
-  noSelectOnFocus: boolean;
+  noSelectOnFocus?: boolean;
 }
 
 export default function JMFTextInput({
-  label, value, onEnter, noSelectOnFocus,
+  label, value, onEnter, noSelectOnFocus = false,
 }: Props) {
   return (
     <div>
