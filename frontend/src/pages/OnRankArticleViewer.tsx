@@ -115,11 +115,13 @@ function ResultTable() {
           accessor: "date",
           title: "日期",
           sortable: true,
+          noWrap: true,
           render: (record) => (getDate(new Date(record.date * 1000))),
         },
         {
           accessor: "ranking",
           title: "排名",
+          noWrap: true,
           sortable: true,
         },
         {
@@ -138,6 +140,7 @@ function ResultTable() {
         {
           accessor: "FP_reward_count",
           title: "获钻量",
+          noWrap: true,
           sortable: true,
         },
       ]}
