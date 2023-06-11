@@ -3,6 +3,7 @@ import {
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
+import JMFLink from "../components/JMFLink";
 import JMFTextInput from "../components/JMFTextInput";
 import {
   ArticleDataRequest,
@@ -65,8 +66,12 @@ export default function ArticlePublishTimeViewer() {
       {hasResult.value && (
         <Card padding="lg" shadow="xs" radius="lg" withBorder>
           <Text>
-            标题：
-            {articleTitle.value}
+            文章：
+            <JMFLink
+              url={articleURL.value}
+              label={articleTitle.value.length <= 17 ? articleTitle.value : `${articleTitle.value.substring(0, 17)}...`}
+              isExternal
+            />
           </Text>
           <Text>
             更新过：

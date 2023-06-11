@@ -78,7 +78,11 @@ export default function ArticleWordcloudGenerator() {
       <>
         <Center>
           <Text>文章：</Text>
-          <JMFLink url={articleURL.value} label={articleTitle.value} isExternal />
+          <JMFLink
+            url={articleURL.value}
+            label={articleTitle.value.length <= 17 ? articleTitle.value : `${articleTitle.value.substring(0, 17)}...`}
+            isExternal
+          />
         </Center>
         <ChartWrapper chartType="radial" minWidth={800} height={500} allowOverflow>
           <Wordcloud data={wordFreqData} />
