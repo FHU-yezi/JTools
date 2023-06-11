@@ -125,7 +125,14 @@ function PriceTrendLine({ buy, sell }: PriceTrendLineProps) {
         labels: Object.keys(buy.value),
         datasets: [
           { label: "买贝", data: Object.values(buy.value), cubicInterpolationMode: "monotone" },
-          { label: "卖贝", data: Object.values(sell.value), cubicInterpolationMode: "monotone" }],
+          { label: "卖贝", data: Object.values(sell.value), cubicInterpolationMode: "monotone" },
+          {
+            label: "官方标定价格",
+            data: new Array(Object.keys(buy.value).length).fill(0.10),
+            pointStyle: false,
+            borderDash: [5, 5],
+          },
+        ],
       }}
       options={{
         interaction: {
@@ -136,6 +143,16 @@ function PriceTrendLine({ buy, sell }: PriceTrendLineProps) {
           y: {
             suggestedMin: 0.10,
             suggestedMax: 0.17,
+          },
+        },
+        plugins: {
+          colors: {
+            forceOverride: true,
+          },
+          legend: {
+            labels: {
+              filter: (item) => item.text !== "官方标定价格",
+            },
           },
         },
       }}
