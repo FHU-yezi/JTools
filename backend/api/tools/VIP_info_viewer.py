@@ -42,11 +42,12 @@ def VIP_info_handler(  # noqa: N802
 
     name = user.name
     VIP_info = user.VIP_info  # noqa: N806
-    VIP_type = VIP_info["vip_type"]  # noqa: N806
+    VIP_type: str = VIP_info["vip_type"]  # noqa: N806
     if not VIP_type:
         VIP_type = "无会员"  # noqa: N806
-    VIP_expire_time = VIP_info["expire_date"]  # noqa: N806
+    VIP_expire_time: datetime = VIP_info["expire_date"]  # noqa: N806
     if VIP_expire_time:
+        VIP_expire_time = VIP_expire_time.replace(hour=0, minute=0, second=0)  # noqa: N806
         VIP_expire_time_to_now_human_readable = human_readable_td(  # noqa: N806
             VIP_expire_time - datetime.now()
         )
@@ -58,7 +59,7 @@ def VIP_info_handler(  # noqa: N802
         data=VIPInfoResponse(
             name=name,
             VIP_type=VIP_type,
-            VIP_expire_time=VIP_expire_time.timestamp() if VIP_expire_time else None,
+            VIP_expire_time=int(VIP_expire_time.timestamp()) if VIP_expire_time else None,
             VIP_expire_time_to_now_human_readable=VIP_expire_time_to_now_human_readable,
         ).dict(),
     )

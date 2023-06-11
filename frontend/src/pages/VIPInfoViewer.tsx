@@ -11,7 +11,7 @@ import {
 } from "../models/VIPInfoViewer/VIPInfo";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
-import { getDatetime } from "../utils/timeHelper";
+import { getDate } from "../utils/timeHelper";
 
 const userURL = signal("");
 const hasResult = signal(false);
@@ -74,7 +74,7 @@ export default function VIPInfoViewer() {
           {VIPType.value !== "无会员" && (
             <Text>
               到期时间：
-              {getDatetime(VIPExpireTime.value!)}
+              {getDate(VIPExpireTime.value!)}
               （剩余
               {" "}
               {VIPExpireTimeToNowHumanReadable.value}
