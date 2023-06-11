@@ -35,7 +35,7 @@ function handleGenerate() {
   }
 
   fetchData<WordFreqDataRequest, WordFreqDataResponse>(
-    "GET",
+    "POST",
     "/tools/article_wordcloud_generator/word_freq_data",
     {
       article_url: articleURL.value,
@@ -51,14 +51,15 @@ function handleGenerate() {
 }
 
 function Wordcloud({ data }: WordcloudProps) {
+  const scale = 120 / Math.max(...Object.values(data.value));
   return (
     <Chart
       type="wordCloud"
       data={{
         labels: Object.keys(data.value),
         datasets: [{
-          // * 10 用来调整每个词的大小
-          data: Object.values(data.value).map((item) => item * 10),
+          // 使用最高频词的出现次数调整每个词的大小，使高频词不至于过大而溢出画面
+          data: Object.values(data.value).map((item) => item * scale),
           color: "#EA6F5A",
         }],
       }}
