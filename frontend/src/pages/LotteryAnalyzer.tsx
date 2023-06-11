@@ -150,7 +150,7 @@ function PerPrizeAnalyzeTable({ data }: PerPrizeAnalyzeTableProps) {
                 {RoundFloat(item.winning_rate * 100, 3)}
                 %
               </td>
-              <dd>{item.rarity}</dd>
+              <td>{item.rarity}</td>
             </tr>
           ))}
         </tbody>
