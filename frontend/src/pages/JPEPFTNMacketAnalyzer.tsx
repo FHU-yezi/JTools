@@ -128,6 +128,10 @@ function PriceTrendLine({ buy, sell }: PriceTrendLineProps) {
           { label: "卖贝", data: Object.values(sell.value), cubicInterpolationMode: "monotone" }],
       }}
       options={{
+        interaction: {
+          intersect: false,
+          axis: "x",
+        },
         scales: {
           y: {
             suggestedMin: 0.10,

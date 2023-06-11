@@ -187,6 +187,10 @@ function RewardWinsTrendLine({ data }: RewardWinsTrendLineProps) {
         datasets: [{ data: Object.values(data.value), cubicInterpolationMode: "monotone" }],
       }}
       options={{
+        interaction: {
+          intersect: false,
+          axis: "x",
+        },
         plugins: {
           legend: {
             display: false,
