@@ -9,6 +9,7 @@ import { notifications } from "@mantine/notifications";
 import { signal } from "@preact/signals";
 import JMFAutocomplete from "../components/JMFAutocomplete";
 import JMFLink from "../components/JMFLink";
+import JMFScolllable from "../components/JMFScollable";
 import {
   OnRankRecordItem,
   OnRankRecordsRequest,
@@ -94,37 +95,39 @@ export default function OnRankArticleViewer() {
       </Button>
       {hasResult.value
         && (result.value.length !== 0 ? (
-          <Table captionSide="bottom">
-            <thead>
-              <tr>
-                <th>日期</th>
-                <th style={{ minWidth: "50px" }}>排名</th>
-                <th>文章</th>
-                <th>获钻量</th>
-              </tr>
-            </thead>
-            <tbody>
-              {result.value.map((item) => (
-                <tr key={`${item.date.toString()}_${item.url}`}>
-                  <td>{getDate(new Date(item.date * 1000))}</td>
-                  <td>{item.ranking}</td>
-                  <td>
-                    <JMFLink
-                      url={item.url}
-                      label={item.title.length <= 30
-                        ? item.title
-                        : `${item.title.substring(0, 30)}...`}
-                      isExternal
-                    />
-                  </td>
-                  <td>{item.FP_reward_count}</td>
+          <JMFScolllable>
+            <Table style={{ minWidth: 360 }} captionSide="bottom">
+              <thead>
+                <tr>
+                  <th>日期</th>
+                  <th style={{ minWidth: "50px" }}>排名</th>
+                  <th>文章</th>
+                  <th>获钻量</th>
                 </tr>
-              ))}
-            </tbody>
-            {result.value.length === 100 && (
+              </thead>
+              <tbody>
+                {result.value.map((item) => (
+                  <tr key={`${item.date.toString()}_${item.url}`}>
+                    <td>{getDate(new Date(item.date * 1000))}</td>
+                    <td>{item.ranking}</td>
+                    <td>
+                      <JMFLink
+                        url={item.url}
+                        label={item.title.length <= 30
+                          ? item.title
+                          : `${item.title.substring(0, 30)}...`}
+                        isExternal
+                      />
+                    </td>
+                    <td>{item.FP_reward_count}</td>
+                  </tr>
+                ))}
+              </tbody>
+              {result.value.length === 100 && (
               <caption>仅展示距现在最近的 100 条结果</caption>
-            )}
-          </Table>
+              )}
+            </Table>
+          </JMFScolllable>
         ) : (
           <Center>
             <Text fw={600} m={24} size="lg">
