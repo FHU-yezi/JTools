@@ -2,14 +2,13 @@ import {
   Button,
   Center,
   Stack,
-  Table,
   Text,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { signal } from "@preact/signals";
+import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import JMFAutocomplete from "../components/JMFAutocomplete";
 import JMFLink from "../components/JMFLink";
-import JMFScolllable from "../components/JMFScollable";
 import {
   OnRankRecordItem,
   OnRankRecordsRequest,
@@ -28,6 +27,7 @@ const completeItems = signal<string[]>([]);
 const isLoading = signal(false);
 const hasResult = signal(false);
 const result = signal<OnRankRecordItem[]>([]);
+const resultTableSortStatus = signal<DataTableSortStatus>({ columnAccessor: "date", direction: "desc" });
 
 function isURL(string: string): boolean {
   return string.startsWith("https://");
@@ -80,6 +80,75 @@ function handleQuery() {
   } catch {}
 }
 
+function handleResultTableSort() {
+  const sortKey = resultTableSortStatus.value.columnAccessor;
+  const sortDirection = resultTableSortStatus.value.direction;
+  const resultToSort = result.value;
+
+  function processSortKey(key: number) {
+    const sortKeyProcessResult = Date.parse(key.toString());
+    if (!Number.isNaN(sortKeyProcessResult)) {
+      return sortKeyProcessResult;
+    }
+    return key;
+  }
+
+  resultToSort.sort(
+    (a: Record<string, any>, b: Record<string, any>) => (
+      processSortKey(a[sortKey]) - processSortKey(b[sortKey])
+    ),
+  );
+
+  if (sortDirection === "desc") {
+    result.value = resultToSort.reverse();
+  } else {
+    result.value = resultToSort;
+  }
+}
+
+function ResultTable() {
+  return (
+    <DataTable
+      records={result.value}
+      columns={[
+        {
+          accessor: "date",
+          title: "日期",
+          sortable: true,
+          render: (record) => (getDate(new Date(record.date * 1000))),
+        },
+        {
+          accessor: "ranking",
+          title: "排名",
+          sortable: true,
+        },
+        {
+          accessor: "title",
+          title: "文章",
+          render: (record) => (
+            <JMFLink
+              url={record.url}
+              label={record.title.length <= 30
+                ? record.title
+                : `${record.title.substring(0, 30)}...`}
+              isExternal
+            />
+          ),
+        },
+        {
+          accessor: "FP_reward_count",
+          title: "获钻量",
+          sortable: true,
+        },
+      ]}
+      sortStatus={resultTableSortStatus.value}
+      onSortStatusChange={
+        (newStatus) => { resultTableSortStatus.value = newStatus; handleResultTableSort(); }
+      }
+    />
+  );
+}
+
 export default function OnRankArticleViewer() {
   return (
     <Stack>
@@ -95,39 +164,7 @@ export default function OnRankArticleViewer() {
       </Button>
       {hasResult.value
         && (result.value.length !== 0 ? (
-          <JMFScolllable>
-            <Table style={{ minWidth: 360 }} captionSide="bottom">
-              <thead>
-                <tr>
-                  <th>日期</th>
-                  <th style={{ minWidth: "50px" }}>排名</th>
-                  <th>文章</th>
-                  <th>获钻量</th>
-                </tr>
-              </thead>
-              <tbody>
-                {result.value.map((item) => (
-                  <tr key={`${item.date.toString()}_${item.url}`}>
-                    <td>{getDate(new Date(item.date * 1000))}</td>
-                    <td>{item.ranking}</td>
-                    <td>
-                      <JMFLink
-                        url={item.url}
-                        label={item.title.length <= 30
-                          ? item.title
-                          : `${item.title.substring(0, 30)}...`}
-                        isExternal
-                      />
-                    </td>
-                    <td>{item.FP_reward_count}</td>
-                  </tr>
-                ))}
-              </tbody>
-              {result.value.length === 100 && (
-              <caption>仅展示距现在最近的 100 条结果</caption>
-              )}
-            </Table>
-          </JMFScolllable>
+          <ResultTable />
         ) : (
           <Center>
             <Text fw={600} m={24} size="lg">
