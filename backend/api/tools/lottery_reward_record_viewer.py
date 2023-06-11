@@ -6,7 +6,7 @@ from sanic import Blueprint, HTTPResponse, Request
 from sspeedup.api import CODE, sanic_response_json
 
 from utils.db import lottery_db
-from utils.inject_data_model import inject_data_model
+from utils.inject_data_model import inject_data_model_from_body
 from utils.pydantic_base import BaseModel
 
 REWARDS: Set[str] = {
@@ -53,7 +53,7 @@ class LotteryRecordsResponse(BaseModel):
 
 
 @lottery_reward_record_viewer_blueprint.post("/lottery_records")
-@inject_data_model(LotteryRecordsRequest)
+@inject_data_model_from_body(LotteryRecordsRequest)
 def lottery_records_handler(
     request: Request, data: LotteryRecordsRequest
 ) -> HTTPResponse:

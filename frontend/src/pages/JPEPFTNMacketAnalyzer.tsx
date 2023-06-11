@@ -19,10 +19,10 @@ import { useEffect } from "preact/hooks";
 import { Line, Pie } from "react-chartjs-2";
 import ChartWrapper from "../components/ChartWrapper";
 import { DataUpdateTimeResponse } from "../models/JPEPFTNMacketAnalyzer/DataUpdateTime";
-import { PoolAmountComparePieDataResponse } from "../models/JPEPFTNMacketAnalyzer/PoolAmountComparePieData";
+import { PoolAmountDataResponse } from "../models/JPEPFTNMacketAnalyzer/PoolAmountData";
 import {
-  PriceTrendLineDataItem, PriceTrendLineDataRequest, PriceTrendLineDataResponse, TimeRange,
-} from "../models/JPEPFTNMacketAnalyzer/PriceTrendLineData";
+  PriceTrendDataItem, PriceTrendDataRequest, PriceTrendDataResponse, TimeRange,
+} from "../models/JPEPFTNMacketAnalyzer/PriceTrendData";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import { getDatetime } from "../utils/timeHelper";
@@ -44,10 +44,10 @@ const dataUpdateTime = signal<Date | undefined>(undefined);
 const buyPoolAmount = signal(0);
 const sellPoolAmount = signal(0);
 const PriceTrendLineTimeRange = signal<TimeRange>("24h");
-const BuyPriceTrendLineData = signal<PriceTrendLineDataItem | undefined>(
+const BuyPriceTrendData = signal<PriceTrendDataItem | undefined>(
   undefined,
 );
-const SellPriceTrendLineData = signal<PriceTrendLineDataItem | undefined>(
+const SellPriceTrendData = signal<PriceTrendDataItem | undefined>(
   undefined,
 );
 
@@ -57,8 +57,8 @@ interface PoolAmountComparePieProps {
 }
 
 interface PriceTrendLineProps {
-  buy: Signal<PriceTrendLineDataItem>
-  sell: Signal<PriceTrendLineDataItem>
+  buy: Signal<PriceTrendDataItem>
+  sell: Signal<PriceTrendDataItem>
 }
 
 function handleDataUpdateTimeFetch() {
@@ -75,11 +75,11 @@ function handleDataUpdateTimeFetch() {
   } catch {}
 }
 
-function handlePoolAmountComparePieDataFetch() {
+function handlePoolAmountDataFetch() {
   try {
-    fetchData<Record<string, never>, PoolAmountComparePieDataResponse>(
+    fetchData<Record<string, never>, PoolAmountDataResponse>(
       "GET",
-      "/tools/JPEP_FTN_market_analyzer/pool_amount_compare_pie_data",
+      "/tools/JPEP_FTN_market_analyzer/pool_amount_data",
       {},
       (data) => batch(() => {
         buyPoolAmount.value = data.buy_amount;
@@ -90,17 +90,17 @@ function handlePoolAmountComparePieDataFetch() {
   } catch {}
 }
 
-function handlePriceTrendLineDataFetch() {
+function handlePriceTrendDataFetch() {
   try {
-    fetchData<PriceTrendLineDataRequest, PriceTrendLineDataResponse>(
-      "POST",
-      "/tools/JPEP_FTN_market_analyzer/price_trend_line_data",
+    fetchData<PriceTrendDataRequest, PriceTrendDataResponse>(
+      "GET",
+      "/tools/JPEP_FTN_market_analyzer/price_trend_data",
       {
         time_range: PriceTrendLineTimeRange.value,
       },
       (data) => batch(() => {
-        BuyPriceTrendLineData.value = data.buy_trend;
-        SellPriceTrendLineData.value = data.sell_trend;
+        BuyPriceTrendData.value = data.buy_trend;
+        SellPriceTrendData.value = data.sell_trend;
       }),
       commonAPIErrorHandler,
     );
@@ -142,8 +142,8 @@ function PriceTrendLine({ buy, sell }: PriceTrendLineProps) {
 export default function JPEPFTNMarketAnalyzer() {
   useEffect(() => {
     handleDataUpdateTimeFetch();
-    handlePoolAmountComparePieDataFetch();
-    handlePriceTrendLineDataFetch();
+    handlePoolAmountDataFetch();
+    handlePriceTrendDataFetch();
   }, []);
 
   return (
@@ -162,10 +162,10 @@ export default function JPEPFTNMarketAnalyzer() {
         onChange={(newValue: TimeRange) => {
           batch(() => {
             PriceTrendLineTimeRange.value = newValue;
-            BuyPriceTrendLineData.value = undefined;
-            SellPriceTrendLineData.value = undefined;
+            BuyPriceTrendData.value = undefined;
+            SellPriceTrendData.value = undefined;
           });
-          handlePriceTrendLineDataFetch();
+          handlePriceTrendDataFetch();
         }}
         data={[
           { label: "24 小时", value: "24h" },
@@ -174,10 +174,10 @@ export default function JPEPFTNMarketAnalyzer() {
           { label: "30 天", value: "30d" },
         ]}
       />
-      <ChartWrapper chartType="radial" show={typeof BuyPriceTrendLineData.value !== "undefined"}>
+      <ChartWrapper chartType="radial" show={typeof BuyPriceTrendData.value !== "undefined"}>
         <PriceTrendLine
-          buy={BuyPriceTrendLineData as unknown as Signal<PriceTrendLineDataItem>}
-          sell={SellPriceTrendLineData as unknown as Signal<PriceTrendLineDataItem>}
+          buy={BuyPriceTrendData as unknown as Signal<PriceTrendDataItem>}
+          sell={SellPriceTrendData as unknown as Signal<PriceTrendDataItem>}
         />
       </ChartWrapper>
     </Stack>

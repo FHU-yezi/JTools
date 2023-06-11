@@ -33,7 +33,7 @@ function handleQuery() {
 
   try {
     fetchData<ArticleDataRequest, ArticleDataRqsponse>(
-      "POST",
+      "GET",
       "/tools/article_publish_time_viewer/article_data",
       {
         article_url: articleURL.value,

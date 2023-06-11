@@ -7,7 +7,7 @@ from sanic import Blueprint, HTTPResponse, Request
 from sspeedup.api import CODE, sanic_response_json
 from sspeedup.time_helper import human_readable_td
 
-from utils.inject_data_model import inject_data_model
+from utils.inject_data_model import inject_data_model_from_body
 from utils.pydantic_base import BaseModel
 
 set_cache_status(False)
@@ -27,7 +27,7 @@ class VIPInfoResponse(BaseModel):
 
 
 @VIP_info_viewer_blueprint.post("/VIP_info")
-@inject_data_model(VIPInfoRequest)
+@inject_data_model_from_body(VIPInfoRequest)
 def VIP_info_handler(  # noqa: N802
     request: Request, data: VIPInfoRequest
 ) -> HTTPResponse:

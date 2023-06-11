@@ -28,15 +28,15 @@ import {
   PerPrizeDataResponse,
 } from "../models/LotteryAnalyzer/PerPrizeData";
 import {
-  RewardsWinsCountPieDataItem,
-  RewardsWinsCountPieDataRequest,
-  RewardsWinsCountPieDataResponse,
-} from "../models/LotteryAnalyzer/RewardWinsCountPieData";
+  RewardsWinsCountDataItem,
+  RewardsWinsCountDataRequest,
+  RewardsWinsCountDataResponse,
+} from "../models/LotteryAnalyzer/RewardWinsCountData";
 import {
-  RewardWinsTrendLineDataItem,
-  RewardWinsTrendLineDataRequest,
-  RewardsWinsTrendLineDataResponse,
-} from "../models/LotteryAnalyzer/RewardWinsTrendLineData";
+  RewardWinsTrendDataItem,
+  RewardWinsTrendDataRequest,
+  RewardsWinsTrendDataResponse,
+} from "../models/LotteryAnalyzer/RewardWinsTrendData";
 import { TimeRange, TimeRangeWithoutAll } from "../models/LotteryAnalyzer/base";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
@@ -58,11 +58,11 @@ Chart.register(
 const perPrizeAnalyzeTimeRange = signal<TimeRange>("1d");
 const perPrizeAnalyzeData = signal<PerPrizeDataItem[]>([]);
 const RewardWinsCountPieTimeRange = signal<TimeRange>("1d");
-const RewardWinsCountPieData = signal<RewardsWinsCountPieDataItem | undefined>(
+const RewardWinsCountData = signal<RewardsWinsCountDataItem | undefined>(
   undefined,
 );
 const RewardWinsTrendLineTimeRange = signal<TimeRangeWithoutAll>("1d");
-const RewardWinsTrendLineData = signal<RewardWinsTrendLineDataItem | undefined>(
+const RewardWinsTrendData = signal<RewardWinsTrendDataItem | undefined>(
   undefined,
 );
 
@@ -71,17 +71,17 @@ interface PerPrizeAnalyzeTableProps {
 }
 
 interface RewardWinsCountPieProps {
-  data: Signal<RewardsWinsCountPieDataItem>;
+  data: Signal<RewardsWinsCountDataItem>;
 }
 
 interface RewardWinsTrendLineProps {
-  data: Signal<RewardWinsTrendLineDataItem>;
+  data: Signal<RewardWinsTrendDataItem>;
 }
 
 function handlePerPrizeAnalayzeDataFetch() {
   try {
     fetchData<PerPrizeDataRequest, PerPrizeDataResponse>(
-      "POST",
+      "GET",
       "/tools/lottery_analyzer/per_prize_data",
       {
         time_range: perPrizeAnalyzeTimeRange.value,
@@ -92,29 +92,29 @@ function handlePerPrizeAnalayzeDataFetch() {
   } catch {}
 }
 
-function handleRewardWinsCountPieDataFetch() {
+function handleRewardWinsCountDataFetch() {
   try {
-    fetchData<RewardsWinsCountPieDataRequest, RewardsWinsCountPieDataResponse>(
-      "POST",
-      "/tools/lottery_analyzer/reward_wins_count_pie_data",
+    fetchData<RewardsWinsCountDataRequest, RewardsWinsCountDataResponse>(
+      "GET",
+      "/tools/lottery_analyzer/reward_wins_count_data",
       {
         time_range: RewardWinsCountPieTimeRange.value,
       },
-      (data) => (RewardWinsCountPieData.value = data.pie_data),
+      (data) => (RewardWinsCountData.value = data.wins_count_data),
       commonAPIErrorHandler,
     );
   } catch {}
 }
 
-function handleRewardWinsTrendLineDataFetch() {
+function handleRewardWinsTrendDataFetch() {
   try {
-    fetchData<RewardWinsTrendLineDataRequest, RewardsWinsTrendLineDataResponse>(
-      "POST",
-      "/tools/lottery_analyzer/reward_wins_trend_line_data",
+    fetchData<RewardWinsTrendDataRequest, RewardsWinsTrendDataResponse>(
+      "GET",
+      "/tools/lottery_analyzer/reward_wins_trend_data",
       {
         time_range: RewardWinsTrendLineTimeRange.value,
       },
-      (data) => (RewardWinsTrendLineData.value = data.line_data),
+      (data) => (RewardWinsTrendData.value = data.trend_data),
       commonAPIErrorHandler,
     );
   } catch {}
@@ -200,8 +200,8 @@ function RewardWinsTrendLine({ data }: RewardWinsTrendLineProps) {
 export default function LotteryAnalyzer() {
   useEffect(() => {
     handlePerPrizeAnalayzeDataFetch();
-    handleRewardWinsCountPieDataFetch();
-    handleRewardWinsTrendLineDataFetch();
+    handleRewardWinsCountDataFetch();
+    handleRewardWinsTrendDataFetch();
   }, []);
 
   return (
@@ -231,9 +231,9 @@ export default function LotteryAnalyzer() {
         onChange={(newValue: TimeRange) => {
           batch(() => {
             RewardWinsCountPieTimeRange.value = newValue;
-            RewardWinsCountPieData.value = undefined;
+            RewardWinsCountData.value = undefined;
           });
-          handleRewardWinsCountPieDataFetch();
+          handleRewardWinsCountDataFetch();
         }}
         data={[
           { label: "1 天", value: "1d" },
@@ -242,10 +242,10 @@ export default function LotteryAnalyzer() {
           { label: "全部", value: "all" },
         ]}
       />
-      <ChartWrapper chartType="pie" show={typeof RewardWinsCountPieData.value !== "undefined"}>
+      <ChartWrapper chartType="pie" show={typeof RewardWinsCountData.value !== "undefined"}>
         <RewardWinsCountPie
           data={
-            RewardWinsCountPieData as unknown as Signal<RewardsWinsCountPieDataItem>
+            RewardWinsCountData as unknown as Signal<RewardsWinsCountDataItem>
           }
         />
       </ChartWrapper>
@@ -255,9 +255,9 @@ export default function LotteryAnalyzer() {
         onChange={(newValue: TimeRangeWithoutAll) => {
           batch(() => {
             RewardWinsTrendLineTimeRange.value = newValue;
-            RewardWinsTrendLineData.value = undefined;
+            RewardWinsTrendData.value = undefined;
           });
-          handleRewardWinsTrendLineDataFetch();
+          handleRewardWinsTrendDataFetch();
         }}
         data={[
           { label: "1 天", value: "1d" },
@@ -265,10 +265,10 @@ export default function LotteryAnalyzer() {
           { label: "30 天", value: "30d" },
         ]}
       />
-      <ChartWrapper chartType="radial" show={typeof RewardWinsTrendLineData.value !== "undefined"}>
+      <ChartWrapper chartType="radial" show={typeof RewardWinsTrendData.value !== "undefined"}>
         <RewardWinsTrendLine
           data={
-            RewardWinsTrendLineData as unknown as Signal<RewardWinsTrendLineDataItem>
+            RewardWinsTrendData as unknown as Signal<RewardWinsTrendDataItem>
           }
         />
       </ChartWrapper>

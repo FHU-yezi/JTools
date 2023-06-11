@@ -42,7 +42,7 @@ function handleCompleteItemUpdate(value: string) {
 
   try {
     fetchData<UserNameAutocompleteRequest, UserNameAutocompleteResponse>(
-      "POST",
+      "GET",
       "/tools/on_rank_article_viewer/user_name_autocomplete",
       {
         name_part: value,

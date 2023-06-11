@@ -7,7 +7,7 @@ from sspeedup.ability.word_split.jieba import AbilityJiebaPossegSplitterV1
 from sspeedup.api import CODE, sanic_response_json
 
 from utils.config import config
-from utils.inject_data_model import inject_data_model
+from utils.inject_data_model import inject_data_model_from_query_args
 from utils.pydantic_base import BaseModel
 
 set_cache_status(False)
@@ -32,8 +32,8 @@ class WordFreqDataResponse(BaseModel):
     word_freq: Dict[str, int]
 
 
-@article_wordcloud_generator_blueprint.post("/word_freq_data")
-@inject_data_model(WordFreqDataRequest)
+@article_wordcloud_generator_blueprint.get("/word_freq_data")
+@inject_data_model_from_query_args(WordFreqDataRequest)
 def word_freq_data_handler(request: Request, data: WordFreqDataRequest) -> HTTPResponse:
     del request
 

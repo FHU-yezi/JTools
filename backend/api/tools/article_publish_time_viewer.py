@@ -4,7 +4,7 @@ from sanic import Blueprint, HTTPResponse, Request
 from sspeedup.api import CODE, sanic_response_json
 from sspeedup.time_helper import human_readable_td_to_now, is_datetime_equal
 
-from utils.inject_data_model import inject_data_model
+from utils.inject_data_model import inject_data_model_from_query_args
 from utils.pydantic_base import BaseModel
 
 set_cache_status(False)
@@ -27,8 +27,8 @@ class ArticleDataResponse(BaseModel):
     update_time_to_now_human_readable: str
 
 
-@article_publish_time_viewer_blueprint.post("/article_data")
-@inject_data_model(ArticleDataRequest)
+@article_publish_time_viewer_blueprint.get("/article_data")
+@inject_data_model_from_query_args(ArticleDataRequest)
 def article_data_handler(request: Request, data: ArticleDataRequest) -> HTTPResponse:
     del request
 

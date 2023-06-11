@@ -12,7 +12,7 @@ from sspeedup.cache.timeout import timeout_cache
 from sspeedup.time_helper import human_readable_td_to_now
 
 from utils.db import LP_collections_db, article_fp_rank_db
-from utils.inject_data_model import inject_data_model
+from utils.inject_data_model import inject_data_model_from_body
 from utils.pydantic_base import BaseModel
 
 set_cache_status(False)
@@ -130,7 +130,7 @@ class CheckResponse(BaseModel):
 
 
 @LP_recommend_checker_blueprint.post("/check")
-@inject_data_model(CheckRequest)
+@inject_data_model_from_body(CheckRequest)
 def check_handler(request: Request, data: CheckRequest) -> HTTPResponse:
     del request
 

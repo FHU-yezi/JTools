@@ -6,7 +6,7 @@ from sspeedup.api import CODE, sanic_response_json
 from sspeedup.cache.timeout import timeout_cache
 
 from utils.db import JPEP_FTN_market_db
-from utils.inject_data_model import inject_data_model
+from utils.inject_data_model import inject_data_model_from_query_args
 from utils.pydantic_base import BaseModel
 from utils.time_helper import get_data_start_time
 
@@ -121,13 +121,13 @@ def data_update_time_handler(request: Request) -> HTTPResponse:
     )
 
 
-class PoolAmountComparePieDataResponse(BaseModel):
+class PoolAmountDataResponse(BaseModel):
     buy_amount: int
     sell_amount: int
 
 
-@JPEP_FTN_market_analyzer_blueprint.get("/pool_amount_compare_pie_data")
-def pool_amount_compare_pie_data(request: Request) -> HTTPResponse:
+@JPEP_FTN_market_analyzer_blueprint.get("/pool_amount_data")
+def pool_amount_data(request: Request) -> HTTPResponse:
     del request
 
     data_update_time = get_data_update_time()
@@ -137,25 +137,25 @@ def pool_amount_compare_pie_data(request: Request) -> HTTPResponse:
 
     return sanic_response_json(
         code=CODE.SUCCESS,
-        data=PoolAmountComparePieDataResponse(
+        data=PoolAmountDataResponse(
             buy_amount=buy_amount, sell_amount=sell_amount
         ).dict(),
     )
 
 
-class PriceTrendLineDataRequest(BaseModel):
+class PriceTrendDataRequest(BaseModel):
     time_range: Literal["24h", "7d", "15d", "30d"]
 
 
-class PriceTrendLineDataResponse(BaseModel):
+class PriceTrendDataResponse(BaseModel):
     buy_trend: Dict[str, float]
     sell_trend: Dict[str, float]
 
 
-@JPEP_FTN_market_analyzer_blueprint.post("/price_trend_line_data")
-@inject_data_model(PriceTrendLineDataRequest)
-def price_trend_line_data_handler(
-    request: Request, data: PriceTrendLineDataRequest
+@JPEP_FTN_market_analyzer_blueprint.get("/price_trend_data")
+@inject_data_model_from_query_args(PriceTrendDataRequest)
+def price_trend_data_handler(
+    request: Request, data: PriceTrendDataRequest
 ) -> HTTPResponse:
     del request
 
@@ -164,7 +164,7 @@ def price_trend_line_data_handler(
 
     return sanic_response_json(
         code=CODE.SUCCESS,
-        data=PriceTrendLineDataResponse(
+        data=PriceTrendDataResponse(
             buy_trend=buy_trend,
             sell_trend=sell_trend,
         ).dict(),

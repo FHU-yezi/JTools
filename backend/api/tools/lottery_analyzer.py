@@ -5,7 +5,7 @@ from sanic import Blueprint, HTTPResponse, Request
 from sspeedup.api import CODE, sanic_response_json
 
 from utils.db import lottery_db
-from utils.inject_data_model import inject_data_model
+from utils.inject_data_model import inject_data_model_from_query_args
 from utils.pydantic_base import BaseModel
 from utils.time_helper import get_data_start_time
 
@@ -169,8 +169,8 @@ class PerPrizeDataResponse(BaseModel):
     rewards: List[PerPrizeDataItem]
 
 
-@lottery_analyzer_blueprint.post("/per_prize_data")
-@inject_data_model(PerPrizeDataRequest)
+@lottery_analyzer_blueprint.get("/per_prize_data")
+@inject_data_model_from_query_args(PerPrizeDataRequest)
 def per_prize_data_handler(request: Request, data: PerPrizeDataRequest) -> HTTPResponse:
     del request
 
@@ -202,46 +202,47 @@ def per_prize_data_handler(request: Request, data: PerPrizeDataRequest) -> HTTPR
     )
 
 
-class RewardWinsCountPieDataRequest(BaseModel):
+class RewardWinsCountDataRequest(BaseModel):
     time_range: Literal["1d", "7d", "30d", "all"]
 
 
-class RewardWinsCountPieDataResponse(BaseModel):
-    pie_data: Dict[str, int]
+class RewardWinsCountDataResponse(BaseModel):
+    wins_count_data: Dict[str, int]
 
 
-@lottery_analyzer_blueprint.post("/reward_wins_count_pie_data")
-@inject_data_model(RewardWinsCountPieDataRequest)
-def reward_wins_count_pie_data_handler(
-    request: Request, data: RewardWinsCountPieDataRequest
+@lottery_analyzer_blueprint.get("/reward_wins_count_data")
+@inject_data_model_from_query_args(RewardWinsCountDataRequest)
+def reward_wins_count_data_handler(
+    request: Request, data: RewardWinsCountDataRequest
 ) -> HTTPResponse:
     del request
 
-    pie_data = get_all_rewards_wins_count(TEXT_TO_TIMEDELTA[data.time_range])
-
-    return sanic_response_json(
-        code=CODE.SUCCESS, data=RewardWinsCountPieDataResponse(pie_data=pie_data).dict()
-    )
-
-
-class RewardWinsTrendLineDataRequest(BaseModel):
-    time_range: Literal["1d", "7d", "30d"]
-
-
-class RewardWinsTrendLineDataResponse(BaseModel):
-    line_data: Dict[str, int]
-
-
-@lottery_analyzer_blueprint.post("/reward_wins_trend_line_data")
-@inject_data_model(RewardWinsTrendLineDataRequest)
-def reward_wins_trend_line_data_handler(
-    request: Request, data: RewardWinsTrendLineDataRequest
-) -> HTTPResponse:
-    del request
-
-    line_data = get_period_wins_count(TEXT_TO_TIMEDELTA[data.time_range])
+    wins_count_data = get_all_rewards_wins_count(TEXT_TO_TIMEDELTA[data.time_range])
 
     return sanic_response_json(
         code=CODE.SUCCESS,
-        data=RewardWinsTrendLineDataResponse(line_data=line_data).dict(),
+        data=RewardWinsCountDataResponse(wins_count_data=wins_count_data).dict(),
+    )
+
+
+class RewardWinsDataRequest(BaseModel):
+    time_range: Literal["1d", "7d", "30d"]
+
+
+class RewardWinsDataResponse(BaseModel):
+    trend_data: Dict[str, int]
+
+
+@lottery_analyzer_blueprint.get("/reward_wins_trend_data")
+@inject_data_model_from_query_args(RewardWinsDataRequest)
+def reward_wins_trend_data_handler(
+    request: Request, data: RewardWinsDataRequest
+) -> HTTPResponse:
+    del request
+
+    trend_data = get_period_wins_count(TEXT_TO_TIMEDELTA[data.time_range])
+
+    return sanic_response_json(
+        code=CODE.SUCCESS,
+        data=RewardWinsDataResponse(trend_data=trend_data).dict(),
     )

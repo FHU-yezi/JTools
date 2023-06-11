@@ -35,7 +35,7 @@ function handleGenerate() {
   }
 
   fetchData<WordFreqDataRequest, WordFreqDataResponse>(
-    "POST",
+    "GET",
     "/tools/article_wordcloud_generator/word_freq_data",
     {
       article_url: articleURL.value,
