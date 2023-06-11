@@ -9,6 +9,7 @@ import {
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
 import JMFLink from "../components/JMFLink";
+import JMFScolllable from "../components/JMFScollable";
 import JMFTextInput from "../components/JMFTextInput";
 import { CheckItem, CheckRequest, CheckResponse } from "../models/LPRecommendChecker/CheckResult";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
@@ -71,7 +72,7 @@ export default function LPRecommendChecker() {
               {checkPassed.value ? "符合推荐标准" : "不符合推荐标准"}
             </Text>
           </Center>
-          <div style={{ overflowX: "scroll" }}>
+          <JMFScolllable>
             <Table style={{ minWidth: 480 }}>
               <thead>
                 <tr>
@@ -92,7 +93,7 @@ export default function LPRecommendChecker() {
                 ))}
               </tbody>
             </Table>
-          </div>
+          </JMFScolllable>
         </>
       )}
     </Stack>

@@ -1,5 +1,6 @@
 import { Center, Skeleton } from "@mantine/core";
 import { JSX } from "preact/jsx-runtime";
+import JMFScolllable from "./JMFScollable";
 
 interface Props {
     children: JSX.Element | (() => JSX.Element)
@@ -23,11 +24,11 @@ export default function ChartWrapper({
 
   if (allowOverflow) {
     return (
-      <div style={{ overflowX: "scroll" }}>
+      <JMFScolllable>
         <div style={{ minWidth, height }}>
           {children}
         </div>
-      </div>
+      </JMFScolllable>
     );
   }
   return (
