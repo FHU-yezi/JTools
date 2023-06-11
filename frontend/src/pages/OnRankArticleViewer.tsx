@@ -46,7 +46,7 @@ function handleCompleteItemUpdate(value: string) {
       "GET",
       "/tools/on_rank_article_viewer/user_name_autocomplete",
       {
-        name_part: value,
+        name_part: value.trim(),
       },
       (data) => (completeItems.value = data.possible_names),
       commonAPIErrorHandler,
@@ -65,7 +65,7 @@ function handleQuery() {
 
   const requestBody: OnRankRecordsRequest = isURL(userURLOrUserName.value)
     ? { user_url: userURLOrUserName.value }
-    : { user_name: userURLOrUserName.value };
+    : { user_name: userURLOrUserName.value.trim() };
 
   try {
     fetchData<OnRankRecordsRequest, OnRankRecordsResponse>(
