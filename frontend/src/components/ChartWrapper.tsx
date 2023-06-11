@@ -1,16 +1,26 @@
-import { Center } from "@mantine/core";
+import { Center, Skeleton } from "@mantine/core";
 import { JSX } from "preact/jsx-runtime";
 
 interface Props {
     children: JSX.Element | (() => JSX.Element)
+    show?: boolean;
     minWidth?: number
     height?: number;
+    chartType: "radial" | "pie";
     allowOverflow?: boolean
 }
 
 export default function ChartWrapper({
-  children, minWidth = undefined, height = undefined, allowOverflow = false,
+  children, show = true, minWidth = undefined, height = undefined, chartType, allowOverflow = false,
 }: Props) {
+  if (!show) {
+    return (
+      <Skeleton
+        h={height ?? (chartType === "radial" ? (window.innerWidth * 0.9) / 2 : window.innerWidth)}
+      />
+    );
+  }
+
   if (allowOverflow) {
     return (
       <div style={{ overflowX: "scroll" }}>

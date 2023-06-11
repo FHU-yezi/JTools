@@ -5,7 +5,7 @@ import {
   Table,
   Title,
 } from "@mantine/core";
-import { Signal, signal } from "@preact/signals";
+import { Signal, batch, signal } from "@preact/signals";
 import {
   ArcElement,
   CategoryScale,
@@ -229,7 +229,10 @@ export default function LotteryAnalyzer() {
       <SegmentedControl
         value={RewardWinsCountPieTimeRange.value}
         onChange={(newValue: TimeRange) => {
-          RewardWinsCountPieTimeRange.value = newValue;
+          batch(() => {
+            RewardWinsCountPieTimeRange.value = newValue;
+            RewardWinsCountPieData.value = undefined;
+          });
           handleRewardWinsCountPieDataFetch();
         }}
         data={[
@@ -239,22 +242,21 @@ export default function LotteryAnalyzer() {
           { label: "全部", value: "all" },
         ]}
       />
-      {typeof RewardWinsCountPieData.value !== "undefined" ? (
-        <ChartWrapper>
-          <RewardWinsCountPie
-            data={
+      <ChartWrapper chartType="pie" show={typeof RewardWinsCountPieData.value !== "undefined"}>
+        <RewardWinsCountPie
+          data={
             RewardWinsCountPieData as unknown as Signal<RewardsWinsCountPieDataItem>
           }
-          />
-        </ChartWrapper>
-      ) : (
-        <Skeleton h={500} />
-      )}
+        />
+      </ChartWrapper>
       <Title order={2}>中奖次数趋势</Title>
       <SegmentedControl
         value={RewardWinsTrendLineTimeRange.value}
         onChange={(newValue: TimeRangeWithoutAll) => {
-          RewardWinsTrendLineTimeRange.value = newValue;
+          batch(() => {
+            RewardWinsTrendLineTimeRange.value = newValue;
+            RewardWinsTrendLineData.value = undefined;
+          });
           handleRewardWinsTrendLineDataFetch();
         }}
         data={[
@@ -263,17 +265,13 @@ export default function LotteryAnalyzer() {
           { label: "30 天", value: "30d" },
         ]}
       />
-      {typeof RewardWinsTrendLineData.value !== "undefined" ? (
-        <ChartWrapper>
-          <RewardWinsTrendLine
-            data={
+      <ChartWrapper chartType="radial" show={typeof RewardWinsTrendLineData.value !== "undefined"}>
+        <RewardWinsTrendLine
+          data={
             RewardWinsTrendLineData as unknown as Signal<RewardWinsTrendLineDataItem>
           }
-          />
-        </ChartWrapper>
-      ) : (
-        <Skeleton h={500} />
-      )}
+        />
+      </ChartWrapper>
     </Stack>
   );
 }

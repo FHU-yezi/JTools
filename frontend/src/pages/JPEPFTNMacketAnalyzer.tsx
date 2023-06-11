@@ -1,5 +1,5 @@
 import {
-  SegmentedControl, Skeleton, Stack, Text, Title,
+  SegmentedControl, Stack, Text, Title,
 } from "@mantine/core";
 import { Signal, batch, signal } from "@preact/signals";
 import {
@@ -153,16 +153,18 @@ export default function JPEPFTNMarketAnalyzer() {
         {dataUpdateTime.value ? getDatetime(dataUpdateTime.value) : "获取中..."}
       </Text>
       <Title order={2}>买卖贝挂单量对比</Title>
-      {buyPoolAmount.value !== 0 ? (
-        <ChartWrapper>
-          <PoolAmountComparePie buy={buyPoolAmount} sell={sellPoolAmount} />
-        </ChartWrapper>
-      ) : <Skeleton h={500} />}
+      <ChartWrapper chartType="pie" show={buyPoolAmount.value !== 0}>
+        <PoolAmountComparePie buy={buyPoolAmount} sell={sellPoolAmount} />
+      </ChartWrapper>
       <Title order={2}>贝价趋势</Title>
       <SegmentedControl
         value={PriceTrendLineTimeRange.value}
         onChange={(newValue: TimeRange) => {
-          PriceTrendLineTimeRange.value = newValue;
+          batch(() => {
+            PriceTrendLineTimeRange.value = newValue;
+            BuyPriceTrendLineData.value = undefined;
+            SellPriceTrendLineData.value = undefined;
+          });
           handlePriceTrendLineDataFetch();
         }}
         data={[
@@ -172,14 +174,12 @@ export default function JPEPFTNMarketAnalyzer() {
           { label: "30 天", value: "30d" },
         ]}
       />
-      {typeof BuyPriceTrendLineData.value !== "undefined" ? (
-        <ChartWrapper>
-          <PriceTrendLine
-            buy={BuyPriceTrendLineData as unknown as Signal<PriceTrendLineDataItem>}
-            sell={SellPriceTrendLineData as unknown as Signal<PriceTrendLineDataItem>}
-          />
-        </ChartWrapper>
-      ) : <Skeleton h={500} />}
+      <ChartWrapper chartType="radial" show={typeof BuyPriceTrendLineData.value !== "undefined"}>
+        <PriceTrendLine
+          buy={BuyPriceTrendLineData as unknown as Signal<PriceTrendLineDataItem>}
+          sell={SellPriceTrendLineData as unknown as Signal<PriceTrendLineDataItem>}
+        />
+      </ChartWrapper>
     </Stack>
   );
 }
