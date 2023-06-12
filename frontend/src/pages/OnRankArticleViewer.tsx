@@ -20,7 +20,7 @@ import {
 } from "../models/OnRankArticleViewer/UserNameAutocomplete";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
-import { getDate } from "../utils/timeHelper";
+import { getDate, parseTime } from "../utils/timeHelper";
 
 const userURLOrUserName = signal("");
 const completeItems = signal<string[]>([]);
@@ -116,7 +116,7 @@ function ResultTable() {
           title: "日期",
           sortable: true,
           noWrap: true,
-          render: (record) => (getDate(new Date(record.date * 1000))),
+          render: (record) => (getDate(parseTime(record.date))),
         },
         {
           accessor: "ranking",

@@ -11,7 +11,7 @@ import {
 } from "../models/ArticlePublishTimeViewer/ArticleData";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
-import { getDatetime } from "../utils/timeHelper";
+import { getDatetime, parseTime } from "../utils/timeHelper";
 
 const articleURL = signal("");
 const hasResult = signal(false);
@@ -43,9 +43,9 @@ function handleQuery() {
         batch(() => {
           articleTitle.value = data.title;
           isUpdated.value = data.is_updated;
-          publishTime.value = new Date(data.publish_time * 1000);
+          publishTime.value = parseTime(data.publish_time);
           publishTimeToNowHumanReadable.value = data.publish_time_to_now_human_readable;
-          updateTime.value = new Date(data.update_time * 1000);
+          updateTime.value = parseTime(data.update_time);
           updateTimeToNowHumanReadable.value = data.update_time_to_now_human_readable;
         });
       },

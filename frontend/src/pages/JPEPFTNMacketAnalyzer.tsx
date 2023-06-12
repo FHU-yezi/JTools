@@ -25,7 +25,7 @@ import {
 } from "../models/JPEPFTNMacketAnalyzer/PriceTrendData";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
-import { getDatetime } from "../utils/timeHelper";
+import { getDatetime, parseTime } from "../utils/timeHelper";
 
 Chart.register(
   ArcElement,
@@ -68,7 +68,7 @@ function handleDataUpdateTimeFetch() {
       "/tools/JPEP_FTN_market_analyzer/data_update_time",
       {},
       (data) => batch(() => {
-        dataUpdateTime.value = new Date(data.data_update_time * 1000);
+        dataUpdateTime.value = parseTime(data.data_update_time);
       }),
       commonAPIErrorHandler,
     );

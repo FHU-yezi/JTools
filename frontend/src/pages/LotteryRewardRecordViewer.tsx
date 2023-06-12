@@ -20,7 +20,7 @@ import {
 import { RewardResponse } from "../models/LotteryRewardRecordViewer/Rewards";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
-import { getDatetime } from "../utils/timeHelper";
+import { getDatetime, parseTime } from "../utils/timeHelper";
 
 const rewards = signal<string[]>([]);
 const userURL = signal("");
@@ -106,7 +106,7 @@ export default function LotteryRewardRecordViewer() {
             <tbody>
               {result.value.map((item) => (
                 <tr key={item.time}>
-                  <td>{getDatetime(new Date(item.time * 1000))}</td>
+                  <td>{getDatetime(parseTime(item.time))}</td>
                   <td>{item.reward_name}</td>
                 </tr>
               ))}

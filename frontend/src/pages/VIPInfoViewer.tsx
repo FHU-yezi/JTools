@@ -11,7 +11,7 @@ import {
 } from "../models/VIPInfoViewer/VIPInfo";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
-import { getDate } from "../utils/timeHelper";
+import { getDate, parseTime } from "../utils/timeHelper";
 
 const userURL = signal("");
 const hasResult = signal(false);
@@ -45,7 +45,7 @@ function handleQuery() {
         userName.value = data.name;
         VIPType.value = data.VIP_type;
         if (typeof data.VIP_expire_time !== "undefined") {
-          VIPExpireTime.value = new Date(data.VIP_expire_time * 1000);
+          VIPExpireTime.value = parseTime(data.VIP_expire_time);
           VIPExpireTimeToNowHumanReadable.value = data.VIP_expire_time_to_now_human_readable!;
         }
       }),

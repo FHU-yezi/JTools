@@ -14,7 +14,7 @@ import JMFTextInput from "../components/JMFTextInput";
 import { CheckItem, CheckRequest, CheckResponse } from "../models/LPRecommendChecker/CheckResult";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
-import { getDatetime } from "../utils/timeHelper";
+import { getDatetime, parseTime } from "../utils/timeHelper";
 
 const articleURL = signal("");
 const hasResult = signal(false);
@@ -42,7 +42,7 @@ function handleCheck() {
     },
     (data) => batch(() => {
       articleTitle.value = data.title;
-      releaseTime.value = new Date(data.release_time * 1000);
+      releaseTime.value = parseTime(data.release_time);
       releaseTimeHumanReadable.value = data.release_time_human_readable;
       checkPassed.value = data.check_passed;
       checkItems.value = data.check_items;
