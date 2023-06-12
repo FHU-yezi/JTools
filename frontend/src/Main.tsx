@@ -42,7 +42,7 @@ function Main() {
             nothingFoundMessage="无结果"
           >
             <ErrorBoundary FallbackComponent={ErrorFallback}>
-              <Box mx="auto" mih="100vh" w="90vw" mt={28} maw={896}>
+              <Box mx="auto" w="90vw" my={28} maw={896}>
                 <App />
               </Box>
             </ErrorBoundary>
