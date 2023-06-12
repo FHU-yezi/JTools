@@ -20,6 +20,7 @@ import {
 import { RewardResponse } from "../models/LotteryRewardRecordViewer/Rewards";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
+import { replaceAll } from "../utils/textHelper";
 import { getDatetime, parseTime } from "../utils/timeHelper";
 
 const rewards = signal<string[]>([]);
@@ -63,7 +64,7 @@ export default function LotteryRewardRecordViewer() {
         {},
         (data) => batch(() => {
           rewards.value = data.rewards;
-          selectedRewards.value = data.rewards.map((item) => item.replace(" ", ""));
+          selectedRewards.value = data.rewards.map((item) => replaceAll(item, " ", ""));
         }),
         commonAPIErrorHandler,
       );
@@ -83,7 +84,7 @@ export default function LotteryRewardRecordViewer() {
           >
             <Group>
               {rewards.value.map((item) => (
-                <Chip key={item.replace(" ", "")} value={item.replace(" ", "")}>{item}</Chip>
+                <Chip key={replaceAll(item, " ", "")} value={replaceAll(item, " ", "")}>{item}</Chip>
               ))}
             </Group>
           </Chip.Group>
