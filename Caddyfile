@@ -22,6 +22,6 @@
     }
 
     handle /api/* {
-        reverse_proxy api:8901
+        reverse_proxy api:8902
     }
 }
