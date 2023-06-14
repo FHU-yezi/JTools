@@ -55,7 +55,10 @@ export default function Header({ toolName, showBackArrow }: Props) {
         </Text>
       </Group>
       <Group position="right" noWrap>
-        <ActionIcon onClick={spotlight.open} aria-label="Search">
+        <ActionIcon
+          onClick={() => { umamiTrack("click-search-button"); spotlight.open(); }}
+          aria-label="Search"
+        >
           <AiOutlineSearch size={22} />
         </ActionIcon>
         <Switch
