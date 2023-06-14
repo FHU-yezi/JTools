@@ -83,20 +83,20 @@ function handleQuery() {
 function handleResultTableSort() {
   const sortKey = resultTableSortStatus.value.columnAccessor;
   const sortDirection = resultTableSortStatus.value.direction;
-  const resultToSort = result.value;
+  let resultToSort = result.value;
 
-  function processSortKey(key: number) {
-    const sortKeyProcessResult = Date.parse(key.toString());
-    if (!Number.isNaN(sortKeyProcessResult)) {
-      return sortKeyProcessResult;
-    }
-    return key;
-  }
+  resultToSort = resultToSort.map(
+    (item) => { item.date = parseTime(item.date).getTime(); return item; },
+  );
 
   resultToSort.sort(
     (a: Record<string, any>, b: Record<string, any>) => (
-      processSortKey(a[sortKey]) - processSortKey(b[sortKey])
+      a[sortKey] - b[sortKey]
     ),
+  );
+
+  resultToSort = resultToSort.map(
+    (item) => { item.date = new Date(item.date).getTime() / 1000; return item; },
   );
 
   if (sortDirection === "desc") {
