@@ -1,6 +1,4 @@
-import {
-  SegmentedControl, Stack, Text, Title,
-} from "@mantine/core";
+import { SegmentedControl, Stack, Title } from "@mantine/core";
 import { Signal, batch, signal } from "@preact/signals";
 import {
   ArcElement,
@@ -18,14 +16,12 @@ import {
 import { useEffect } from "preact/hooks";
 import { Line, Pie } from "react-chartjs-2";
 import ChartWrapper from "../components/ChartWrapper";
-import { DataUpdateTimeResponse } from "../models/JPEPFTNMacketAnalyzer/DataUpdateTime";
 import { PoolAmountDataResponse } from "../models/JPEPFTNMacketAnalyzer/PoolAmountData";
 import {
   PriceTrendDataItem, PriceTrendDataRequest, PriceTrendDataResponse, TimeRange,
 } from "../models/JPEPFTNMacketAnalyzer/PriceTrendData";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
-import { getDatetime, parseTime } from "../utils/timeHelper";
 
 Chart.register(
   ArcElement,
@@ -40,7 +36,6 @@ Chart.register(
   Tooltip,
 );
 
-const dataUpdateTime = signal<Date | undefined>(undefined);
 const buyPoolAmount = signal(0);
 const sellPoolAmount = signal(0);
 const PriceTrendLineTimeRange = signal<TimeRange>("24h");
@@ -59,20 +54,6 @@ interface PoolAmountComparePieProps {
 interface PriceTrendLineProps {
   buy: Signal<PriceTrendDataItem>
   sell: Signal<PriceTrendDataItem>
-}
-
-function handleDataUpdateTimeFetch() {
-  try {
-    fetchData<Record<string, never>, DataUpdateTimeResponse>(
-      "GET",
-      "/tools/JPEP_FTN_market_analyzer/data_update_time",
-      {},
-      (data) => batch(() => {
-        dataUpdateTime.value = parseTime(data.data_update_time);
-      }),
-      commonAPIErrorHandler,
-    );
-  } catch {}
 }
 
 function handlePoolAmountDataFetch() {
@@ -162,17 +143,12 @@ function PriceTrendLine({ buy, sell }: PriceTrendLineProps) {
 
 export default function JPEPFTNMarketAnalyzer() {
   useEffect(() => {
-    handleDataUpdateTimeFetch();
     handlePoolAmountDataFetch();
     handlePriceTrendDataFetch();
   }, []);
 
   return (
     <Stack>
-      <Text>
-        更新时间：
-        {dataUpdateTime.value ? getDatetime(dataUpdateTime.value) : "获取中..."}
-      </Text>
       <Title order={2}>买卖贝挂单量对比</Title>
       <ChartWrapper chartType="pie" show={buyPoolAmount.value !== 0}>
         <PoolAmountComparePie buy={buyPoolAmount} sell={sellPoolAmount} />

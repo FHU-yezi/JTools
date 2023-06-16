@@ -11,7 +11,7 @@ from sspeedup.api import CODE, sanic_response_json
 from sspeedup.cache.timeout import timeout_cache
 from sspeedup.time_helper import human_readable_td_to_now
 
-from utils.db import LP_collections_db, article_fp_rank_db
+from utils.db import LP_collections_db, article_FP_rank_db
 from utils.inject_data_model import inject_data_model_from_body
 from utils.pydantic_base import BaseModel
 
@@ -66,7 +66,7 @@ def recommend_by_lp_last_7d_checker(article_obj: Article) -> CheckResult:
 
 def on_rank_last_10d_top30_checker(article_obj: Article) -> CheckResult:
     author_url: str = get_author_url(article_obj)
-    on_rank_last_10d_top30: int = article_fp_rank_db.count_documents(
+    on_rank_last_10d_top30: int = article_FP_rank_db.count_documents(
         {
             "author.url": author_url,
             "date": {
@@ -84,7 +84,7 @@ def on_rank_last_10d_top30_checker(article_obj: Article) -> CheckResult:
 
 def on_rank_last_1m_top30_checker(article_obj: Article) -> CheckResult:
     author_url: str = get_author_url(article_obj)
-    on_rank_last_1m_top30: int = article_fp_rank_db.count_documents(
+    on_rank_last_1m_top30: int = article_FP_rank_db.count_documents(
         {
             "author.url": author_url,
             "date": {

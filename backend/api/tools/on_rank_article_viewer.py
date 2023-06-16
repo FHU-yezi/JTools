@@ -5,7 +5,7 @@ from JianshuResearchTools.exceptions import InputError
 from sanic import Blueprint, HTTPResponse, Request
 from sspeedup.api import CODE, sanic_response_json
 
-from utils.db import article_fp_rank_db
+from utils.db import article_FP_rank_db
 from utils.inject_data_model import (
     inject_data_model_from_body,
     inject_data_model_from_query_args,
@@ -45,7 +45,7 @@ def user_name_autocomplete_handler(
         )
 
     result: List[str] = (
-        article_fp_rank_db.distinct(
+        article_FP_rank_db.distinct(
             "author.name",
             {
                 "author.name": {
@@ -105,7 +105,7 @@ def on_rank_records_handler(
         else {"author.url": data.user_url}
     )
 
-    result: List[Dict] = article_fp_rank_db.find(fliter).sort("date", -1).limit(100)  # type: ignore
+    result: List[Dict] = article_FP_rank_db.find(fliter).sort("date", -1).limit(100)  # type: ignore
 
     return sanic_response_json(
         code=CODE.SUCCESS,
