@@ -14,7 +14,6 @@ REWARDS: Set[str] = {
     "收益加成卡 1 万",
     "四叶草徽章",
     "锦鲤头像框 1 年",
-    "招财猫头像框 1 年",
 }
 
 lottery_reward_record_viewer_blueprint = Blueprint(
