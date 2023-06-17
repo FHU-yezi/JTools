@@ -1,5 +1,5 @@
 import {
-  Button, Flex, Modal, Stack,
+  Button, Flex, Modal, Stack, Text,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, useSignal } from "@preact/signals";
@@ -13,6 +13,7 @@ import { fetchData } from "../utils/fetchData";
 import { getDatetime, parseTime } from "../utils/timeHelper";
 import Header from "./Header";
 import Loading from "./Loading";
+import SSLink from "./SSLink";
 import SSStat from "./SSStat";
 
 interface Props {
@@ -31,6 +32,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
   const dataUpdateTime = useSignal<Date | undefined>(undefined);
   const dataUpdateFreqDesc = useSignal<string | undefined>(undefined);
   const dataCount = useSignal<number | undefined>(undefined);
+  const dataSource = useSignal<Record<string, string> | undefined>({});
   const showUnavaliableModal = useSignal(false);
 
   // 处理部分情况下页面切换后不在顶部的问题
@@ -49,6 +51,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
             toolStatus.value = data.status;
             unavaliableReason.value = data.unavaliable_reason;
             downgradedReason.value = data.downgraded_reason;
+            dataSource.value = data.data_source;
             if (data.data_update_time) {
               dataUpdateTime.value = parseTime(data.data_update_time);
               dataUpdateFreqDesc.value = data.data_update_freq_desc!;
@@ -113,6 +116,18 @@ export default function ToolWrapper({ Component, toolName }: Props) {
               <SSStat title="数据量" value={dataCount.value} />
               )}
             </Flex>
+            {typeof dataSource.value !== "undefined" && (
+            <Stack spacing={4} my={16}>
+              <Text fw={600}>数据来源</Text>
+              {Object.entries(dataSource.value).map(([name, url]) => (
+                <Text>
+                  {name}
+                  ：
+                  <SSLink url={url} isExternal />
+                </Text>
+              ))}
+            </Stack>
+            )}
             <Component />
           </>
         ) : <Loading />}

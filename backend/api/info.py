@@ -66,6 +66,7 @@ class InfoItem(BaseModel):
     data_update_time_key: Optional[str]
     data_update_time_sort_direction: Optional[Literal["asc", "desc"]]
     data_update_freq_desc: Optional[str]
+    data_source: Optional[Dict[str, str]]
 
 
 class InfoRequest(BaseModel):
@@ -79,6 +80,7 @@ class InfoResponse(BaseModel):
     data_update_time: Optional[int]
     data_update_freq_desc: Optional[str]
     data_count: Optional[int]
+    data_source: Optional[Dict[str, str]]
 
 
 @info_blueprint.get("/")
@@ -105,6 +107,7 @@ def info_handler(request: Request, data: InfoRequest) -> HTTPResponse:
     )
     data_count = get_data_count(info.db) if info.enable_data_count else None  # type: ignore
     data_update_freq_desc = info.data_update_freq_desc
+    data_source = info.data_source
 
     return sanic_response_json(
         code=CODE.SUCCESS,
@@ -118,6 +121,7 @@ def info_handler(request: Request, data: InfoRequest) -> HTTPResponse:
                 else None,
                 data_count=data_count,
                 data_update_freq_desc=data_update_freq_desc,
+                data_source=data_source,
             ).dict()
         ),
     )

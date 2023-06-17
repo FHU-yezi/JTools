@@ -3,10 +3,10 @@ import { Button } from "@mantine/core";
 interface Props {
     url: string
     label?: string
-    isExternal: boolean
+    isExternal?: boolean
 }
 
-export default function SSLink({ url, label, isExternal }: Props) {
+export default function SSLink({ url, label, isExternal = false }: Props) {
   return (
     <Button
       onClick={() => window.open(url, isExternal ? "_blank" : "_self")}
