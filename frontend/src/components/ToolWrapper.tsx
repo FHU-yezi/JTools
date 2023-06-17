@@ -10,7 +10,7 @@ import { InfoRequest, InfoResponse, InfoStatus } from "../models/info";
 import { getToolSlug } from "../utils/URLHelper";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
-import { getDatetime, parseTime } from "../utils/timeHelper";
+import { getDateTimeWithoutSecond, parseTime } from "../utils/timeHelper";
 import Header from "./Header";
 import Loading from "./Loading";
 import SSLink from "./SSLink";
@@ -108,7 +108,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
               {typeof dataUpdateTime.value !== "undefined" && (
               <SSStat
                 title="数据更新时间"
-                value={getDatetime(dataUpdateTime.value!)}
+                value={getDateTimeWithoutSecond(dataUpdateTime.value!)}
                 desc={dataUpdateFreqDesc.value}
               />
               )}
