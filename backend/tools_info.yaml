@@ -1,9 +1,3 @@
-article-publish-time-viewer:
-    status: 0
-    unavaliable_reason: ""
-    downgraded_reason: ""
-    enable_data_update_time: false
-    enable_data_count: false
 article-wordcloud-generator:
     status: 0
     unavaliable_reason: ""

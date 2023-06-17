@@ -1,6 +1,5 @@
 from sanic import Blueprint
 
-from api.tools.article_publish_time_viewer import article_publish_time_viewer_blueprint
 from api.tools.article_wordcloud_generator import article_wordcloud_generator_blueprint
 from api.tools.JPEP_FTN_macket_analyzer import JPEP_FTN_market_analyzer_blueprint
 from api.tools.lottery_analyzer import lottery_analyzer_blueprint
@@ -12,7 +11,6 @@ from api.tools.on_rank_article_viewer import on_rank_article_viewer_blueprint
 from api.tools.VIP_info_viewer import VIP_info_viewer_blueprint
 
 tools_blueprint = Blueprint.group(
-    article_publish_time_viewer_blueprint,
     article_wordcloud_generator_blueprint,
     JPEP_FTN_market_analyzer_blueprint,
     lottery_analyzer_blueprint,

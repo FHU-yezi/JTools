@@ -41,12 +41,6 @@ export const routes: RouteItem[] = [
     description: "分析简书大转盘中奖数据。",
   },
   {
-    component: lazy(() => import("./pages/ArticlePublishTimeViewer")),
-    path: "/article-publish-time-viewer",
-    toolName: "文章发布时间查询",
-    description: "查询文章的发布与更新时间。",
-  },
-  {
     component: lazy(() => import("./pages/ArticleWordcloudGenerator")),
     path: "/article-wordcloud-generator",
     toolName: "文章词云图",
