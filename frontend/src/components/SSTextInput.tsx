@@ -8,7 +8,7 @@ interface Props {
   noSelectOnFocus?: boolean;
 }
 
-export default function JMFTextInput({
+export default function SSTextInput({
   label, value, onEnter, noSelectOnFocus = false,
 }: Props) {
   return (

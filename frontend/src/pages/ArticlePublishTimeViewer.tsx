@@ -3,8 +3,8 @@ import {
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
-import JMFLink from "../components/JMFLink";
-import JMFTextInput from "../components/JMFTextInput";
+import SSLink from "../components/SSLink";
+import SSTextInput from "../components/SSTextInput";
 import {
   ArticleDataRequest,
   ArticleDataRqsponse,
@@ -59,7 +59,7 @@ function handleQuery() {
 export default function ArticlePublishTimeViewer() {
   return (
     <Stack>
-      <JMFTextInput label="文章链接" value={articleURL} onEnter={handleQuery} />
+      <SSTextInput label="文章链接" value={articleURL} onEnter={handleQuery} />
       <Button onClick={handleQuery} loading={isLoading.value}>
         查询
       </Button>
@@ -67,7 +67,7 @@ export default function ArticlePublishTimeViewer() {
         <Card padding="lg" shadow="xs" radius="lg" withBorder>
           <Text>
             文章：
-            <JMFLink
+            <SSLink
               url={articleURL.value}
               label={articleTitle.value.length <= 17 ? articleTitle.value : `${articleTitle.value.substring(0, 17)}...`}
               isExternal

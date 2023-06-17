@@ -7,8 +7,8 @@ import {
 import { notifications } from "@mantine/notifications";
 import { signal } from "@preact/signals";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
-import JMFAutocomplete from "../components/JMFAutocomplete";
-import JMFLink from "../components/JMFLink";
+import SSAutocomplete from "../components/SSAutocomplete";
+import SSLink from "../components/SSLink";
 import {
   OnRankRecordItem,
   OnRankRecordsRequest,
@@ -128,7 +128,7 @@ function ResultTable() {
           accessor: "title",
           title: "文章",
           render: (record) => (
-            <JMFLink
+            <SSLink
               url={record.url}
               label={record.title.length <= 30
                 ? record.title
@@ -155,7 +155,7 @@ function ResultTable() {
 export default function OnRankArticleViewer() {
   return (
     <Stack>
-      <JMFAutocomplete
+      <SSAutocomplete
         label="用户昵称 / 个人主页链接"
         value={userURLOrUserName}
         onEnter={handleQuery}

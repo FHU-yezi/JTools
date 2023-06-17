@@ -6,7 +6,7 @@ interface Props {
     isExternal: boolean
 }
 
-export default function JMFLink({ url, label, isExternal }: Props) {
+export default function SSLink({ url, label, isExternal }: Props) {
   return (
     <Button
       onClick={() => window.open(url, isExternal ? "_blank" : "_self")}

@@ -11,7 +11,7 @@ import {
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
-import JMFTextInput from "../components/JMFTextInput";
+import SSTextInput from "../components/SSTextInput";
 import {
   LotteryRecordItem,
   LotteryRecordsRequest,
@@ -73,7 +73,7 @@ export default function LotteryRewardRecordViewer() {
 
   return (
     <Stack>
-      <JMFTextInput label="用户个人主页链接" value={userURL} onEnter={handleQuery} />
+      <SSTextInput label="用户个人主页链接" value={userURL} onEnter={handleQuery} />
       {rewards.value.length !== 0 ? (
         <>
           <Text fw={600}>奖项筛选</Text>

@@ -4,7 +4,7 @@ interface Props {
     children: JSX.Element | (() => JSX.Element)
 }
 
-export default function JMFScolllable({ children }: Props) {
+export default function SSScolllable({ children }: Props) {
   return (
     <div style={{ overflowX: "scroll" }}>
       {children}

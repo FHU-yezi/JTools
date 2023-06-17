@@ -22,7 +22,7 @@ import {
 import { useEffect } from "preact/hooks";
 import { Line, Pie } from "react-chartjs-2";
 import ChartWrapper from "../components/ChartWrapper";
-import JMFScolllable from "../components/JMFScollable";
+import SSScolllable from "../components/SSScollable";
 import {
   PerPrizeDataItem,
   PerPrizeDataRequest,
@@ -127,7 +127,7 @@ function PerPrizeAnalyzeTable({ data }: PerPrizeAnalyzeTableProps) {
   const totalAvagaeWinsCountPerWinner = totalWins / totalWinners;
 
   return (
-    <JMFScolllable>
+    <SSScolllable>
       <Table style={{ minWidth: 670 }}>
         <thead>
           <tr>
@@ -165,7 +165,7 @@ function PerPrizeAnalyzeTable({ data }: PerPrizeAnalyzeTableProps) {
           </tr>
         </tfoot>
       </Table>
-    </JMFScolllable>
+    </SSScolllable>
   );
 }
 

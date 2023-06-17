@@ -13,7 +13,7 @@ import { Signal, signal } from "@preact/signals";
 import { AiOutlineCheck } from "react-icons/ai";
 import { BiCopy, BiRightArrowAlt } from "react-icons/bi";
 import QRCode from "react-qr-code";
-import JMFTextInput from "../components/JMFTextInput";
+import SSTextInput from "../components/SSTextInput";
 
 interface JianshuURLType {
   URLSchemePrefix: string;
@@ -110,7 +110,7 @@ export default function URLSchemeConvertor() {
 
   return (
     <Stack>
-      <JMFTextInput label="简书链接" value={jianshuURL} onEnter={handleConvert} />
+      <SSTextInput label="简书链接" value={jianshuURL} onEnter={handleConvert} />
       <Button onClick={handleConvert}>转换</Button>
       {hasResult.value && (
         <Center>

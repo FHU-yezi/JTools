@@ -7,8 +7,8 @@ import { Chart as ChartInstance, Colors, LinearScale } from "chart.js";
 import { WordCloudController, WordElement } from "chartjs-chart-wordcloud";
 import { Chart } from "react-chartjs-2";
 import ChartWrapper from "../components/ChartWrapper";
-import JMFLink from "../components/JMFLink";
-import JMFTextInput from "../components/JMFTextInput";
+import SSLink from "../components/SSLink";
+import SSTextInput from "../components/SSTextInput";
 import { WordFreqDataItem, WordFreqDataRequest, WordFreqDataResponse } from "../models/ArticleWordcloudGenerator/WordFreqData";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
@@ -73,13 +73,13 @@ function Wordcloud({ data }: WordcloudProps) {
 export default function ArticleWordcloudGenerator() {
   return (
     <Stack>
-      <JMFTextInput label="文章链接" value={articleURL} onEnter={handleGenerate} />
+      <SSTextInput label="文章链接" value={articleURL} onEnter={handleGenerate} />
       <Button onClick={handleGenerate} loading={isLoading.value}>查询</Button>
       {hasResult.value && (
       <>
         <Center>
           <Text>文章：</Text>
-          <JMFLink
+          <SSLink
             url={articleURL.value}
             label={articleTitle.value.length <= 17 ? articleTitle.value : `${articleTitle.value.substring(0, 17)}...`}
             isExternal

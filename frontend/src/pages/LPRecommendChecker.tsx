@@ -8,9 +8,9 @@ import {
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
-import JMFLink from "../components/JMFLink";
-import JMFScolllable from "../components/JMFScollable";
-import JMFTextInput from "../components/JMFTextInput";
+import SSLink from "../components/SSLink";
+import SSScolllable from "../components/SSScollable";
+import SSTextInput from "../components/SSTextInput";
 import { CheckItem, CheckRequest, CheckResponse } from "../models/LPRecommendChecker/CheckResult";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
@@ -56,13 +56,13 @@ function handleCheck() {
 export default function LPRecommendChecker() {
   return (
     <Stack>
-      <JMFTextInput label="文章链接" value={articleURL} onEnter={handleCheck} />
+      <SSTextInput label="文章链接" value={articleURL} onEnter={handleCheck} />
       <Button onClick={handleCheck} loading={isLoading.value}>查询</Button>
       {hasResult.value && (
         <>
           <Center>
             <Text>文章标题：</Text>
-            <JMFLink url={articleURL.value} label={articleTitle.value} isExternal />
+            <SSLink url={articleURL.value} label={articleTitle.value} isExternal />
           </Center>
           <Center>
             <Text>{`发布于 ${getDatetime(releaseTime.value!)}（${releaseTimeHumanReadable.value}前）`}</Text>
@@ -72,7 +72,7 @@ export default function LPRecommendChecker() {
               {checkPassed.value ? "符合推荐标准" : "不符合推荐标准"}
             </Text>
           </Center>
-          <JMFScolllable>
+          <SSScolllable>
             <Table style={{ minWidth: 480 }}>
               <thead>
                 <tr>
@@ -93,7 +93,7 @@ export default function LPRecommendChecker() {
                 ))}
               </tbody>
             </Table>
-          </JMFScolllable>
+          </SSScolllable>
         </>
       )}
     </Stack>

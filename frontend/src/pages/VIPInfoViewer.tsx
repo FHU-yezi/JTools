@@ -3,8 +3,8 @@ import {
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
-import JMFLink from "../components/JMFLink";
-import JMFTextInput from "../components/JMFTextInput";
+import SSLink from "../components/SSLink";
+import SSTextInput from "../components/SSTextInput";
 import {
   VIPInfoRequest,
   VIPInfoResponse,
@@ -59,13 +59,13 @@ function handleQuery() {
 export default function VIPInfoViewer() {
   return (
     <Stack>
-      <JMFTextInput label="用户个人主页链接" value={userURL} onEnter={handleQuery} />
+      <SSTextInput label="用户个人主页链接" value={userURL} onEnter={handleQuery} />
       <Button onClick={handleQuery} loading={isLoading.value}>查询</Button>
       {hasResult.value && (
         <>
           <Text>
             昵称：
-            <JMFLink url={userURL.value} label={userName.value} isExternal />
+            <SSLink url={userURL.value} label={userName.value} isExternal />
           </Text>
           <Text>
             会员级别：

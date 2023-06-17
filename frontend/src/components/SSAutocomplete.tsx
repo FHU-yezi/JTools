@@ -14,7 +14,7 @@ interface Props {
   noSelectOnFocus?: boolean;
 }
 
-export default function JMFAutocomplete({
+export default function SSAutocomplete({
   label,
   value,
   onEnter,
