@@ -16,7 +16,7 @@ JPEP-FTN-market-analyzer:
     downgraded_reason: ""
     enable_data_update_time: true
     enable_data_count: true
-    db: JPEP_FTN_market 
+    db: JPEP_FTN_market
     data_update_time_key: fetch_time
     data_update_time_sort_direction: desc
     data_update_freq_desc: 十分钟更新一次
