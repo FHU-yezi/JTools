@@ -65,6 +65,11 @@ function Wordcloud({ data }: WordcloudProps) {
       }}
       options={{
         events: [],
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
       }}
     />
   );
