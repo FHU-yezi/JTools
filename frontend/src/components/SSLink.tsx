@@ -1,4 +1,4 @@
-import { Button } from "@mantine/core";
+import { Anchor } from "@mantine/core";
 
 interface Props {
     url: string
@@ -8,12 +8,11 @@ interface Props {
 
 export default function SSLink({ url, label, isExternal = false }: Props) {
   return (
-    <Button
-      onClick={() => window.open(url, isExternal ? "_blank" : "_self")}
-      variant="subtle"
-      compact
+    <Anchor
+      href={url}
+      target={isExternal ? "_blank" : "_self"}
     >
       {label ?? url}
-    </Button>
+    </Anchor>
   );
 }
