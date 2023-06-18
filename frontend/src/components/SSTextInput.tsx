@@ -27,6 +27,7 @@ export default function SSTextInput({
             : undefined
       }
         aria-label={label}
+        spellcheck={false}
       />
     </div>
   );

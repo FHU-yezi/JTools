@@ -48,6 +48,7 @@ export default function SSAutocomplete({
       }
         data={completeItems.value}
         aria-label={label}
+        spellcheck={false}
       />
     </div>
   );
