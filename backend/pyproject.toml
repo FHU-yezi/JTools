@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "jtools"
-version = "3.0.0-b4"
+version = "3.0.0-b5"
 description = ""
 authors = ["yezi <yehaowei20060411@qq.com>"]
 license = "MIT"
