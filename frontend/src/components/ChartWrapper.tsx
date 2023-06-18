@@ -31,8 +31,15 @@ export default function ChartWrapper({
       </SSScolllable>
     );
   }
+  if (chartType === "pie") {
+    return (
+      <Center mx="auto" style={{ width: "100%", height, maxWidth: 384 }}>
+        {children}
+      </Center>
+    );
+  }
   return (
-    <Center style={{ width: "100%", height }}>
+    <Center mx="auto" style={{ width: "100%", height, maxWidth: 512 }}>
       {children}
     </Center>
   );
