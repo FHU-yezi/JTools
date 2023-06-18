@@ -12,6 +12,7 @@ import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
 import SSTextInput from "../components/SSTextInput";
+import SSTips from "../components/SSTips";
 import {
   LotteryRecordItem,
   LotteryRecordsRequest,
@@ -92,6 +93,11 @@ export default function LotteryRewardRecordViewer() {
       ) : (
         <Skeleton height={64} />
       )}
+      <SSTips
+        label="关于免费开 1 次连载 / 锦鲤头像框"
+        content="受简书接口限制，我们无法获取这两种奖品的中奖情况，故无法进行查询"
+        multiline
+      />
       <Button onClick={handleQuery} loading={isLoading.value}>
         查询
       </Button>
