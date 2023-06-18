@@ -47,7 +47,7 @@ def get_data_update_time(
 
 
 def get_data_count(db: str) -> int:
-    return DB_STRING_TO_OBJ[db].count_documents({})
+    return DB_STRING_TO_OBJ[db].estimated_document_count()
 
 
 class InfoStatus(IntEnum):
