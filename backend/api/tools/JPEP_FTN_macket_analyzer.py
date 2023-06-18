@@ -39,24 +39,27 @@ def get_data_update_time() -> datetime:
 
 
 def get_pool_amount(type_: Literal["buy", "sell"], time: datetime) -> int:
-    return JPEP_FTN_market_db.aggregate(
-        [
-            {
-                "$match": {
-                    "fetch_time": time,
-                    "trade_type": type_,
-                }
-            },
-            {
-                "$group": {
-                    "_id": None,
-                    "sum": {
-                        "$sum": "$amount.tradable",
+    try:
+        return JPEP_FTN_market_db.aggregate(
+            [
+                {
+                    "$match": {
+                        "fetch_time": time,
+                        "trade_type": type_,
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": None,
+                        "sum": {
+                            "$sum": "$amount.tradable",
+                        },
                     },
                 },
-            },
-        ]
-    ).next()["sum"]
+            ]
+        ).next()["sum"]
+    except StopIteration:  # 该侧没有挂单
+        return 0
 
 
 def get_price_trend_data(
