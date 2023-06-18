@@ -1,11 +1,19 @@
-import { Stack } from "@mantine/core";
+import { Stack, Text } from "@mantine/core";
+import { batch, signal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
 import { useLocation } from "wouter-preact";
 import { V2RedirectRoutes, V2UnavaliableRoutes, V2UnimplementedRoutes } from "../V2RedirectRoutes";
 import Header from "../components/Header";
 import SSTips from "../components/SSTips";
 import ToolCard from "../components/ToolCard";
+import { StatusResponse } from "../models/status";
 import { routes } from "../routes";
+import { commonAPIErrorHandler } from "../utils/errorHandler";
+import { fetchData } from "../utils/fetchData";
+
+const version = signal<string | undefined>(undefined);
+const downgradedTools = signal<string[]>([]);
+const unavaliableTools = signal<string[]>([]);
 
 // eslint-disable-next-line no-unused-vars
 function handleV2Redirect(appName: string, setLocation: (location: string) => void) {
@@ -33,7 +41,21 @@ export default function MainPage() {
     if (V2AppName) {
       handleV2Redirect(V2AppName, setLocation);
     }
-  });
+  }, []);
+
+  useEffect(() => {
+    fetchData<Record<string, never>, StatusResponse>(
+      "GET",
+      "/status",
+      {},
+      (data) => batch(() => {
+        version.value = data.version;
+        downgradedTools.value = data.downgraded_tools;
+        unavaliableTools.value = data.unavaliable_tools;
+      }),
+      commonAPIErrorHandler,
+    );
+  }, []);
 
   return (
     <>
@@ -50,15 +72,20 @@ export default function MainPage() {
       >
         <Header toolName="简书小工具集" showBackArrow={false} />
       </header>
-      <div style={{ height: "4em" }} />
+      <div style={{ height: "3em" }} />
       <Stack>
+        <Text size="sm" c="dimmed">
+          版本：
+          {version.value ?? "获取中..."}
+        </Text>
         {routes.map((item) => (
           <ToolCard
             key={item.toolName}
             toolName={item.toolName}
-            component={item.component}
             path={item.path}
             description={item.description}
+            downgraded={downgradedTools.value.includes(item.path.slice(1))}
+            unavaliable={unavaliableTools.value.includes(item.path.slice(1))}
           />
         ))}
         <SSTips
