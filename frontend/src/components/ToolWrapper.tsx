@@ -113,7 +113,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
               />
               )}
               {typeof dataCount.value !== "undefined" && (
-              <SSStat title="数据量" value={dataCount.value} />
+              <SSStat title="总数据量" value={dataCount.value} />
               )}
             </Flex>
             {typeof dataSource.value !== "undefined" && (
