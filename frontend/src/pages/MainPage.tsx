@@ -10,6 +10,7 @@ import { StatusResponse } from "../models/status";
 import { routes } from "../routes";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
+import umamiTrack from "../utils/umamiTrack";
 
 const version = signal<string | undefined>(undefined);
 const downgradedTools = signal<string[]>([]);
@@ -18,16 +19,19 @@ const unavaliableTools = signal<string[]>([]);
 // eslint-disable-next-line no-unused-vars
 function handleV2Redirect(appName: string, setLocation: (location: string) => void) {
   if (appName in V2RedirectRoutes) {
+    umamiTrack("v2-redirect", { from: appName, to: V2RedirectRoutes[appName] });
     setLocation(V2RedirectRoutes[appName]);
     return;
   }
 
   if (V2UnimplementedRoutes.includes(appName)) {
+    umamiTrack("v2-redirect", { from: appName, to: "/v2-unimplemented" });
     setLocation("/v2-unimplemented");
     return;
   }
 
   if (V2UnavaliableRoutes.includes(appName)) {
+    umamiTrack("v2-redirect", { from: appName, to: "/v2-unavaliable" });
     setLocation("/v2-unavaliable");
   }
 }
