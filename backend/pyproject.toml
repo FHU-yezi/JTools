@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "jtools"
 version = "3.0.0-b6"
-description = ""
+description = "探索未知"
 authors = ["yezi <yehaowei20060411@qq.com>"]
 license = "MIT"
 readme = "README.md"
@@ -15,7 +15,6 @@ pymongo = "^4.2.0"
 sspeedup = {version = "^0.11.1", extras = ["logging", "api-response-sanic", "ability-word-split"]}
 sanic = "^23.3.0"
 pydantic = "^1.10.7"
-
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.269"
