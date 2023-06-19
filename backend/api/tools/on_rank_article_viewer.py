@@ -64,6 +64,7 @@ def user_name_autocomplete_handler(
 class OnRankRecordsRequest(BaseModel):
     user_url: Optional[str]
     user_name: Optional[str]
+    offset: int
 
 
 class OnRankRecordItem(BaseModel):
@@ -76,6 +77,7 @@ class OnRankRecordItem(BaseModel):
 
 class OnRankRecordsResponse(BaseModel):
     records: List[OnRankRecordItem]
+    total: int
 
 
 @on_rank_article_viewer_blueprint.post("/on_rank_records")
@@ -99,13 +101,19 @@ def on_rank_records_handler(
         except InputError:
             return sanic_response_json(code=CODE.BAD_ARGUMENTS, message="输入的用户个人主页链接无效")
 
-    fliter: Dict[str, Any] = (
+    filter_dict: Dict[str, Any] = (
         {"author.name": data.user_name}
         if data.user_name
         else {"author.url": data.user_url}
     )
 
-    result: List[Dict] = article_FP_rank_db.find(fliter).sort("date", -1).limit(100)  # type: ignore
+    result: List[Dict] = (
+        article_FP_rank_db.find(filter_dict)
+        .sort("date", -1)
+        .skip(data.offset)
+        .limit(50)
+    )  # type: ignore
+    total = article_FP_rank_db.count_documents(filter_dict)
 
     return sanic_response_json(
         code=CODE.SUCCESS,
@@ -119,6 +127,7 @@ def on_rank_records_handler(
                     FP_reward_count=x["reward"]["to_author"],
                 )
                 for x in result
-            ]
+            ],
+            total=total,
         ).dict(),
     )

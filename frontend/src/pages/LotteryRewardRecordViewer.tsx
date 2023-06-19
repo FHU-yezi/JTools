@@ -5,11 +5,11 @@ import {
   Group,
   Skeleton,
   Stack,
-  Table,
   Text,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
+import { DataTable } from "mantine-datatable";
 import { useEffect } from "preact/hooks";
 import SSTextInput from "../components/SSTextInput";
 import SSTips from "../components/SSTips";
@@ -24,14 +24,18 @@ import { fetchData } from "../utils/fetchData";
 import { replaceAll } from "../utils/textHelper";
 import { getDatetime, parseTime } from "../utils/timeHelper";
 
+const PAGE_SIZE = 100;
+
 const rewards = signal<string[]>([]);
 const userURL = signal("");
 const selectedRewards = signal<string[]>([]);
 const hasResult = signal(false);
 const isLoading = signal(false);
 const result = signal<LotteryRecordItem[]>([]);
+const resultTotalCount = signal<number | undefined>(undefined);
+const currentPage = signal(1);
 
-function handleQuery() {
+function handleQuery(offset: number) {
   if (userURL.value.length === 0) {
     notifications.show({
       message: "请输入用户个人主页链接",
@@ -47,13 +51,46 @@ function handleQuery() {
       {
         user_url: userURL.value,
         target_rewards: selectedRewards.value,
+        offset,
       },
-      (data) => (result.value = data.records),
+      (data) => {
+        result.value = data.records;
+        resultTotalCount.value = data.total;
+      },
       commonAPIErrorHandler,
-      hasResult,
-      isLoading,
+      result.value.length === 0 ? hasResult : undefined,
+      result.value.length === 0 ? isLoading : undefined,
     );
   } catch {}
+}
+
+function ResultTable() {
+  return (
+    <DataTable
+      height={600}
+      records={result.value}
+      columns={[
+        {
+          accessor: "time",
+          title: "时间",
+          noWrap: true,
+          render: (record) => (getDatetime(parseTime(record.time))),
+        },
+        {
+          accessor: "reward_name",
+          title: "奖项",
+          noWrap: true,
+        },
+      ]}
+      totalRecords={resultTotalCount.value}
+      recordsPerPage={PAGE_SIZE}
+      page={currentPage.value}
+      onPageChange={(page) => {
+        handleQuery((page - 1) * PAGE_SIZE);
+        currentPage.value = page;
+      }}
+    />
+  );
 }
 
 export default function LotteryRewardRecordViewer() {
@@ -74,7 +111,11 @@ export default function LotteryRewardRecordViewer() {
 
   return (
     <Stack>
-      <SSTextInput label="用户个人主页链接" value={userURL} onEnter={handleQuery} />
+      <SSTextInput
+        label="用户个人主页链接"
+        value={userURL}
+        onEnter={() => handleQuery(0)}
+      />
       {rewards.value.length !== 0 ? (
         <>
           <Text fw={600}>奖项筛选</Text>
@@ -98,30 +139,12 @@ export default function LotteryRewardRecordViewer() {
         content="受简书接口限制，我们无法获取这两种奖品的中奖情况，故无法进行查询"
         multiline
       />
-      <Button onClick={handleQuery} loading={isLoading.value}>
+      <Button onClick={() => handleQuery(0)} loading={isLoading.value}>
         查询
       </Button>
       {hasResult.value
         && (result.value.length !== 0 ? (
-          <Table captionSide="bottom">
-            <thead>
-              <tr>
-                <th>时间</th>
-                <th>奖项</th>
-              </tr>
-            </thead>
-            <tbody>
-              {result.value.map((item) => (
-                <tr key={item.time}>
-                  <td>{getDatetime(parseTime(item.time))}</td>
-                  <td>{item.reward_name}</td>
-                </tr>
-              ))}
-            </tbody>
-            {result.value.length === 100 && (
-              <caption>仅展示距现在最近的 100 条结果</caption>
-            )}
-          </Table>
+          <ResultTable />
         ) : (
           <Center>
             <Text fw={600} m={24} size="lg">

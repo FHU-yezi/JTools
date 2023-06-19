@@ -1,6 +1,7 @@
 export interface OnRankRecordsRequest {
   user_url?: string;
   user_name?: string;
+  offset: number;
 }
 
 export interface OnRankRecordItem {
@@ -13,4 +14,5 @@ export interface OnRankRecordItem {
 
 export interface OnRankRecordsResponse {
   records: OnRankRecordItem[];
+  total: number;
 }

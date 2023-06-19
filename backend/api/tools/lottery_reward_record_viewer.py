@@ -40,6 +40,7 @@ async def rewards_handler(request: Request) -> HTTPResponse:
 class LotteryRecordsRequest(BaseModel):
     user_url: str
     target_rewards: List[str]
+    offset: int
 
 
 class LotteryItem(BaseModel):
@@ -49,6 +50,7 @@ class LotteryItem(BaseModel):
 
 class LotteryRecordsResponse(BaseModel):
     records: List[LotteryItem]
+    total: int
 
 
 @lottery_reward_record_viewer_blueprint.post("/lottery_records")
@@ -63,25 +65,26 @@ def lottery_records_handler(
     except InputError:
         return sanic_response_json(code=CODE.BAD_ARGUMENTS, message="输入的简书用户个人主页链接无效")
 
+    filter_dict = {
+        "user.url": data.user_url,
+        "reward_name": {
+            "$in": data.target_rewards,
+        },
+    }
     result: List[Dict] = (
-        lottery_db.find(
-            {
-                "user.url": data.user_url,
-                "reward_name": {
-                    "$in": data.target_rewards,
-                },
-            },
-        )
-        .sort("time", -1)
-        .limit(100)
+        lottery_db.find(filter_dict).sort("time", -1).skip(data.offset).limit(100)
     )  # type: ignore
+    total = lottery_db.count_documents(filter_dict)
 
     return sanic_response_json(
         code=CODE.SUCCESS,
         data=LotteryRecordsResponse(
             records=[
-                LotteryItem(time=int(x["time"].timestamp()), reward_name=x["reward_name"])
+                LotteryItem(
+                    time=int(x["time"].timestamp()), reward_name=x["reward_name"]
+                )
                 for x in result
-            ]
+            ],
+            total=total,
         ).dict(),
     )

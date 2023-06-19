@@ -22,11 +22,15 @@ import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import { getDate, parseTime } from "../utils/timeHelper";
 
+const PAGE_SIZE = 50;
+
 const userURLOrUserName = signal("");
 const completeItems = signal<string[]>([]);
 const isLoading = signal(false);
 const hasResult = signal(false);
 const result = signal<OnRankRecordItem[]>([]);
+const resultTotalCount = signal<number | undefined>(undefined);
+const currentPage = signal(1);
 const resultTableSortStatus = signal<DataTableSortStatus>({ columnAccessor: "date", direction: "desc" });
 
 function isURL(string: string): boolean {
@@ -54,7 +58,7 @@ function handleCompleteItemUpdate(value: string) {
   } catch {}
 }
 
-function handleQuery() {
+function handleQuery(offset: number) {
   if (userURLOrUserName.value.length === 0) {
     notifications.show({
       message: "请输入用户昵称或个人主页链接",
@@ -64,18 +68,21 @@ function handleQuery() {
   }
 
   const requestBody: OnRankRecordsRequest = isURL(userURLOrUserName.value)
-    ? { user_url: userURLOrUserName.value }
-    : { user_name: userURLOrUserName.value.trim() };
+    ? { user_url: userURLOrUserName.value, offset }
+    : { user_name: userURLOrUserName.value.trim(), offset };
 
   try {
     fetchData<OnRankRecordsRequest, OnRankRecordsResponse>(
       "POST",
       "/tools/on_rank_article_viewer/on_rank_records",
       requestBody,
-      (data) => (result.value = data.records),
+      (data) => {
+        result.value = data.records;
+        resultTotalCount.value = data.total;
+      },
       commonAPIErrorHandler,
-      hasResult,
-      isLoading,
+      result.value.length === 0 ? hasResult : undefined,
+      result.value.length === 0 ? isLoading : undefined,
     );
   } catch {}
 }
@@ -109,6 +116,7 @@ function handleResultTableSort() {
 function ResultTable() {
   return (
     <DataTable
+      height={600}
       records={result.value}
       columns={[
         {
@@ -148,6 +156,13 @@ function ResultTable() {
       onSortStatusChange={
         (newStatus) => { resultTableSortStatus.value = newStatus; handleResultTableSort(); }
       }
+      totalRecords={resultTotalCount.value}
+      recordsPerPage={PAGE_SIZE}
+      page={currentPage.value}
+      onPageChange={(page) => {
+        handleQuery((page - 1) * PAGE_SIZE);
+        currentPage.value = page;
+      }}
     />
   );
 }
@@ -158,16 +173,18 @@ export default function OnRankArticleViewer() {
       <SSAutocomplete
         label="用户昵称 / 个人主页链接"
         value={userURLOrUserName}
-        onEnter={handleQuery}
+        onEnter={() => handleQuery(0)}
         onValueChange={handleCompleteItemUpdate}
         completeItems={completeItems}
       />
-      <Button onClick={handleQuery} loading={isLoading.value}>
+      <Button onClick={() => handleQuery(0)} loading={isLoading.value}>
         查询
       </Button>
       {hasResult.value
         && (result.value.length !== 0 ? (
-          <ResultTable />
+          <Stack>
+            <ResultTable />
+          </Stack>
         ) : (
           <Center>
             <Text fw={600} m={24} size="lg">
