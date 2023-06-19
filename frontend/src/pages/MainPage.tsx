@@ -91,6 +91,17 @@ export default function MainPage() {
         <Button variant="default" onClick={() => setLocation("/thanks")}>
           鸣谢 &gt;
         </Button>
+        <Button
+          variant="default"
+          onClick={
+          () => window.open(
+            "https://wenjuan.feishu.cn/m?t=sjQp3W8yUrNi-g37f",
+            "_blank",
+          )
+          }
+        >
+          反馈 &gt;
+        </Button>
         <SSTips
           label="关于消零派辅助工具"
           content="消零派辅助工具已在小工具集 v3 中下线，我们即将发布更强大的工具，敬请期待"

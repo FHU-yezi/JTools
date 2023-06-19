@@ -9,6 +9,7 @@ import {
 } from "@mantine/core";
 import { BiError } from "react-icons/bi";
 import { useLocation } from "wouter-preact";
+import SSLink from "./SSLink";
 
 interface Props {
   error: Error;
@@ -36,6 +37,11 @@ export default function ErrorFallback({ error }: Props) {
         </Title>
         <Text>非常抱歉给您带来不好的体验，您可尝试点击下方按钮刷新页面。</Text>
         <Text>如果您多次看到此页面，请向开发者反馈此问题。</Text>
+        <SSLink
+          url="https://wenjuan.feishu.cn/m?t=sGzpuZGzUrNi-cbbb"
+          label="前往反馈表单 >"
+          isExternal
+        />
         <Text fz="sm" c="dimmed">
           {error.toString()}
         </Text>
