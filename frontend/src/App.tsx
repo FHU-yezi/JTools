@@ -3,6 +3,7 @@ import { Route, Switch } from "wouter-preact";
 import Loading from "./components/Loading";
 import ToolWrapper from "./components/ToolWrapper";
 import MainPage from "./pages/MainPage";
+import ThanksPage from "./pages/ThanksPage";
 import V2UnavaliablePage from "./pages/V2UnavaliablePage";
 import V2UnimplementedPage from "./pages/V2UnimplementedPage";
 import { routes } from "./routes";
@@ -23,6 +24,11 @@ export default function App() {
           />
         </Route>
       ))}
+      <Route path="/thanks">
+        <Suspense fallback={<Loading />}>
+          <ThanksPage />
+        </Suspense>
+      </Route>
       <Route path="/v2-unimplemented">
         <Suspense fallback={<Loading />}>
           <V2UnimplementedPage />
