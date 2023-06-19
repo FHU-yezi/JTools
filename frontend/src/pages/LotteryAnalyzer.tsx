@@ -212,7 +212,7 @@ export default function LotteryAnalyzer() {
 
   return (
     <Stack>
-      <Title order={2}>综合统计</Title>
+      <Title order={3}>综合统计</Title>
       <SegmentedControl
         value={perPrizeAnalyzeTimeRange.value}
         onChange={(newValue: TimeRange) => {
@@ -236,7 +236,7 @@ export default function LotteryAnalyzer() {
         content="受简书接口限制，我们无法获取这两种奖品的中奖情况，故表中未予统计"
         multiline
       />
-      <Title order={2}>中奖次数分布</Title>
+      <Title order={3}>中奖次数分布</Title>
       <SegmentedControl
         value={RewardWinsCountPieTimeRange.value}
         onChange={(newValue: TimeRange) => {
@@ -260,7 +260,7 @@ export default function LotteryAnalyzer() {
           }
         />
       </ChartWrapper>
-      <Title order={2}>中奖次数趋势</Title>
+      <Title order={3}>中奖次数趋势</Title>
       <SegmentedControl
         value={RewardWinsTrendLineTimeRange.value}
         onChange={(newValue: TimeRangeWithoutAll) => {

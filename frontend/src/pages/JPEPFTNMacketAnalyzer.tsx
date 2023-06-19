@@ -149,11 +149,11 @@ export default function JPEPFTNMarketAnalyzer() {
 
   return (
     <Stack>
-      <Title order={2}>买卖贝挂单量对比</Title>
+      <Title order={3}>买卖贝挂单量对比</Title>
       <ChartWrapper chartType="pie" show={buyPoolAmount.value !== 0}>
         <PoolAmountComparePie buy={buyPoolAmount} sell={sellPoolAmount} />
       </ChartWrapper>
-      <Title order={2}>贝价趋势</Title>
+      <Title order={3}>贝价趋势</Title>
       <SegmentedControl
         value={PriceTrendLineTimeRange.value}
         onChange={(newValue: TimeRange) => {
