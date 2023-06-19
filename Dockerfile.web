@@ -1,0 +1,19 @@
+FROM node:20.3.0-alpine3.18 AS build
+
+WORKDIR /app
+
+RUN npm install -g pnpm
+
+COPY frontend/package.json /app
+
+RUN pnpm install --prod
+
+COPY frontend /app
+
+RUN pnpm build
+
+FROM caddy:2.6.4-alpine
+
+WORKDIR /app
+
+COPY --from=build /app/dist ./static

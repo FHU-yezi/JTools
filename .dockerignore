@@ -1,5 +1,6 @@
-.git
-.mypy_cache
-.pytest_cache
-__pycache__
+**/node_modules
+**/dist
+**/__pycache__
+**/.ruff_cache
+poetry.lock
 config.yaml

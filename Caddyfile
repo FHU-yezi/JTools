@@ -1,0 +1,27 @@
+{
+    # 下线宽限期
+    grace_period 3s
+
+    # 日志
+    log {
+        level INFO
+        output stdout
+        format console
+    }
+}
+
+:8602 {
+    handle {
+        header Content-Security-Policy "default-src 'self' wa.sscreator.com 'unsafe-inline'"
+
+        root * ./static
+        try_files {path} /index.html
+        file_server {
+            precompressed br gzip
+        }
+    }
+
+    handle /api/* {
+        reverse_proxy api:8902
+    }
+}

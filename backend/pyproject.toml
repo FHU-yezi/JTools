@@ -1,0 +1,34 @@
+[tool.poetry]
+name = "jtools"
+version = "3.0.0"
+description = "探索未知"
+authors = ["yezi <yehaowei20060411@qq.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+jianshuresearchtools = "2.11.0"
+pyyaml = "^6.0"
+tomd = "^0.1.3"
+pymongo = "^4.2.0"
+sspeedup = {version = "^0.11.1", extras = ["logging", "api-response-sanic", "ability-word-split"]}
+sanic = "^23.3.0"
+pydantic = "^1.10.7"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.0.269"
+pyright = "^1.1.309"
+black = "^23.3.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+
+select = ["A", "ANN", "B", "C", "E", "F", "I", "N", "RET", "S", "SIM", "UP", "W"]
+
+ignore = ["ANN101", "ANN102", "ANN401", "C901", "E501", "S104"]
+
+target-version = "py38"

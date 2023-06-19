@@ -1,20 +1,41 @@
 version: "3"
 
 networks:
+  internal:
   mongodb:
     external: true
   cutup:
     external: true
 
 services:
-  main:
-    image: jianshu-micro-features:2.11.0
-    build: .
+  web:
+    image: jtools-web:3.0.0
+    build:
+      dockerfile: Dockerfile.web
     ports:
       - 8602:8602
     volumes:
-      - ./config.yaml:/app/config.yaml:ro
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
     networks:
+      - internal
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 48M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+    stop_grace_period: 5s
+  api:
+    image: jtools-api:3.0.0
+    build:
+      dockerfile: Dockerfile.api
+    volumes:
+      - ./backend/config.yaml:/app/config.yaml:ro
+    networks:
+      - internal
       - mongodb
       - cutup
     environment:
@@ -22,10 +43,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.50"
-          memory: 192M
+          cpus: "1.00"
+          memory: 96M
       restart_policy:
         condition: on-failure
         delay: 5s
         max_attempts: 3
-    stop_grace_period: 1s
+    stop_grace_period: 5s

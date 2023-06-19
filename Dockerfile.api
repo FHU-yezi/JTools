@@ -1,0 +1,18 @@
+FROM python:3.10.8-slim
+
+ENV TZ Asia/Shanghai
+
+WORKDIR /app
+
+COPY backend/requirements.txt .
+
+RUN pip install \
+    -r requirements.txt \
+    --no-cache-dir \
+    --no-compile \
+    --disable-pip-version-check \
+    --quiet
+
+COPY /backend /app
+
+CMD ["python", "main.py"]
