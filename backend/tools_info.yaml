@@ -72,3 +72,11 @@ VIP-info-viewer:
     downgraded_reason: ""
     enable_data_update_time: false
     enable_data_count: false
+VIP-profit-compute:
+    status: 0
+    unavaliable_reason: ""
+    downgraded_reason: ""
+    enable_data_update_time: false
+    enable_data_count: false
+    data_source:
+        简书 - 简书会员大使: https://www.jianshu.com/mobile/club/ambassador
