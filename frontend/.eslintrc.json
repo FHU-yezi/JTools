@@ -57,6 +57,7 @@
             {
                 "allowForLoopAfterthoughts": true
             }
-        ]
+        ],
+        "import/no-absolute-path": "off"
     }
 }
