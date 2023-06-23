@@ -6,10 +6,6 @@ import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
 import SSLink from "../components/SSLink";
 import SSTextInput from "../components/SSTextInput";
-import VIPBadgeBronzeURL from "../img/vip_badge_bronze.png";
-import VIPBadgeGoldURL from "../img/vip_badge_gold.png";
-import VIPBadgePlatinaURL from "../img/vip_badge_platina.png";
-import VIPBadgeSilverURL from "../img/vip_badge_silver.png";
 import {
   VIPInfoRequest,
   VIPInfoResponse,
@@ -17,6 +13,10 @@ import {
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import { getDate, parseTime } from "../utils/timeHelper";
+import VIPBadgeBronzeURL from "/img/vip_badge_bronze.png";
+import VIPBadgeGoldURL from "/img/vip_badge_gold.png";
+import VIPBadgePlatinaURL from "/img/vip_badge_platina.png";
+import VIPBadgeSilverURL from "/img/vip_badge_silver.png";
 
 const userURL = signal("");
 const hasResult = signal(false);
