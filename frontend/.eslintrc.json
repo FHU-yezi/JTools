@@ -22,16 +22,41 @@
         "react/react-in-jsx-scope": "off",
         "@typescript-eslint/no-non-null-assertion": "off",
         "@typescript-eslint/no-explicit-any": "off",
-        "no-empty": ["error", { "allowEmptyCatch": true }],
-        "quotes": ["warn", "double"],
-        "semi": ["warn", "always"],
-        "react/jsx-filename-extension": ["error", { "allow": "as-needed", "extensions": [".tsx"] }],
+        "no-empty": [
+            "error",
+            {
+                "allowEmptyCatch": true
+            }
+        ],
+        "quotes": [
+            "warn",
+            "double"
+        ],
+        "semi": [
+            "warn",
+            "always"
+        ],
+        "react/jsx-filename-extension": [
+            "error",
+            {
+                "allow": "as-needed",
+                "extensions": [
+                    ".tsx"
+                ]
+            }
+        ],
         "import/no-unresolved": "off",
         "import/prefer-default-export": "off",
         "no-param-reassign": "off",
         "import/extensions": "off",
         "no-return-assign": "off",
         "jsx-a11y/control-has-associated-label": "off",
-        "react/require-default-props": "off"
+        "react/require-default-props": "off",
+        "no-plusplus": [
+            "error",
+            {
+                "allowForLoopAfterthoughts": true
+            }
+        ]
     }
 }

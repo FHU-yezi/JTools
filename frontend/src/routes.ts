@@ -29,6 +29,12 @@ export const routes: RouteItem[] = [
     description: "分析简书积分兑换平台贝市数据。",
   },
   {
+    component: lazy(() => import("./pages/VIPProfitCompute")),
+    path: "/VIP-profit-compute",
+    toolName: "会员收益计算",
+    description: "根据持钻量、创作收益等因素计算会员收益。",
+  },
+  {
     component: lazy(() => import("./pages/LotteryRewardRecordViewer")),
     path: "/lottery-reward-record-viewer",
     toolName: "简书大转盘中奖记录",

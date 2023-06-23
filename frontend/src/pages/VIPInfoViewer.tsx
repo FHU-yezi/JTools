@@ -1,10 +1,15 @@
 import {
+  Avatar,
   Badge, Button, Stack, Text,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
 import SSLink from "../components/SSLink";
 import SSTextInput from "../components/SSTextInput";
+import VIPBadgeBronzeURL from "../img/vip_badge_bronze.png";
+import VIPBadgeGoldURL from "../img/vip_badge_gold.png";
+import VIPBadgePlatinaURL from "../img/vip_badge_platina.png";
+import VIPBadgeSilverURL from "../img/vip_badge_silver.png";
 import {
   VIPInfoRequest,
   VIPInfoResponse,
@@ -20,6 +25,13 @@ const isLoading = signal(false);
 const VIPType = signal("");
 const VIPExpireTime = signal<Date | undefined>(undefined);
 const VIPExpireTimeToNowHumanReadable = signal("");
+
+const VIPTypeToBadgeImageURL: Record<string, string> = {
+  铜牌: VIPBadgeBronzeURL,
+  银牌: VIPBadgeSilverURL,
+  金牌: VIPBadgeGoldURL,
+  白金: VIPBadgePlatinaURL,
+};
 
 function handleQuery() {
   if (isLoading.value) {
@@ -69,7 +81,21 @@ export default function VIPInfoViewer() {
           </Text>
           <Text>
             会员级别：
-            <Badge size="lg">{VIPType.value}</Badge>
+            <Badge
+              size="lg"
+              pl={0}
+              color="gray"
+              leftSection={(
+                <Avatar
+                  alt={`${VIPType.value} 徽章图片`}
+                  size={24}
+                  mr={6}
+                  src={VIPTypeToBadgeImageURL[VIPType.value]}
+                />
+              )}
+            >
+              {VIPType.value}
+            </Badge>
           </Text>
           {VIPType.value !== "无会员" && (
             <Text>
