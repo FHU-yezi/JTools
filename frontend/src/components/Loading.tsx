@@ -7,7 +7,7 @@ export default function Loading() {
 
   useEffect(() => {
     setTimeout(() => (showLoader.value = true), 300);
-  });
+  }, []);
 
   return (
     <Center style={{ marginTop: "20vh" }}>

@@ -40,7 +40,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
   useDocumentTitle(`${toolName} - 简书小工具集`);
 
   // 处理部分情况下页面切换后不在顶部的问题
-  useEffect(() => window.scrollTo(0, 0));
+  useEffect(() => window.scrollTo(0, 0), []);
 
   useEffect(() => {
     try {
