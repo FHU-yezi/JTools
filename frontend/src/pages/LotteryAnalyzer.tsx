@@ -40,6 +40,7 @@ import {
   RewardsWinsTrendDataResponse,
 } from "../models/LotteryAnalyzer/RewardWinsTrendData";
 import { TimeRange, TimeRangeWithoutAll } from "../models/LotteryAnalyzer/base";
+import { buildSegmentedControlDataFromRecord } from "../utils/data_helper";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import { RoundFloat } from "../utils/numberHelper";
@@ -56,6 +57,18 @@ Chart.register(
   PointElement,
   Tooltip,
 );
+
+const timeRangeSCData = buildSegmentedControlDataFromRecord({
+  "1 天": "1d",
+  "7 天": "7d",
+  "30 天": "30d",
+  全部: "all",
+});
+const timeRangeWithoutAllSCData = buildSegmentedControlDataFromRecord({
+  "1 天": "1d",
+  "7 天": "7d",
+  "30 天": "30d",
+});
 
 const perPrizeAnalyzeTimeRange = signal<TimeRange>("1d");
 const perPrizeAnalyzeData = signal<PerPrizeDataItem[]>([]);
@@ -219,12 +232,7 @@ export default function LotteryAnalyzer() {
           perPrizeAnalyzeTimeRange.value = newValue;
           handlePerPrizeAnalayzeDataFetch();
         }}
-        data={[
-          { label: "1 天", value: "1d" },
-          { label: "7 天", value: "7d" },
-          { label: "30 天", value: "30d" },
-          { label: "全部", value: "all" },
-        ]}
+        data={timeRangeSCData}
       />
       {perPrizeAnalyzeData.value.length !== 0 ? (
         <PerPrizeAnalyzeTable data={perPrizeAnalyzeData} />
@@ -246,12 +254,7 @@ export default function LotteryAnalyzer() {
           });
           handleRewardWinsCountDataFetch();
         }}
-        data={[
-          { label: "1 天", value: "1d" },
-          { label: "7 天", value: "7d" },
-          { label: "30 天", value: "30d" },
-          { label: "全部", value: "all" },
-        ]}
+        data={timeRangeSCData}
       />
       <ChartWrapper chartType="pie" show={typeof RewardWinsCountData.value !== "undefined"}>
         <RewardWinsCountPie
@@ -270,11 +273,7 @@ export default function LotteryAnalyzer() {
           });
           handleRewardWinsTrendDataFetch();
         }}
-        data={[
-          { label: "1 天", value: "1d" },
-          { label: "7 天", value: "7d" },
-          { label: "30 天", value: "30d" },
-        ]}
+        data={timeRangeWithoutAllSCData}
       />
       <ChartWrapper chartType="radial" show={typeof RewardWinsTrendData.value !== "undefined"}>
         <RewardWinsTrendLine

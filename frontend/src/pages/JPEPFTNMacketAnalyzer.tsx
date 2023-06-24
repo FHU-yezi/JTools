@@ -20,6 +20,7 @@ import { PoolAmountDataResponse } from "../models/JPEPFTNMacketAnalyzer/PoolAmou
 import {
   PriceTrendDataItem, PriceTrendDataRequest, PriceTrendDataResponse, TimeRange,
 } from "../models/JPEPFTNMacketAnalyzer/PriceTrendData";
+import { buildSegmentedControlDataFromRecord } from "../utils/data_helper";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 
@@ -35,6 +36,13 @@ Chart.register(
   PointElement,
   Tooltip,
 );
+
+const TimeRangeSCData = buildSegmentedControlDataFromRecord({
+  "24 小时": "24h",
+  "7 天": "7d",
+  "15 天": "15d",
+  "30 天": "30d",
+});
 
 const buyPoolAmount = signal(0);
 const sellPoolAmount = signal(0);
@@ -164,12 +172,7 @@ export default function JPEPFTNMarketAnalyzer() {
           });
           handlePriceTrendDataFetch();
         }}
-        data={[
-          { label: "24 小时", value: "24h" },
-          { label: "7 天", value: "7d" },
-          { label: "15 天", value: "15d" },
-          { label: "30 天", value: "30d" },
-        ]}
+        data={TimeRangeSCData}
       />
       <ChartWrapper chartType="radial" show={typeof BuyPriceTrendData.value !== "undefined"}>
         <PriceTrendLine
