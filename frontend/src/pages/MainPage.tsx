@@ -1,4 +1,5 @@
 import { Button, Stack, Text } from "@mantine/core";
+import { useDocumentTitle } from "@mantine/hooks";
 import { batch, signal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
 import { useLocation } from "wouter-preact";
@@ -38,6 +39,9 @@ function handleV2Redirect(appName: string, setLocation: (location: string) => vo
 
 export default function MainPage() {
   const [, setLocation] = useLocation();
+
+  // 设置页面标题
+  useDocumentTitle("简书小工具集");
 
   useEffect(() => {
     const queryArguments = new URLSearchParams(window.location.search);

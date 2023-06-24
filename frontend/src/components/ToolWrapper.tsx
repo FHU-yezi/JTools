@@ -1,6 +1,7 @@
 import {
   Button, Flex, Modal, Stack, Text,
 } from "@mantine/core";
+import { useDocumentTitle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { batch, useSignal } from "@preact/signals";
 import { JSX, Suspense, useEffect } from "preact/compat";
@@ -34,6 +35,9 @@ export default function ToolWrapper({ Component, toolName }: Props) {
   const dataCount = useSignal<number | undefined>(undefined);
   const dataSource = useSignal<Record<string, string> | undefined>({});
   const showUnavaliableModal = useSignal(false);
+
+  // 设置页面标题
+  useDocumentTitle(`${toolName} - 简书小工具集`);
 
   // 处理部分情况下页面切换后不在顶部的问题
   useEffect(() => window.scrollTo(0, 0));

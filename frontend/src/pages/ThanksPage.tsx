@@ -1,6 +1,7 @@
 import {
   Card, Center, Space, Stack, Text, Title,
 } from "@mantine/core";
+import { useDocumentTitle } from "@mantine/hooks";
 import { signal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
 import Header from "../components/Header";
@@ -16,6 +17,9 @@ const v3BetaPaticipants = signal<Record<string, string>>({});
 const debugProjectRecords = signal<DebugProjectRecordsItem[]>([]);
 
 export default function ThanksPage() {
+  // 设置页面标题
+  useDocumentTitle("鸣谢 - 简书小工具集");
+
   useEffect(() => {
     try {
       fetchData<Record<string, never>, ThanksResponse>(
