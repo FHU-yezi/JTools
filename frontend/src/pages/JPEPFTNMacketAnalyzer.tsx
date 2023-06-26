@@ -1,5 +1,9 @@
-import { SegmentedControl, Stack, Title } from "@mantine/core";
-import { Signal, batch, signal } from "@preact/signals";
+import {
+  Group, SegmentedControl, Skeleton, Stack, Title,
+} from "@mantine/core";
+import {
+  Signal, batch, computed, signal,
+} from "@preact/signals";
 import {
   ArcElement,
   CategoryScale,
@@ -9,13 +13,13 @@ import {
   LineController,
   LineElement,
   LinearScale,
-  PieController,
   PointElement,
   Tooltip,
 } from "chart.js";
 import { useEffect } from "preact/hooks";
-import { Line, Pie } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 import ChartWrapper from "../components/ChartWrapper";
+import SSStat from "../components/SSStat";
 import { PoolAmountDataResponse } from "../models/JPEPFTNMacketAnalyzer/PoolAmountData";
 import { PoolAmountTrendDataItem, PoolAmountTrendDataRequest, PoolAmountTrendDataResponse } from "../models/JPEPFTNMacketAnalyzer/PoolAmountTrendData";
 import {
@@ -34,7 +38,6 @@ Chart.register(
   LineController,
   LineElement,
   LinearScale,
-  PieController,
   PointElement,
   Tooltip,
 );
@@ -48,6 +51,7 @@ const TimeRangeSCData = buildSegmentedControlDataFromRecord({
 
 const buyPoolAmount = signal(0);
 const sellPoolAmount = signal(0);
+const totalPoolAmount = computed(() => buyPoolAmount.value + sellPoolAmount.value);
 const PriceTrendLineTimeRange = signal<TimeRange>("24h");
 const BuyPriceTrendData = signal<PriceTrendDataItem | undefined>(
   undefined,
@@ -62,11 +66,6 @@ const BuyPoolAmountTrendData = signal<PoolAmountTrendDataItem | undefined>(
 const SellPoolAmountTrendData = signal<PoolAmountTrendDataItem | undefined>(
   undefined,
 );
-
-interface PoolAmountComparePieProps {
-  buy: Signal<number>
-  sell: Signal<number>
-}
 
 interface PriceTrendLineProps {
   buy: Signal<PriceTrendDataItem>
@@ -125,17 +124,6 @@ function handlePoolAmountTrendDataFetch() {
       commonAPIErrorHandler,
     );
   } catch {}
-}
-
-function PoolAmountComparePie({ buy, sell }: PoolAmountComparePieProps) {
-  return (
-    <Pie
-      data={{
-        labels: ["买贝", "卖贝"],
-        datasets: [{ data: [buy.value, sell.value] }],
-      }}
-    />
-  );
 }
 
 function PriceTrendLine({ buy, sell }: PriceTrendLineProps) {
@@ -214,10 +202,21 @@ export default function JPEPFTNMarketAnalyzer() {
 
   return (
     <Stack>
-      <Title order={3}>买卖贝挂单量对比</Title>
-      <ChartWrapper chartType="pie" show={buyPoolAmount.value !== 0}>
-        <PoolAmountComparePie buy={buyPoolAmount} sell={sellPoolAmount} />
-      </ChartWrapper>
+      <Title order={3}>实时挂单量</Title>
+      {buyPoolAmount.value !== 0 ? (
+        <Group grow>
+          <SSStat
+            title="买单"
+            value={buyPoolAmount.value}
+            desc={`占比 ${((buyPoolAmount.value / totalPoolAmount.value) * 100).toFixed(2)}%`}
+          />
+          <SSStat
+            title="卖单"
+            value={sellPoolAmount.value}
+            desc={`占比 ${((sellPoolAmount.value / totalPoolAmount.value) * 100).toFixed(2)}%`}
+          />
+        </Group>
+      ) : <Skeleton h={85.5} />}
 
       <Title order={3}>贝价趋势</Title>
       <SegmentedControl
