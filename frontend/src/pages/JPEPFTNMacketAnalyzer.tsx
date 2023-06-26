@@ -17,9 +17,11 @@ import { useEffect } from "preact/hooks";
 import { Line, Pie } from "react-chartjs-2";
 import ChartWrapper from "../components/ChartWrapper";
 import { PoolAmountDataResponse } from "../models/JPEPFTNMacketAnalyzer/PoolAmountData";
+import { PoolAmountTrendDataItem, PoolAmountTrendDataRequest, PoolAmountTrendDataResponse } from "../models/JPEPFTNMacketAnalyzer/PoolAmountTrendData";
 import {
-  PriceTrendDataItem, PriceTrendDataRequest, PriceTrendDataResponse, TimeRange,
+  PriceTrendDataItem, PriceTrendDataRequest, PriceTrendDataResponse,
 } from "../models/JPEPFTNMacketAnalyzer/PriceTrendData";
+import { TimeRange } from "../models/JPEPFTNMacketAnalyzer/base";
 import { buildSegmentedControlDataFromRecord } from "../utils/data_helper";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
@@ -53,6 +55,13 @@ const BuyPriceTrendData = signal<PriceTrendDataItem | undefined>(
 const SellPriceTrendData = signal<PriceTrendDataItem | undefined>(
   undefined,
 );
+const PoolAmountTrendLineTimeRange = signal<TimeRange>("24h");
+const BuyPoolAmountTrendData = signal<PoolAmountTrendDataItem | undefined>(
+  undefined,
+);
+const SellPoolAmountTrendData = signal<PoolAmountTrendDataItem | undefined>(
+  undefined,
+);
 
 interface PoolAmountComparePieProps {
   buy: Signal<number>
@@ -60,6 +69,11 @@ interface PoolAmountComparePieProps {
 }
 
 interface PriceTrendLineProps {
+  buy: Signal<PriceTrendDataItem>
+  sell: Signal<PriceTrendDataItem>
+}
+
+interface PoolAmountTrendLineProps {
   buy: Signal<PriceTrendDataItem>
   sell: Signal<PriceTrendDataItem>
 }
@@ -90,6 +104,23 @@ function handlePriceTrendDataFetch() {
       (data) => batch(() => {
         BuyPriceTrendData.value = data.buy_trend;
         SellPriceTrendData.value = data.sell_trend;
+      }),
+      commonAPIErrorHandler,
+    );
+  } catch {}
+}
+
+function handlePoolAmountTrendDataFetch() {
+  try {
+    fetchData<PoolAmountTrendDataRequest, PoolAmountTrendDataResponse>(
+      "GET",
+      "/tools/JPEP_FTN_market_analyzer/pool_amount_trend_data",
+      {
+        time_range: PoolAmountTrendLineTimeRange.value,
+      },
+      (data) => batch(() => {
+        BuyPoolAmountTrendData.value = data.buy_trend;
+        SellPoolAmountTrendData.value = data.sell_trend;
       }),
       commonAPIErrorHandler,
     );
@@ -149,10 +180,36 @@ function PriceTrendLine({ buy, sell }: PriceTrendLineProps) {
   );
 }
 
+function PoolAmountTrendLine({ buy, sell }: PoolAmountTrendLineProps) {
+  return (
+    <Line
+      data={{
+        labels: Object.keys(buy.value),
+        datasets: [
+          { label: "买贝", data: Object.values(buy.value), cubicInterpolationMode: "monotone" },
+          { label: "卖贝", data: Object.values(sell.value), cubicInterpolationMode: "monotone" },
+        ],
+      }}
+      options={{
+        interaction: {
+          intersect: false,
+          axis: "x",
+        },
+        plugins: {
+          colors: {
+            forceOverride: true,
+          },
+        },
+      }}
+    />
+  );
+}
+
 export default function JPEPFTNMarketAnalyzer() {
   useEffect(() => {
     handlePoolAmountDataFetch();
     handlePriceTrendDataFetch();
+    handlePoolAmountTrendDataFetch();
   }, []);
 
   return (
@@ -161,6 +218,7 @@ export default function JPEPFTNMarketAnalyzer() {
       <ChartWrapper chartType="pie" show={buyPoolAmount.value !== 0}>
         <PoolAmountComparePie buy={buyPoolAmount} sell={sellPoolAmount} />
       </ChartWrapper>
+
       <Title order={3}>贝价趋势</Title>
       <SegmentedControl
         value={PriceTrendLineTimeRange.value}
@@ -178,6 +236,26 @@ export default function JPEPFTNMarketAnalyzer() {
         <PriceTrendLine
           buy={BuyPriceTrendData as unknown as Signal<PriceTrendDataItem>}
           sell={SellPriceTrendData as unknown as Signal<PriceTrendDataItem>}
+        />
+      </ChartWrapper>
+
+      <Title order={3}>挂单量趋势</Title>
+      <SegmentedControl
+        value={PoolAmountTrendLineTimeRange.value}
+        onChange={(newValue: TimeRange) => {
+          batch(() => {
+            PoolAmountTrendLineTimeRange.value = newValue;
+            BuyPoolAmountTrendData.value = undefined;
+            SellPoolAmountTrendData.value = undefined;
+          });
+          handlePoolAmountTrendDataFetch();
+        }}
+        data={TimeRangeSCData}
+      />
+      <ChartWrapper chartType="radial" show={typeof BuyPoolAmountTrendData.value !== "undefined"}>
+        <PoolAmountTrendLine
+          buy={BuyPoolAmountTrendData as unknown as Signal<PoolAmountTrendDataItem>}
+          sell={SellPoolAmountTrendData as unknown as Signal<PoolAmountTrendDataItem>}
         />
       </ChartWrapper>
     </Stack>

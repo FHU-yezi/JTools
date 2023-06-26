@@ -106,6 +106,61 @@ def get_price_trend_data(
     return {item["_id"].strftime(r"%m-%d"): item["price"] for item in db_result}
 
 
+def get_pool_amount_trend_data(
+    type_: Literal["buy", "sell"], td: timedelta
+) -> Dict[str, float]:
+    unit = "hour" if td <= timedelta(days=1) else "day"
+
+    db_result = JPEP_FTN_market_db.aggregate(
+        [
+            {
+                "$match": {
+                    "trade_type": type_,
+                    "fetch_time": {
+                        "$gte": get_data_start_time(td),
+                    },
+                },
+            },
+            {
+                "$group": {
+                    "_id": "$fetch_time",
+                    "amount": {
+                        "$sum": "$amount.tradable",
+                    },
+                },
+            },
+            {
+                "$group": {
+                    "_id": {
+                        "$dateTrunc": {
+                            "date": "$_id",
+                            "unit": "hour",
+                        },
+                    },
+                    "amount": {
+                        "$avg": "$amount",
+                    },
+                },
+            },
+            {
+                "$sort": {
+                    "_id": 1,
+                },
+            },
+        ]
+    )
+
+    if unit == "hour":
+        return {
+            item["_id"].strftime(r"%m-%d %I:%M"): round(item["amount"])
+            for item in db_result
+        }
+
+    return {
+        item["_id"].strftime(r"%m-%d"): round(item["amount"], 2) for item in db_result
+    }
+
+
 class DataUpdateTimeResponse(BaseModel):
     data_update_time: int
 
@@ -168,6 +223,34 @@ def price_trend_data_handler(
     return sanic_response_json(
         code=CODE.SUCCESS,
         data=PriceTrendDataResponse(
+            buy_trend=buy_trend,
+            sell_trend=sell_trend,
+        ).dict(),
+    )
+
+
+class PoolAmountTrendDataRequest(BaseModel):
+    time_range: Literal["24h", "7d", "15d", "30d"]
+
+
+class PoolAmountTrendDataResponse(BaseModel):
+    buy_trend: Dict[str, float]
+    sell_trend: Dict[str, float]
+
+
+@JPEP_FTN_market_analyzer_blueprint.get("/pool_amount_trend_data")
+@inject_data_model_from_query_args(PoolAmountTrendDataRequest)
+def pool_amount_trend_data_handler(
+    request: Request, data: PoolAmountTrendDataRequest
+) -> HTTPResponse:
+    del request
+
+    buy_trend = get_pool_amount_trend_data("buy", TEXT_TO_TIMEDELTA[data.time_range])
+    sell_trend = get_pool_amount_trend_data("sell", TEXT_TO_TIMEDELTA[data.time_range])
+
+    return sanic_response_json(
+        code=CODE.SUCCESS,
+        data=PoolAmountTrendDataResponse(
             buy_trend=buy_trend,
             sell_trend=sell_trend,
         ).dict(),
