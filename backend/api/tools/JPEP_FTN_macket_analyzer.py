@@ -25,7 +25,7 @@ JPEP_FTN_market_analyzer_blueprint = Blueprint(
 )
 
 
-@timeout_cache(300)
+@timeout_cache(60)
 def get_data_update_time() -> datetime:
     return (
         JPEP_FTN_market_db.find(
