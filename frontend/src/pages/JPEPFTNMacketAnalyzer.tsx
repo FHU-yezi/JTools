@@ -20,6 +20,7 @@ import { useEffect } from "preact/hooks";
 import { Line } from "react-chartjs-2";
 import ChartWrapper from "../components/ChartWrapper";
 import SSStat from "../components/SSStat";
+import { JPEPRulesResponse } from "../models/JPEPFTNMacketAnalyzer/JPEP_rules";
 import { PoolAmountResponse } from "../models/JPEPFTNMacketAnalyzer/PoolAmount";
 import { PoolAmountTrendDataItem, PoolAmountTrendDataRequest, PoolAmountTrendDataResponse } from "../models/JPEPFTNMacketAnalyzer/PoolAmountTrendData";
 import { PriceResponse } from "../models/JPEPFTNMacketAnalyzer/Price";
@@ -50,11 +51,18 @@ const TimeRangeSCData = buildSegmentedControlDataFromRecord({
   "30 天": "30d",
 });
 
+const tradeFeePercent = signal<number | undefined>(undefined);
 const buyPrice = signal<number | null | undefined>(undefined);
 const sellPrice = signal<number | null | undefined>(undefined);
+const buyOrderMinimumPrice = signal<number | undefined>(undefined);
+const sellOrderMinimumPrice = signal<number | undefined>(undefined);
 const buyPoolAmount = signal<number | undefined>(undefined);
 const sellPoolAmount = signal<number | undefined>(undefined);
-const totalPoolAmount = computed(() => buyPoolAmount.value + sellPoolAmount.value);
+const totalPoolAmount = computed(
+  () => ((typeof buyPoolAmount.value !== "undefined" && typeof sellPoolAmount.value !== "undefined")
+    ? (buyPoolAmount.value + sellPoolAmount.value)
+    : null),
+);
 const PriceTrendLineTimeRange = signal<TimeRange>("24h");
 const BuyPriceTrendData = signal<PriceTrendDataItem | undefined>(
   undefined,
@@ -78,6 +86,22 @@ interface PriceTrendLineProps {
 interface PoolAmountTrendLineProps {
   buy: Signal<PriceTrendDataItem>
   sell: Signal<PriceTrendDataItem>
+}
+
+function handleJPEPRulesFetch() {
+  try {
+    fetchData<Record<string, never>, JPEPRulesResponse>(
+      "GET",
+      "/tools/JPEP_FTN_market_analyzer/JPEP_rules",
+      {},
+      (data) => batch(() => {
+        tradeFeePercent.value = data.trade_fee_percent;
+        buyOrderMinimumPrice.value = data.buy_order_minimum_price;
+        sellOrderMinimumPrice.value = data.sell_order_minimum_price;
+      }),
+      commonAPIErrorHandler,
+    );
+  } catch {}
 }
 
 function handlePriceFetch() {
@@ -213,6 +237,7 @@ function PoolAmountTrendLine({ buy, sell }: PoolAmountTrendLineProps) {
 
 export default function JPEPFTNMarketAnalyzer() {
   useEffect(() => {
+    handleJPEPRulesFetch();
     handlePriceFetch();
     handlePoolAmountFetch();
     handlePriceTrendDataFetch();
@@ -221,16 +246,22 @@ export default function JPEPFTNMarketAnalyzer() {
 
   return (
     <Stack>
+      <SSStat
+        title="交易手续费"
+        value={typeof tradeFeePercent.value !== "undefined" ? `${tradeFeePercent.value * 100}%` : "获取中..."}
+      />
       <Title order={3}>实时贝价</Title>
       {(typeof buyPrice.value !== "undefined" && typeof sellPrice.value !== "undefined") ? (
         <Group grow>
           <SSStat
             title="买单"
             value={buyPrice.value ?? "不可用"}
+            desc={`限价：${buyOrderMinimumPrice.value ?? "获取中..."}`}
           />
           <SSStat
             title="卖单"
             value={sellPrice.value ?? "不可用"}
+            desc={`限价：${sellOrderMinimumPrice.value ?? "获取中..."}`}
           />
         </Group>
       ) : <Skeleton h={85.5} />}
@@ -240,12 +271,12 @@ export default function JPEPFTNMarketAnalyzer() {
           <SSStat
             title="买单"
             value={buyPoolAmount.value}
-            desc={`占比 ${((buyPoolAmount.value / totalPoolAmount.value) * 100).toFixed(2)}%`}
+            desc={`占比 ${((buyPoolAmount.value / totalPoolAmount.value!) * 100).toFixed(2)}%`}
           />
           <SSStat
             title="卖单"
             value={sellPoolAmount.value}
-            desc={`占比 ${((sellPoolAmount.value / totalPoolAmount.value) * 100).toFixed(2)}%`}
+            desc={`占比 ${((sellPoolAmount.value / totalPoolAmount.value!) * 100).toFixed(2)}%`}
           />
         </Group>
       ) : <Skeleton h={85.5} />}

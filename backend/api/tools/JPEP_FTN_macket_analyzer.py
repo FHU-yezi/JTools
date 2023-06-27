@@ -230,8 +230,42 @@ def pool_amount_handler(request: Request) -> HTTPResponse:
 
     return sanic_response_json(
         code=CODE.SUCCESS,
-        data=PoolAmountResponse(
-            buy_amount=buy_amount, sell_amount=sell_amount
+        data=PoolAmountResponse(buy_amount=buy_amount, sell_amount=sell_amount).dict(),
+    )
+
+
+class JPEPRulesResponse(BaseModel):
+    buy_order_minimum_price: float
+    sell_order_minimum_price: float
+    trade_fee_percent: float
+
+
+@JPEP_FTN_market_analyzer_blueprint.get("/JPEP_rules")
+def JPEP_rules_handler(request: Request) -> HTTPResponse:  # noqa: N802
+    del request
+
+    response = HTTP_CLIENT.post(
+        "https://20221023.tp.lanrenmb.net/api/getList/furnish.setting/1/",
+        json={
+            "fields": "fee,minimum_price,buy_minimum_price",
+        },
+    )
+
+    response.raise_for_status()
+    json_data = response.json()
+    if json_data["code"] != 200:
+        raise ValueError()
+
+    buy_order_minimum_price = json_data["data"]["buy_minimum_price"]
+    sell_order_minimum_price = json_data["data"]["minimum_price"]
+    trade_fee_percent = json_data["data"]["fee"]
+
+    return sanic_response_json(
+        code=CODE.SUCCESS,
+        data=JPEPRulesResponse(
+            buy_order_minimum_price=buy_order_minimum_price,
+            sell_order_minimum_price=sell_order_minimum_price,
+            trade_fee_percent=trade_fee_percent,
         ).dict(),
     )
 
