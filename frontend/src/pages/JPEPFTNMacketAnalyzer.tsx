@@ -20,8 +20,9 @@ import { useEffect } from "preact/hooks";
 import { Line } from "react-chartjs-2";
 import ChartWrapper from "../components/ChartWrapper";
 import SSStat from "../components/SSStat";
-import { PoolAmountDataResponse } from "../models/JPEPFTNMacketAnalyzer/PoolAmountData";
+import { PoolAmountResponse } from "../models/JPEPFTNMacketAnalyzer/PoolAmount";
 import { PoolAmountTrendDataItem, PoolAmountTrendDataRequest, PoolAmountTrendDataResponse } from "../models/JPEPFTNMacketAnalyzer/PoolAmountTrendData";
+import { PriceResponse } from "../models/JPEPFTNMacketAnalyzer/Price";
 import {
   PriceTrendDataItem, PriceTrendDataRequest, PriceTrendDataResponse,
 } from "../models/JPEPFTNMacketAnalyzer/PriceTrendData";
@@ -49,8 +50,10 @@ const TimeRangeSCData = buildSegmentedControlDataFromRecord({
   "30 天": "30d",
 });
 
-const buyPoolAmount = signal(0);
-const sellPoolAmount = signal(0);
+const buyPrice = signal<number | null | undefined>(undefined);
+const sellPrice = signal<number | null | undefined>(undefined);
+const buyPoolAmount = signal<number | undefined>(undefined);
+const sellPoolAmount = signal<number | undefined>(undefined);
 const totalPoolAmount = computed(() => buyPoolAmount.value + sellPoolAmount.value);
 const PriceTrendLineTimeRange = signal<TimeRange>("24h");
 const BuyPriceTrendData = signal<PriceTrendDataItem | undefined>(
@@ -77,11 +80,26 @@ interface PoolAmountTrendLineProps {
   sell: Signal<PriceTrendDataItem>
 }
 
-function handlePoolAmountDataFetch() {
+function handlePriceFetch() {
   try {
-    fetchData<Record<string, never>, PoolAmountDataResponse>(
+    fetchData<Record<string, never>, PriceResponse>(
       "GET",
-      "/tools/JPEP_FTN_market_analyzer/pool_amount_data",
+      "/tools/JPEP_FTN_market_analyzer/price",
+      {},
+      (data) => batch(() => {
+        buyPrice.value = data.buy_price;
+        sellPrice.value = data.sell_price;
+      }),
+      commonAPIErrorHandler,
+    );
+  } catch {}
+}
+
+function handlePoolAmountFetch() {
+  try {
+    fetchData<Record<string, never>, PoolAmountResponse>(
+      "GET",
+      "/tools/JPEP_FTN_market_analyzer/pool_amount",
       {},
       (data) => batch(() => {
         buyPoolAmount.value = data.buy_amount;
@@ -195,15 +213,29 @@ function PoolAmountTrendLine({ buy, sell }: PoolAmountTrendLineProps) {
 
 export default function JPEPFTNMarketAnalyzer() {
   useEffect(() => {
-    handlePoolAmountDataFetch();
+    handlePriceFetch();
+    handlePoolAmountFetch();
     handlePriceTrendDataFetch();
     handlePoolAmountTrendDataFetch();
   }, []);
 
   return (
     <Stack>
+      <Title order={3}>实时贝价</Title>
+      {(typeof buyPrice.value !== "undefined" && typeof sellPrice.value !== "undefined") ? (
+        <Group grow>
+          <SSStat
+            title="买单"
+            value={buyPrice.value ?? "不可用"}
+          />
+          <SSStat
+            title="卖单"
+            value={sellPrice.value ?? "不可用"}
+          />
+        </Group>
+      ) : <Skeleton h={85.5} />}
       <Title order={3}>实时挂单量</Title>
-      {buyPoolAmount.value !== 0 ? (
+      {(typeof buyPoolAmount.value !== "undefined" && typeof sellPoolAmount.value !== "undefined") ? (
         <Group grow>
           <SSStat
             title="买单"

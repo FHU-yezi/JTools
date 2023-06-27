@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta  # noqa: N999
-from typing import Dict, Literal
+from typing import Dict, Literal, Optional
 
+from httpx import Client
 from sanic import Blueprint, HTTPResponse, Request
 from sspeedup.api import CODE, sanic_response_json
 from sspeedup.cache.timeout import timeout_cache
@@ -16,6 +17,8 @@ TEXT_TO_TIMEDELTA: Dict[str, timedelta] = {
     "15d": timedelta(days=15),
     "30d": timedelta(days=30),
 }
+
+HTTP_CLIENT = Client()
 
 JPEP_FTN_market_analyzer_blueprint = Blueprint(
     "JPEP_FTN_market_analyzer", url_prefix="/JPEP_FTN_market_analyzer"
@@ -36,6 +39,18 @@ def get_data_update_time() -> datetime:
         .limit(1)
         .next()["fetch_time"]
     )
+
+
+def get_price(type_: Literal["buy", "sell"], time: datetime) -> float:
+    try:
+        return (
+            JPEP_FTN_market_db.find({"fetch_time": time, "trade_type": type_})
+            .sort("price", 1 if type_ == "buy" else -1)
+            .limit(1)
+            .next()["price"]
+        )
+    except StopIteration:  # 该侧没有挂单
+        return 0.0
 
 
 def get_pool_amount(type_: Literal["buy", "sell"], time: datetime) -> int:
@@ -179,13 +194,33 @@ def data_update_time_handler(request: Request) -> HTTPResponse:
     )
 
 
-class PoolAmountDataResponse(BaseModel):
+class PriceResponse(BaseModel):
+    buy_price: Optional[float]
+    sell_price: Optional[float]
+
+
+@JPEP_FTN_market_analyzer_blueprint.get("/price")
+def price_handler(request: Request) -> HTTPResponse:
+    del request
+
+    data_update_time = get_data_update_time()
+
+    buy_price = get_price("buy", data_update_time)
+    sell_price = get_price("sell", data_update_time)
+
+    return sanic_response_json(
+        code=CODE.SUCCESS,
+        data=PriceResponse(buy_price=buy_price, sell_price=sell_price).dict(),
+    )
+
+
+class PoolAmountResponse(BaseModel):
     buy_amount: int
     sell_amount: int
 
 
-@JPEP_FTN_market_analyzer_blueprint.get("/pool_amount_data")
-def pool_amount_data(request: Request) -> HTTPResponse:
+@JPEP_FTN_market_analyzer_blueprint.get("/pool_amount")
+def pool_amount_handler(request: Request) -> HTTPResponse:
     del request
 
     data_update_time = get_data_update_time()
@@ -195,7 +230,7 @@ def pool_amount_data(request: Request) -> HTTPResponse:
 
     return sanic_response_json(
         code=CODE.SUCCESS,
-        data=PoolAmountDataResponse(
+        data=PoolAmountResponse(
             buy_amount=buy_amount, sell_amount=sell_amount
         ).dict(),
     )
