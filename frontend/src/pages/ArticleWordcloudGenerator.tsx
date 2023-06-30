@@ -1,4 +1,4 @@
-import { Button, Center, Stack, Text } from "@mantine/core";
+import { Button, Stack } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { Signal, batch, signal } from "@preact/signals";
 import { Chart as ChartInstance, Colors, LinearScale } from "chart.js";
@@ -6,6 +6,7 @@ import { WordCloudController, WordElement } from "chartjs-chart-wordcloud";
 import { Chart } from "react-chartjs-2";
 import ChartWrapper from "../components/ChartWrapper";
 import SSLink from "../components/SSLink";
+import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
 import {
   WordFreqDataItem,
@@ -93,8 +94,8 @@ export default function ArticleWordcloudGenerator() {
       </Button>
       {hasResult.value && (
         <>
-          <Center>
-            <Text>文章：</Text>
+          <SSText center>
+            文章：
             <SSLink
               url={articleURL.value}
               label={
@@ -104,7 +105,7 @@ export default function ArticleWordcloudGenerator() {
               }
               isExternal
             />
-          </Center>
+          </SSText>
           <ChartWrapper
             chartType="radial"
             minWidth={800}

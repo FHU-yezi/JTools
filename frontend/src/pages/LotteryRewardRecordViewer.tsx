@@ -1,16 +1,9 @@
-import {
-  Button,
-  Center,
-  Chip,
-  Group,
-  Skeleton,
-  Stack,
-  Text,
-} from "@mantine/core";
+import { Button, Chip, Group, Skeleton, Stack } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
 import { DataTable } from "mantine-datatable";
 import { useEffect } from "preact/hooks";
+import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
 import SSTips from "../components/SSTips";
 import {
@@ -121,7 +114,7 @@ export default function LotteryRewardRecordViewer() {
       />
       {rewards.value.length !== 0 ? (
         <>
-          <Text fw={600}>奖项筛选</Text>
+          <SSText bold>奖项筛选</SSText>
           <Chip.Group
             value={selectedRewards.value}
             onChange={(value) => (selectedRewards.value = value)}
@@ -154,11 +147,9 @@ export default function LotteryRewardRecordViewer() {
         (result.value.length !== 0 ? (
           <ResultTable />
         ) : (
-          <Center>
-            <Text fw={600} m={24} size="lg">
-              没有查询到数据
-            </Text>
-          </Center>
+          <SSText className="m-6" bold large center>
+            没有查询到数据
+          </SSText>
         ))}
     </Stack>
   );

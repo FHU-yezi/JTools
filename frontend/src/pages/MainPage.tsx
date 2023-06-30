@@ -1,4 +1,4 @@
-import { Button, Stack, Text } from "@mantine/core";
+import { Button, Stack } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { batch, signal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
@@ -9,6 +9,7 @@ import {
   V2UnimplementedRoutes,
 } from "../V2RedirectRoutes";
 import Header from "../components/Header";
+import SSText from "../components/SSText";
 import SSTips from "../components/SSTips";
 import ToolCard from "../components/ToolCard";
 import { StatusResponse } from "../models/status";
@@ -77,10 +78,10 @@ export default function MainPage() {
     <>
       <Header toolName="简书小工具集" showBackArrow={false} />
       <Stack>
-        <Text size="sm" c="dimmed">
+        <SSText small gray>
           版本：
           {version.value ?? "获取中..."}
-        </Text>
+        </SSText>
         {routes.map((item) => (
           <ToolCard
             key={item.toolName}

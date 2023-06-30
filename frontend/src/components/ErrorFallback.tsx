@@ -1,15 +1,8 @@
-import {
-  Accordion,
-  Button,
-  Center,
-  Kbd,
-  Stack,
-  Text,
-  Title,
-} from "@mantine/core";
+import { Accordion, Button, Kbd, Title } from "@mantine/core";
 import { BiError } from "react-icons/bi";
 import { useLocation } from "wouter-preact";
 import SSLink from "./SSLink";
+import SSText from "./SSText";
 
 interface Props {
   error: Error;
@@ -22,29 +15,22 @@ export default function ErrorFallback({ error }: Props) {
   console.error(`${error.name}: ${error.message}\n${error.stack}`);
 
   return (
-    <Center>
-      <Stack
-        style={{
-          display: "flex",
-          width: "90vw",
-          maxWidth: "896px",
-          marginTop: "20vh",
-        }}
-      >
+    <div className="grid h-[100vh] place-content-center">
+      <div className="flex w-[90vw] max-w-4xl flex-col gap-4">
         <BiError size={48} />
         <Title fz="xl" fw={700}>
           发生意外错误
         </Title>
-        <Text>非常抱歉给您带来不好的体验，您可尝试点击下方按钮刷新页面。</Text>
-        <Text>如果您多次看到此页面，请向开发者反馈此问题。</Text>
+        <SSText>
+          非常抱歉给您带来不好的体验，您可尝试点击下方按钮刷新页面。
+        </SSText>
+        <SSText>如果您多次看到此页面，请向开发者反馈此问题。</SSText>
         <SSLink
           url="https://wenjuan.feishu.cn/m?t=sGzpuZGzUrNi-cbbb"
           label="前往反馈表单 >"
           isExternal
         />
-        <Text fz="sm" c="dimmed">
-          {error.toString()}
-        </Text>
+        <SSText gray>{error.toString()}</SSText>
         <Button onClick={() => window.location.reload()}>刷新</Button>
         <Button
           variant="light"
@@ -65,7 +51,7 @@ export default function ErrorFallback({ error }: Props) {
             </Accordion.Panel>
           </Accordion.Item>
         </Accordion>
-      </Stack>
-    </Center>
+      </div>
+    </div>
   );
 }

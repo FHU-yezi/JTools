@@ -1,10 +1,11 @@
-import { Switch, Text, useMantineColorScheme } from "@mantine/core";
+import { Switch, useMantineColorScheme } from "@mantine/core";
 import { spotlight } from "@mantine/spotlight";
 import { AiOutlineSearch } from "react-icons/ai";
 import { BsMoonStars, BsSun } from "react-icons/bs";
 import { IoIosArrowBack } from "react-icons/io";
 import { useLocation } from "wouter-preact";
 import umamiTrack from "../utils/umamiTrack";
+import SSText from "./SSText";
 
 interface Props {
   toolName: string;
@@ -31,18 +32,12 @@ export default function Header({ toolName, showBackArrow }: Props) {
               />
             </button>
           )}
-          <Text
-            size="lg"
-            fw={700}
-            style={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              maxWidth: "calc(90vw - 150px)",
-            }}
+          <SSText
+            className="max-w-[calc(90vw - 150px)] overflow-hidden text-ellipsis whitespace-nowrap font-bold"
+            large
           >
             {toolName}
-          </Text>
+          </SSText>
         </div>
         <div className="flex flex-nowrap items-center gap-x-3">
           <button

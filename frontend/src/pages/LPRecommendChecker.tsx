@@ -1,8 +1,10 @@
-import { Badge, Button, Center, Stack, Table, Text } from "@mantine/core";
+import { Badge, Button, Stack, Table } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
+import clsx from "clsx";
 import SSLink from "../components/SSLink";
 import SSScolllable from "../components/SSScollable";
+import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
 import {
   CheckItem,
@@ -60,24 +62,27 @@ export default function LPRecommendChecker() {
       </Button>
       {hasResult.value && (
         <>
-          <Center>
-            <Text>文章标题：</Text>
+          <SSText center>
+            文章标题：
             <SSLink
               url={articleURL.value}
               label={articleTitle.value}
               isExternal
             />
-          </Center>
-          <Center>
-            <Text>{`发布于 ${getDatetime(releaseTime.value!)}（${
-              releaseTimeHumanReadable.value
-            }前）`}</Text>
-          </Center>
-          <Center>
-            <Text fz="xl" fw={600} c={checkPassed.value ? "green" : "red"}>
-              {checkPassed.value ? "符合推荐标准" : "不符合推荐标准"}
-            </Text>
-          </Center>
+          </SSText>
+          <SSText center>{`发布于 ${getDatetime(releaseTime.value!)}（${
+            releaseTimeHumanReadable.value
+          }前）`}</SSText>
+          <SSText
+            className={clsx("text-xl", {
+              "text-green-600": checkPassed.value,
+              "text-red-600": !checkPassed.value,
+            })}
+            bold
+            center
+          >
+            {checkPassed.value ? "符合推荐标准" : "不符合推荐标准"}
+          </SSText>
           <SSScolllable>
             <Table style={{ minWidth: 480 }}>
               <thead>

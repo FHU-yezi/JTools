@@ -1,4 +1,4 @@
-import { Center, Skeleton } from "@mantine/core";
+import { Skeleton } from "@mantine/core";
 import { JSX } from "preact/jsx-runtime";
 import SSScolllable from "./SSScollable";
 
@@ -40,15 +40,7 @@ export default function ChartWrapper({
     );
   }
   if (chartType === "pie") {
-    return (
-      <Center mx="auto" style={{ width: "100%", height, maxWidth: 384 }}>
-        {children}
-      </Center>
-    );
+    return <div className="mx-auto w-full max-w-sm">{children}</div>;
   }
-  return (
-    <Center mx="auto" style={{ width: "100%", height, maxWidth: 512 }}>
-      {children}
-    </Center>
-  );
+  return <div className="mx-auto w-full max-w-lg">{children}</div>;
 }

@@ -1,17 +1,15 @@
 import {
   Avatar,
   Card,
-  Center,
   Group,
-  MantineColor,
   SegmentedControl,
   SimpleGrid,
   Stack,
-  Text,
 } from "@mantine/core";
 import { computed, signal } from "@preact/signals";
 import { JSX } from "preact/jsx-runtime";
 import SSNumberInput from "../components/SSNumberInput";
+import SSText from "../components/SSText";
 import { RoundFloat } from "../utils/numberHelper";
 import VIPBadgeBronzeURL from "/img/vip_badge_bronze.png";
 import VIPBadgeGoldURL from "/img/vip_badge_gold.png";
@@ -183,7 +181,7 @@ interface ResultItemProps {
   label: string;
   description?: string;
   value: number;
-  valueColor?: MantineColor;
+  valueColor?: string;
   ndigits: number;
   asPercentage?: boolean;
   asTimes?: boolean;
@@ -213,15 +211,15 @@ function ResultItem({
 
   return (
     <Group position="apart">
-      <Text fw={bold ? 600 : undefined}>
+      <SSText bold={bold}>
         {label}
-        <Text size="sm">
+        <SSText small>
           {description.length !== 0 && `（${description}）`}
-        </Text>
-      </Text>
-      <Text fw={bold ? 600 : undefined} color={valueColor}>
+        </SSText>
+      </SSText>
+      <SSText className={valueColor} bold={bold}>
         {valuePart}
-      </Text>
+      </SSText>
     </Group>
   );
 }
@@ -234,9 +232,9 @@ interface ResultGroupProps {
 function ResultGroup({ children, label }: ResultGroupProps) {
   return (
     <Card shadow="sm" radius="md" padding="lg" withBorder>
-      <Text size="xl" fw={600} mb={14}>
+      <SSText className="m-4 text-xl" bold>
         {label}
-      </Text>
+      </SSText>
       <Stack spacing="sm">{children}</Stack>
     </Card>
   );
@@ -246,7 +244,7 @@ export default function VIPProfitCompute() {
   return (
     <Stack>
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <Text fw={600}>会员等级</Text>
+        <SSText bold>会员等级</SSText>
         <SegmentedControl
           mt={6}
           value={VIPLevel.value}
@@ -254,37 +252,49 @@ export default function VIPProfitCompute() {
           data={[
             {
               label: (
-                <Center>
-                  <Avatar size={20} mr={8} src={VIPBadgeBronzeURL} />
-                  <Text>铜牌</Text>
-                </Center>
+                <div className="grid place-content-center">
+                  <SSText className="flex">
+                    {" "}
+                    <Avatar size={20} mr={8} src={VIPBadgeBronzeURL} />
+                    铜牌
+                  </SSText>
+                </div>
               ),
               value: "bronze",
             },
             {
               label: (
-                <Center>
-                  <Avatar size={20} mr={8} src={VIPBadgeSilverURL} />
-                  银牌
-                </Center>
+                <div className="grid place-content-center">
+                  <SSText className="flex">
+                    {" "}
+                    <Avatar size={20} mr={8} src={VIPBadgeSilverURL} />
+                    银牌
+                  </SSText>
+                </div>
               ),
               value: "silver",
             },
             {
               label: (
-                <Center>
-                  <Avatar size={20} mr={8} src={VIPBadgeGoldURL} />
-                  金牌
-                </Center>
+                <div className="grid place-content-center">
+                  <SSText className="flex">
+                    {" "}
+                    <Avatar size={20} mr={8} src={VIPBadgeGoldURL} />
+                    金牌
+                  </SSText>
+                </div>
               ),
               value: "gold",
             },
             {
               label: (
-                <Center>
-                  <Avatar size={20} mr={8} src={VIPBadgePlatinaURL} />
-                  白金
-                </Center>
+                <div className="grid place-content-center">
+                  <SSText className="flex">
+                    {" "}
+                    <Avatar size={20} mr={8} src={VIPBadgePlatinaURL} />
+                    白金
+                  </SSText>
+                </div>
               ),
               value: "platina",
             },
@@ -391,19 +401,23 @@ export default function VIPProfitCompute() {
             label="年回报率"
             value={returnRate.value}
             ndigits={2}
-            valueColor={canGetMoneyBack.value ? "green" : "red"}
+            valueColor={
+              canGetMoneyBack.value ? "text-green-600" : "text-red-600"
+            }
             asPercentage
             bold
           />
         </ResultGroup>
         <ResultGroup label="注意事项">
-          <Text>
+          <SSText>
             1.
             收益计算已考虑复利，但未考虑持钻量增加对收益率的提升，计算结果可能偏低。
-          </Text>
-          <Text>2. 每月净收益为平均值，由于持钻量上升，实际收益逐月增长。</Text>
-          <Text>3. 全部数值单位均为简书贝。</Text>
-          <Text fw={600}>本工具不作为投资参考。</Text>
+          </SSText>
+          <SSText>
+            2. 每月净收益为平均值，由于持钻量上升，实际收益逐月增长。
+          </SSText>
+          <SSText>3. 全部数值单位均为简书贝。</SSText>
+          <SSText bold>本工具不作为投资参考。</SSText>
         </ResultGroup>
       </SimpleGrid>
     </Stack>

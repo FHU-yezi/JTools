@@ -19,6 +19,7 @@
     "@preact/signals": "^1.1.3",
     "chart.js": "^4.3.0",
     "chartjs-chart-wordcloud": "^4.2.0",
+    "clsx": "^1.2.1",
     "mantine-datatable": "^2.6.3",
     "preact": "^10.15.1",
     "react-chartjs-2": "^5.2.0",

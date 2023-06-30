@@ -1,9 +1,10 @@
-import { Button, Center, Stack, Text } from "@mantine/core";
+import { Button, Stack } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { signal } from "@preact/signals";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import SSAutocomplete from "../components/SSAutocomplete";
 import SSLink from "../components/SSLink";
+import SSText from "../components/SSText";
 import {
   OnRankRecordItem,
   OnRankRecordsRequest,
@@ -187,11 +188,9 @@ export default function OnRankArticleViewer() {
             <ResultTable />
           </Stack>
         ) : (
-          <Center>
-            <Text fw={600} m={24} size="lg">
-              没有查询到数据
-            </Text>
-          </Center>
+          <SSText className="m-6" large bold center>
+            没有查询到数据
+          </SSText>
         ))}
     </Stack>
   );

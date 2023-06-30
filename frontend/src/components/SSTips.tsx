@@ -1,5 +1,6 @@
-import { Text, Tooltip } from "@mantine/core";
+import { Tooltip } from "@mantine/core";
 import { GoQuestion } from "react-icons/go";
+import SSText from "./SSText";
 
 interface Props {
   label: string;
@@ -23,11 +24,11 @@ export default function SSTips({
       multiline={multiline}
       width={multiline ? 256 : undefined}
     >
-      <Text fz="sm" c="dimmed">
+      <SSText small gray>
         <GoQuestion size="1.2em" />
         {"  "}
         {label}
-      </Text>
+      </SSText>
     </Tooltip>
   );
 }

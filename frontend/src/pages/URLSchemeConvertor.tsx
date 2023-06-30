@@ -1,10 +1,8 @@
 import {
   ActionIcon,
   Button,
-  Center,
   Group,
   Stack,
-  Text,
   Tooltip,
 } from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
@@ -13,6 +11,7 @@ import { Signal, signal } from "@preact/signals";
 import { AiOutlineCheck } from "react-icons/ai";
 import { BiCopy, BiRightArrowAlt } from "react-icons/bi";
 import QRCode from "react-qr-code";
+import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
 
 interface JianshuURLType {
@@ -117,10 +116,10 @@ export default function URLSchemeConvertor() {
       />
       <Button onClick={handleConvert}>转换</Button>
       {hasResult.value && (
-        <Center>
-          <Stack mt={48} align="center">
+        <div className="grid place-content-center">
+          <div className="mt-12 flex flex-col gap-4">
             <Group spacing="xs">
-              <Text>{result.value}</Text>
+              <SSText>{result.value}</SSText>
               <Tooltip label="访问">
                 <ActionIcon onClick={() => window.open(result.value)}>
                   <BiRightArrowAlt />
@@ -136,8 +135,8 @@ export default function URLSchemeConvertor() {
               </Tooltip>
             </Group>
             <QRCode value={result.value} />
-          </Stack>
-        </Center>
+          </div>
+        </div>
       )}
     </Stack>
   );

@@ -1,4 +1,4 @@
-import { Button, Flex, Modal, Stack, Text } from "@mantine/core";
+import { Button, Flex, Modal, Stack } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { batch, useSignal } from "@preact/signals";
@@ -14,6 +14,7 @@ import Header from "./Header";
 import Loading from "./Loading";
 import SSLink from "./SSLink";
 import SSStat from "./SSStat";
+import SSText from "./SSText";
 
 interface Props {
   Component: () => JSX.Element;
@@ -113,13 +114,13 @@ export default function ToolWrapper({ Component, toolName }: Props) {
             </Flex>
             {typeof dataSource.value !== "undefined" && (
               <Stack spacing={4} my={16}>
-                <Text fw={600}>数据来源</Text>
+                <SSText bold>数据来源</SSText>
                 {Object.entries(dataSource.value).map(([name, url]) => (
-                  <Text>
+                  <SSText>
                     {name}
                     ：
                     <SSLink url={url} isExternal />
-                  </Text>
+                  </SSText>
                 ))}
               </Stack>
             )}

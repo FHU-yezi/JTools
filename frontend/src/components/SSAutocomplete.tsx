@@ -1,7 +1,8 @@
-import { Autocomplete, Text } from "@mantine/core";
+import { Autocomplete } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { Signal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
+import SSText from "./SSText";
 
 interface Props {
   label: string;
@@ -31,7 +32,7 @@ export default function SSAutocomplete({
 
   return (
     <div>
-      <Text fw={600}>{label}</Text>
+      <SSText bold>{label}</SSText>
       <Autocomplete
         mt={6}
         value={value.value}

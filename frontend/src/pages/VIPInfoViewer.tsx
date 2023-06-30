@@ -1,7 +1,8 @@
-import { Avatar, Badge, Button, Stack, Text } from "@mantine/core";
+import { Avatar, Badge, Button, Stack } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
 import SSLink from "../components/SSLink";
+import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
 import {
   VIPInfoRequest,
@@ -80,11 +81,11 @@ export default function VIPInfoViewer() {
       </Button>
       {hasResult.value && (
         <>
-          <Text>
+          <SSText>
             昵称：
             <SSLink url={userURL.value} label={userName.value} isExternal />
-          </Text>
-          <Text>
+          </SSText>
+          <SSText>
             会员级别：
             <Badge
               size="lg"
@@ -101,13 +102,13 @@ export default function VIPInfoViewer() {
             >
               {VIPType.value}
             </Badge>
-          </Text>
+          </SSText>
           {VIPType.value !== "无会员" && (
-            <Text>
+            <SSText>
               到期时间：
               {getDate(VIPExpireTime.value!)}
               （剩余 {VIPExpireTimeToNowHumanReadable.value}）
-            </Text>
+            </SSText>
           )}
         </>
       )}

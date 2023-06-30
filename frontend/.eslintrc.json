@@ -49,8 +49,9 @@
     "import/no-absolute-path": "off",
     "react/jsx-one-expression-per-line": "off",
     "implicit-arrow-linebreak": "off",
-    "operator-linebreak": ["error", "after"],
+    "operator-linebreak": "off",
     "comma-dangle": "off",
-    "function-paren-newline": "off"
+    "function-paren-newline": "off",
+    "object-curly-newline": "off"
   }
 }

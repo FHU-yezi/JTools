@@ -1,4 +1,4 @@
-import { Text, Stack } from "@mantine/core";
+import SSText from "./SSText";
 
 interface Props {
   title: string;
@@ -8,12 +8,12 @@ interface Props {
 
 export default function SSStat({ title, value, desc = "" }: Props) {
   return (
-    <Stack spacing={4}>
-      <Text fw={600}>{title}</Text>
-      <Text fz="xl">{value}</Text>
-      <Text fz="sm" c="dimmed">
+    <div className="flex flex-col gap-1">
+      <SSText bold>{title}</SSText>
+      <SSText className="text-xl">{value}</SSText>
+      <SSText small gray>
         {desc}
-      </Text>
-    </Stack>
+      </SSText>
+    </div>
   );
 }

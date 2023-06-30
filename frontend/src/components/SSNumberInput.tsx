@@ -1,5 +1,6 @@
-import { NumberInput, Text } from "@mantine/core";
+import { NumberInput } from "@mantine/core";
 import { Signal } from "@preact/signals";
+import SSText from "./SSText";
 
 interface Props {
   label: string;
@@ -24,7 +25,7 @@ export default function SSNumberInput({
 }: Props) {
   return (
     <div>
-      <Text fw={600}>{label}</Text>
+      <SSText bold>{label}</SSText>
       <NumberInput
         mt={6}
         value={value.value}
