@@ -88,20 +88,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
 
   return (
     <>
-      <header
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          height: "4em",
-          width: "100%",
-          display: "flex",
-          zIndex: 3,
-        }}
-      >
-        <Header toolName={toolName} showBackArrow />
-      </header>
-      <div style={{ height: "3em" }} />
+      <Header toolName={toolName} showBackArrow />
       <Suspense fallback={<Loading />}>
         {hasResult.value ? (
           <>

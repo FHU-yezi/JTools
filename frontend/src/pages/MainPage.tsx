@@ -67,20 +67,7 @@ export default function MainPage() {
 
   return (
     <>
-      <header
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          height: "4em",
-          width: "100%",
-          display: "flex",
-          zIndex: 3,
-        }}
-      >
-        <Header toolName="简书小工具集" showBackArrow={false} />
-      </header>
-      <div style={{ height: "3em" }} />
+      <Header toolName="简书小工具集" showBackArrow={false} />
       <Stack>
         <Text size="sm" c="dimmed">
           版本：
