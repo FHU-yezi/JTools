@@ -12,7 +12,7 @@ import {
 import { SpotlightProvider } from "@mantine/spotlight";
 
 import { useLocalStorage } from "@mantine/hooks";
-import React, { render } from "preact/compat";
+import React, { render, useEffect } from "preact/compat";
 import App from "./App";
 import ErrorFallback from "./components/ErrorFallback";
 import { spotlightActions } from "./routes";
@@ -27,8 +27,24 @@ function Main() {
     key: "jtools-color-scheme",
     defaultValue: "light",
   });
-  const toggleColorScheme = () =>
+  const toggleColorScheme = () => {
     setColorScheme(colorScheme === "dark" ? "light" : "dark");
+
+    // Tailwind CSS 深色模式
+    if (colorScheme === "dark") {
+      document.documentElement.classList.remove("dark");
+    } else {
+      document.documentElement.classList.add("dark");
+    }
+  };
+
+  useEffect(() => {
+    // Tailwind CSS 深色模式
+    if (localStorage.getItem("jtools-color-scheme") === '"dark"') {
+      document.documentElement.classList.add("dark");
+    }
+  }, []);
+
   return (
     <React.StrictMode>
       <ColorSchemeProvider
