@@ -1,6 +1,4 @@
-import {
-  Button, Flex, Modal, Stack, Text,
-} from "@mantine/core";
+import { Button, Flex, Modal, Stack, Text } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { batch, useSignal } from "@preact/signals";
@@ -67,9 +65,10 @@ export default function ToolWrapper({ Component, toolName }: Props) {
           if (toolStatus.value === InfoStatus.DOWNGRADED) {
             notifications.show({
               title: "服务降级",
-              message: downgradedReason.value.length !== 0
-                ? downgradedReason.value
-                : "该小工具处于降级状态，其数据准确性、展示效果及性能可能受到影响，请您留意。",
+              message:
+                downgradedReason.value.length !== 0
+                  ? downgradedReason.value
+                  : "该小工具处于降级状态，其数据准确性、展示效果及性能可能受到影响，请您留意。",
               color: "orange",
               autoClose: false,
               icon: <AiOutlineArrowDown size="1.2em" color="white" />,
@@ -81,7 +80,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
         },
         commonAPIErrorHandler,
         hasResult,
-        isLoading,
+        isLoading
       );
     } catch {}
   }, []);
@@ -94,34 +93,41 @@ export default function ToolWrapper({ Component, toolName }: Props) {
           <>
             <Flex
               gap={24}
-              my={typeof dataUpdateTime.value !== "undefined" || typeof dataCount.value !== "undefined" ? 16 : 0}
+              my={
+                typeof dataUpdateTime.value !== "undefined" ||
+                typeof dataCount.value !== "undefined"
+                  ? 16
+                  : 0
+              }
             >
               {typeof dataUpdateTime.value !== "undefined" && (
-              <SSStat
-                title="数据更新时间"
-                value={getDateTimeWithoutSecond(dataUpdateTime.value!)}
-                desc={dataUpdateFreqDesc.value}
-              />
+                <SSStat
+                  title="数据更新时间"
+                  value={getDateTimeWithoutSecond(dataUpdateTime.value!)}
+                  desc={dataUpdateFreqDesc.value}
+                />
               )}
               {typeof dataCount.value !== "undefined" && (
-              <SSStat title="总数据量" value={dataCount.value} />
+                <SSStat title="总数据量" value={dataCount.value} />
               )}
             </Flex>
             {typeof dataSource.value !== "undefined" && (
-            <Stack spacing={4} my={16}>
-              <Text fw={600}>数据来源</Text>
-              {Object.entries(dataSource.value).map(([name, url]) => (
-                <Text>
-                  {name}
-                  ：
-                  <SSLink url={url} isExternal />
-                </Text>
-              ))}
-            </Stack>
+              <Stack spacing={4} my={16}>
+                <Text fw={600}>数据来源</Text>
+                {Object.entries(dataSource.value).map(([name, url]) => (
+                  <Text>
+                    {name}
+                    ：
+                    <SSLink url={url} isExternal />
+                  </Text>
+                ))}
+              </Stack>
             )}
             <Component />
           </>
-        ) : <Loading />}
+        ) : (
+          <Loading />
+        )}
       </Suspense>
       <Modal
         opened={showUnavaliableModal.value}
@@ -135,10 +141,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
           {unavaliableReason.value.length !== 0
             ? unavaliableReason.value
             : "该小工具由于数据准确性、体验或安全性等原因暂时不可用，请稍后再尝试访问，并留意相关公告。"}
-          <Button
-            variant="light"
-            onClick={() => setLocation("/")}
-          >
+          <Button variant="light" onClick={() => setLocation("/")}>
             返回首页
           </Button>
         </Stack>

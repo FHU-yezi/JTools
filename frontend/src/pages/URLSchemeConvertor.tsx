@@ -68,7 +68,7 @@ function getURLType(url: Signal<string>): JianshuURLType | "unknown" {
   let slug;
   try {
     splitted = url.value.split("/");
-    [,,, perfix, slug] = splitted;
+    [, , , perfix, slug] = splitted;
   } catch {
     return "unknown";
   }
@@ -76,8 +76,8 @@ function getURLType(url: Signal<string>): JianshuURLType | "unknown" {
   for (const URLType of URLTypesArray) {
     if (perfix === URLType.URLPrefix) {
       if (
-        URLType.slugLengthRange.min <= slug.length
-        && slug.length <= URLType.slugLengthRange.max
+        URLType.slugLengthRange.min <= slug.length &&
+        slug.length <= URLType.slugLengthRange.max
       ) {
         return URLType;
       }
@@ -101,7 +101,7 @@ function handleConvert() {
   hasResult.value = true;
   result.value = jianshuURL.value.replace(
     `https://www.jianshu.com/${urlType.URLPrefix}/`,
-    `jianshu://${urlType.URLSchemePrefix}/`,
+    `jianshu://${urlType.URLSchemePrefix}/`
   );
 }
 
@@ -110,7 +110,11 @@ export default function URLSchemeConvertor() {
 
   return (
     <Stack>
-      <SSTextInput label="简书链接" value={jianshuURL} onEnter={handleConvert} />
+      <SSTextInput
+        label="简书链接"
+        value={jianshuURL}
+        onEnter={handleConvert}
+      />
       <Button onClick={handleConvert}>转换</Button>
       {hasResult.value && (
         <Center>

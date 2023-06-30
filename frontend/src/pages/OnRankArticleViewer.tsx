@@ -1,9 +1,4 @@
-import {
-  Button,
-  Center,
-  Stack,
-  Text,
-} from "@mantine/core";
+import { Button, Center, Stack, Text } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { signal } from "@preact/signals";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
@@ -31,7 +26,10 @@ const hasResult = signal(false);
 const result = signal<OnRankRecordItem[]>([]);
 const resultTotalCount = signal<number | undefined>(undefined);
 const currentPage = signal(1);
-const resultTableSortStatus = signal<DataTableSortStatus>({ columnAccessor: "date", direction: "desc" });
+const resultTableSortStatus = signal<DataTableSortStatus>({
+  columnAccessor: "date",
+  direction: "desc",
+});
 
 function isURL(string: string): boolean {
   return string.startsWith("https://");
@@ -53,7 +51,7 @@ function handleCompleteItemUpdate(value: string) {
         name_part: value.trim(),
       },
       (data) => (completeItems.value = data.possible_names),
-      commonAPIErrorHandler,
+      commonAPIErrorHandler
     );
   } catch {}
 }
@@ -82,7 +80,7 @@ function handleQuery(offset: number) {
       },
       commonAPIErrorHandler,
       result.value.length === 0 ? hasResult : undefined,
-      result.value.length === 0 ? isLoading : undefined,
+      result.value.length === 0 ? isLoading : undefined
     );
   } catch {}
 }
@@ -92,19 +90,19 @@ function handleResultTableSort() {
   const sortDirection = resultTableSortStatus.value.direction;
   let resultToSort = result.value;
 
-  resultToSort = resultToSort.map(
-    (item) => { item.date = parseTime(item.date).getTime(); return item; },
-  );
+  resultToSort = resultToSort.map((item) => {
+    item.date = parseTime(item.date).getTime();
+    return item;
+  });
 
   resultToSort.sort(
-    (a: Record<string, any>, b: Record<string, any>) => (
-      a[sortKey] - b[sortKey]
-    ),
+    (a: Record<string, any>, b: Record<string, any>) => a[sortKey] - b[sortKey]
   );
 
-  resultToSort = resultToSort.map(
-    (item) => { item.date = new Date(item.date).getTime() / 1000; return item; },
-  );
+  resultToSort = resultToSort.map((item) => {
+    item.date = new Date(item.date).getTime() / 1000;
+    return item;
+  });
 
   if (sortDirection === "desc") {
     result.value = resultToSort.reverse();
@@ -124,7 +122,7 @@ function ResultTable() {
           title: "日期",
           sortable: true,
           noWrap: true,
-          render: (record) => (getDate(parseTime(record.date))),
+          render: (record) => getDate(parseTime(record.date)),
         },
         {
           accessor: "ranking",
@@ -138,9 +136,11 @@ function ResultTable() {
           render: (record) => (
             <SSLink
               url={record.url}
-              label={record.title.length <= 30
-                ? record.title
-                : `${record.title.substring(0, 30)}...`}
+              label={
+                record.title.length <= 30
+                  ? record.title
+                  : `${record.title.substring(0, 30)}...`
+              }
               isExternal
             />
           ),
@@ -153,9 +153,10 @@ function ResultTable() {
         },
       ]}
       sortStatus={resultTableSortStatus.value}
-      onSortStatusChange={
-        (newStatus) => { resultTableSortStatus.value = newStatus; handleResultTableSort(); }
-      }
+      onSortStatusChange={(newStatus) => {
+        resultTableSortStatus.value = newStatus;
+        handleResultTableSort();
+      }}
       totalRecords={resultTotalCount.value}
       recordsPerPage={PAGE_SIZE}
       page={currentPage.value}
@@ -180,8 +181,8 @@ export default function OnRankArticleViewer() {
       <Button onClick={() => handleQuery(0)} loading={isLoading.value}>
         查询
       </Button>
-      {hasResult.value
-        && (result.value.length !== 0 ? (
+      {hasResult.value &&
+        (result.value.length !== 0 ? (
           <Stack>
             <ResultTable />
           </Stack>

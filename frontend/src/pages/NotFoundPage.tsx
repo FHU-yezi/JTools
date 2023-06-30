@@ -1,6 +1,4 @@
-import {
-  Button, Center, Stack, Text, Title,
-} from "@mantine/core";
+import { Button, Center, Stack, Text, Title } from "@mantine/core";
 import { IoPaperPlaneSharp } from "react-icons/io5";
 import { useLocation } from "wouter-preact";
 

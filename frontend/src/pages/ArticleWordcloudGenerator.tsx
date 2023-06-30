@@ -1,6 +1,4 @@
-import {
-  Button, Center, Stack, Text,
-} from "@mantine/core";
+import { Button, Center, Stack, Text } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { Signal, batch, signal } from "@preact/signals";
 import { Chart as ChartInstance, Colors, LinearScale } from "chart.js";
@@ -9,7 +7,11 @@ import { Chart } from "react-chartjs-2";
 import ChartWrapper from "../components/ChartWrapper";
 import SSLink from "../components/SSLink";
 import SSTextInput from "../components/SSTextInput";
-import { WordFreqDataItem, WordFreqDataRequest, WordFreqDataResponse } from "../models/ArticleWordcloudGenerator/WordFreqData";
+import {
+  WordFreqDataItem,
+  WordFreqDataRequest,
+  WordFreqDataResponse,
+} from "../models/ArticleWordcloudGenerator/WordFreqData";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 
@@ -22,7 +24,7 @@ const articleTitle = signal("");
 const wordFreqData = signal<WordFreqDataItem>({});
 
 interface WordcloudProps {
-    data: Signal<WordFreqDataItem>
+  data: Signal<WordFreqDataItem>;
 }
 
 function handleGenerate() {
@@ -40,13 +42,14 @@ function handleGenerate() {
     {
       article_url: articleURL.value,
     },
-    (data) => batch(() => {
-      articleTitle.value = data.title;
-      wordFreqData.value = data.word_freq;
-    }),
+    (data) =>
+      batch(() => {
+        articleTitle.value = data.title;
+        wordFreqData.value = data.word_freq;
+      }),
     commonAPIErrorHandler,
     hasResult,
-    isLoading,
+    isLoading
   );
 }
 
@@ -57,11 +60,13 @@ function Wordcloud({ data }: WordcloudProps) {
       type="wordCloud"
       data={{
         labels: Object.keys(data.value),
-        datasets: [{
-          // 使用最高频词的出现次数调整每个词的大小，使高频词不至于过大而溢出画面
-          data: Object.values(data.value).map((item) => item * scale),
-          color: "#EA6F5A",
-        }],
+        datasets: [
+          {
+            // 使用最高频词的出现次数调整每个词的大小，使高频词不至于过大而溢出画面
+            data: Object.values(data.value).map((item) => item * scale),
+            color: "#EA6F5A",
+          },
+        ],
       }}
       options={{
         events: [],
@@ -78,22 +83,37 @@ function Wordcloud({ data }: WordcloudProps) {
 export default function ArticleWordcloudGenerator() {
   return (
     <Stack>
-      <SSTextInput label="文章链接" value={articleURL} onEnter={handleGenerate} />
-      <Button onClick={handleGenerate} loading={isLoading.value}>查询</Button>
+      <SSTextInput
+        label="文章链接"
+        value={articleURL}
+        onEnter={handleGenerate}
+      />
+      <Button onClick={handleGenerate} loading={isLoading.value}>
+        查询
+      </Button>
       {hasResult.value && (
-      <>
-        <Center>
-          <Text>文章：</Text>
-          <SSLink
-            url={articleURL.value}
-            label={articleTitle.value.length <= 17 ? articleTitle.value : `${articleTitle.value.substring(0, 17)}...`}
-            isExternal
-          />
-        </Center>
-        <ChartWrapper chartType="radial" minWidth={800} height={500} allowOverflow>
-          <Wordcloud data={wordFreqData} />
-        </ChartWrapper>
-      </>
+        <>
+          <Center>
+            <Text>文章：</Text>
+            <SSLink
+              url={articleURL.value}
+              label={
+                articleTitle.value.length <= 17
+                  ? articleTitle.value
+                  : `${articleTitle.value.substring(0, 17)}...`
+              }
+              isExternal
+            />
+          </Center>
+          <ChartWrapper
+            chartType="radial"
+            minWidth={800}
+            height={500}
+            allowOverflow
+          >
+            <Wordcloud data={wordFreqData} />
+          </ChartWrapper>
+        </>
       )}
     </Stack>
   );

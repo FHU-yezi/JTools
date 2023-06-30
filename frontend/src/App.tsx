@@ -18,10 +18,7 @@ export default function App() {
       </Route>
       {routes.map((item) => (
         <Route key={item.path} path={item.path}>
-          <ToolWrapper
-            toolName={item.toolName}
-            Component={item.component}
-          />
+          <ToolWrapper toolName={item.toolName} Component={item.component} />
         </Route>
       ))}
       <Route path="/thanks">

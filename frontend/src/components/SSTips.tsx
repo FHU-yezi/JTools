@@ -2,14 +2,17 @@ import { Text, Tooltip } from "@mantine/core";
 import { GoQuestion } from "react-icons/go";
 
 interface Props {
-    label: string;
-    content: string;
-    multiline?: boolean;
-    inline?: boolean;
+  label: string;
+  content: string;
+  multiline?: boolean;
+  inline?: boolean;
 }
 
 export default function SSTips({
-  label, content, multiline = false, inline = false,
+  label,
+  content,
+  multiline = false,
+  inline = false,
 }: Props) {
   return (
     <Tooltip

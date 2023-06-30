@@ -13,7 +13,14 @@ interface Props {
 }
 
 export default function SSNumberInput({
-  label, value, min, max, precision = 0, onEnter, noSelectOnFocus = false, showControls = false,
+  label,
+  value,
+  min,
+  max,
+  precision = 0,
+  onEnter,
+  noSelectOnFocus = false,
+  showControls = false,
 }: Props) {
   return (
     <div>
@@ -25,14 +32,18 @@ export default function SSNumberInput({
         max={max}
         precision={precision}
         onChange={(x: number) => (value.value = x)}
-        onKeyUp={onEnter ? (event: any) => (event.key === "Enter" && onEnter()) : undefined}
+        onKeyUp={
+          onEnter
+            ? (event: any) => event.key === "Enter" && onEnter()
+            : undefined
+        }
         onFocus={
           !noSelectOnFocus
-            ? (event: any) => (
-              event.currentTarget.value.length !== 0 && event.currentTarget.select()
-            )
+            ? (event: any) =>
+                event.currentTarget.value.length !== 0 &&
+                event.currentTarget.select()
             : undefined
-      }
+        }
         hideControls={!showControls}
         aria-label={label}
       />

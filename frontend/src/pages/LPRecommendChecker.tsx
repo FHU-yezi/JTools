@@ -1,17 +1,14 @@
-import {
-  Badge,
-  Button,
-  Center,
-  Stack,
-  Table,
-  Text,
-} from "@mantine/core";
+import { Badge, Button, Center, Stack, Table, Text } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
 import SSLink from "../components/SSLink";
 import SSScolllable from "../components/SSScollable";
 import SSTextInput from "../components/SSTextInput";
-import { CheckItem, CheckRequest, CheckResponse } from "../models/LPRecommendChecker/CheckResult";
+import {
+  CheckItem,
+  CheckRequest,
+  CheckResponse,
+} from "../models/LPRecommendChecker/CheckResult";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import { getDatetime, parseTime } from "../utils/timeHelper";
@@ -40,16 +37,17 @@ function handleCheck() {
     {
       article_url: articleURL.value,
     },
-    (data) => batch(() => {
-      articleTitle.value = data.title;
-      releaseTime.value = parseTime(data.release_time);
-      releaseTimeHumanReadable.value = data.release_time_human_readable;
-      checkPassed.value = data.check_passed;
-      checkItems.value = data.check_items;
-    }),
+    (data) =>
+      batch(() => {
+        articleTitle.value = data.title;
+        releaseTime.value = parseTime(data.release_time);
+        releaseTimeHumanReadable.value = data.release_time_human_readable;
+        checkPassed.value = data.check_passed;
+        checkItems.value = data.check_items;
+      }),
     commonAPIErrorHandler,
     hasResult,
-    isLoading,
+    isLoading
   );
 }
 
@@ -57,15 +55,23 @@ export default function LPRecommendChecker() {
   return (
     <Stack>
       <SSTextInput label="文章链接" value={articleURL} onEnter={handleCheck} />
-      <Button onClick={handleCheck} loading={isLoading.value}>查询</Button>
+      <Button onClick={handleCheck} loading={isLoading.value}>
+        查询
+      </Button>
       {hasResult.value && (
         <>
           <Center>
             <Text>文章标题：</Text>
-            <SSLink url={articleURL.value} label={articleTitle.value} isExternal />
+            <SSLink
+              url={articleURL.value}
+              label={articleTitle.value}
+              isExternal
+            />
           </Center>
           <Center>
-            <Text>{`发布于 ${getDatetime(releaseTime.value!)}（${releaseTimeHumanReadable.value}前）`}</Text>
+            <Text>{`发布于 ${getDatetime(releaseTime.value!)}（${
+              releaseTimeHumanReadable.value
+            }前）`}</Text>
           </Center>
           <Center>
             <Text fz="xl" fw={600} c={checkPassed.value ? "green" : "red"}>
@@ -86,7 +92,14 @@ export default function LPRecommendChecker() {
                 {checkItems.value.map((item) => (
                   <tr key={item.name}>
                     <td>{item.name}</td>
-                    <td><Badge size="lg" color={item.item_passed ? "green" : "red"}>{item.item_passed ? "符合" : "不符合"}</Badge></td>
+                    <td>
+                      <Badge
+                        size="lg"
+                        color={item.item_passed ? "green" : "red"}
+                      >
+                        {item.item_passed ? "符合" : "不符合"}
+                      </Badge>
+                    </td>
                     <td>{`${item.operator} ${item.limit_value}`}</td>
                     <td>{item.actual_value}</td>
                   </tr>

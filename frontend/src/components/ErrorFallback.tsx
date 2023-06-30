@@ -59,10 +59,7 @@ export default function ErrorFallback({ error }: Props) {
           <Accordion.Item value="more-tech-info">
             <Accordion.Control>我如何提供更多技术信息？</Accordion.Control>
             <Accordion.Panel>
-              如果您使用电脑访问本服务，请按下
-              {" "}
-              <Kbd>F12</Kbd>
-              {" "}
+              如果您使用电脑访问本服务，请按下 <Kbd>F12</Kbd>{" "}
               打开开发者工具，在顶栏中选择
               Console（控制台）选项，截图其内容并在反馈时一并发送。
             </Accordion.Panel>

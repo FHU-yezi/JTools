@@ -1,6 +1,4 @@
-import {
-  Button, Center, Stack, Text, Title,
-} from "@mantine/core";
+import { Button, Center, Stack, Text, Title } from "@mantine/core";
 import { LuConstruction } from "react-icons/lu";
 import { useLocation } from "wouter-preact";
 

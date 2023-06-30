@@ -9,7 +9,10 @@ interface Props {
 }
 
 export default function SSTextInput({
-  label, value, onEnter, noSelectOnFocus = false,
+  label,
+  value,
+  onEnter,
+  noSelectOnFocus = false,
 }: Props) {
   return (
     <div>
@@ -18,14 +21,18 @@ export default function SSTextInput({
         mt={6}
         value={value.value}
         onChange={(event: any) => (value.value = event.currentTarget.value)}
-        onKeyUp={onEnter ? (event: any) => (event.key === "Enter" && onEnter()) : undefined}
+        onKeyUp={
+          onEnter
+            ? (event: any) => event.key === "Enter" && onEnter()
+            : undefined
+        }
         onFocus={
           !noSelectOnFocus
-            ? (event: any) => (
-              event.currentTarget.value.length !== 0 && event.currentTarget.select()
-            )
+            ? (event: any) =>
+                event.currentTarget.value.length !== 0 &&
+                event.currentTarget.select()
             : undefined
-      }
+        }
         aria-label={label}
         spellcheck={false}
       />

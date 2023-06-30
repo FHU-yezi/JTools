@@ -11,13 +11,17 @@ interface Props {
 }
 
 export default function ToolCard({
-  toolName, path, description, downgraded, unavaliable,
+  toolName,
+  path,
+  description,
+  downgraded,
+  unavaliable,
 }: Props) {
   const [, setLocation] = useLocation();
   return (
     <button
       type="button"
-      className="w-full flex justify-between items-center p-5 rounded-2xl shadow border bg-white dark:bg-zinc-800 dark:border-zinc-700"
+      className="flex w-full items-center justify-between rounded-2xl border bg-white p-5 shadow dark:border-zinc-700 dark:bg-zinc-800"
       onClick={!unavaliable ? () => setLocation(path) : undefined}
     >
       <div>
@@ -26,8 +30,16 @@ export default function ToolCard({
             <Text size="lg" fw={700}>
               {toolName}
             </Text>
-            {downgraded && <Badge color="orange" radius="sm" size="lg">降级</Badge>}
-            {unavaliable && <Badge color="red" radius="sm" size="lg">不可用</Badge>}
+            {downgraded && (
+              <Badge color="orange" radius="sm" size="lg">
+                降级
+              </Badge>
+            )}
+            {unavaliable && (
+              <Badge color="red" radius="sm" size="lg">
+                不可用
+              </Badge>
+            )}
           </Group>
         </div>
         <div className="h-4" />

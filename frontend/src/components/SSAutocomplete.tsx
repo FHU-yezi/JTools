@@ -38,14 +38,18 @@ export default function SSAutocomplete({
         onChange={(newValue: string) => {
           value.value = newValue;
         }}
-        onKeyUp={onEnter ? (event: any) => (event.key === "Enter" && onEnter()) : undefined}
+        onKeyUp={
+          onEnter
+            ? (event: any) => event.key === "Enter" && onEnter()
+            : undefined
+        }
         onFocus={
           !noSelectOnFocus
-            ? (event: any) => (
-              event.currentTarget.value.length !== 0 && event.currentTarget.select()
-            )
+            ? (event: any) =>
+                event.currentTarget.value.length !== 0 &&
+                event.currentTarget.select()
             : undefined
-      }
+        }
         data={completeItems.value}
         aria-label={label}
         spellcheck={false}

@@ -1,6 +1,4 @@
-import {
-  Card, Center, Space, Stack, Text, Title,
-} from "@mantine/core";
+import { Card, Center, Space, Stack, Text, Title } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { signal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
@@ -32,7 +30,7 @@ export default function ThanksPage() {
           debugProjectRecords.value = data.debug_project_records;
         },
         commonAPIErrorHandler,
-        hasResult,
+        hasResult
       );
     } catch {}
   }, []);
@@ -44,7 +42,9 @@ export default function ThanksPage() {
         <Stack>
           <Stack spacing={2}>
             <Title order={3}>v3 Beta 内测成员</Title>
-            <Text size="sm" c="dimmed">排名不分先后</Text>
+            <Text size="sm" c="dimmed">
+              排名不分先后
+            </Text>
           </Stack>
           {Object.entries(v3BetaPaticipants.value).map(([name, url]) => (
             <Text>
@@ -58,7 +58,11 @@ export default function ThanksPage() {
             <Text>
               {name}
               ：
-              <SSLink url={url} label={`${url.split("/")[4]} - GitHub`} isExternal />
+              <SSLink
+                url={url}
+                label={`${url.split("/")[4]} - GitHub`}
+                isExternal
+              />
             </Text>
           ))}
           <Title order={3}>「捉虫计划」反馈</Title>
@@ -66,13 +70,22 @@ export default function ThanksPage() {
             <Card radius="md" withBorder>
               <Stack spacing="sm">
                 <Stack spacing={2}>
-                  <Text size="lg" fw={600}>{`${item.time} | ${item.type}`}</Text>
-                  <Text size="sm" c="dimmed">{item.module}</Text>
+                  <Text
+                    size="lg"
+                    fw={600}
+                  >{`${item.time} | ${item.type}`}</Text>
+                  <Text size="sm" c="dimmed">
+                    {item.module}
+                  </Text>
                 </Stack>
                 <Text>{item.desc}</Text>
                 <Text>
                   反馈者：
-                  <SSLink url={item.user_url} label={item.user_name} isExternal />
+                  <SSLink
+                    url={item.user_url}
+                    label={item.user_name}
+                    isExternal
+                  />
                 </Text>
                 <Text>{`奖励：${item.award} 简书贝`}</Text>
               </Stack>
@@ -83,7 +96,9 @@ export default function ThanksPage() {
             <Text size="lg">还有，感谢为简书生态奉献的你。</Text>
           </Center>
         </Stack>
-      ) : <Loading />}
+      ) : (
+        <Loading />
+      )}
     </>
   );
 }

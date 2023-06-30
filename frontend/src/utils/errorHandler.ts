@@ -3,7 +3,7 @@ import { notifications } from "@mantine/notifications";
 export function commonAPIErrorHandler(
   code: number,
   message: string,
-  userErrorToastColor?: string,
+  userErrorToastColor?: string
 ) {
   // 参数异常，一般是用户问题
   if (code === 412) {

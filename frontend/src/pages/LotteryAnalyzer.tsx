@@ -1,10 +1,4 @@
-import {
-  SegmentedControl,
-  Skeleton,
-  Stack,
-  Table,
-  Title,
-} from "@mantine/core";
+import { SegmentedControl, Skeleton, Stack, Table, Title } from "@mantine/core";
 import { Signal, batch, signal } from "@preact/signals";
 import {
   ArcElement,
@@ -55,7 +49,7 @@ Chart.register(
   LinearScale,
   PieController,
   PointElement,
-  Tooltip,
+  Tooltip
 );
 
 const timeRangeSCData = buildSegmentedControlDataFromRecord({
@@ -74,11 +68,11 @@ const perPrizeAnalyzeTimeRange = signal<TimeRange>("1d");
 const perPrizeAnalyzeData = signal<PerPrizeDataItem[]>([]);
 const RewardWinsCountPieTimeRange = signal<TimeRange>("1d");
 const RewardWinsCountData = signal<RewardsWinsCountDataItem | undefined>(
-  undefined,
+  undefined
 );
 const RewardWinsTrendLineTimeRange = signal<TimeRangeWithoutAll>("1d");
 const RewardWinsTrendData = signal<RewardWinsTrendDataItem | undefined>(
-  undefined,
+  undefined
 );
 
 interface PerPrizeAnalyzeTableProps {
@@ -102,7 +96,7 @@ function handlePerPrizeAnalayzeDataFetch() {
         time_range: perPrizeAnalyzeTimeRange.value,
       },
       (data) => (perPrizeAnalyzeData.value = data.rewards),
-      commonAPIErrorHandler,
+      commonAPIErrorHandler
     );
   } catch {}
 }
@@ -116,7 +110,7 @@ function handleRewardWinsCountDataFetch() {
         time_range: RewardWinsCountPieTimeRange.value,
       },
       (data) => (RewardWinsCountData.value = data.wins_count_data),
-      commonAPIErrorHandler,
+      commonAPIErrorHandler
     );
   } catch {}
 }
@@ -130,7 +124,7 @@ function handleRewardWinsTrendDataFetch() {
         time_range: RewardWinsTrendLineTimeRange.value,
       },
       (data) => (RewardWinsTrendData.value = data.trend_data),
-      commonAPIErrorHandler,
+      commonAPIErrorHandler
     );
   } catch {}
 }
@@ -160,10 +154,7 @@ function PerPrizeAnalyzeTable({ data }: PerPrizeAnalyzeTableProps) {
               <td>{item.wins_count}</td>
               <td>{item.winners_count}</td>
               <td>{item.average_wins_count_per_winner}</td>
-              <td>
-                {RoundFloat(item.winning_rate * 100, 3)}
-                %
-              </td>
+              <td>{RoundFloat(item.winning_rate * 100, 3)}%</td>
               <td>{item.rarity}</td>
             </tr>
           ))}
@@ -199,7 +190,12 @@ function RewardWinsTrendLine({ data }: RewardWinsTrendLineProps) {
     <Line
       data={{
         labels: Object.keys(data.value),
-        datasets: [{ data: Object.values(data.value), cubicInterpolationMode: "monotone" }],
+        datasets: [
+          {
+            data: Object.values(data.value),
+            cubicInterpolationMode: "monotone",
+          },
+        ],
       }}
       options={{
         interaction: {
@@ -256,7 +252,10 @@ export default function LotteryAnalyzer() {
         }}
         data={timeRangeSCData}
       />
-      <ChartWrapper chartType="pie" show={typeof RewardWinsCountData.value !== "undefined"}>
+      <ChartWrapper
+        chartType="pie"
+        show={typeof RewardWinsCountData.value !== "undefined"}
+      >
         <RewardWinsCountPie
           data={
             RewardWinsCountData as unknown as Signal<RewardsWinsCountDataItem>
@@ -275,7 +274,10 @@ export default function LotteryAnalyzer() {
         }}
         data={timeRangeWithoutAllSCData}
       />
-      <ChartWrapper chartType="radial" show={typeof RewardWinsTrendData.value !== "undefined"}>
+      <ChartWrapper
+        chartType="radial"
+        show={typeof RewardWinsTrendData.value !== "undefined"}
+      >
         <RewardWinsTrendLine
           data={
             RewardWinsTrendData as unknown as Signal<RewardWinsTrendDataItem>

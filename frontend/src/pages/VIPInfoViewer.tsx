@@ -1,7 +1,4 @@
-import {
-  Avatar,
-  Badge, Button, Stack, Text,
-} from "@mantine/core";
+import { Avatar, Badge, Button, Stack, Text } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
 import SSLink from "../components/SSLink";
@@ -53,17 +50,19 @@ function handleQuery() {
       {
         user_url: userURL.value,
       },
-      (data) => batch(() => {
-        userName.value = data.name;
-        VIPType.value = data.VIP_type;
-        if (typeof data.VIP_expire_time !== "undefined") {
-          VIPExpireTime.value = parseTime(data.VIP_expire_time);
-          VIPExpireTimeToNowHumanReadable.value = data.VIP_expire_time_to_now_human_readable!;
-        }
-      }),
+      (data) =>
+        batch(() => {
+          userName.value = data.name;
+          VIPType.value = data.VIP_type;
+          if (typeof data.VIP_expire_time !== "undefined") {
+            VIPExpireTime.value = parseTime(data.VIP_expire_time);
+            VIPExpireTimeToNowHumanReadable.value =
+              data.VIP_expire_time_to_now_human_readable!;
+          }
+        }),
       commonAPIErrorHandler,
       hasResult,
-      isLoading,
+      isLoading
     );
   } catch {}
 }
@@ -71,8 +70,14 @@ function handleQuery() {
 export default function VIPInfoViewer() {
   return (
     <Stack>
-      <SSTextInput label="用户个人主页链接" value={userURL} onEnter={handleQuery} />
-      <Button onClick={handleQuery} loading={isLoading.value}>查询</Button>
+      <SSTextInput
+        label="用户个人主页链接"
+        value={userURL}
+        onEnter={handleQuery}
+      />
+      <Button onClick={handleQuery} loading={isLoading.value}>
+        查询
+      </Button>
       {hasResult.value && (
         <>
           <Text>
@@ -85,14 +90,14 @@ export default function VIPInfoViewer() {
               size="lg"
               pl={0}
               color="gray"
-              leftSection={(
+              leftSection={
                 <Avatar
                   alt={`${VIPType.value} 徽章图片`}
                   size={24}
                   mr={6}
                   src={VIPTypeToBadgeImageURL[VIPType.value]}
                 />
-              )}
+              }
             >
               {VIPType.value}
             </Badge>
@@ -101,10 +106,7 @@ export default function VIPInfoViewer() {
             <Text>
               到期时间：
               {getDate(VIPExpireTime.value!)}
-              （剩余
-              {" "}
-              {VIPExpireTimeToNowHumanReadable.value}
-              ）
+              （剩余 {VIPExpireTimeToNowHumanReadable.value}）
             </Text>
           )}
         </>

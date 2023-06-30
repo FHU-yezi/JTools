@@ -59,7 +59,7 @@ function handleQuery(offset: number) {
       },
       commonAPIErrorHandler,
       result.value.length === 0 ? hasResult : undefined,
-      result.value.length === 0 ? isLoading : undefined,
+      result.value.length === 0 ? isLoading : undefined
     );
   } catch {}
 }
@@ -74,7 +74,7 @@ function ResultTable() {
           accessor: "time",
           title: "时间",
           noWrap: true,
-          render: (record) => (getDatetime(parseTime(record.time))),
+          render: (record) => getDatetime(parseTime(record.time)),
         },
         {
           accessor: "reward_name",
@@ -100,11 +100,14 @@ export default function LotteryRewardRecordViewer() {
         "GET",
         "/tools/lottery_reward_record_viewer/rewards",
         {},
-        (data) => batch(() => {
-          rewards.value = data.rewards;
-          selectedRewards.value = data.rewards.map((item) => replaceAll(item, " ", ""));
-        }),
-        commonAPIErrorHandler,
+        (data) =>
+          batch(() => {
+            rewards.value = data.rewards;
+            selectedRewards.value = data.rewards.map((item) =>
+              replaceAll(item, " ", "")
+            );
+          }),
+        commonAPIErrorHandler
       );
     } catch {}
   }, []);
@@ -126,7 +129,12 @@ export default function LotteryRewardRecordViewer() {
           >
             <Group>
               {rewards.value.map((item) => (
-                <Chip key={replaceAll(item, " ", "")} value={replaceAll(item, " ", "")}>{item}</Chip>
+                <Chip
+                  key={replaceAll(item, " ", "")}
+                  value={replaceAll(item, " ", "")}
+                >
+                  {item}
+                </Chip>
               ))}
             </Group>
           </Chip.Group>
@@ -142,8 +150,8 @@ export default function LotteryRewardRecordViewer() {
       <Button onClick={() => handleQuery(0)} loading={isLoading.value}>
         查询
       </Button>
-      {hasResult.value
-        && (result.value.length !== 0 ? (
+      {hasResult.value &&
+        (result.value.length !== 0 ? (
           <ResultTable />
         ) : (
           <Center>

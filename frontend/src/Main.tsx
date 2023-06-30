@@ -27,7 +27,8 @@ function Main() {
     key: "jtools-color-scheme",
     defaultValue: "light",
   });
-  const toggleColorScheme = () => setColorScheme(colorScheme === "dark" ? "light" : "dark");
+  const toggleColorScheme = () =>
+    setColorScheme(colorScheme === "dark" ? "light" : "dark");
   return (
     <React.StrictMode>
       <ColorSchemeProvider

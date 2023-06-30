@@ -3,7 +3,11 @@ import { useDocumentTitle } from "@mantine/hooks";
 import { batch, signal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
 import { useLocation } from "wouter-preact";
-import { V2RedirectRoutes, V2UnavaliableRoutes, V2UnimplementedRoutes } from "../V2RedirectRoutes";
+import {
+  V2RedirectRoutes,
+  V2UnavaliableRoutes,
+  V2UnimplementedRoutes,
+} from "../V2RedirectRoutes";
 import Header from "../components/Header";
 import SSTips from "../components/SSTips";
 import ToolCard from "../components/ToolCard";
@@ -18,7 +22,10 @@ const downgradedTools = signal<string[]>([]);
 const unavaliableTools = signal<string[]>([]);
 
 // eslint-disable-next-line no-unused-vars
-function handleV2Redirect(appName: string, setLocation: (location: string) => void) {
+function handleV2Redirect(
+  appName: string,
+  setLocation: (location: string) => void
+) {
   if (appName in V2RedirectRoutes) {
     umamiTrack("v2-redirect", { from: appName, to: V2RedirectRoutes[appName] });
     setLocation(V2RedirectRoutes[appName]);
@@ -56,12 +63,13 @@ export default function MainPage() {
       "GET",
       "/status",
       {},
-      (data) => batch(() => {
-        version.value = data.version;
-        downgradedTools.value = data.downgraded_tools;
-        unavaliableTools.value = data.unavaliable_tools;
-      }),
-      commonAPIErrorHandler,
+      (data) =>
+        batch(() => {
+          version.value = data.version;
+          downgradedTools.value = data.downgraded_tools;
+          unavaliableTools.value = data.unavaliable_tools;
+        }),
+      commonAPIErrorHandler
     );
   }, []);
 
@@ -88,11 +96,11 @@ export default function MainPage() {
         </Button>
         <Button
           variant="default"
-          onClick={
-          () => window.open(
-            "https://wenjuan.feishu.cn/m?t=sjQp3W8yUrNi-g37f",
-            "_blank",
-          )
+          onClick={() =>
+            window.open(
+              "https://wenjuan.feishu.cn/m?t=sjQp3W8yUrNi-g37f",
+              "_blank"
+            )
           }
         >
           反馈 &gt;
