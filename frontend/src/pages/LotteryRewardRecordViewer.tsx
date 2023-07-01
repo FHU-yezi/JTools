@@ -1,4 +1,4 @@
-import { Chip, Group, Skeleton, Stack } from "@mantine/core";
+import { Chip, Skeleton, Stack } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
 import { DataTable } from "mantine-datatable";
@@ -121,7 +121,7 @@ export default function LotteryRewardRecordViewer() {
             onChange={(value) => (selectedRewards.value = value)}
             multiple
           >
-            <Group>
+            <div className="flex gap-3 flex-wrap">
               {rewards.value.map((item) => (
                 <Chip
                   key={replaceAll(item, " ", "")}
@@ -130,7 +130,7 @@ export default function LotteryRewardRecordViewer() {
                   {item}
                 </Chip>
               ))}
-            </Group>
+            </div>
           </Chip.Group>
         </>
       ) : (

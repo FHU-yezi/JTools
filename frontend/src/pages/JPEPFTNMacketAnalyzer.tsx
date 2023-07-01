@@ -1,4 +1,4 @@
-import { Group, SegmentedControl, Skeleton, Stack } from "@mantine/core";
+import { SegmentedControl, Skeleton, Stack } from "@mantine/core";
 import { Signal, batch, computed, signal } from "@preact/signals";
 import {
   ArcElement,
@@ -280,18 +280,20 @@ export default function JPEPFTNMarketAnalyzer() {
       </SSText>
       {typeof buyPrice.value !== "undefined" &&
       typeof sellPrice.value !== "undefined" ? (
-        <Group grow>
+        <div className="flex gap-2">
           <SSStat
+            className="flex-grow"
             title="买单"
             value={buyPrice.value ?? "不可用"}
             desc={`限价：${buyOrderMinimumPrice.value ?? "获取中..."}`}
           />
           <SSStat
+            className="flex-grow"
             title="卖单"
             value={sellPrice.value ?? "不可用"}
             desc={`限价：${sellOrderMinimumPrice.value ?? "获取中..."}`}
           />
-        </Group>
+        </div>
       ) : (
         <Skeleton h={85.5} />
       )}
@@ -300,8 +302,9 @@ export default function JPEPFTNMarketAnalyzer() {
       </SSText>
       {typeof buyPoolAmount.value !== "undefined" &&
       typeof sellPoolAmount.value !== "undefined" ? (
-        <Group grow>
+        <div className="flex gap-2">
           <SSStat
+            className="flex-grow"
             title="买单"
             value={buyPoolAmount.value}
             desc={`占比 ${(
@@ -310,6 +313,7 @@ export default function JPEPFTNMarketAnalyzer() {
             ).toFixed(2)}%`}
           />
           <SSStat
+            className="flex-grow"
             title="卖单"
             value={sellPoolAmount.value}
             desc={`占比 ${(
@@ -317,7 +321,7 @@ export default function JPEPFTNMarketAnalyzer() {
               100
             ).toFixed(2)}%`}
           />
-        </Group>
+        </div>
       ) : (
         <Skeleton h={85.5} />
       )}

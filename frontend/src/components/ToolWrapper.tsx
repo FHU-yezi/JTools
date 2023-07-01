@@ -1,7 +1,8 @@
-import { Flex, Modal, Stack } from "@mantine/core";
+import { Modal, Stack } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { batch, useSignal } from "@preact/signals";
+import clsx from "clsx";
 import { JSX, Suspense, useEffect } from "preact/compat";
 import { AiOutlineArrowDown } from "react-icons/ai";
 import { useLocation } from "wouter-preact";
@@ -93,26 +94,29 @@ export default function ToolWrapper({ Component, toolName }: Props) {
       <Suspense fallback={<Loading />}>
         {hasResult.value ? (
           <>
-            <Flex
-              gap={24}
-              my={
-                typeof dataUpdateTime.value !== "undefined" ||
-                typeof dataCount.value !== "undefined"
-                  ? 16
-                  : 0
-              }
+            <div
+              className={clsx("flex gap-6", {
+                "my-4":
+                  typeof dataUpdateTime.value !== "undefined" ||
+                  typeof dataCount.value !== "undefined",
+              })}
             >
               {typeof dataUpdateTime.value !== "undefined" && (
                 <SSStat
+                  className="flex-grow"
                   title="数据更新时间"
                   value={getDateTimeWithoutSecond(dataUpdateTime.value!)}
                   desc={dataUpdateFreqDesc.value}
                 />
               )}
               {typeof dataCount.value !== "undefined" && (
-                <SSStat title="总数据量" value={dataCount.value} />
+                <SSStat
+                  className="flex-grow"
+                  title="总数据量"
+                  value={dataCount.value}
+                />
               )}
-            </Flex>
+            </div>
             {typeof dataSource.value !== "undefined" && (
               <Stack spacing={4} my={16}>
                 <SSText bold>数据来源</SSText>
@@ -143,9 +147,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
           {unavaliableReason.value.length !== 0
             ? unavaliableReason.value
             : "该小工具由于数据准确性、体验或安全性等原因暂时不可用，请稍后再尝试访问，并留意相关公告。"}
-          <SSButton onClick={() => setLocation("/")}>
-            返回首页
-          </SSButton>
+          <SSButton onClick={() => setLocation("/")}>返回首页</SSButton>
         </Stack>
       </Modal>
     </>

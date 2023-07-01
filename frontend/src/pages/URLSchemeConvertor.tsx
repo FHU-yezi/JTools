@@ -1,4 +1,4 @@
-import { Group, Stack } from "@mantine/core";
+import { Stack } from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { Signal, signal } from "@preact/signals";
@@ -115,7 +115,7 @@ export default function URLSchemeConvertor() {
       {hasResult.value && (
         <div className="grid place-content-center">
           <div className="mt-12 flex flex-col gap-4">
-            <Group spacing="xs">
+            <div className="flex gap-2">
               <SSText>{result.value}</SSText>
               <SSTooltip tooltip="访问" hideIcon>
                 <SSActionIcon onClick={() => window.open(result.value)}>
@@ -133,7 +133,7 @@ export default function URLSchemeConvertor() {
                   {!clipboard.copied ? <BiCopy /> : <AiOutlineCheck />}
                 </SSActionIcon>
               </SSTooltip>
-            </Group>
+            </div>
             <QRCode value={result.value} />
           </div>
         </div>

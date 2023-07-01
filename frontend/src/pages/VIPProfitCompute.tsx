@@ -1,4 +1,4 @@
-import { Avatar, Group, SegmentedControl, Stack } from "@mantine/core";
+import { Avatar, SegmentedControl, Stack } from "@mantine/core";
 import { computed, signal } from "@preact/signals";
 import { JSX } from "preact/jsx-runtime";
 import SSNumberInput from "../components/SSNumberInput";
@@ -203,7 +203,7 @@ function ResultItem({
   }
 
   return (
-    <Group position="apart">
+    <div className="flex justify-between">
       <SSText bold={bold}>
         {label}
         <SSText small>
@@ -213,7 +213,7 @@ function ResultItem({
       <SSText color={valueColor} bold={bold}>
         {valuePart}
       </SSText>
-    </Group>
+    </div>
   );
 }
 

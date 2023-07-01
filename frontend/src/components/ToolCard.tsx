@@ -1,4 +1,3 @@
-import { Group } from "@mantine/core";
 import { AiOutlineArrowRight } from "react-icons/ai";
 import { useLocation } from "wouter-preact";
 import SSBadge from "./SSBadge";
@@ -28,7 +27,7 @@ export default function ToolCard({
     >
       <div>
         <div>
-          <Group spacing="xs">
+          <div className="flex gap-2">
             <SSText className="font-bold" large>
               {toolName}
             </SSText>
@@ -42,7 +41,7 @@ export default function ToolCard({
                 不可用
               </SSBadge>
             )}
-          </Group>
+          </div>
         </div>
         <div className="h-4" />
         <SSText className="text-left">{description}</SSText>
