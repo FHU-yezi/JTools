@@ -1,4 +1,3 @@
-import { Stack } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { signal } from "@preact/signals";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
@@ -172,7 +171,7 @@ function ResultTable() {
 
 export default function OnRankArticleViewer() {
   return (
-    <Stack>
+    <div className="flex flex-col gap-4">
       <SSAutocomplete
         label="用户昵称 / 个人主页链接"
         value={userURLOrUserName}
@@ -185,14 +184,12 @@ export default function OnRankArticleViewer() {
       </SSButton>
       {hasResult.value &&
         (result.value.length !== 0 ? (
-          <Stack>
-            <ResultTable />
-          </Stack>
+          <ResultTable />
         ) : (
           <SSText className="m-6" large bold center>
             没有查询到数据
           </SSText>
         ))}
-    </Stack>
+    </div>
   );
 }

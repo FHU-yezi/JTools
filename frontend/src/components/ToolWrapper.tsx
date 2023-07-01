@@ -1,4 +1,4 @@
-import { Modal, Stack } from "@mantine/core";
+import { Modal } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { batch, useSignal } from "@preact/signals";
@@ -118,7 +118,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
               )}
             </div>
             {typeof dataSource.value !== "undefined" && (
-              <Stack spacing={4} my={16}>
+              <div className="m-4 flex flex-col gap-1">
                 <SSText bold>数据来源</SSText>
                 {Object.entries(dataSource.value).map(([name, url]) => (
                   <SSText>
@@ -127,7 +127,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
                     <SSLink url={url} isExternal />
                   </SSText>
                 ))}
-              </Stack>
+              </div>
             )}
             <Component />
           </>
@@ -143,12 +143,12 @@ export default function ToolWrapper({ Component, toolName }: Props) {
         closeOnEscape={false}
         withCloseButton={false}
       >
-        <Stack>
+        <div className="flex flex-col gap-4">
           {unavaliableReason.value.length !== 0
             ? unavaliableReason.value
             : "该小工具由于数据准确性、体验或安全性等原因暂时不可用，请稍后再尝试访问，并留意相关公告。"}
           <SSButton onClick={() => setLocation("/")}>返回首页</SSButton>
-        </Stack>
+        </div>
       </Modal>
     </>
   );

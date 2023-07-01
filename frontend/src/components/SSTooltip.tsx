@@ -10,7 +10,7 @@ interface Props {
     | boolean
     | Element
     | (string | number | boolean | Element | VNode)[];
-  className: string;
+  className?: string;
   tooltip: string;
   hideIcon?: boolean;
 }

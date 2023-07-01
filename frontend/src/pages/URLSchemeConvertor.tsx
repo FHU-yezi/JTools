@@ -1,4 +1,3 @@
-import { Stack } from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { Signal, signal } from "@preact/signals";
@@ -105,7 +104,7 @@ export default function URLSchemeConvertor() {
   const clipboard = useClipboard();
 
   return (
-    <Stack>
+    <div className="flex flex-col gap-4">
       <SSTextInput
         label="简书链接"
         value={jianshuURL}
@@ -138,6 +137,6 @@ export default function URLSchemeConvertor() {
           </div>
         </div>
       )}
-    </Stack>
+    </div>
   );
 }

@@ -1,4 +1,4 @@
-import { Chip, Skeleton, Stack } from "@mantine/core";
+import { Chip, Skeleton } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
 import { DataTable } from "mantine-datatable";
@@ -107,7 +107,7 @@ export default function LotteryRewardRecordViewer() {
   }, []);
 
   return (
-    <Stack>
+    <div className="flex flex-col gap-4">
       <SSTextInput
         label="用户个人主页链接"
         value={userURL}
@@ -150,6 +150,6 @@ export default function LotteryRewardRecordViewer() {
             没有查询到数据
           </SSText>
         ))}
-    </Stack>
+    </div>
   );
 }

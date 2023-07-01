@@ -1,4 +1,4 @@
-import { Avatar, Stack } from "@mantine/core";
+import { Avatar } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
 import SSBadge from "../components/SSBadge";
@@ -72,7 +72,7 @@ function handleQuery() {
 
 export default function VIPInfoViewer() {
   return (
-    <Stack>
+    <div className="flex flex-col gap-4">
       <SSTextInput
         label="用户个人主页链接"
         value={userURL}
@@ -108,6 +108,6 @@ export default function VIPInfoViewer() {
           )}
         </>
       )}
-    </Stack>
+    </div>
   );
 }

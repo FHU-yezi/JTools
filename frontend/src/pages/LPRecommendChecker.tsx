@@ -1,4 +1,4 @@
-import { Stack, Table } from "@mantine/core";
+import { Table } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
 import SSBadge from "../components/SSBadge";
@@ -56,7 +56,7 @@ function handleCheck() {
 
 export default function LPRecommendChecker() {
   return (
-    <Stack>
+    <div className="flex flex-col gap-4">
       <SSTextInput label="文章链接" value={articleURL} onEnter={handleCheck} />
       <SSButton onClick={handleCheck} loading={isLoading.value}>
         查询
@@ -116,6 +116,6 @@ export default function LPRecommendChecker() {
           </SSScolllable>
         </>
       )}
-    </Stack>
+    </div>
   );
 }

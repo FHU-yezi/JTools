@@ -1,4 +1,3 @@
-import { Space, Stack } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { signal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
@@ -37,18 +36,18 @@ export default function ThanksPage() {
   }, []);
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <Header toolName="鸣谢" showBackArrow />
       {hasResult.value ? (
-        <Stack>
-          <Stack spacing={2}>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-0.5">
             <SSText xlarge xbold>
               v3 Beta 内测成员
             </SSText>
             <SSText small gray>
               排名不分先后
             </SSText>
-          </Stack>
+          </div>
           {Object.entries(v3BetaPaticipants.value).map(([name, url]) => (
             <SSText>
               {name}
@@ -75,13 +74,13 @@ export default function ThanksPage() {
           </SSText>
           {debugProjectRecords.value.map((item) => (
             <div className="rounded-2xl border p-4 shadow">
-              <Stack spacing="sm">
-                <Stack spacing={2}>
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-0.5">
                   <SSText bold large>{`${item.time} | ${item.type}`}</SSText>
                   <SSText small gray>
                     {item.module}
                   </SSText>
-                </Stack>
+                </div>
                 <SSText>{item.desc}</SSText>
                 <SSText>
                   反馈者：
@@ -92,17 +91,17 @@ export default function ThanksPage() {
                   />
                 </SSText>
                 <SSText>{`奖励：${item.award} 简书贝`}</SSText>
-              </Stack>
+              </div>
             </div>
           ))}
           <div className="h-9" />
           <SSText large center>
             还有，感谢为简书生态奉献的你。
           </SSText>
-        </Stack>
+        </div>
       ) : (
         <Loading />
       )}
-    </>
+    </div>
   );
 }

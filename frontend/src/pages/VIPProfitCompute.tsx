@@ -1,4 +1,4 @@
-import { Avatar, SegmentedControl, Stack } from "@mantine/core";
+import { Avatar, SegmentedControl } from "@mantine/core";
 import { computed, signal } from "@preact/signals";
 import { JSX } from "preact/jsx-runtime";
 import SSNumberInput from "../components/SSNumberInput";
@@ -235,7 +235,7 @@ function ResultGroup({ children, label }: ResultGroupProps) {
 
 export default function VIPProfitCompute() {
   return (
-    <Stack>
+    <div className="flex flex-col gap-4">
       <div className="flex flex-col">
         <SSText bold>会员等级</SSText>
         <SegmentedControl
@@ -401,6 +401,6 @@ export default function VIPProfitCompute() {
           <SSText bold>本工具不作为投资参考。</SSText>
         </ResultGroup>
       </div>
-    </Stack>
+    </div>
   );
 }

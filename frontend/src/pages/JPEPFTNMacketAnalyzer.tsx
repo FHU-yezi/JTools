@@ -1,4 +1,4 @@
-import { SegmentedControl, Skeleton, Stack } from "@mantine/core";
+import { SegmentedControl, Skeleton } from "@mantine/core";
 import { Signal, batch, computed, signal } from "@preact/signals";
 import {
   ArcElement,
@@ -266,7 +266,7 @@ export default function JPEPFTNMarketAnalyzer() {
   }, []);
 
   return (
-    <Stack>
+    <div className="flex flex-col gap-4">
       <SSStat
         title="交易手续费"
         value={
@@ -379,6 +379,6 @@ export default function JPEPFTNMarketAnalyzer() {
           }
         />
       </ChartWrapper>
-    </Stack>
+    </div>
   );
 }

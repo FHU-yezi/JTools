@@ -1,4 +1,3 @@
-import { Stack } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { Signal, batch, signal } from "@preact/signals";
 import { Chart as ChartInstance, Colors, LinearScale } from "chart.js";
@@ -84,7 +83,7 @@ function Wordcloud({ data }: WordcloudProps) {
 
 export default function ArticleWordcloudGenerator() {
   return (
-    <Stack>
+    <div className="flex flex-col gap-4">
       <SSTextInput
         label="文章链接"
         value={articleURL}
@@ -117,6 +116,6 @@ export default function ArticleWordcloudGenerator() {
           </ChartWrapper>
         </>
       )}
-    </Stack>
+    </div>
   );
 }

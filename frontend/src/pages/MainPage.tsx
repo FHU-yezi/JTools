@@ -1,4 +1,3 @@
-import { Stack } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { batch, signal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
@@ -78,7 +77,7 @@ export default function MainPage() {
   return (
     <>
       <Header toolName="简书小工具集" showBackArrow={false} />
-      <Stack>
+      <div className="flex flex-col gap-4">
         <SSText small gray>
           版本：
           {version.value ?? "获取中..."}
@@ -113,7 +112,7 @@ export default function MainPage() {
         <SSTooltip tooltip="简书 App 中滑动到文章最后，网页端将鼠标悬浮在发布时间上即可查看文章更新时间，小工具集 v3 不再提供此工具">
           关于文章发布时间查询工具
         </SSTooltip>
-      </Stack>
+      </div>
     </>
   );
 }

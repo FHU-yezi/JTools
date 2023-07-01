@@ -1,4 +1,4 @@
-import { SegmentedControl, Skeleton, Stack, Table } from "@mantine/core";
+import { SegmentedControl, Skeleton, Table } from "@mantine/core";
 import { Signal, batch, signal } from "@preact/signals";
 import {
   ArcElement,
@@ -221,7 +221,7 @@ export default function LotteryAnalyzer() {
   }, []);
 
   return (
-    <Stack>
+    <div className="flex flex-col gap-4">
       <SSText xlarge xbold>
         综合统计
       </SSText>
@@ -289,6 +289,6 @@ export default function LotteryAnalyzer() {
           }
         />
       </ChartWrapper>
-    </Stack>
+    </div>
   );
 }

@@ -2,7 +2,7 @@ import clsx from "clsx";
 import SSText from "./SSText";
 
 interface Props {
-  className: string;
+  className?: string;
   title: string;
   value: string | number;
   desc?: string;
