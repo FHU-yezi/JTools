@@ -25,9 +25,9 @@ export default function SSText({
   return (
     <p
       className={clsx(className, {
-        "text-zinc-900 dark:text-zinc-300": !gray && color.length === 0,
+        "text-gray-900 dark:text-gray-300": !gray && color.length === 0,
         [color]: color.length !== 0,
-        "text-zinc-500": gray,
+        "text-gray-500": gray,
         "font-semibold": bold,
         "text-sm": small,
         "text-lg": large,

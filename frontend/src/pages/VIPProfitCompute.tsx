@@ -224,7 +224,7 @@ interface ResultGroupProps {
 
 function ResultGroup({ children, label }: ResultGroupProps) {
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border bg-white p-5 shadow dark:border-zinc-700 dark:bg-zinc-900">
+    <div className="flex flex-col gap-4 rounded-2xl border bg-white p-5 shadow dark:border-gray-700 dark:bg-gray-900">
       <SSText className="text-xl" bold>
         {label}
       </SSText>

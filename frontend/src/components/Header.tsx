@@ -18,7 +18,7 @@ export default function Header({ toolName, showBackArrow }: Props) {
 
   return (
     <>
-      <div className="fixed left-0 top-0 z-40 flex h-16 w-full flex-nowrap justify-between bg-zinc-50 px-[5vw] shadow-sm dark:bg-zinc-800">
+      <div className="fixed left-0 top-0 z-40 flex h-16 w-full flex-nowrap justify-between bg-gray-50 px-[5vw] shadow-sm dark:bg-gray-800">
         <div className="flex flex-nowrap items-center gap-x-2">
           {showBackArrow && (
             <button
@@ -27,7 +27,7 @@ export default function Header({ toolName, showBackArrow }: Props) {
               aria-label="Back"
             >
               <IoIosArrowBack
-                className="text-zinc-500 dark:text-zinc-300"
+                className="text-gray-500 dark:text-gray-300"
                 size={22}
               />
             </button>
@@ -49,7 +49,7 @@ export default function Header({ toolName, showBackArrow }: Props) {
             aria-label="Search"
           >
             <AiOutlineSearch
-              className="text-zinc-500 dark:text-zinc-300"
+              className="text-gray-500 dark:text-gray-300"
               size={22}
             />
           </button>

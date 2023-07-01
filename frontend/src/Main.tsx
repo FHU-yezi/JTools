@@ -34,10 +34,8 @@ function Main() {
     // Tailwind CSS 深色模式
     if (colorScheme === "dark") {
       document.documentElement.classList.remove("dark");
-      document.body.className = "";
     } else {
       document.documentElement.classList.add("dark");
-      document.body.className = "bg-white dark:bg-zinc-950";
     }
   };
 
@@ -46,7 +44,6 @@ function Main() {
     // eslint-disable-next-line quotes
     if (localStorage.getItem("jtools-color-scheme") === '"dark"') {
       document.documentElement.classList.add("dark");
-      document.body.className = "bg-white dark:bg-zinc-950";
     }
   }, []);
 

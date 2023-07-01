@@ -35,8 +35,8 @@ export default function SSButton({
         className={clsx(
           "flex items-center justify-center gap-3 font-semibold",
           {
-            "text-zinc-200": !light,
-            "text-zinc-900 dark:text-zinc-300": light,
+            "text-gray-200": !light,
+            "text-gray-900 dark:text-gray-300": light,
           }
         )}
       >

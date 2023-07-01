@@ -22,7 +22,7 @@ export default function ToolCard({
   return (
     <button
       type="button"
-      className="flex w-full items-center justify-between rounded-2xl border bg-white p-5 shadow dark:border-zinc-700 dark:bg-zinc-900"
+      className="flex w-full items-center justify-between rounded-2xl border bg-white p-5 shadow dark:border-gray-700 dark:bg-gray-900"
       onClick={!unavaliable ? () => setLocation(path) : undefined}
     >
       <div>
@@ -47,7 +47,7 @@ export default function ToolCard({
         <SSText className="text-left">{description}</SSText>
       </div>
       {!unavaliable && (
-        <AiOutlineArrowRight className="dark:text-zinc-300" size={24} />
+        <AiOutlineArrowRight className="dark:text-gray-300" size={24} />
       )}
     </button>
   );

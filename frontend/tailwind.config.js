@@ -1,9 +1,23 @@
+import colors from "tailwindcss/colors";
+
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: "class",
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  content: [
+    "./index.html",
+    "./src/components/*.tsx",
+    "./src/pages/*.tsx",
+    "./src/*.tsx",
+  ],
   theme: {
-    extend: {},
+    colors: {
+      white: colors.white,
+      black: colors.black,
+      gray: colors.zinc,
+      red: colors.red,
+      green: colors.green,
+      blue: colors.blue,
+    },
   },
   plugins: [],
 };
