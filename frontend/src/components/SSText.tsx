@@ -2,13 +2,19 @@ import clsx from "clsx";
 import { VNode } from "preact";
 
 interface Props {
-  children: string | number | boolean | Element | (string | number | boolean | Element | VNode)[];
+  children:
+    | string
+    | number
+    | boolean
+    | Element
+    | (string | number | boolean | Element | VNode)[];
   className?: string;
   gray?: boolean;
   color?: string;
   bold?: boolean;
   small?: boolean;
   large?: boolean;
+  xlarge?: boolean;
   center?: boolean;
 }
 
@@ -20,6 +26,7 @@ export default function SSText({
   bold = false,
   small = false,
   large = false,
+  xlarge = false,
   center = false,
 }: Props) {
   return (
@@ -31,6 +38,7 @@ export default function SSText({
         "font-semibold": bold,
         "text-sm": small,
         "text-lg": large,
+        "text-xl": xlarge,
         "text-center": center,
       })}
     >

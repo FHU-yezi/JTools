@@ -1,6 +1,7 @@
-import { Badge, Stack, Table } from "@mantine/core";
+import { Stack, Table } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
+import SSBadge from "../components/SSBadge";
 import SSButton from "../components/SSButton";
 import SSLink from "../components/SSLink";
 import SSScolllable from "../components/SSScollable";
@@ -74,9 +75,9 @@ export default function LPRecommendChecker() {
             releaseTimeHumanReadable.value
           }前）`}</SSText>
           <SSText
-            className="text-xl"
             color={checkPassed.value ? "text-green-600" : "text-red-500"}
             bold
+            xlarge
             center
           >
             {checkPassed.value ? "符合推荐标准" : "不符合推荐标准"}
@@ -96,12 +97,15 @@ export default function LPRecommendChecker() {
                   <tr key={item.name}>
                     <td>{item.name}</td>
                     <td>
-                      <Badge
-                        size="lg"
-                        color={item.item_passed ? "green" : "red"}
+                      <SSBadge
+                        className={
+                          item.item_passed
+                            ? "bg-green-200 text-green-600 dark:bg-green-950"
+                            : "bg-red-200 text-red-500 dark:bg-red-950"
+                        }
                       >
                         {item.item_passed ? "符合" : "不符合"}
-                      </Badge>
+                      </SSBadge>
                     </td>
                     <td>{`${item.operator} ${item.limit_value}`}</td>
                     <td>{item.actual_value}</td>

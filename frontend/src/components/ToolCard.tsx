@@ -1,6 +1,7 @@
-import { Badge, Group } from "@mantine/core";
+import { Group } from "@mantine/core";
 import { AiOutlineArrowRight } from "react-icons/ai";
 import { useLocation } from "wouter-preact";
+import SSBadge from "./SSBadge";
 import SSText from "./SSText";
 
 interface Props {
@@ -32,14 +33,14 @@ export default function ToolCard({
               {toolName}
             </SSText>
             {downgraded && (
-              <Badge color="orange" radius="sm" size="lg">
+              <SSBadge className="bg-orange-200 text-orange-500 dark:bg-orange-950">
                 降级
-              </Badge>
+              </SSBadge>
             )}
             {unavaliable && (
-              <Badge color="red" radius="sm" size="lg">
+              <SSBadge className="bg-red-200 text-red-500 dark:bg-red-950">
                 不可用
-              </Badge>
+              </SSBadge>
             )}
           </Group>
         </div>
@@ -47,7 +48,10 @@ export default function ToolCard({
         <SSText className="text-left">{description}</SSText>
       </div>
       {!unavaliable && (
-        <AiOutlineArrowRight className="dark:text-gray-300" size={24} />
+        <AiOutlineArrowRight
+          className="text-gray-900 dark:text-gray-300"
+          size={24}
+        />
       )}
     </button>
   );

@@ -1,14 +1,15 @@
-import { ActionIcon, Group, Stack } from "@mantine/core";
+import { Group, Stack } from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { Signal, signal } from "@preact/signals";
 import { AiOutlineCheck } from "react-icons/ai";
 import { BiCopy, BiRightArrowAlt } from "react-icons/bi";
-import SSTooltip from "../components/SSTooltip";
 import QRCode from "react-qr-code";
+import SSActionIcon from "../components/SSActionIcon";
 import SSButton from "../components/SSButton";
 import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
+import SSTooltip from "../components/SSTooltip";
 
 interface JianshuURLType {
   URLSchemePrefix: string;
@@ -117,20 +118,20 @@ export default function URLSchemeConvertor() {
             <Group spacing="xs">
               <SSText>{result.value}</SSText>
               <SSTooltip tooltip="访问" hideIcon>
-                <ActionIcon onClick={() => window.open(result.value)}>
+                <SSActionIcon onClick={() => window.open(result.value)}>
                   <BiRightArrowAlt />
-                </ActionIcon>
+                </SSActionIcon>
               </SSTooltip>
               <SSTooltip
                 tooltip={!clipboard.copied ? "复制" : "复制成功"}
                 hideIcon
               >
-                <ActionIcon
+                <SSActionIcon
                   onClick={() => clipboard.copy(result.value)}
-                  color={!clipboard.copied ? undefined : "green"}
+                  color={!clipboard.copied ? undefined : "bg-green-100"}
                 >
                   {!clipboard.copied ? <BiCopy /> : <AiOutlineCheck />}
-                </ActionIcon>
+                </SSActionIcon>
               </SSTooltip>
             </Group>
             <QRCode value={result.value} />

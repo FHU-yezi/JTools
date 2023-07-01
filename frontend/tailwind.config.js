@@ -17,6 +17,7 @@ export default {
       red: colors.red,
       green: colors.green,
       blue: colors.blue,
+      orange: colors.orange,
     },
   },
   plugins: [],

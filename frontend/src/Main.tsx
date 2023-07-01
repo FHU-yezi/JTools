@@ -4,7 +4,6 @@ import { AiOutlineSearch } from "react-icons/ai";
 import { install } from "resize-observer";
 
 import {
-  Box,
   ColorScheme,
   ColorSchemeProvider,
   MantineProvider,
@@ -12,7 +11,6 @@ import {
 import { SpotlightProvider } from "@mantine/spotlight";
 
 import { useLocalStorage } from "@mantine/hooks";
-import clsx from "clsx";
 import React, { render, useEffect } from "preact/compat";
 import App from "./App";
 import ErrorFallback from "./components/ErrorFallback";
@@ -61,9 +59,9 @@ function Main() {
             nothingFoundMessage="无结果"
           >
             <ErrorBoundary FallbackComponent={ErrorFallback}>
-              <Box className="mx-auto my-7 w-[90vw] max-w-4xl">
+              <div className="mx-auto my-7 w-[90vw] max-w-4xl">
                 <App />
-              </Box>
+              </div>
             </ErrorBoundary>
             <Notifications position="top-right" autoClose={2000} />
           </SpotlightProvider>

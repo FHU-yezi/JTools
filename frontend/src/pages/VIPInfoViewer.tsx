@@ -1,6 +1,7 @@
-import { Avatar, Badge, Stack } from "@mantine/core";
+import { Avatar, Stack } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
+import SSBadge from "../components/SSBadge";
 import SSButton from "../components/SSButton";
 import SSLink from "../components/SSLink";
 import SSText from "../components/SSText";
@@ -86,24 +87,18 @@ export default function VIPInfoViewer() {
             昵称：
             <SSLink url={userURL.value} label={userName.value} isExternal />
           </SSText>
-          <SSText>
-            会员级别：
-            <Badge
-              size="lg"
-              pl={0}
-              color="gray"
-              leftSection={
-                <Avatar
-                  alt={`${VIPType.value} 徽章图片`}
-                  size={24}
-                  mr={6}
-                  src={VIPTypeToBadgeImageURL[VIPType.value]}
-                />
-              }
-            >
+          <div className="flex max-w-fit items-center gap-1">
+            <SSText>会员级别：</SSText>
+            <Avatar
+              alt={`${VIPType.value} 徽章图片`}
+              size={24}
+              mr={6}
+              src={VIPTypeToBadgeImageURL[VIPType.value]}
+            />
+            <SSBadge className="bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
               {VIPType.value}
-            </Badge>
-          </SSText>
+            </SSBadge>
+          </div>
           {VIPType.value !== "无会员" && (
             <SSText>
               到期时间：

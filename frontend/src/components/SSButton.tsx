@@ -13,7 +13,7 @@ interface Props {
 export default function SSButton({
   children,
   className,
-  onClick = () => {},
+  onClick,
   loading = false,
   light = false,
 }: Props) {
