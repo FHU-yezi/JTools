@@ -1,4 +1,4 @@
-import { SegmentedControl, Skeleton, Stack, Table, Title } from "@mantine/core";
+import { SegmentedControl, Skeleton, Stack, Table } from "@mantine/core";
 import { Signal, batch, signal } from "@preact/signals";
 import {
   ArcElement,
@@ -17,6 +17,7 @@ import { useEffect } from "preact/hooks";
 import { Line, Pie } from "react-chartjs-2";
 import ChartWrapper from "../components/ChartWrapper";
 import SSScolllable from "../components/SSScollable";
+import SSText from "../components/SSText";
 import SSTooltip from "../components/SSTooltip";
 import {
   PerPrizeDataItem,
@@ -221,7 +222,9 @@ export default function LotteryAnalyzer() {
 
   return (
     <Stack>
-      <Title order={3}>综合统计</Title>
+      <SSText xlarge xbold>
+        综合统计
+      </SSText>
       <SegmentedControl
         value={perPrizeAnalyzeTimeRange.value}
         onChange={(newValue: TimeRange) => {
@@ -238,7 +241,9 @@ export default function LotteryAnalyzer() {
       <SSTooltip tooltip="受简书接口限制，我们无法获取这两种奖品的中奖情况，故表中未予统计">
         关于免费开 1 次连载 / 锦鲤头像框
       </SSTooltip>
-      <Title order={3}>中奖次数分布</Title>
+      <SSText xlarge xbold>
+        中奖次数分布
+      </SSText>
       <SegmentedControl
         value={RewardWinsCountPieTimeRange.value}
         onChange={(newValue: TimeRange) => {
@@ -260,7 +265,9 @@ export default function LotteryAnalyzer() {
           }
         />
       </ChartWrapper>
-      <Title order={3}>中奖次数趋势</Title>
+      <SSText xlarge xbold>
+        中奖次数趋势
+      </SSText>
       <SegmentedControl
         value={RewardWinsTrendLineTimeRange.value}
         onChange={(newValue: TimeRangeWithoutAll) => {

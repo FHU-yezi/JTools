@@ -1,4 +1,3 @@
-import { Title } from "@mantine/core";
 import { LuConstruction } from "react-icons/lu";
 import { useLocation } from "wouter-preact";
 import SSButton from "../components/SSButton";
@@ -11,14 +10,12 @@ export default function V2UnavaliablePage() {
     <div className="grid h-[100vh] place-content-center">
       <div className="flex w-[90vw] max-w-4xl flex-col gap-4">
         <LuConstruction size={48} />
-        <Title fz="xl" fw={700}>
+        <SSText xlarge xbold>
           已下线
-        </Title>
+        </SSText>
         <SSText>您正在访问的小工具已在简书小工具集 v3 中下线。</SSText>
         <SSText>如有问题，请联系开发者。</SSText>
-        <SSButton onClick={() => setLocation("/")}>
-          返回首页
-        </SSButton>
+        <SSButton onClick={() => setLocation("/")}>返回首页</SSButton>
       </div>
     </div>
   );

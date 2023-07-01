@@ -12,6 +12,7 @@ interface Props {
   gray?: boolean;
   color?: string;
   bold?: boolean;
+  xbold?: boolean;
   small?: boolean;
   large?: boolean;
   xlarge?: boolean;
@@ -24,6 +25,7 @@ export default function SSText({
   gray = false,
   color = "",
   bold = false,
+  xbold = false,
   small = false,
   large = false,
   xlarge = false,
@@ -36,6 +38,7 @@ export default function SSText({
         [color]: color.length !== 0,
         "text-gray-500": gray,
         "font-semibold": bold,
+        "font-bold": xbold,
         "text-sm": small,
         "text-lg": large,
         "text-xl": xlarge,

@@ -1,4 +1,4 @@
-import { Space, Stack, Title } from "@mantine/core";
+import { Space, Stack } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { signal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
@@ -42,7 +42,9 @@ export default function ThanksPage() {
       {hasResult.value ? (
         <Stack>
           <Stack spacing={2}>
-            <Title order={3}>v3 Beta 内测成员</Title>
+            <SSText xlarge xbold>
+              v3 Beta 内测成员
+            </SSText>
             <SSText small gray>
               排名不分先后
             </SSText>
@@ -54,7 +56,9 @@ export default function ThanksPage() {
               <SSLink url={url} isExternal />
             </SSText>
           ))}
-          <Title order={3}>开源库</Title>
+          <SSText xlarge xbold>
+            开源库
+          </SSText>
           {Object.entries(opensourcePackages.value).map(([name, url]) => (
             <SSText>
               {name}
@@ -66,9 +70,11 @@ export default function ThanksPage() {
               />
             </SSText>
           ))}
-          <Title order={3}>「捉虫计划」反馈</Title>
+          <SSText xlarge xbold>
+            「捉虫计划」反馈
+          </SSText>
           {debugProjectRecords.value.map((item) => (
-            <div className="shadow border rounded-2xl p-4">
+            <div className="rounded-2xl border p-4 shadow">
               <Stack spacing="sm">
                 <Stack spacing={2}>
                   <SSText bold large>{`${item.time} | ${item.type}`}</SSText>
@@ -89,8 +95,10 @@ export default function ThanksPage() {
               </Stack>
             </div>
           ))}
-          <Space h={36} />
-            <SSText large center>还有，感谢为简书生态奉献的你。</SSText>
+          <div className="h-9" />
+          <SSText large center>
+            还有，感谢为简书生态奉献的你。
+          </SSText>
         </Stack>
       ) : (
         <Loading />

@@ -1,4 +1,3 @@
-import { Title } from "@mantine/core";
 import { LuServerOff } from "react-icons/lu";
 import { useLocation } from "wouter-preact";
 import SSButton from "../components/SSButton";
@@ -11,9 +10,9 @@ export default function V2UnimplementedPage() {
     <div className="grid h-[100vh] place-content-center">
       <div className="flex w-[90vw] max-w-4xl flex-col gap-4">
         <LuServerOff size={48} />
-        <Title fz="xl" fw={700}>
+        <SSText xlarge xbold>
           正在开发中
-        </Title>
+        </SSText>
         <SSText>您正在访问的小工具尚未在简书小工具集 v3 中实现。</SSText>
         <SSButton onClick={() => setLocation("/")}>返回首页</SSButton>
       </div>

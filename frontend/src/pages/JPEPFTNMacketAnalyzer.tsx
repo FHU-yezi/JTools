@@ -1,4 +1,4 @@
-import { Group, SegmentedControl, Skeleton, Stack, Title } from "@mantine/core";
+import { Group, SegmentedControl, Skeleton, Stack } from "@mantine/core";
 import { Signal, batch, computed, signal } from "@preact/signals";
 import {
   ArcElement,
@@ -16,6 +16,7 @@ import { useEffect } from "preact/hooks";
 import { Line } from "react-chartjs-2";
 import ChartWrapper from "../components/ChartWrapper";
 import SSStat from "../components/SSStat";
+import SSText from "../components/SSText";
 import { JPEPRulesResponse } from "../models/JPEPFTNMacketAnalyzer/JPEP_rules";
 import { PoolAmountResponse } from "../models/JPEPFTNMacketAnalyzer/PoolAmount";
 import {
@@ -274,7 +275,9 @@ export default function JPEPFTNMarketAnalyzer() {
             : "获取中..."
         }
       />
-      <Title order={3}>实时贝价</Title>
+      <SSText xlarge xbold>
+        实时贝价
+      </SSText>
       {typeof buyPrice.value !== "undefined" &&
       typeof sellPrice.value !== "undefined" ? (
         <Group grow>
@@ -292,7 +295,9 @@ export default function JPEPFTNMarketAnalyzer() {
       ) : (
         <Skeleton h={85.5} />
       )}
-      <Title order={3}>实时挂单量</Title>
+      <SSText xlarge xbold>
+        实时挂单量
+      </SSText>
       {typeof buyPoolAmount.value !== "undefined" &&
       typeof sellPoolAmount.value !== "undefined" ? (
         <Group grow>
@@ -317,7 +322,9 @@ export default function JPEPFTNMarketAnalyzer() {
         <Skeleton h={85.5} />
       )}
 
-      <Title order={3}>贝价趋势</Title>
+      <SSText xlarge xbold>
+        贝价趋势
+      </SSText>
       <SegmentedControl
         value={PriceTrendLineTimeRange.value}
         onChange={(newValue: TimeRange) => {
@@ -340,7 +347,9 @@ export default function JPEPFTNMarketAnalyzer() {
         />
       </ChartWrapper>
 
-      <Title order={3}>挂单量趋势</Title>
+      <SSText xlarge xbold>
+        挂单量趋势
+      </SSText>
       <SegmentedControl
         value={PoolAmountTrendLineTimeRange.value}
         onChange={(newValue: TimeRange) => {

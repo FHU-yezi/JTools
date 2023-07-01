@@ -1,4 +1,4 @@
-import { Accordion, Kbd, Title } from "@mantine/core";
+import { Accordion, Kbd } from "@mantine/core";
 import { BiError } from "react-icons/bi";
 import { useLocation } from "wouter-preact";
 import SSButton from "./SSButton";
@@ -19,9 +19,9 @@ export default function ErrorFallback({ error }: Props) {
     <div className="grid h-[100vh] place-content-center">
       <div className="flex w-[90vw] max-w-4xl flex-col gap-4">
         <BiError size={48} />
-        <Title fz="xl" fw={700}>
+        <SSText xlarge xbold>
           发生意外错误
-        </Title>
+        </SSText>
         <SSText>
           非常抱歉给您带来不好的体验，您可尝试点击下方按钮刷新页面。
         </SSText>
