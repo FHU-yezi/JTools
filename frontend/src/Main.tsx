@@ -12,6 +12,7 @@ import {
 import { SpotlightProvider } from "@mantine/spotlight";
 
 import { useLocalStorage } from "@mantine/hooks";
+import clsx from "clsx";
 import React, { render, useEffect } from "preact/compat";
 import App from "./App";
 import ErrorFallback from "./components/ErrorFallback";
@@ -33,15 +34,19 @@ function Main() {
     // Tailwind CSS 深色模式
     if (colorScheme === "dark") {
       document.documentElement.classList.remove("dark");
+      document.body.className = "";
     } else {
       document.documentElement.classList.add("dark");
+      document.body.className = "bg-white dark:bg-zinc-950";
     }
   };
 
   useEffect(() => {
     // Tailwind CSS 深色模式
+    // eslint-disable-next-line quotes
     if (localStorage.getItem("jtools-color-scheme") === '"dark"') {
       document.documentElement.classList.add("dark");
+      document.body.className = "bg-white dark:bg-zinc-950";
     }
   }, []);
 
@@ -51,7 +56,7 @@ function Main() {
         colorScheme={colorScheme}
         toggleColorScheme={toggleColorScheme}
       >
-        <MantineProvider theme={{ colorScheme }} withGlobalStyles>
+        <MantineProvider theme={{ colorScheme }}>
           <SpotlightProvider
             actions={spotlightActions}
             searchIcon={<AiOutlineSearch size="1.2rem" />}
@@ -59,7 +64,7 @@ function Main() {
             nothingFoundMessage="无结果"
           >
             <ErrorBoundary FallbackComponent={ErrorFallback}>
-              <Box mx="auto" w="90vw" my={28} maw={896}>
+              <Box className="mx-auto my-7 w-[90vw] max-w-4xl">
                 <App />
               </Box>
             </ErrorBoundary>

@@ -1,8 +1,9 @@
-import { Button, Stack } from "@mantine/core";
+import { Stack } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { signal } from "@preact/signals";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import SSAutocomplete from "../components/SSAutocomplete";
+import SSButton from "../components/SSButton";
 import SSLink from "../components/SSLink";
 import SSText from "../components/SSText";
 import {
@@ -179,9 +180,9 @@ export default function OnRankArticleViewer() {
         onValueChange={handleCompleteItemUpdate}
         completeItems={completeItems}
       />
-      <Button onClick={() => handleQuery(0)} loading={isLoading.value}>
+      <SSButton onClick={() => handleQuery(0)} loading={isLoading.value}>
         查询
-      </Button>
+      </SSButton>
       {hasResult.value &&
         (result.value.length !== 0 ? (
           <Stack>

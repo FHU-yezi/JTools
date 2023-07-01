@@ -1,6 +1,7 @@
-import { Button, Title } from "@mantine/core";
+import { Title } from "@mantine/core";
 import { IoPaperPlaneSharp } from "react-icons/io5";
 import { useLocation } from "wouter-preact";
+import SSButton from "../components/SSButton";
 import SSText from "../components/SSText";
 
 export default function NotFoundPage() {
@@ -14,9 +15,7 @@ export default function NotFoundPage() {
           啊呀，没有找到这个页面
         </Title>
         <SSText>您要找的小工具可能不存在或已经下线。</SSText>
-        <Button variant="light" onClick={() => setLocation("/")}>
-          返回首页
-        </Button>
+        <SSButton onClick={() => setLocation("/")}>返回首页</SSButton>
       </div>
     </div>
   );

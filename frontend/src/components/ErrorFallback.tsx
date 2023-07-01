@@ -1,6 +1,7 @@
-import { Accordion, Button, Kbd, Title } from "@mantine/core";
+import { Accordion, Kbd, Title } from "@mantine/core";
 import { BiError } from "react-icons/bi";
 import { useLocation } from "wouter-preact";
+import SSButton from "./SSButton";
 import SSLink from "./SSLink";
 import SSText from "./SSText";
 
@@ -31,16 +32,15 @@ export default function ErrorFallback({ error }: Props) {
           isExternal
         />
         <SSText gray>{error.toString()}</SSText>
-        <Button onClick={() => window.location.reload()}>刷新</Button>
-        <Button
-          variant="light"
+        <SSButton onClick={() => window.location.reload()}>刷新</SSButton>
+        <SSButton
           onClick={() => {
             setLocation("/");
             window.location.reload();
           }}
         >
           返回首页
-        </Button>
+        </SSButton>
         <Accordion variant="contained">
           <Accordion.Item value="more-tech-info">
             <Accordion.Control>我如何提供更多技术信息？</Accordion.Control>

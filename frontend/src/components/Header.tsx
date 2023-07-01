@@ -39,7 +39,7 @@ export default function Header({ toolName, showBackArrow }: Props) {
             {toolName}
           </SSText>
         </div>
-        <div className="flex flex-nowrap items-center gap-x-3">
+        <div className="flex flex-nowrap items-center gap-x-4">
           <button
             type="button"
             onClick={() => {

@@ -1,4 +1,4 @@
-import { Button, Flex, Modal, Stack } from "@mantine/core";
+import { Flex, Modal, Stack } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { batch, useSignal } from "@preact/signals";
@@ -12,6 +12,7 @@ import { fetchData } from "../utils/fetchData";
 import { getDateTimeWithoutSecond, parseTime } from "../utils/timeHelper";
 import Header from "./Header";
 import Loading from "./Loading";
+import SSButton from "./SSButton";
 import SSLink from "./SSLink";
 import SSStat from "./SSStat";
 import SSText from "./SSText";
@@ -142,9 +143,9 @@ export default function ToolWrapper({ Component, toolName }: Props) {
           {unavaliableReason.value.length !== 0
             ? unavaliableReason.value
             : "该小工具由于数据准确性、体验或安全性等原因暂时不可用，请稍后再尝试访问，并留意相关公告。"}
-          <Button variant="light" onClick={() => setLocation("/")}>
+          <SSButton onClick={() => setLocation("/")}>
             返回首页
-          </Button>
+          </SSButton>
         </Stack>
       </Modal>
     </>

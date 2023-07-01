@@ -1,6 +1,7 @@
-import { Avatar, Badge, Button, Stack } from "@mantine/core";
+import { Avatar, Badge, Stack } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
+import SSButton from "../components/SSButton";
 import SSLink from "../components/SSLink";
 import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
@@ -76,9 +77,9 @@ export default function VIPInfoViewer() {
         value={userURL}
         onEnter={handleQuery}
       />
-      <Button onClick={handleQuery} loading={isLoading.value}>
+      <SSButton onClick={handleQuery} loading={isLoading.value}>
         查询
-      </Button>
+      </SSButton>
       {hasResult.value && (
         <>
           <SSText>

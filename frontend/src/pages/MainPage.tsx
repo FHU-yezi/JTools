@@ -1,4 +1,4 @@
-import { Button, Stack } from "@mantine/core";
+import { Stack } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { batch, signal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
@@ -9,6 +9,7 @@ import {
   V2UnimplementedRoutes,
 } from "../V2RedirectRoutes";
 import Header from "../components/Header";
+import SSButton from "../components/SSButton";
 import SSText from "../components/SSText";
 import SSTips from "../components/SSTips";
 import ToolCard from "../components/ToolCard";
@@ -92,20 +93,20 @@ export default function MainPage() {
             unavaliable={unavaliableTools.value.includes(item.path.slice(1))}
           />
         ))}
-        <Button variant="default" onClick={() => setLocation("/thanks")}>
+        <SSButton onClick={() => setLocation("/thanks")} light>
           鸣谢 &gt;
-        </Button>
-        <Button
-          variant="default"
+        </SSButton>
+        <SSButton
           onClick={() =>
             window.open(
               "https://wenjuan.feishu.cn/m?t=sjQp3W8yUrNi-g37f",
               "_blank"
             )
           }
+          light
         >
           反馈 &gt;
-        </Button>
+        </SSButton>
         <SSTips
           label="关于消零派辅助工具"
           content="消零派辅助工具已在小工具集 v3 中下线，我们即将发布更强大的工具，敬请期待"

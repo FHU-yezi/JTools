@@ -1,11 +1,4 @@
-import {
-  Avatar,
-  Card,
-  Group,
-  SegmentedControl,
-  SimpleGrid,
-  Stack,
-} from "@mantine/core";
+import { Avatar, Group, SegmentedControl, Stack } from "@mantine/core";
 import { computed, signal } from "@preact/signals";
 import { JSX } from "preact/jsx-runtime";
 import SSNumberInput from "../components/SSNumberInput";
@@ -217,7 +210,7 @@ function ResultItem({
           {description.length !== 0 && `（${description}）`}
         </SSText>
       </SSText>
-      <SSText className={valueColor} bold={bold}>
+      <SSText color={valueColor} bold={bold}>
         {valuePart}
       </SSText>
     </Group>
@@ -231,12 +224,12 @@ interface ResultGroupProps {
 
 function ResultGroup({ children, label }: ResultGroupProps) {
   return (
-    <Card shadow="sm" radius="md" padding="lg" withBorder>
-      <SSText className="m-4 text-xl" bold>
+    <div className="flex flex-col gap-4 rounded-2xl border bg-white p-5 shadow dark:border-zinc-700 dark:bg-zinc-900">
+      <SSText className="text-xl" bold>
         {label}
       </SSText>
-      <Stack spacing="sm">{children}</Stack>
-    </Card>
+      <div className="flex flex-col gap-3">{children}</div>
+    </div>
   );
 }
 
@@ -320,14 +313,7 @@ export default function VIPProfitCompute() {
       />
       <SSNumberInput label="每日创作收益" value={earningFromCreation} min={0} />
 
-      <SimpleGrid
-        cols={2}
-        breakpoints={[
-          { maxWidth: "sm", cols: 2 },
-          { maxWidth: "xs", cols: 1 },
-        ]}
-        mt={18}
-      >
+      <div className="md: mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <ResultGroup label="会员持钻收益">
           <ResultItem
             label="基础收益率"
@@ -402,7 +388,7 @@ export default function VIPProfitCompute() {
             value={returnRate.value}
             ndigits={2}
             valueColor={
-              canGetMoneyBack.value ? "text-green-600" : "text-red-600"
+              canGetMoneyBack.value ? "text-green-600" : "text-red-500"
             }
             asPercentage
             bold
@@ -419,7 +405,7 @@ export default function VIPProfitCompute() {
           <SSText>3. 全部数值单位均为简书贝。</SSText>
           <SSText bold>本工具不作为投资参考。</SSText>
         </ResultGroup>
-      </SimpleGrid>
+      </div>
     </Stack>
   );
 }

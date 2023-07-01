@@ -1,16 +1,11 @@
-import {
-  ActionIcon,
-  Button,
-  Group,
-  Stack,
-  Tooltip,
-} from "@mantine/core";
+import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { Signal, signal } from "@preact/signals";
 import { AiOutlineCheck } from "react-icons/ai";
 import { BiCopy, BiRightArrowAlt } from "react-icons/bi";
 import QRCode from "react-qr-code";
+import SSButton from "../components/SSButton";
 import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
 
@@ -114,7 +109,7 @@ export default function URLSchemeConvertor() {
         value={jianshuURL}
         onEnter={handleConvert}
       />
-      <Button onClick={handleConvert}>转换</Button>
+      <SSButton onClick={handleConvert}>转换</SSButton>
       {hasResult.value && (
         <div className="grid place-content-center">
           <div className="mt-12 flex flex-col gap-4">

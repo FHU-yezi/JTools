@@ -1,8 +1,9 @@
-import { Button, Chip, Group, Skeleton, Stack } from "@mantine/core";
+import { Chip, Group, Skeleton, Stack } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
 import { DataTable } from "mantine-datatable";
 import { useEffect } from "preact/hooks";
+import SSButton from "../components/SSButton";
 import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
 import SSTips from "../components/SSTips";
@@ -140,9 +141,9 @@ export default function LotteryRewardRecordViewer() {
         content="受简书接口限制，我们无法获取这两种奖品的中奖情况，故无法进行查询"
         multiline
       />
-      <Button onClick={() => handleQuery(0)} loading={isLoading.value}>
+      <SSButton onClick={() => handleQuery(0)} loading={isLoading.value}>
         查询
-      </Button>
+      </SSButton>
       {hasResult.value &&
         (result.value.length !== 0 ? (
           <ResultTable />

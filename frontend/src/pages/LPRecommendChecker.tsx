@@ -1,7 +1,8 @@
-import { Badge, Button, Stack, Table } from "@mantine/core";
+import { Badge, Stack, Table } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
 import clsx from "clsx";
+import SSButton from "../components/SSButton";
 import SSLink from "../components/SSLink";
 import SSScolllable from "../components/SSScollable";
 import SSText from "../components/SSText";
@@ -57,9 +58,9 @@ export default function LPRecommendChecker() {
   return (
     <Stack>
       <SSTextInput label="文章链接" value={articleURL} onEnter={handleCheck} />
-      <Button onClick={handleCheck} loading={isLoading.value}>
+      <SSButton onClick={handleCheck} loading={isLoading.value}>
         查询
-      </Button>
+      </SSButton>
       {hasResult.value && (
         <>
           <SSText center>
@@ -74,10 +75,8 @@ export default function LPRecommendChecker() {
             releaseTimeHumanReadable.value
           }前）`}</SSText>
           <SSText
-            className={clsx("text-xl", {
-              "text-green-600": checkPassed.value,
-              "text-red-600": !checkPassed.value,
-            })}
+            className="text-xl"
+            color={checkPassed.value ? "text-green-600" : "text-red-500"}
             bold
             center
           >

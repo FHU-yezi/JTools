@@ -1,10 +1,11 @@
-import { Button, Stack } from "@mantine/core";
+import { Stack } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { Signal, batch, signal } from "@preact/signals";
 import { Chart as ChartInstance, Colors, LinearScale } from "chart.js";
 import { WordCloudController, WordElement } from "chartjs-chart-wordcloud";
 import { Chart } from "react-chartjs-2";
 import ChartWrapper from "../components/ChartWrapper";
+import SSButton from "../components/SSButton";
 import SSLink from "../components/SSLink";
 import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
@@ -89,9 +90,9 @@ export default function ArticleWordcloudGenerator() {
         value={articleURL}
         onEnter={handleGenerate}
       />
-      <Button onClick={handleGenerate} loading={isLoading.value}>
+      <SSButton onClick={handleGenerate} loading={isLoading.value}>
         查询
-      </Button>
+      </SSButton>
       {hasResult.value && (
         <>
           <SSText center>
