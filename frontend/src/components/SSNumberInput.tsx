@@ -1,4 +1,3 @@
-import { NumberInput } from "@mantine/core";
 import { Signal } from "@preact/signals";
 import SSText from "./SSText";
 
@@ -7,10 +6,9 @@ interface Props {
   value: Signal<number>;
   min?: number;
   max?: number;
-  precision?: number;
+  step?: string;
   onEnter?: () => void;
   noSelectOnFocus?: boolean;
-  showControls?: boolean;
 }
 
 export default function SSNumberInput({
@@ -18,21 +16,28 @@ export default function SSNumberInput({
   value,
   min,
   max,
-  precision = 0,
+  step = "1",
   onEnter,
   noSelectOnFocus = false,
-  showControls = false,
 }: Props) {
   return (
     <div>
       <SSText bold>{label}</SSText>
-      <NumberInput
-        mt={6}
-        value={value.value}
+      <input
+        type="text"
+        inputMode="numeric"
+        pattern="[0-9\.]*"
         min={min}
         max={max}
-        precision={precision}
-        onChange={(x: number) => (value.value = x)}
+        step={step}
+        className="mt-1.5 w-full rounded-lg border-2 border-zinc-200 bg-white p-1.5 px-3 text-zinc-900 invalid:border-red-500 focus:border-blue-300 focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 focus:dark:border-blue-600"
+        value={value.value}
+        onChange={(event: any) => {
+          const parseResult = parseFloat(event.currentTarget.value);
+          if (!Number.isNaN(parseResult)) {
+            value.value = parseResult;
+          }
+        }}
         onKeyUp={
           onEnter
             ? (event: any) => event.key === "Enter" && onEnter()
@@ -45,8 +50,8 @@ export default function SSNumberInput({
                 event.currentTarget.select()
             : undefined
         }
-        hideControls={!showControls}
         aria-label={label}
+        spellCheck={false}
       />
     </div>
   );

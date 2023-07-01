@@ -295,12 +295,7 @@ export default function VIPProfitCompute() {
         />
       </div>
       <SSNumberInput label="持钻量" value={FPCount} min={0} />
-      <SSNumberInput
-        label="旗下会员数"
-        value={membersCount}
-        min={0}
-        showControls
-      />
+      <SSNumberInput label="旗下会员数" value={membersCount} min={0} />
       <SSNumberInput
         label="旗下一级会员持钻量"
         value={Level1MembersFPCount}
