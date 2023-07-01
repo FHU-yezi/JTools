@@ -22,7 +22,7 @@ export default function SSTooltip({
   hideIcon = false,
 }: Props) {
   return (
-    <div className={clsx(className, "relative w-7")}>
+    <div className={clsx(className, "relative")}>
       <button type="button" className="group peer">
         <SSText
           className="flex items-center gap-2 transition-colors group-hover:text-blue-500 group-focus:text-blue-500"
