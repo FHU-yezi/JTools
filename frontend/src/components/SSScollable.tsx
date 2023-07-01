@@ -5,5 +5,5 @@ interface Props {
 }
 
 export default function SSScolllable({ children }: Props) {
-  return <div style={{ overflowX: "scroll" }}>{children}</div>;
+  return <div className="overflow-x-scroll">{children}</div>;
 }

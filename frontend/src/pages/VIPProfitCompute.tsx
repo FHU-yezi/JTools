@@ -236,7 +236,7 @@ function ResultGroup({ children, label }: ResultGroupProps) {
 export default function VIPProfitCompute() {
   return (
     <Stack>
-      <div style={{ display: "flex", flexDirection: "column" }}>
+      <div className="flex flex-col">
         <SSText bold>会员等级</SSText>
         <SegmentedControl
           mt={6}

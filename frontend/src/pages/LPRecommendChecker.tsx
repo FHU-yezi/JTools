@@ -82,13 +82,13 @@ export default function LPRecommendChecker() {
             {checkPassed.value ? "符合推荐标准" : "不符合推荐标准"}
           </SSText>
           <SSScolllable>
-            <Table style={{ minWidth: 480 }}>
+            <Table className="min-w-[480px]">
               <thead>
                 <tr>
                   <th>项目</th>
                   <th>检测结果</th>
-                  <th style={{ minWidth: 65 }}>限制值</th>
-                  <th style={{ minWidth: 65 }}>实际值</th>
+                  <th className="min-w-fit">限制值</th>
+                  <th className="min-w-fit">实际值</th>
                 </tr>
               </thead>
               <tbody>

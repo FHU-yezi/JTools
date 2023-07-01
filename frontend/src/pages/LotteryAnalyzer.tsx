@@ -136,7 +136,7 @@ function PerPrizeAnalyzeTable({ data }: PerPrizeAnalyzeTableProps) {
 
   return (
     <SSScolllable>
-      <Table style={{ minWidth: 670 }}>
+      <Table className="min-w-[670px]">
         <thead>
           <tr>
             <th>奖品名称</th>
