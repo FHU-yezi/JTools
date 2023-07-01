@@ -1,4 +1,4 @@
-import { Card, Space, Stack, Title } from "@mantine/core";
+import { Space, Stack, Title } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { signal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
@@ -68,7 +68,7 @@ export default function ThanksPage() {
           ))}
           <Title order={3}>「捉虫计划」反馈</Title>
           {debugProjectRecords.value.map((item) => (
-            <Card radius="md" withBorder>
+            <div className="shadow border rounded-2xl p-4">
               <Stack spacing="sm">
                 <Stack spacing={2}>
                   <SSText bold large>{`${item.time} | ${item.type}`}</SSText>
@@ -87,7 +87,7 @@ export default function ThanksPage() {
                 </SSText>
                 <SSText>{`奖励：${item.award} 简书贝`}</SSText>
               </Stack>
-            </Card>
+            </div>
           ))}
           <Space h={36} />
             <SSText large center>还有，感谢为简书生态奉献的你。</SSText>
