@@ -1,9 +1,10 @@
-import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
+import { ActionIcon, Group, Stack } from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { Signal, signal } from "@preact/signals";
 import { AiOutlineCheck } from "react-icons/ai";
 import { BiCopy, BiRightArrowAlt } from "react-icons/bi";
+import SSTooltip from "../components/SSTooltip";
 import QRCode from "react-qr-code";
 import SSButton from "../components/SSButton";
 import SSText from "../components/SSText";
@@ -115,19 +116,22 @@ export default function URLSchemeConvertor() {
           <div className="mt-12 flex flex-col gap-4">
             <Group spacing="xs">
               <SSText>{result.value}</SSText>
-              <Tooltip label="访问">
+              <SSTooltip tooltip="访问" hideIcon>
                 <ActionIcon onClick={() => window.open(result.value)}>
                   <BiRightArrowAlt />
                 </ActionIcon>
-              </Tooltip>
-              <Tooltip label={!clipboard.copied ? "复制" : "复制成功"}>
+              </SSTooltip>
+              <SSTooltip
+                tooltip={!clipboard.copied ? "复制" : "复制成功"}
+                hideIcon
+              >
                 <ActionIcon
                   onClick={() => clipboard.copy(result.value)}
                   color={!clipboard.copied ? undefined : "green"}
                 >
                   {!clipboard.copied ? <BiCopy /> : <AiOutlineCheck />}
                 </ActionIcon>
-              </Tooltip>
+              </SSTooltip>
             </Group>
             <QRCode value={result.value} />
           </div>

@@ -1,7 +1,6 @@
 import { Badge, Stack, Table } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
-import clsx from "clsx";
 import SSButton from "../components/SSButton";
 import SSLink from "../components/SSLink";
 import SSScolllable from "../components/SSScollable";

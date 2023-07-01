@@ -17,7 +17,7 @@ import { useEffect } from "preact/hooks";
 import { Line, Pie } from "react-chartjs-2";
 import ChartWrapper from "../components/ChartWrapper";
 import SSScolllable from "../components/SSScollable";
-import SSTips from "../components/SSTips";
+import SSTooltip from "../components/SSTooltip";
 import {
   PerPrizeDataItem,
   PerPrizeDataRequest,
@@ -235,11 +235,9 @@ export default function LotteryAnalyzer() {
       ) : (
         <Skeleton h={291} />
       )}
-      <SSTips
-        label="关于免费开 1 次连载 / 锦鲤头像框"
-        content="受简书接口限制，我们无法获取这两种奖品的中奖情况，故表中未予统计"
-        multiline
-      />
+      <SSTooltip tooltip="受简书接口限制，我们无法获取这两种奖品的中奖情况，故表中未予统计">
+        关于免费开 1 次连载 / 锦鲤头像框
+      </SSTooltip>
       <Title order={3}>中奖次数分布</Title>
       <SegmentedControl
         value={RewardWinsCountPieTimeRange.value}

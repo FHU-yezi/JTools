@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { VNode } from "preact";
 
 interface Props {
-  children: string | number | boolean | (string | number | Element | VNode)[];
+  children: string | number | boolean | Element | (string | number | boolean | Element | VNode)[];
   className?: string;
   gray?: boolean;
   color?: string;

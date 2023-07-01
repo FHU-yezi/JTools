@@ -11,7 +11,7 @@ import {
 import Header from "../components/Header";
 import SSButton from "../components/SSButton";
 import SSText from "../components/SSText";
-import SSTips from "../components/SSTips";
+import SSTooltip from "../components/SSTooltip";
 import ToolCard from "../components/ToolCard";
 import { StatusResponse } from "../models/status";
 import { routes } from "../routes";
@@ -107,16 +107,12 @@ export default function MainPage() {
         >
           反馈 &gt;
         </SSButton>
-        <SSTips
-          label="关于消零派辅助工具"
-          content="消零派辅助工具已在小工具集 v3 中下线，我们即将发布更强大的工具，敬请期待"
-          multiline
-        />
-        <SSTips
-          label="关于文章发布时间查询工具"
-          content="简书 App 中滑动到文章最后，网页端将鼠标悬浮在发布时间上即可查看文章更新时间，小工具集 v3 不再提供此工具"
-          multiline
-        />
+        <SSTooltip tooltip="消零派辅助工具已在小工具集 v3 中下线，我们即将发布更强大的工具，敬请期待">
+          关于消零派辅助工具
+        </SSTooltip>
+        <SSTooltip tooltip="简书 App 中滑动到文章最后，网页端将鼠标悬浮在发布时间上即可查看文章更新时间，小工具集 v3 不再提供此工具">
+          关于文章发布时间查询工具
+        </SSTooltip>
       </Stack>
     </>
   );
