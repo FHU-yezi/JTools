@@ -1,5 +1,3 @@
-import { Anchor } from "@mantine/core";
-
 interface Props {
   url: string;
   label?: string;
@@ -8,8 +6,13 @@ interface Props {
 
 export default function SSLink({ url, label, isExternal = false }: Props) {
   return (
-    <Anchor href={url} target={isExternal ? "_blank" : "_self"}>
+    <a
+      className="break-all text-blue-500 hover:text-blue-600"
+      href={url}
+      target={isExternal ? "_blank" : "_self"}
+      rel="noreferrer"
+    >
       {label ?? url}
-    </Anchor>
+    </a>
   );
 }
