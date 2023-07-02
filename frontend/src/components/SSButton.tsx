@@ -22,10 +22,11 @@ export default function SSButton({
       type="button"
       className={clsx(
         className,
-        "rounded-lg p-2 transition-colors focus:ring",
+        "rounded-lg p-2 transition-colors focus:border-blue-500 focus:outline-none focus:ring",
         {
-          "bg-blue-600 hover:bg-blue-700 active:bg-blue-800": !light,
-          "border border-blue-500 hover:bg-blue-300 active:bg-blue-500 dark:border-2 dark:border-blue-600 dark:hover:bg-blue-800 dark:active:bg-blue-900":
+          "bg-gray-900 hover:bg-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600":
+            !light,
+          "border border-gray-500 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-800":
             light,
         }
       )}
@@ -35,7 +36,7 @@ export default function SSButton({
         className={clsx(
           "flex items-center justify-center gap-3 font-semibold",
           {
-            "text-gray-200": !light,
+            "text-gray-100": !light,
             "text-gray-900 dark:text-gray-300": light,
           }
         )}
