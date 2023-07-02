@@ -118,7 +118,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
               )}
             </div>
             {typeof dataSource.value !== "undefined" && (
-              <div className="m-4 flex flex-col gap-1">
+              <div className="my-4 flex flex-col gap-1">
                 <SSText bold>数据来源</SSText>
                 {Object.entries(dataSource.value).map(([name, url]) => (
                   <SSText>
