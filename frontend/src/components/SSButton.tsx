@@ -28,6 +28,7 @@ export default function SSButton({
             !light,
           "border border-gray-500 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-800":
             light,
+          "cursor-wait": loading,
         }
       )}
       onClick={onClick}
