@@ -106,6 +106,17 @@ export default function MainPage() {
         >
           反馈 &gt;
         </SSButton>
+        <SSButton
+          onClick={() =>
+            window.open(
+              "https://status.sscreator.com/status/jtools",
+              "_blank"
+            )
+          }
+          light
+        >
+          服务状态 &gt;
+        </SSButton>
         <SSTooltip tooltip="消零派辅助工具已在小工具集 v3 中下线，我们即将发布更强大的工具，敬请期待">
           关于消零派辅助工具
         </SSTooltip>
