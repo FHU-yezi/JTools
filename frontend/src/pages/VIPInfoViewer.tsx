@@ -13,10 +13,10 @@ import {
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import { getDate, parseTime } from "../utils/timeHelper";
-import VIPBadgeBronzeURL from "/img/vip_badge_bronze.png";
-import VIPBadgeGoldURL from "/img/vip_badge_gold.png";
-import VIPBadgePlatinaURL from "/img/vip_badge_platina.png";
-import VIPBadgeSilverURL from "/img/vip_badge_silver.png";
+import VIPBadgeBronzeURL from "/vip_badges/vip_badge_bronze.png";
+import VIPBadgeGoldURL from "/vip_badges/vip_badge_gold.png";
+import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";
+import VIPBadgeSilverURL from "/vip_badges/vip_badge_silver.png";
 
 const userURL = signal("");
 const hasResult = signal(false);

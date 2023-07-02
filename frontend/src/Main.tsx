@@ -2,6 +2,7 @@ import { Notifications } from "@mantine/notifications";
 import { ErrorBoundary } from "react-error-boundary";
 import { AiOutlineSearch } from "react-icons/ai";
 import { install } from "resize-observer";
+import { registerSW } from "virtual:pwa-register";
 
 import {
   ColorScheme,
@@ -20,6 +21,9 @@ import { spotlightActions } from "./routes";
 if (!window.ResizeObserver) {
   install();
 }
+
+// 注册 PWA
+registerSW({ immediate: true });
 
 function Main() {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({

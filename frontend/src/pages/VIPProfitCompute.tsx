@@ -4,10 +4,10 @@ import { JSX } from "preact/jsx-runtime";
 import SSNumberInput from "../components/SSNumberInput";
 import SSText from "../components/SSText";
 import { RoundFloat } from "../utils/numberHelper";
-import VIPBadgeBronzeURL from "/img/vip_badge_bronze.png";
-import VIPBadgeGoldURL from "/img/vip_badge_gold.png";
-import VIPBadgePlatinaURL from "/img/vip_badge_platina.png";
-import VIPBadgeSilverURL from "/img/vip_badge_silver.png";
+import VIPBadgeBronzeURL from "/vip_badges/vip_badge_bronze.png";
+import VIPBadgeGoldURL from "/vip_badges/vip_badge_gold.png";
+import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";
+import VIPBadgeSilverURL from "/vip_badges/vip_badge_silver.png";
 
 type VIPLevelType = "bronze" | "silver" | "gold" | "platina";
 
