@@ -1,10 +1,10 @@
-import {
-  Avatar,
-  Badge, Button, Stack, Text,
-} from "@mantine/core";
+import { Avatar } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
+import SSBadge from "../components/SSBadge";
+import SSButton from "../components/SSButton";
 import SSLink from "../components/SSLink";
+import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
 import {
   VIPInfoRequest,
@@ -13,10 +13,10 @@ import {
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import { getDate, parseTime } from "../utils/timeHelper";
-import VIPBadgeBronzeURL from "/img/vip_badge_bronze.png";
-import VIPBadgeGoldURL from "/img/vip_badge_gold.png";
-import VIPBadgePlatinaURL from "/img/vip_badge_platina.png";
-import VIPBadgeSilverURL from "/img/vip_badge_silver.png";
+import VIPBadgeBronzeURL from "/vip_badges/vip_badge_bronze.png";
+import VIPBadgeGoldURL from "/vip_badges/vip_badge_gold.png";
+import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";
+import VIPBadgeSilverURL from "/vip_badges/vip_badge_silver.png";
 
 const userURL = signal("");
 const hasResult = signal(false);
@@ -53,62 +53,61 @@ function handleQuery() {
       {
         user_url: userURL.value,
       },
-      (data) => batch(() => {
-        userName.value = data.name;
-        VIPType.value = data.VIP_type;
-        if (typeof data.VIP_expire_time !== "undefined") {
-          VIPExpireTime.value = parseTime(data.VIP_expire_time);
-          VIPExpireTimeToNowHumanReadable.value = data.VIP_expire_time_to_now_human_readable!;
-        }
-      }),
+      (data) =>
+        batch(() => {
+          userName.value = data.name;
+          VIPType.value = data.VIP_type;
+          if (typeof data.VIP_expire_time !== "undefined") {
+            VIPExpireTime.value = parseTime(data.VIP_expire_time);
+            VIPExpireTimeToNowHumanReadable.value =
+              data.VIP_expire_time_to_now_human_readable!;
+          }
+        }),
       commonAPIErrorHandler,
       hasResult,
-      isLoading,
+      isLoading
     );
   } catch {}
 }
 
 export default function VIPInfoViewer() {
   return (
-    <Stack>
-      <SSTextInput label="用户个人主页链接" value={userURL} onEnter={handleQuery} />
-      <Button onClick={handleQuery} loading={isLoading.value}>查询</Button>
+    <div className="flex flex-col gap-4">
+      <SSTextInput
+        label="用户个人主页链接"
+        value={userURL}
+        onEnter={handleQuery}
+      />
+      <SSButton onClick={handleQuery} loading={isLoading.value}>
+        查询
+      </SSButton>
       {hasResult.value && (
         <>
-          <Text>
+          <SSText>
             昵称：
             <SSLink url={userURL.value} label={userName.value} isExternal />
-          </Text>
-          <Text>
-            会员级别：
-            <Badge
-              size="lg"
-              pl={0}
-              color="gray"
-              leftSection={(
-                <Avatar
-                  alt={`${VIPType.value} 徽章图片`}
-                  size={24}
-                  mr={6}
-                  src={VIPTypeToBadgeImageURL[VIPType.value]}
-                />
-              )}
-            >
+          </SSText>
+          <div className="flex max-w-fit items-center gap-1">
+            <SSText>会员级别：</SSText>
+            <Avatar
+              alt={`${VIPType.value} 徽章图片`}
+              size={24}
+              mr={6}
+              src={VIPTypeToBadgeImageURL[VIPType.value]}
+            />
+            <SSBadge className="bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
               {VIPType.value}
-            </Badge>
-          </Text>
+            </SSBadge>
+          </div>
           {VIPType.value !== "无会员" && (
-            <Text>
+            <SSText>
               到期时间：
               {getDate(VIPExpireTime.value!)}
-              （剩余
-              {" "}
-              {VIPExpireTimeToNowHumanReadable.value}
-              ）
-            </Text>
+              （剩余 {VIPExpireTimeToNowHumanReadable.value}）
+            </SSText>
           )}
         </>
       )}
-    </Stack>
+    </div>
   );
 }

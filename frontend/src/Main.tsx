@@ -2,9 +2,9 @@ import { Notifications } from "@mantine/notifications";
 import { ErrorBoundary } from "react-error-boundary";
 import { AiOutlineSearch } from "react-icons/ai";
 import { install } from "resize-observer";
+import { registerSW } from "virtual:pwa-register";
 
 import {
-  Box,
   ColorScheme,
   ColorSchemeProvider,
   MantineProvider,
@@ -12,7 +12,7 @@ import {
 import { SpotlightProvider } from "@mantine/spotlight";
 
 import { useLocalStorage } from "@mantine/hooks";
-import React, { render } from "preact/compat";
+import React, { render, useEffect } from "preact/compat";
 import App from "./App";
 import ErrorFallback from "./components/ErrorFallback";
 import { spotlightActions } from "./routes";
@@ -22,19 +22,40 @@ if (!window.ResizeObserver) {
   install();
 }
 
+// 注册 PWA
+registerSW({ immediate: true });
+
 function Main() {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: "jtools-color-scheme",
     defaultValue: "light",
   });
-  const toggleColorScheme = () => setColorScheme(colorScheme === "dark" ? "light" : "dark");
+  const toggleColorScheme = () => {
+    setColorScheme(colorScheme === "dark" ? "light" : "dark");
+
+    // Tailwind CSS 深色模式
+    if (colorScheme === "dark") {
+      document.documentElement.classList.remove("dark");
+    } else {
+      document.documentElement.classList.add("dark");
+    }
+  };
+
+  useEffect(() => {
+    // Tailwind CSS 深色模式
+    // eslint-disable-next-line quotes
+    if (localStorage.getItem("jtools-color-scheme") === '"dark"') {
+      document.documentElement.classList.add("dark");
+    }
+  }, []);
+
   return (
     <React.StrictMode>
       <ColorSchemeProvider
         colorScheme={colorScheme}
         toggleColorScheme={toggleColorScheme}
       >
-        <MantineProvider theme={{ colorScheme }} withGlobalStyles>
+        <MantineProvider theme={{ colorScheme }}>
           <SpotlightProvider
             actions={spotlightActions}
             searchIcon={<AiOutlineSearch size="1.2rem" />}
@@ -42,9 +63,9 @@ function Main() {
             nothingFoundMessage="无结果"
           >
             <ErrorBoundary FallbackComponent={ErrorFallback}>
-              <Box mx="auto" w="90vw" my={28} maw={896}>
+              <div className="mx-auto my-7 w-[90vw] max-w-4xl">
                 <App />
-              </Box>
+              </div>
             </ErrorBoundary>
             <Notifications position="top-right" autoClose={2000} />
           </SpotlightProvider>

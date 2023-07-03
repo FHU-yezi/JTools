@@ -1,5 +1,5 @@
-import { SegmentedControl, Stack, Title } from "@mantine/core";
-import { Signal, batch, signal } from "@preact/signals";
+import { SegmentedControl, Skeleton } from "@mantine/core";
+import { Signal, batch, computed, signal } from "@preact/signals";
 import {
   ArcElement,
   CategoryScale,
@@ -9,17 +9,29 @@ import {
   LineController,
   LineElement,
   LinearScale,
-  PieController,
   PointElement,
   Tooltip,
 } from "chart.js";
 import { useEffect } from "preact/hooks";
-import { Line, Pie } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 import ChartWrapper from "../components/ChartWrapper";
-import { PoolAmountDataResponse } from "../models/JPEPFTNMacketAnalyzer/PoolAmountData";
+import SSStat from "../components/SSStat";
+import SSText from "../components/SSText";
+import { JPEPRulesResponse } from "../models/JPEPFTNMacketAnalyzer/JPEP_rules";
+import { PoolAmountResponse } from "../models/JPEPFTNMacketAnalyzer/PoolAmount";
 import {
-  PriceTrendDataItem, PriceTrendDataRequest, PriceTrendDataResponse, TimeRange,
+  PoolAmountTrendDataItem,
+  PoolAmountTrendDataRequest,
+  PoolAmountTrendDataResponse,
+} from "../models/JPEPFTNMacketAnalyzer/PoolAmountTrendData";
+import { PriceResponse } from "../models/JPEPFTNMacketAnalyzer/Price";
+import {
+  PriceTrendDataItem,
+  PriceTrendDataRequest,
+  PriceTrendDataResponse,
 } from "../models/JPEPFTNMacketAnalyzer/PriceTrendData";
+import { TimeRange } from "../models/JPEPFTNMacketAnalyzer/base";
+import { buildSegmentedControlDataFromRecord } from "../utils/data_helper";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 
@@ -31,42 +43,96 @@ Chart.register(
   LineController,
   LineElement,
   LinearScale,
-  PieController,
   PointElement,
-  Tooltip,
+  Tooltip
 );
 
-const buyPoolAmount = signal(0);
-const sellPoolAmount = signal(0);
+const TimeRangeSCData = buildSegmentedControlDataFromRecord({
+  "24 小时": "24h",
+  "7 天": "7d",
+  "15 天": "15d",
+  "30 天": "30d",
+});
+
+const tradeFeePercent = signal<number | undefined>(undefined);
+const buyPrice = signal<number | null | undefined>(undefined);
+const sellPrice = signal<number | null | undefined>(undefined);
+const buyOrderMinimumPrice = signal<number | undefined>(undefined);
+const sellOrderMinimumPrice = signal<number | undefined>(undefined);
+const buyPoolAmount = signal<number | undefined>(undefined);
+const sellPoolAmount = signal<number | undefined>(undefined);
+const totalPoolAmount = computed(() =>
+  typeof buyPoolAmount.value !== "undefined" &&
+  typeof sellPoolAmount.value !== "undefined"
+    ? buyPoolAmount.value + sellPoolAmount.value
+    : null
+);
 const PriceTrendLineTimeRange = signal<TimeRange>("24h");
-const BuyPriceTrendData = signal<PriceTrendDataItem | undefined>(
-  undefined,
+const BuyPriceTrendData = signal<PriceTrendDataItem | undefined>(undefined);
+const SellPriceTrendData = signal<PriceTrendDataItem | undefined>(undefined);
+const PoolAmountTrendLineTimeRange = signal<TimeRange>("24h");
+const BuyPoolAmountTrendData = signal<PoolAmountTrendDataItem | undefined>(
+  undefined
 );
-const SellPriceTrendData = signal<PriceTrendDataItem | undefined>(
-  undefined,
+const SellPoolAmountTrendData = signal<PoolAmountTrendDataItem | undefined>(
+  undefined
 );
-
-interface PoolAmountComparePieProps {
-  buy: Signal<number>
-  sell: Signal<number>
-}
 
 interface PriceTrendLineProps {
-  buy: Signal<PriceTrendDataItem>
-  sell: Signal<PriceTrendDataItem>
+  buy: Signal<PriceTrendDataItem>;
+  sell: Signal<PriceTrendDataItem>;
 }
 
-function handlePoolAmountDataFetch() {
+interface PoolAmountTrendLineProps {
+  buy: Signal<PriceTrendDataItem>;
+  sell: Signal<PriceTrendDataItem>;
+}
+
+function handleJPEPRulesFetch() {
   try {
-    fetchData<Record<string, never>, PoolAmountDataResponse>(
+    fetchData<Record<string, never>, JPEPRulesResponse>(
       "GET",
-      "/tools/JPEP_FTN_market_analyzer/pool_amount_data",
+      "/tools/JPEP_FTN_market_analyzer/JPEP_rules",
       {},
-      (data) => batch(() => {
-        buyPoolAmount.value = data.buy_amount;
-        sellPoolAmount.value = data.sell_amount;
-      }),
-      commonAPIErrorHandler,
+      (data) =>
+        batch(() => {
+          tradeFeePercent.value = data.trade_fee_percent;
+          buyOrderMinimumPrice.value = data.buy_order_minimum_price;
+          sellOrderMinimumPrice.value = data.sell_order_minimum_price;
+        }),
+      commonAPIErrorHandler
+    );
+  } catch {}
+}
+
+function handlePriceFetch() {
+  try {
+    fetchData<Record<string, never>, PriceResponse>(
+      "GET",
+      "/tools/JPEP_FTN_market_analyzer/price",
+      {},
+      (data) =>
+        batch(() => {
+          buyPrice.value = data.buy_price;
+          sellPrice.value = data.sell_price;
+        }),
+      commonAPIErrorHandler
+    );
+  } catch {}
+}
+
+function handlePoolAmountFetch() {
+  try {
+    fetchData<Record<string, never>, PoolAmountResponse>(
+      "GET",
+      "/tools/JPEP_FTN_market_analyzer/pool_amount",
+      {},
+      (data) =>
+        batch(() => {
+          buyPoolAmount.value = data.buy_amount;
+          sellPoolAmount.value = data.sell_amount;
+        }),
+      commonAPIErrorHandler
     );
   } catch {}
 }
@@ -79,24 +145,32 @@ function handlePriceTrendDataFetch() {
       {
         time_range: PriceTrendLineTimeRange.value,
       },
-      (data) => batch(() => {
-        BuyPriceTrendData.value = data.buy_trend;
-        SellPriceTrendData.value = data.sell_trend;
-      }),
-      commonAPIErrorHandler,
+      (data) =>
+        batch(() => {
+          BuyPriceTrendData.value = data.buy_trend;
+          SellPriceTrendData.value = data.sell_trend;
+        }),
+      commonAPIErrorHandler
     );
   } catch {}
 }
 
-function PoolAmountComparePie({ buy, sell }: PoolAmountComparePieProps) {
-  return (
-    <Pie
-      data={{
-        labels: ["买贝", "卖贝"],
-        datasets: [{ data: [buy.value, sell.value] }],
-      }}
-    />
-  );
+function handlePoolAmountTrendDataFetch() {
+  try {
+    fetchData<PoolAmountTrendDataRequest, PoolAmountTrendDataResponse>(
+      "GET",
+      "/tools/JPEP_FTN_market_analyzer/pool_amount_trend_data",
+      {
+        time_range: PoolAmountTrendLineTimeRange.value,
+      },
+      (data) =>
+        batch(() => {
+          BuyPoolAmountTrendData.value = data.buy_trend;
+          SellPoolAmountTrendData.value = data.sell_trend;
+        }),
+      commonAPIErrorHandler
+    );
+  } catch {}
 }
 
 function PriceTrendLine({ buy, sell }: PriceTrendLineProps) {
@@ -105,11 +179,19 @@ function PriceTrendLine({ buy, sell }: PriceTrendLineProps) {
       data={{
         labels: Object.keys(buy.value),
         datasets: [
-          { label: "买贝", data: Object.values(buy.value), cubicInterpolationMode: "monotone" },
-          { label: "卖贝", data: Object.values(sell.value), cubicInterpolationMode: "monotone" },
+          {
+            label: "买贝",
+            data: Object.values(buy.value),
+            cubicInterpolationMode: "monotone",
+          },
+          {
+            label: "卖贝",
+            data: Object.values(sell.value),
+            cubicInterpolationMode: "monotone",
+          },
           {
             label: "官方推荐参考价格",
-            data: new Array(Object.keys(buy.value).length).fill(0.10),
+            data: new Array(Object.keys(buy.value).length).fill(0.1),
             pointStyle: false,
             borderDash: [5, 5],
           },
@@ -122,7 +204,7 @@ function PriceTrendLine({ buy, sell }: PriceTrendLineProps) {
         },
         scales: {
           y: {
-            suggestedMin: 0.10,
+            suggestedMin: 0.1,
             suggestedMax: 0.17,
           },
         },
@@ -141,19 +223,112 @@ function PriceTrendLine({ buy, sell }: PriceTrendLineProps) {
   );
 }
 
+function PoolAmountTrendLine({ buy, sell }: PoolAmountTrendLineProps) {
+  return (
+    <Line
+      data={{
+        labels: Object.keys(buy.value),
+        datasets: [
+          {
+            label: "买贝",
+            data: Object.values(buy.value),
+            cubicInterpolationMode: "monotone",
+          },
+          {
+            label: "卖贝",
+            data: Object.values(sell.value),
+            cubicInterpolationMode: "monotone",
+          },
+        ],
+      }}
+      options={{
+        interaction: {
+          intersect: false,
+          axis: "x",
+        },
+        plugins: {
+          colors: {
+            forceOverride: true,
+          },
+        },
+      }}
+    />
+  );
+}
+
 export default function JPEPFTNMarketAnalyzer() {
   useEffect(() => {
-    handlePoolAmountDataFetch();
+    handleJPEPRulesFetch();
+    handlePriceFetch();
+    handlePoolAmountFetch();
     handlePriceTrendDataFetch();
+    handlePoolAmountTrendDataFetch();
   }, []);
 
   return (
-    <Stack>
-      <Title order={3}>买卖贝挂单量对比</Title>
-      <ChartWrapper chartType="pie" show={buyPoolAmount.value !== 0}>
-        <PoolAmountComparePie buy={buyPoolAmount} sell={sellPoolAmount} />
-      </ChartWrapper>
-      <Title order={3}>贝价趋势</Title>
+    <div className="flex flex-col gap-4">
+      <SSStat
+        title="交易手续费"
+        value={
+          typeof tradeFeePercent.value !== "undefined"
+            ? `${tradeFeePercent.value * 100}%`
+            : "获取中..."
+        }
+      />
+      <SSText xlarge xbold>
+        实时贝价
+      </SSText>
+      {typeof buyPrice.value !== "undefined" &&
+      typeof sellPrice.value !== "undefined" ? (
+        <div className="flex gap-2">
+          <SSStat
+            className="flex-grow"
+            title="买单"
+            value={buyPrice.value ?? "不可用"}
+            desc={`限价：${buyOrderMinimumPrice.value ?? "获取中..."}`}
+          />
+          <SSStat
+            className="flex-grow"
+            title="卖单"
+            value={sellPrice.value ?? "不可用"}
+            desc={`限价：${sellOrderMinimumPrice.value ?? "获取中..."}`}
+          />
+        </div>
+      ) : (
+        <Skeleton h={85.5} />
+      )}
+      <SSText xlarge xbold>
+        实时挂单量
+      </SSText>
+      {typeof buyPoolAmount.value !== "undefined" &&
+      typeof sellPoolAmount.value !== "undefined" ? (
+        <div className="flex gap-2">
+          <SSStat
+            className="flex-grow"
+            title="买单"
+            value={buyPoolAmount.value}
+            desc={`占比 ${(
+              (buyPoolAmount.value / totalPoolAmount.value!) *
+              100
+            ).toFixed(2)}%`}
+          />
+          <SSStat
+            className="flex-grow"
+            title="卖单"
+            value={sellPoolAmount.value}
+            desc={`占比 ${(
+              (sellPoolAmount.value / totalPoolAmount.value!) *
+              100
+            ).toFixed(2)}%`}
+          />
+        </div>
+      ) : (
+        <Skeleton h={85.5} />
+      )}
+
+      <SSText xlarge xbold>
+        贝价趋势
+      </SSText>
       <SegmentedControl
         value={PriceTrendLineTimeRange.value}
         onChange={(newValue: TimeRange) => {
@@ -164,19 +339,46 @@ export default function JPEPFTNMarketAnalyzer() {
           });
           handlePriceTrendDataFetch();
         }}
-        data={[
-          { label: "24 小时", value: "24h" },
-          { label: "7 天", value: "7d" },
-          { label: "15 天", value: "15d" },
-          { label: "30 天", value: "30d" },
-        ]}
+        data={TimeRangeSCData}
       />
-      <ChartWrapper chartType="radial" show={typeof BuyPriceTrendData.value !== "undefined"}>
+      <ChartWrapper
+        chartType="radial"
+        show={typeof BuyPriceTrendData.value !== "undefined"}
+      >
         <PriceTrendLine
           buy={BuyPriceTrendData as unknown as Signal<PriceTrendDataItem>}
           sell={SellPriceTrendData as unknown as Signal<PriceTrendDataItem>}
         />
       </ChartWrapper>
-    </Stack>
+
+      <SSText xlarge xbold>
+        挂单量趋势
+      </SSText>
+      <SegmentedControl
+        value={PoolAmountTrendLineTimeRange.value}
+        onChange={(newValue: TimeRange) => {
+          batch(() => {
+            PoolAmountTrendLineTimeRange.value = newValue;
+            BuyPoolAmountTrendData.value = undefined;
+            SellPoolAmountTrendData.value = undefined;
+          });
+          handlePoolAmountTrendDataFetch();
+        }}
+        data={TimeRangeSCData}
+      />
+      <ChartWrapper
+        chartType="radial"
+        show={typeof BuyPoolAmountTrendData.value !== "undefined"}
+      >
+        <PoolAmountTrendLine
+          buy={
+            BuyPoolAmountTrendData as unknown as Signal<PoolAmountTrendDataItem>
+          }
+          sell={
+            SellPoolAmountTrendData as unknown as Signal<PoolAmountTrendDataItem>
+          }
+        />
+      </ChartWrapper>
+    </div>
   );
 }

@@ -1,7 +1,8 @@
-import { Autocomplete, Text } from "@mantine/core";
+import { Autocomplete } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { Signal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
+import SSText from "./SSText";
 
 interface Props {
   label: string;
@@ -31,21 +32,25 @@ export default function SSAutocomplete({
 
   return (
     <div>
-      <Text fw={600}>{label}</Text>
+      <SSText bold>{label}</SSText>
       <Autocomplete
         mt={6}
         value={value.value}
         onChange={(newValue: string) => {
           value.value = newValue;
         }}
-        onKeyUp={onEnter ? (event: any) => (event.key === "Enter" && onEnter()) : undefined}
+        onKeyUp={
+          onEnter
+            ? (event: any) => event.key === "Enter" && onEnter()
+            : undefined
+        }
         onFocus={
           !noSelectOnFocus
-            ? (event: any) => (
-              event.currentTarget.value.length !== 0 && event.currentTarget.select()
-            )
+            ? (event: any) =>
+                event.currentTarget.value.length !== 0 &&
+                event.currentTarget.select()
             : undefined
-      }
+        }
         data={completeItems.value}
         aria-label={label}
         spellcheck={false}

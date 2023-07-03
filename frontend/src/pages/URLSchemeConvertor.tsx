@@ -1,19 +1,14 @@
-import {
-  ActionIcon,
-  Button,
-  Center,
-  Group,
-  Stack,
-  Text,
-  Tooltip,
-} from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { Signal, signal } from "@preact/signals";
 import { AiOutlineCheck } from "react-icons/ai";
 import { BiCopy, BiRightArrowAlt } from "react-icons/bi";
 import QRCode from "react-qr-code";
+import SSActionIcon from "../components/SSActionIcon";
+import SSButton from "../components/SSButton";
+import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
+import SSTooltip from "../components/SSTooltip";
 
 interface JianshuURLType {
   URLSchemePrefix: string;
@@ -68,7 +63,7 @@ function getURLType(url: Signal<string>): JianshuURLType | "unknown" {
   let slug;
   try {
     splitted = url.value.split("/");
-    [,,, perfix, slug] = splitted;
+    [, , , perfix, slug] = splitted;
   } catch {
     return "unknown";
   }
@@ -76,8 +71,8 @@ function getURLType(url: Signal<string>): JianshuURLType | "unknown" {
   for (const URLType of URLTypesArray) {
     if (perfix === URLType.URLPrefix) {
       if (
-        URLType.slugLengthRange.min <= slug.length
-        && slug.length <= URLType.slugLengthRange.max
+        URLType.slugLengthRange.min <= slug.length &&
+        slug.length <= URLType.slugLengthRange.max
       ) {
         return URLType;
       }
@@ -101,7 +96,7 @@ function handleConvert() {
   hasResult.value = true;
   result.value = jianshuURL.value.replace(
     `https://www.jianshu.com/${urlType.URLPrefix}/`,
-    `jianshu://${urlType.URLSchemePrefix}/`,
+    `jianshu://${urlType.URLSchemePrefix}/`
   );
 }
 
@@ -109,32 +104,39 @@ export default function URLSchemeConvertor() {
   const clipboard = useClipboard();
 
   return (
-    <Stack>
-      <SSTextInput label="简书链接" value={jianshuURL} onEnter={handleConvert} />
-      <Button onClick={handleConvert}>转换</Button>
+    <div className="flex flex-col gap-4">
+      <SSTextInput
+        label="简书链接"
+        value={jianshuURL}
+        onEnter={handleConvert}
+      />
+      <SSButton onClick={handleConvert}>转换</SSButton>
       {hasResult.value && (
-        <Center>
-          <Stack mt={48} align="center">
-            <Group spacing="xs">
-              <Text>{result.value}</Text>
-              <Tooltip label="访问">
-                <ActionIcon onClick={() => window.open(result.value)}>
+        <div className="grid place-content-center">
+          <div className="mt-12 flex flex-col gap-4">
+            <div className="flex gap-2">
+              <SSText>{result.value}</SSText>
+              <SSTooltip tooltip="访问" hideIcon>
+                <SSActionIcon onClick={() => window.open(result.value)}>
                   <BiRightArrowAlt />
-                </ActionIcon>
-              </Tooltip>
-              <Tooltip label={!clipboard.copied ? "复制" : "复制成功"}>
-                <ActionIcon
+                </SSActionIcon>
+              </SSTooltip>
+              <SSTooltip
+                tooltip={!clipboard.copied ? "复制" : "复制成功"}
+                hideIcon
+              >
+                <SSActionIcon
                   onClick={() => clipboard.copy(result.value)}
-                  color={!clipboard.copied ? undefined : "green"}
+                  color={!clipboard.copied ? undefined : "bg-green-100"}
                 >
                   {!clipboard.copied ? <BiCopy /> : <AiOutlineCheck />}
-                </ActionIcon>
-              </Tooltip>
-            </Group>
+                </SSActionIcon>
+              </SSTooltip>
+            </div>
             <QRCode value={result.value} />
-          </Stack>
-        </Center>
+          </div>
+        </div>
       )}
-    </Stack>
+    </div>
   );
 }

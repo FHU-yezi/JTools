@@ -1,4 +1,4 @@
-import { Center, Loader } from "@mantine/core";
+import { Loader } from "@mantine/core";
 import { useSignal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
 
@@ -7,11 +7,11 @@ export default function Loading() {
 
   useEffect(() => {
     setTimeout(() => (showLoader.value = true), 300);
-  });
+  }, []);
 
   return (
-    <Center style={{ marginTop: "20vh" }}>
+    <div className="mt-[20vh] grid place-content-center">
       {showLoader.value && <Loader size="lg" variant="dots" />}
-    </Center>
+    </div>
   );
 }

@@ -16,7 +16,7 @@ export async function fetchData<TRequest, TResponse>(
   onError?: (code: number, message: string) => void,
   hasResult?: Signal<boolean>,
   isLoading?: Signal<boolean>,
-  timeout?: number,
+  timeout?: number
 ) {
   if (hasResult) {
     hasResult.value = false;
@@ -32,14 +32,19 @@ export async function fetchData<TRequest, TResponse>(
   url = `${baseURL}/api${url}`;
   if (method === "GET" && typeof data !== "undefined") {
     const params: string[] = [];
-    Object.entries(data as object).forEach(([key, value]) => params.push(`${key}=${value}`));
+    Object.entries(data as object).forEach(([key, value]) =>
+      params.push(`${key}=${value}`)
+    );
     url = `${url}?${params.join("&")}`;
   }
 
   let response;
   const controller = new AbortController();
   try {
-    const timeoutID = setTimeout(() => controller.abort(), timeout ?? defaultTimeout);
+    const timeoutID = setTimeout(
+      () => controller.abort(),
+      timeout ?? defaultTimeout
+    );
     response = await fetch(url, {
       method,
       headers:
@@ -80,7 +85,7 @@ export async function fetchData<TRequest, TResponse>(
       color: "red",
     });
     throw new Error(
-      `API 请求失败：HTTP ${response.status}（${response.statusText}）`,
+      `API 请求失败：HTTP ${response.status}（${response.statusText}）`
     );
   } else {
     const responseJSON = (await response.json()) as Response<TResponse>;

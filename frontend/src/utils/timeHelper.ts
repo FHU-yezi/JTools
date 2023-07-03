@@ -8,7 +8,11 @@ export function getDatetime(dateObj: Date) {
 }
 
 export function getDateTimeWithoutSecond(dateObj: Date) {
-  const splitted = dateObj.toISOString().replace("T", " ").replace(".000Z", "").split(":");
+  const splitted = dateObj
+    .toISOString()
+    .replace("T", " ")
+    .replace(".000Z", "")
+    .split(":");
   splitted.pop();
   return splitted.join(":");
 }

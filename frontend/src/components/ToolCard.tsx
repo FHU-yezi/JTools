@@ -1,9 +1,7 @@
-import {
-  Badge,
-  Box, Card, Group, Space, Text, UnstyledButton,
-} from "@mantine/core";
 import { AiOutlineArrowRight } from "react-icons/ai";
 import { useLocation } from "wouter-preact";
+import SSBadge from "./SSBadge";
+import SSText from "./SSText";
 
 interface Props {
   toolName: string;
@@ -14,35 +12,43 @@ interface Props {
 }
 
 export default function ToolCard({
-  toolName, path, description, downgraded, unavaliable,
+  toolName,
+  path,
+  description,
+  downgraded,
+  unavaliable,
 }: Props) {
   const [, setLocation] = useLocation();
   return (
-    <UnstyledButton onClick={!unavaliable ? () => setLocation(path) : undefined}>
-      <Card padding="lg" shadow="xs" radius="lg" p={20} withBorder>
-        <Box
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Box>
-            <Box>
-              <Group spacing="xs">
-                <Text size="lg" fw={700}>
-                  {toolName}
-                </Text>
-                {downgraded && <Badge color="orange" radius="sm" size="lg">降级</Badge>}
-                {unavaliable && <Badge color="red" radius="sm" size="lg">不可用</Badge>}
-              </Group>
-            </Box>
-            <Space h="md" />
-            <Text>{description}</Text>
-          </Box>
-          {!unavaliable && <AiOutlineArrowRight size={24} />}
-        </Box>
-      </Card>
-    </UnstyledButton>
+    <button
+      type="button"
+      className="flex w-full items-center justify-between rounded-2xl border bg-white p-5 shadow transition-colors hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
+      onClick={!unavaliable ? () => setLocation(path) : undefined}
+    >
+      <div className="flex flex-col gap-3">
+        <div className="flex gap-2">
+          <SSText className="font-bold" large>
+            {toolName}
+          </SSText>
+          {downgraded && (
+            <SSBadge className="bg-orange-200 text-orange-500 dark:bg-orange-950">
+              降级
+            </SSBadge>
+          )}
+          {unavaliable && (
+            <SSBadge className="bg-red-200 text-red-500 dark:bg-red-950">
+              不可用
+            </SSBadge>
+          )}
+        </div>
+        <SSText className="text-left">{description}</SSText>
+      </div>
+      {!unavaliable && (
+        <AiOutlineArrowRight
+          className="text-gray-900 dark:text-gray-300"
+          size={24}
+        />
+      )}
+    </button>
   );
 }

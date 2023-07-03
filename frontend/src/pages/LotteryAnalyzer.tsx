@@ -1,10 +1,4 @@
-import {
-  SegmentedControl,
-  Skeleton,
-  Stack,
-  Table,
-  Title,
-} from "@mantine/core";
+import { SegmentedControl, Skeleton, Table } from "@mantine/core";
 import { Signal, batch, signal } from "@preact/signals";
 import {
   ArcElement,
@@ -23,7 +17,8 @@ import { useEffect } from "preact/hooks";
 import { Line, Pie } from "react-chartjs-2";
 import ChartWrapper from "../components/ChartWrapper";
 import SSScolllable from "../components/SSScollable";
-import SSTips from "../components/SSTips";
+import SSText from "../components/SSText";
+import SSTooltip from "../components/SSTooltip";
 import {
   PerPrizeDataItem,
   PerPrizeDataRequest,
@@ -40,6 +35,7 @@ import {
   RewardsWinsTrendDataResponse,
 } from "../models/LotteryAnalyzer/RewardWinsTrendData";
 import { TimeRange, TimeRangeWithoutAll } from "../models/LotteryAnalyzer/base";
+import { buildSegmentedControlDataFromRecord } from "../utils/data_helper";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import { RoundFloat } from "../utils/numberHelper";
@@ -54,18 +50,30 @@ Chart.register(
   LinearScale,
   PieController,
   PointElement,
-  Tooltip,
+  Tooltip
 );
+
+const timeRangeSCData = buildSegmentedControlDataFromRecord({
+  "1 天": "1d",
+  "7 天": "7d",
+  "30 天": "30d",
+  全部: "all",
+});
+const timeRangeWithoutAllSCData = buildSegmentedControlDataFromRecord({
+  "1 天": "1d",
+  "7 天": "7d",
+  "30 天": "30d",
+});
 
 const perPrizeAnalyzeTimeRange = signal<TimeRange>("1d");
 const perPrizeAnalyzeData = signal<PerPrizeDataItem[]>([]);
 const RewardWinsCountPieTimeRange = signal<TimeRange>("1d");
 const RewardWinsCountData = signal<RewardsWinsCountDataItem | undefined>(
-  undefined,
+  undefined
 );
 const RewardWinsTrendLineTimeRange = signal<TimeRangeWithoutAll>("1d");
 const RewardWinsTrendData = signal<RewardWinsTrendDataItem | undefined>(
-  undefined,
+  undefined
 );
 
 interface PerPrizeAnalyzeTableProps {
@@ -89,7 +97,7 @@ function handlePerPrizeAnalayzeDataFetch() {
         time_range: perPrizeAnalyzeTimeRange.value,
       },
       (data) => (perPrizeAnalyzeData.value = data.rewards),
-      commonAPIErrorHandler,
+      commonAPIErrorHandler
     );
   } catch {}
 }
@@ -103,7 +111,7 @@ function handleRewardWinsCountDataFetch() {
         time_range: RewardWinsCountPieTimeRange.value,
       },
       (data) => (RewardWinsCountData.value = data.wins_count_data),
-      commonAPIErrorHandler,
+      commonAPIErrorHandler
     );
   } catch {}
 }
@@ -117,7 +125,7 @@ function handleRewardWinsTrendDataFetch() {
         time_range: RewardWinsTrendLineTimeRange.value,
       },
       (data) => (RewardWinsTrendData.value = data.trend_data),
-      commonAPIErrorHandler,
+      commonAPIErrorHandler
     );
   } catch {}
 }
@@ -129,7 +137,7 @@ function PerPrizeAnalyzeTable({ data }: PerPrizeAnalyzeTableProps) {
 
   return (
     <SSScolllable>
-      <Table style={{ minWidth: 670 }}>
+      <Table className="min-w-[670px]">
         <thead>
           <tr>
             <th>奖品名称</th>
@@ -147,10 +155,7 @@ function PerPrizeAnalyzeTable({ data }: PerPrizeAnalyzeTableProps) {
               <td>{item.wins_count}</td>
               <td>{item.winners_count}</td>
               <td>{item.average_wins_count_per_winner}</td>
-              <td>
-                {RoundFloat(item.winning_rate * 100, 3)}
-                %
-              </td>
+              <td>{RoundFloat(item.winning_rate * 100, 3)}%</td>
               <td>{item.rarity}</td>
             </tr>
           ))}
@@ -186,7 +191,12 @@ function RewardWinsTrendLine({ data }: RewardWinsTrendLineProps) {
     <Line
       data={{
         labels: Object.keys(data.value),
-        datasets: [{ data: Object.values(data.value), cubicInterpolationMode: "monotone" }],
+        datasets: [
+          {
+            data: Object.values(data.value),
+            cubicInterpolationMode: "monotone",
+          },
+        ],
       }}
       options={{
         interaction: {
@@ -211,32 +221,29 @@ export default function LotteryAnalyzer() {
   }, []);
 
   return (
-    <Stack>
-      <Title order={3}>综合统计</Title>
+    <div className="flex flex-col gap-4">
+      <SSText xlarge xbold>
+        综合统计
+      </SSText>
       <SegmentedControl
         value={perPrizeAnalyzeTimeRange.value}
         onChange={(newValue: TimeRange) => {
           perPrizeAnalyzeTimeRange.value = newValue;
           handlePerPrizeAnalayzeDataFetch();
         }}
-        data={[
-          { label: "1 天", value: "1d" },
-          { label: "7 天", value: "7d" },
-          { label: "30 天", value: "30d" },
-          { label: "全部", value: "all" },
-        ]}
+        data={timeRangeSCData}
       />
       {perPrizeAnalyzeData.value.length !== 0 ? (
         <PerPrizeAnalyzeTable data={perPrizeAnalyzeData} />
       ) : (
         <Skeleton h={291} />
       )}
-      <SSTips
-        label="关于免费开 1 次连载 / 锦鲤头像框"
-        content="受简书接口限制，我们无法获取这两种奖品的中奖情况，故表中未予统计"
-        multiline
-      />
-      <Title order={3}>中奖次数分布</Title>
+      <SSTooltip tooltip="受简书接口限制，我们无法获取这两种奖品的中奖情况，故表中未予统计">
+        关于免费开 1 次连载 / 锦鲤头像框
+      </SSTooltip>
+      <SSText xlarge xbold>
+        中奖次数分布
+      </SSText>
       <SegmentedControl
         value={RewardWinsCountPieTimeRange.value}
         onChange={(newValue: TimeRange) => {
@@ -246,21 +253,21 @@ export default function LotteryAnalyzer() {
           });
           handleRewardWinsCountDataFetch();
         }}
-        data={[
-          { label: "1 天", value: "1d" },
-          { label: "7 天", value: "7d" },
-          { label: "30 天", value: "30d" },
-          { label: "全部", value: "all" },
-        ]}
+        data={timeRangeSCData}
       />
-      <ChartWrapper chartType="pie" show={typeof RewardWinsCountData.value !== "undefined"}>
+      <ChartWrapper
+        chartType="pie"
+        show={typeof RewardWinsCountData.value !== "undefined"}
+      >
         <RewardWinsCountPie
           data={
             RewardWinsCountData as unknown as Signal<RewardsWinsCountDataItem>
           }
         />
       </ChartWrapper>
-      <Title order={3}>中奖次数趋势</Title>
+      <SSText xlarge xbold>
+        中奖次数趋势
+      </SSText>
       <SegmentedControl
         value={RewardWinsTrendLineTimeRange.value}
         onChange={(newValue: TimeRangeWithoutAll) => {
@@ -270,19 +277,18 @@ export default function LotteryAnalyzer() {
           });
           handleRewardWinsTrendDataFetch();
         }}
-        data={[
-          { label: "1 天", value: "1d" },
-          { label: "7 天", value: "7d" },
-          { label: "30 天", value: "30d" },
-        ]}
+        data={timeRangeWithoutAllSCData}
       />
-      <ChartWrapper chartType="radial" show={typeof RewardWinsTrendData.value !== "undefined"}>
+      <ChartWrapper
+        chartType="radial"
+        show={typeof RewardWinsTrendData.value !== "undefined"}
+      >
         <RewardWinsTrendLine
           data={
             RewardWinsTrendData as unknown as Signal<RewardWinsTrendDataItem>
           }
         />
       </ChartWrapper>
-    </Stack>
+    </div>
   );
 }

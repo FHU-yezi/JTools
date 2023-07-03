@@ -1,17 +1,21 @@
-import { Text, Stack } from "@mantine/core";
+import clsx from "clsx";
+import SSText from "./SSText";
 
 interface Props {
-    title: string;
-    value: string | number;
-    desc?: string;
+  className?: string;
+  title: string;
+  value: string | number;
+  desc?: string;
 }
 
-export default function SSStat({ title, value, desc = "" }: Props) {
+export default function SSStat({ className, title, value, desc = "" }: Props) {
   return (
-    <Stack spacing={4}>
-      <Text fw={600}>{title}</Text>
-      <Text fz="xl">{value}</Text>
-      <Text fz="sm" c="dimmed">{desc}</Text>
-    </Stack>
+    <div className={clsx(className, "flex flex-col gap-1")}>
+      <SSText bold>{title}</SSText>
+      <SSText xlarge>{value}</SSText>
+      <SSText small gray>
+        {desc}
+      </SSText>
+    </div>
   );
 }

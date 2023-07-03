@@ -1,17 +1,11 @@
-import {
-  ActionIcon,
-  Group,
-  Switch,
-  Text,
-  useMantineColorScheme,
-  useMantineTheme,
-} from "@mantine/core";
+import { Switch, useMantineColorScheme } from "@mantine/core";
 import { spotlight } from "@mantine/spotlight";
 import { AiOutlineSearch } from "react-icons/ai";
 import { BsMoonStars, BsSun } from "react-icons/bs";
 import { IoIosArrowBack } from "react-icons/io";
 import { useLocation } from "wouter-preact";
 import umamiTrack from "../utils/umamiTrack";
+import SSText from "./SSText";
 
 interface Props {
   toolName: string;
@@ -19,61 +13,61 @@ interface Props {
 }
 
 export default function Header({ toolName, showBackArrow }: Props) {
-  const theme = useMantineTheme();
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const [, setLocation] = useLocation();
 
   return (
-    <Group
-      position="apart"
-      style={{
-        width: "100%",
-        paddingLeft: "5vw",
-        paddingRight: "5vw",
-        backgroundColor:
-          colorScheme === "light" ? theme.colors.gray[0] : theme.colors.gray[9],
-      }}
-      noWrap
-    >
-      <Group noWrap>
-        {showBackArrow && (
-          <ActionIcon onClick={() => setLocation("/")} aria-label="Back">
-            <IoIosArrowBack size={22} />
-          </ActionIcon>
-        )}
-        <Text
-          size="lg"
-          fw={700}
-          style={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            maxWidth: "calc(90vw - 150px)",
-          }}
-        >
-          {toolName}
-        </Text>
-      </Group>
-      <Group position="right" noWrap>
-        <ActionIcon
-          onClick={() => { umamiTrack("click-search-button"); spotlight.open(); }}
-          aria-label="Search"
-        >
-          <AiOutlineSearch size={22} />
-        </ActionIcon>
-        <Switch
-          size="md"
-          color={colorScheme === "dark" ? "gray" : "dark"}
-          onLabel={<BsMoonStars size={16} />}
-          offLabel={<BsSun size={16} />}
-          checked={colorScheme === "dark"}
-          onChange={() => {
-            toggleColorScheme();
-            umamiTrack("toggle-color-scheme");
-          }}
-          aria-label="Toggle Color Scheme"
-        />
-      </Group>
-    </Group>
+    <>
+      <div className="fixed left-0 top-0 z-40 flex h-16 w-full flex-nowrap justify-between bg-gray-50 px-[5vw] shadow-sm dark:bg-gray-800">
+        <div className="flex flex-nowrap items-center gap-x-2">
+          {showBackArrow && (
+            <button
+              type="button"
+              onClick={() => setLocation("/")}
+              aria-label="Back"
+            >
+              <IoIosArrowBack
+                className="text-gray-500 dark:text-gray-300"
+                size={22}
+              />
+            </button>
+          )}
+          <SSText
+            className="max-w-[calc(90vw - 150px)] overflow-hidden text-ellipsis whitespace-nowrap font-bold"
+            large
+          >
+            {toolName}
+          </SSText>
+        </div>
+        <div className="flex flex-nowrap items-center gap-x-4">
+          <button
+            type="button"
+            onClick={() => {
+              umamiTrack("click-search-button");
+              spotlight.open();
+            }}
+            aria-label="Search"
+          >
+            <AiOutlineSearch
+              className="text-gray-500 dark:text-gray-300"
+              size={22}
+            />
+          </button>
+          <Switch
+            size="md"
+            color={colorScheme === "dark" ? "gray" : "dark"}
+            onLabel={<BsMoonStars size={16} />}
+            offLabel={<BsSun size={16} />}
+            checked={colorScheme === "dark"}
+            onChange={() => {
+              toggleColorScheme();
+              umamiTrack("toggle-color-scheme");
+            }}
+            aria-label="Toggle Color Scheme"
+          />
+        </div>
+      </div>
+      <div className="h-12" />
+    </>
   );
 }

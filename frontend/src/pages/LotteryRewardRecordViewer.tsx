@@ -1,18 +1,12 @@
-import {
-  Button,
-  Center,
-  Chip,
-  Group,
-  Skeleton,
-  Stack,
-  Text,
-} from "@mantine/core";
+import { Chip, Skeleton } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
 import { DataTable } from "mantine-datatable";
 import { useEffect } from "preact/hooks";
+import SSButton from "../components/SSButton";
+import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
-import SSTips from "../components/SSTips";
+import SSTooltip from "../components/SSTooltip";
 import {
   LotteryRecordItem,
   LotteryRecordsRequest,
@@ -59,7 +53,7 @@ function handleQuery(offset: number) {
       },
       commonAPIErrorHandler,
       result.value.length === 0 ? hasResult : undefined,
-      result.value.length === 0 ? isLoading : undefined,
+      result.value.length === 0 ? isLoading : undefined
     );
   } catch {}
 }
@@ -74,7 +68,7 @@ function ResultTable() {
           accessor: "time",
           title: "时间",
           noWrap: true,
-          render: (record) => (getDatetime(parseTime(record.time))),
+          render: (record) => getDatetime(parseTime(record.time)),
         },
         {
           accessor: "reward_name",
@@ -100,17 +94,20 @@ export default function LotteryRewardRecordViewer() {
         "GET",
         "/tools/lottery_reward_record_viewer/rewards",
         {},
-        (data) => batch(() => {
-          rewards.value = data.rewards;
-          selectedRewards.value = data.rewards.map((item) => replaceAll(item, " ", ""));
-        }),
-        commonAPIErrorHandler,
+        (data) =>
+          batch(() => {
+            rewards.value = data.rewards;
+            selectedRewards.value = data.rewards.map((item) =>
+              replaceAll(item, " ", "")
+            );
+          }),
+        commonAPIErrorHandler
       );
     } catch {}
   }, []);
 
   return (
-    <Stack>
+    <div className="flex flex-col gap-4">
       <SSTextInput
         label="用户个人主页链接"
         value={userURL}
@@ -118,40 +115,41 @@ export default function LotteryRewardRecordViewer() {
       />
       {rewards.value.length !== 0 ? (
         <>
-          <Text fw={600}>奖项筛选</Text>
+          <SSText bold>奖项筛选</SSText>
           <Chip.Group
             value={selectedRewards.value}
             onChange={(value) => (selectedRewards.value = value)}
             multiple
           >
-            <Group>
+            <div className="flex gap-3 flex-wrap">
               {rewards.value.map((item) => (
-                <Chip key={replaceAll(item, " ", "")} value={replaceAll(item, " ", "")}>{item}</Chip>
+                <Chip
+                  key={replaceAll(item, " ", "")}
+                  value={replaceAll(item, " ", "")}
+                >
+                  {item}
+                </Chip>
               ))}
-            </Group>
+            </div>
           </Chip.Group>
         </>
       ) : (
         <Skeleton height={64} />
       )}
-      <SSTips
-        label="关于免费开 1 次连载 / 锦鲤头像框"
-        content="受简书接口限制，我们无法获取这两种奖品的中奖情况，故无法进行查询"
-        multiline
-      />
-      <Button onClick={() => handleQuery(0)} loading={isLoading.value}>
+      <SSTooltip tooltip="受简书接口限制，我们无法获取这两种奖品的中奖情况，故无法进行查询">
+        关于免费开 1 次连载 / 锦鲤头像框
+      </SSTooltip>
+      <SSButton onClick={() => handleQuery(0)} loading={isLoading.value}>
         查询
-      </Button>
-      {hasResult.value
-        && (result.value.length !== 0 ? (
+      </SSButton>
+      {hasResult.value &&
+        (result.value.length !== 0 ? (
           <ResultTable />
         ) : (
-          <Center>
-            <Text fw={600} m={24} size="lg">
-              没有查询到数据
-            </Text>
-          </Center>
+          <SSText className="m-6" bold large center>
+            没有查询到数据
+          </SSText>
         ))}
-    </Stack>
+    </div>
   );
 }

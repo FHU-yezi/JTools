@@ -1,8 +1,8 @@
-import {
-  Button, Flex, Modal, Stack, Text,
-} from "@mantine/core";
+import { Modal } from "@mantine/core";
+import { useDocumentTitle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { batch, useSignal } from "@preact/signals";
+import clsx from "clsx";
 import { JSX, Suspense, useEffect } from "preact/compat";
 import { AiOutlineArrowDown } from "react-icons/ai";
 import { useLocation } from "wouter-preact";
@@ -13,8 +13,10 @@ import { fetchData } from "../utils/fetchData";
 import { getDateTimeWithoutSecond, parseTime } from "../utils/timeHelper";
 import Header from "./Header";
 import Loading from "./Loading";
+import SSButton from "./SSButton";
 import SSLink from "./SSLink";
 import SSStat from "./SSStat";
+import SSText from "./SSText";
 
 interface Props {
   Component: () => JSX.Element;
@@ -35,8 +37,11 @@ export default function ToolWrapper({ Component, toolName }: Props) {
   const dataSource = useSignal<Record<string, string> | undefined>({});
   const showUnavaliableModal = useSignal(false);
 
+  // 设置页面标题
+  useDocumentTitle(`${toolName} - 简书小工具集`);
+
   // 处理部分情况下页面切换后不在顶部的问题
-  useEffect(() => window.scrollTo(0, 0));
+  useEffect(() => window.scrollTo(0, 0), []);
 
   useEffect(() => {
     try {
@@ -63,9 +68,10 @@ export default function ToolWrapper({ Component, toolName }: Props) {
           if (toolStatus.value === InfoStatus.DOWNGRADED) {
             notifications.show({
               title: "服务降级",
-              message: downgradedReason.value.length !== 0
-                ? downgradedReason.value
-                : "该小工具处于降级状态，其数据准确性、展示效果及性能可能受到影响，请您留意。",
+              message:
+                downgradedReason.value.length !== 0
+                  ? downgradedReason.value
+                  : "该小工具处于降级状态，其数据准确性、展示效果及性能可能受到影响，请您留意。",
               color: "orange",
               autoClose: false,
               icon: <AiOutlineArrowDown size="1.2em" color="white" />,
@@ -77,60 +83,57 @@ export default function ToolWrapper({ Component, toolName }: Props) {
         },
         commonAPIErrorHandler,
         hasResult,
-        isLoading,
+        isLoading
       );
     } catch {}
   }, []);
 
   return (
     <>
-      <header
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          height: "4em",
-          width: "100%",
-          display: "flex",
-          zIndex: 3,
-        }}
-      >
-        <Header toolName={toolName} showBackArrow />
-      </header>
-      <div style={{ height: "3em" }} />
+      <Header toolName={toolName} showBackArrow />
       <Suspense fallback={<Loading />}>
         {hasResult.value ? (
           <>
-            <Flex
-              gap={24}
-              my={typeof dataUpdateTime.value !== "undefined" || typeof dataCount.value !== "undefined" ? 16 : 0}
+            <div
+              className={clsx("flex gap-6", {
+                "my-4":
+                  typeof dataUpdateTime.value !== "undefined" ||
+                  typeof dataCount.value !== "undefined",
+              })}
             >
               {typeof dataUpdateTime.value !== "undefined" && (
-              <SSStat
-                title="数据更新时间"
-                value={getDateTimeWithoutSecond(dataUpdateTime.value!)}
-                desc={dataUpdateFreqDesc.value}
-              />
+                <SSStat
+                  className="flex-grow"
+                  title="数据更新时间"
+                  value={getDateTimeWithoutSecond(dataUpdateTime.value!)}
+                  desc={dataUpdateFreqDesc.value}
+                />
               )}
               {typeof dataCount.value !== "undefined" && (
-              <SSStat title="总数据量" value={dataCount.value} />
+                <SSStat
+                  className="flex-grow"
+                  title="总数据量"
+                  value={dataCount.value}
+                />
               )}
-            </Flex>
+            </div>
             {typeof dataSource.value !== "undefined" && (
-            <Stack spacing={4} my={16}>
-              <Text fw={600}>数据来源</Text>
-              {Object.entries(dataSource.value).map(([name, url]) => (
-                <Text>
-                  {name}
-                  ：
-                  <SSLink url={url} isExternal />
-                </Text>
-              ))}
-            </Stack>
+              <div className="my-4 flex flex-col gap-1">
+                <SSText bold>数据来源</SSText>
+                {Object.entries(dataSource.value).map(([name, url]) => (
+                  <SSText>
+                    {name}
+                    ：
+                    <SSLink url={url} isExternal />
+                  </SSText>
+                ))}
+              </div>
             )}
             <Component />
           </>
-        ) : <Loading />}
+        ) : (
+          <Loading />
+        )}
       </Suspense>
       <Modal
         opened={showUnavaliableModal.value}
@@ -140,17 +143,12 @@ export default function ToolWrapper({ Component, toolName }: Props) {
         closeOnEscape={false}
         withCloseButton={false}
       >
-        <Stack>
+        <div className="flex flex-col gap-4">
           {unavaliableReason.value.length !== 0
             ? unavaliableReason.value
             : "该小工具由于数据准确性、体验或安全性等原因暂时不可用，请稍后再尝试访问，并留意相关公告。"}
-          <Button
-            variant="light"
-            onClick={() => setLocation("/")}
-          >
-            返回首页
-          </Button>
-        </Stack>
+          <SSButton onClick={() => setLocation("/")}>返回首页</SSButton>
+        </div>
       </Modal>
     </>
   );
