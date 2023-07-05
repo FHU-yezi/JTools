@@ -121,7 +121,7 @@ export default function LotteryRewardRecordViewer() {
             onChange={(value) => (selectedRewards.value = value)}
             multiple
           >
-            <div className="flex gap-3 flex-wrap">
+            <div className="flex flex-wrap gap-3">
               {rewards.value.map((item) => (
                 <Chip
                   key={replaceAll(item, " ", "")}

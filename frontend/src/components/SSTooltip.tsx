@@ -1,15 +1,10 @@
 import clsx from "clsx";
-import { VNode } from "preact";
+import type { ComponentChildren } from "preact";
 import { GoQuestion } from "react-icons/go";
 import SSText from "./SSText";
 
 interface Props {
-  children:
-    | string
-    | number
-    | boolean
-    | Element
-    | (string | number | boolean | Element | VNode)[];
+  children: ComponentChildren;
   className?: string;
   tooltip: string;
   hideIcon?: boolean;

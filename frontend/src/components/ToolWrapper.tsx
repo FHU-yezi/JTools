@@ -3,7 +3,8 @@ import { useDocumentTitle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { batch, useSignal } from "@preact/signals";
 import clsx from "clsx";
-import { JSX, Suspense, useEffect } from "preact/compat";
+import type { ComponentChildren } from "preact";
+import { Suspense, useEffect } from "preact/compat";
 import { AiOutlineArrowDown } from "react-icons/ai";
 import { useLocation } from "wouter-preact";
 import { InfoRequest, InfoResponse, InfoStatus } from "../models/info";
@@ -19,11 +20,11 @@ import SSStat from "./SSStat";
 import SSText from "./SSText";
 
 interface Props {
-  Component: () => JSX.Element;
+  component: ComponentChildren;
   toolName: string;
 }
 
-export default function ToolWrapper({ Component, toolName }: Props) {
+export default function ToolWrapper({ component, toolName }: Props) {
   const [, setLocation] = useLocation();
 
   const isLoading = useSignal(false);
@@ -129,7 +130,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
                 ))}
               </div>
             )}
-            <Component />
+            {component}
           </>
         ) : (
           <Loading />

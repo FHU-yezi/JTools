@@ -4,7 +4,7 @@ import SSText from "./SSText";
 interface Props {
   label: string;
   value: Signal<string>;
-  onEnter?: () => void;
+  onEnter?(): void;
   noSelectOnFocus?: boolean;
 }
 

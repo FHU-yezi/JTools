@@ -22,7 +22,6 @@ const version = signal<string | undefined>(undefined);
 const downgradedTools = signal<string[]>([]);
 const unavaliableTools = signal<string[]>([]);
 
-// eslint-disable-next-line no-unused-vars
 function handleV2Redirect(
   appName: string,
   setLocation: (location: string) => void
@@ -108,10 +107,7 @@ export default function MainPage() {
         </SSButton>
         <SSButton
           onClick={() =>
-            window.open(
-              "https://status.sscreator.com/status/jtools",
-              "_blank"
-            )
+            window.open("https://status.sscreator.com/status/jtools", "_blank")
           }
           light
         >

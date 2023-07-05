@@ -3,7 +3,7 @@ import { VNode } from "preact";
 
 interface Props {
   children: Element | VNode;
-  onClick: () => void;
+  onClick(): void;
   color?: string;
 }
 

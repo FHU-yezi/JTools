@@ -1,11 +1,11 @@
 import clsx from "clsx";
-import { VNode } from "preact";
+import type { ComponentChildren } from "preact";
 import { AiOutlineLoading } from "react-icons/ai";
 
 interface Props {
-  children: string | number | (string | number | Element | VNode)[];
+  children: ComponentChildren;
   className?: string;
-  onClick?: () => void;
+  onClick?(): void;
   loading?: boolean;
   light?: boolean;
 }

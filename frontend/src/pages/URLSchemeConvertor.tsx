@@ -67,7 +67,6 @@ function getURLType(url: Signal<string>): JianshuURLType | "unknown" {
   } catch {
     return "unknown";
   }
-  // eslint-disable-next-line no-restricted-syntax
   for (const URLType of URLTypesArray) {
     if (perfix === URLType.URLPrefix) {
       if (

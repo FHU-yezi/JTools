@@ -107,7 +107,7 @@ const FPCount = signal(0);
 const FPCountEarningRateFactor = computed(() => {
   // eslint-disable-next-line no-restricted-syntax
   for (const targetFPCount in FPCountToFPCountEarningRateFactor) {
-    if (FPCount <= targetFPCount) {
+    if (FPCount.value <= parseFloat(targetFPCount)) {
       return FPCountToFPCountEarningRateFactor[targetFPCount];
     }
   }
@@ -117,7 +117,7 @@ const membersCount = signal(0);
 const promoterLevel = computed(() => {
   // eslint-disable-next-line no-restricted-syntax
   for (const targetMembersCount in membersCountToPromoterLevel) {
-    if (membersCount <= targetMembersCount) {
+    if (membersCount.value <= parseInt(targetMembersCount, 10)) {
       return membersCountToPromoterLevel[targetMembersCount];
     }
   }
@@ -148,13 +148,13 @@ const earningFromLevel2Members = computed(
     promoterLevelToLevel2MembersFPEarningRate[promoterLevel.value]
 );
 const earningFromMembers = computed(
-  () => earningFromLevel1Members + earningFromLevel2Members
+  () => earningFromLevel1Members.value + earningFromLevel2Members.value
 );
 const earningFromCreation = signal(0);
 const earningFromCreationToFP = computed(() => earningFromCreation.value / 2); // 创作收益一半是简书钻
 const annualEarning = computed(() => {
   let nowFPCount = FPCount.value;
-  for (let i = 0; i < 366; i++) {
+  for (let i = 0; i < 366; i += 1) {
     const earningFromFP = nowFPCount * (earningRate.value / 365);
     nowFPCount += earningFromFP;
     nowFPCount += earningFromCreationToFP.value;

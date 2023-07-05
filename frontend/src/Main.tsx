@@ -43,7 +43,6 @@ function Main() {
 
   useEffect(() => {
     // Tailwind CSS 深色模式
-    // eslint-disable-next-line quotes
     if (localStorage.getItem("jtools-color-scheme") === '"dark"') {
       document.documentElement.classList.add("dark");
     }

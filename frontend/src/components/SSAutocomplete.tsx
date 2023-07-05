@@ -8,8 +8,7 @@ interface Props {
   label: string;
   value: Signal<string>;
   onEnter?: () => void;
-  // eslint-disable-next-line no-unused-vars
-  onValueChange: (value: string) => void;
+  onValueChange(value: string): void;
   completeItems: Signal<string[]>;
   debounceTime?: number;
   noSelectOnFocus?: boolean;
