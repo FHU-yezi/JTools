@@ -121,11 +121,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
             <div className="my-4 flex flex-col gap-1">
               <SSText bold>数据来源</SSText>
               {Object.entries(dataSource.value).map(([name, url]) => (
-                <SSText>
-                  {name}
-                  ：
-                  <SSLink url={url} isExternal />
-                </SSText>
+                <SSLink label={name} url={url} isExternal />
               ))}
             </div>
           )}
