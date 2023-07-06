@@ -1,3 +1,5 @@
+declare const umami: any;
+
 export default function umamiTrack(
   eventName?: string,
   eventData?: { [key: string]: string | number }
