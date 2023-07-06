@@ -1,5 +1,6 @@
+import type { VNode } from "preact";
 import { Suspense, lazy } from "preact/compat";
-import { Route, Switch } from "wouter-preact";
+import { Route, RouteProps, Switch } from "wouter-preact";
 import Loading from "./components/Loading";
 import ToolWrapper from "./components/ToolWrapper";
 import MainPage from "./pages/MainPage";
@@ -16,11 +17,13 @@ export default function App() {
       <Route path="/">
         <MainPage />
       </Route>
-      {routes.map((item) => (
-        <Route key={item.path} path={item.path}>
-          <ToolWrapper toolName={item.toolName} component={item.component} />
-        </Route>
-      ))}
+      {
+        routes.map((item) => (
+          <Route key={item.path} path={item.path}>
+            <ToolWrapper toolName={item.toolName} Component={item.component} />
+          </Route>
+        )) as unknown as VNode<RouteProps<undefined, string>>
+      }
       <Route path="/thanks">
         <Suspense fallback={<Loading />}>
           <ThanksPage />
