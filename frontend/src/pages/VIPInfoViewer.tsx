@@ -90,7 +90,7 @@ export default function VIPInfoViewer() {
           <div className="flex max-w-fit items-center gap-1">
             <SSText>会员级别：</SSText>
             <Avatar
-              alt={`${VIPType.value} 徽章图片`}
+              alt={`${VIPType.value} 徽章图标`}
               size={24}
               mr={6}
               src={VIPTypeToBadgeImageURL[VIPType.value]}

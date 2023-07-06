@@ -143,6 +143,7 @@ function ResultTable() {
                   : `${record.title.substring(0, 30)}...`
               }
               isExternal
+              hideIcon
             />
           ),
         },
