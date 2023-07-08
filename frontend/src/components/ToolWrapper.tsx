@@ -3,6 +3,7 @@ import { useDocumentTitle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { batch, useSignal } from "@preact/signals";
 import clsx from "clsx";
+import type { Dayjs } from "dayjs";
 import type { JSX } from "preact";
 import { Suspense, useEffect } from "preact/compat";
 import { AiOutlineArrowDown } from "react-icons/ai";
@@ -31,7 +32,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
   const toolStatus = useSignal<InfoStatus | undefined>(undefined);
   const unavaliableReason = useSignal<string | undefined>(undefined);
   const downgradedReason = useSignal<string | undefined>(undefined);
-  const dataUpdateTime = useSignal<Date | undefined>(undefined);
+  const dataUpdateTime = useSignal<Dayjs | undefined>(undefined);
   const dataUpdateFreqDesc = useSignal<string | undefined>(undefined);
   const dataCount = useSignal<number | undefined>(undefined);
   const dataSource = useSignal<Record<string, string> | undefined>({});

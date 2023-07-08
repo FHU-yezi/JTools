@@ -1,6 +1,7 @@
 import { Table } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
+import type { Dayjs } from "dayjs";
 import SSBadge from "../components/SSBadge";
 import SSButton from "../components/SSButton";
 import SSLink from "../components/SSLink";
@@ -14,13 +15,16 @@ import {
 } from "../models/LPRecommendChecker/CheckResult";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
-import { getDatetime, parseTime } from "../utils/timeHelper";
+import {
+  getDatetime,
+  getHumanReadableTimeDelta,
+  parseTime,
+} from "../utils/timeHelper";
 
 const articleURL = signal("");
 const isLoading = signal(false);
 const articleTitle = signal<string | undefined>(undefined);
-const releaseTime = signal<Date | undefined>(undefined);
-const releaseTimeHumanReadable = signal<string | undefined>("");
+const releaseTime = signal<Dayjs | undefined>(undefined);
 const checkPassed = signal<boolean | undefined>(undefined);
 const checkItems = signal<CheckItem[] | undefined>(undefined);
 
@@ -43,7 +47,6 @@ function handleCheck() {
       batch(() => {
         articleTitle.value = data.title;
         releaseTime.value = parseTime(data.release_time);
-        releaseTimeHumanReadable.value = data.release_time_human_readable;
         checkPassed.value = data.check_passed;
         checkItems.value = data.check_items;
       }),
@@ -71,12 +74,11 @@ export default function LPRecommendChecker() {
             />
           </SSText>
         )}
-      {typeof releaseTime.value !== "undefined" &&
-        typeof releaseTimeHumanReadable.value !== "undefined" && (
-          <SSText center>{`发布于 ${getDatetime(releaseTime.value!)}（${
-            releaseTimeHumanReadable.value
-          }前）`}</SSText>
-        )}
+      {typeof releaseTime.value !== "undefined" && (
+        <SSText center>{`发布于 ${getDatetime(
+          releaseTime.value!
+        )}（${getHumanReadableTimeDelta(releaseTime.value!)}）`}</SSText>
+      )}
       {typeof checkPassed.value !== "undefined" && (
         <SSText
           color={checkPassed.value ? "text-green-600" : "text-red-500"}

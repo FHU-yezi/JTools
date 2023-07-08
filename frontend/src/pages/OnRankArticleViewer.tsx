@@ -90,18 +90,13 @@ function handleResultTableSort() {
   let resultToSort = result.value;
 
   resultToSort = resultToSort!.map((item) => {
-    item.date = parseTime(item.date).getTime();
+    item.date = parseTime(item.date).unix();
     return item;
   });
 
   resultToSort.sort(
     (a: Record<string, any>, b: Record<string, any>) => a[sortKey] - b[sortKey]
   );
-
-  resultToSort = resultToSort.map((item) => {
-    item.date = new Date(item.date).getTime() / 1000;
-    return item;
-  });
 
   if (sortDirection === "desc") {
     result.value = resultToSort.reverse();

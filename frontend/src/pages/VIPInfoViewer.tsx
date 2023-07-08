@@ -1,6 +1,7 @@
 import { Avatar } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
+import type { Dayjs } from "dayjs";
 import SSBadge from "../components/SSBadge";
 import SSButton from "../components/SSButton";
 import SSLink from "../components/SSLink";
@@ -12,7 +13,11 @@ import {
 } from "../models/VIPInfoViewer/VIPInfo";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
-import { getDate, parseTime } from "../utils/timeHelper";
+import {
+  getDate,
+  getHumanReadableTimeDelta,
+  parseTime,
+} from "../utils/timeHelper";
 import VIPBadgeBronzeURL from "/vip_badges/vip_badge_bronze.png";
 import VIPBadgeGoldURL from "/vip_badges/vip_badge_gold.png";
 import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";
@@ -22,8 +27,7 @@ const userURL = signal("");
 const userName = signal<string | undefined>(undefined);
 const isLoading = signal(false);
 const VIPType = signal<string | undefined>(undefined);
-const VIPExpireTime = signal<Date | undefined>(undefined);
-const VIPExpireTimeToNowHumanReadable = signal<string | undefined>(undefined);
+const VIPExpireTime = signal<Dayjs | undefined>(undefined);
 
 const VIPTypeToBadgeImageURL: Record<string, string> = {
   铜牌: VIPBadgeBronzeURL,
@@ -58,8 +62,6 @@ function handleQuery() {
           VIPType.value = data.VIP_type;
           if (typeof data.VIP_expire_time !== "undefined") {
             VIPExpireTime.value = parseTime(data.VIP_expire_time);
-            VIPExpireTimeToNowHumanReadable.value =
-              data.VIP_expire_time_to_now_human_readable!;
           }
         }),
       commonAPIErrorHandler,
@@ -104,8 +106,8 @@ export default function VIPInfoViewer() {
           {VIPType.value !== "无会员" && (
             <SSText>
               到期时间：
-              {getDate(VIPExpireTime.value!)}
-              （剩余 {VIPExpireTimeToNowHumanReadable.value}）
+              {getDate(VIPExpireTime.value!)}（
+              {getHumanReadableTimeDelta(VIPExpireTime.value!)}）
             </SSText>
           )}
         </>

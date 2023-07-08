@@ -9,7 +9,6 @@ from JianshuResearchTools.objects import Article, set_cache_status
 from sanic import Blueprint, HTTPResponse, Request
 from sspeedup.api import CODE, sanic_response_json
 from sspeedup.cache.timeout import timeout_cache
-from sspeedup.time_helper import human_readable_td_to_now
 
 from utils.db import LP_collections_db, article_FP_rank_db
 from utils.inject_data_model import inject_data_model_from_body
@@ -124,7 +123,6 @@ class CheckItem(BaseModel):
 class CheckResponse(BaseModel):
     title: str
     release_time: int
-    release_time_human_readable: str
     check_passed: bool
     check_items: List[CheckItem]
 
@@ -146,7 +144,6 @@ def check_handler(request: Request, data: CheckRequest) -> HTTPResponse:
 
     title = article.title
     release_time = article.publish_time
-    release_time_human_readable = human_readable_td_to_now(release_time)
 
     check_passed = True
     check_items: List[CheckItem] = []
@@ -171,7 +168,6 @@ def check_handler(request: Request, data: CheckRequest) -> HTTPResponse:
         data=CheckResponse(
             title=title,
             release_time=int(release_time.timestamp()),
-            release_time_human_readable=release_time_human_readable,
             check_passed=check_passed,
             check_items=check_items,
         ).dict(),
