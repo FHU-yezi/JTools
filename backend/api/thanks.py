@@ -45,5 +45,5 @@ def thanks_handler(request: Request) -> HTTPResponse:
             v3_beta_paticipants=THANKS_DATA.v3_beta_paticipants,
             opensource_packages=THANKS_DATA.opensource_packages,
             debug_project_records=THANKS_DATA.debug_project_records,
-        ).dict(),
+        ).model_dump(),
     )

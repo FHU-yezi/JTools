@@ -1,6 +1,7 @@
 from enum import IntEnum
 from typing import Dict, List, Literal, Optional
 
+from pydantic import Field
 from sanic import Blueprint, HTTPResponse, Request
 from sspeedup.api import CODE, sanic_response_json
 from yaml import safe_load
@@ -18,16 +19,16 @@ class InfoStatus(IntEnum):
 
 
 class InfoItem(BaseModel):
-    status: InfoStatus
+    status: InfoStatus = Field(InfoStatus, strict=False)
     unavaliable_reason: str
     downgraded_reason: str
     enable_data_update_time: bool
     enable_data_count: bool
-    db: Optional[str]
-    data_update_time_key: Optional[str]
-    data_update_time_sort_direction: Optional[Literal["asc", "desc"]]
-    data_update_freq_desc: Optional[str]
-    data_source: Optional[Dict[str, str]]
+    db: Optional[str] = None
+    data_update_time_key: Optional[str] = None
+    data_update_time_sort_direction: Optional[Literal["asc", "desc"]] = None
+    data_update_freq_desc: Optional[str] = None
+    data_source: Optional[Dict[str, str]] = None
 
 
 with open("tools_info.yaml", encoding="utf-8") as file:
@@ -61,5 +62,5 @@ def status_handler(request: Request) -> HTTPResponse:
             version=version,
             downgraded_tools=downgraded_tools,
             unavaliable_tools=unavaliable_tools,
-        ).dict(),
+        ).model_dump(),
     )

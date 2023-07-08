@@ -21,7 +21,7 @@ class VIPInfoRequest(BaseModel):
 class VIPInfoResponse(BaseModel):
     name: str
     VIP_type: str
-    VIP_expire_time: Optional[int]
+    VIP_expire_time: Optional[int] = None
 
 
 @VIP_info_viewer_blueprint.post("/VIP_info")
@@ -45,13 +45,17 @@ def VIP_info_handler(  # noqa: N802
         VIP_type = "无会员"  # noqa: N806
     VIP_expire_time: datetime = VIP_info["expire_date"]  # noqa: N806
     if VIP_expire_time:
-        VIP_expire_time = VIP_expire_time.replace(hour=0, minute=0, second=0)  # noqa: N806
+        VIP_expire_time = VIP_expire_time.replace(  # noqa: N806
+            hour=0, minute=0, second=0
+        )
 
     return sanic_response_json(
         code=CODE.SUCCESS,
         data=VIPInfoResponse(
             name=name,
             VIP_type=VIP_type,
-            VIP_expire_time=int(VIP_expire_time.timestamp()) if VIP_expire_time else None,
-        ).dict(),
+            VIP_expire_time=int(VIP_expire_time.timestamp())
+            if VIP_expire_time
+            else None,
+        ).model_dump(),
     )

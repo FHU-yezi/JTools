@@ -33,7 +33,7 @@ async def rewards_handler(request: Request) -> HTTPResponse:
         code=CODE.SUCCESS,
         data=RewardsResponse(
             rewards=list(REWARDS),
-        ).dict(),
+        ).model_dump(),
     )
 
 
@@ -86,5 +86,5 @@ def lottery_records_handler(
                 for x in result
             ],
             total=total,
-        ).dict(),
+        ).model_dump(),
     )

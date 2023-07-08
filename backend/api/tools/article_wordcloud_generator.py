@@ -52,5 +52,5 @@ def word_freq_data_handler(request: Request, data: WordFreqDataRequest) -> HTTPR
 
     return sanic_response_json(
         code=CODE.SUCCESS,
-        data=WordFreqDataResponse(title=title, word_freq=word_freq).dict(),
+        data=WordFreqDataResponse(title=title, word_freq=word_freq).model_dump(),
     )

@@ -196,7 +196,7 @@ def per_prize_data_handler(request: Request, data: PerPrizeDataRequest) -> HTTPR
         )
 
     return sanic_response_json(
-        code=CODE.SUCCESS, data=PerPrizeDataResponse(rewards=rewards).dict()
+        code=CODE.SUCCESS, data=PerPrizeDataResponse(rewards=rewards).model_dump()
     )
 
 
@@ -219,7 +219,7 @@ def reward_wins_count_data_handler(
 
     return sanic_response_json(
         code=CODE.SUCCESS,
-        data=RewardWinsCountDataResponse(wins_count_data=wins_count_data).dict(),
+        data=RewardWinsCountDataResponse(wins_count_data=wins_count_data).model_dump(),
     )
 
 
@@ -242,5 +242,5 @@ def reward_wins_trend_data_handler(
 
     return sanic_response_json(
         code=CODE.SUCCESS,
-        data=RewardWinsDataResponse(trend_data=trend_data).dict(),
+        data=RewardWinsDataResponse(trend_data=trend_data).model_dump(),
     )

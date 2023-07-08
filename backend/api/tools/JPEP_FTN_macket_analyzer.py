@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta  # noqa: N999
-from typing import Dict, Literal, Optional
+from typing import Dict, Literal
 
 from httpx import Client
 from sanic import Blueprint, HTTPResponse, Request
@@ -190,13 +190,13 @@ def data_update_time_handler(request: Request) -> HTTPResponse:
         code=CODE.SUCCESS,
         data=DataUpdateTimeResponse(
             data_update_time=int(data_update_time.timestamp())
-        ).dict(),
+        ).model_dump(),
     )
 
 
 class PriceResponse(BaseModel):
-    buy_price: Optional[float]
-    sell_price: Optional[float]
+    buy_price: float
+    sell_price: float
 
 
 @JPEP_FTN_market_analyzer_blueprint.get("/price")
@@ -210,7 +210,7 @@ def price_handler(request: Request) -> HTTPResponse:
 
     return sanic_response_json(
         code=CODE.SUCCESS,
-        data=PriceResponse(buy_price=buy_price, sell_price=sell_price).dict(),
+        data=PriceResponse(buy_price=buy_price, sell_price=sell_price).model_dump(),
     )
 
 
@@ -230,7 +230,9 @@ def pool_amount_handler(request: Request) -> HTTPResponse:
 
     return sanic_response_json(
         code=CODE.SUCCESS,
-        data=PoolAmountResponse(buy_amount=buy_amount, sell_amount=sell_amount).dict(),
+        data=PoolAmountResponse(
+            buy_amount=buy_amount, sell_amount=sell_amount
+        ).model_dump(),
     )
 
 
@@ -266,7 +268,7 @@ def JPEP_rules_handler(request: Request) -> HTTPResponse:  # noqa: N802
             buy_order_minimum_price=buy_order_minimum_price,
             sell_order_minimum_price=sell_order_minimum_price,
             trade_fee_percent=trade_fee_percent,
-        ).dict(),
+        ).model_dump(),
     )
 
 
@@ -294,7 +296,7 @@ def price_trend_data_handler(
         data=PriceTrendDataResponse(
             buy_trend=buy_trend,
             sell_trend=sell_trend,
-        ).dict(),
+        ).model_dump(),
     )
 
 
@@ -322,5 +324,5 @@ def pool_amount_trend_data_handler(
         data=PoolAmountTrendDataResponse(
             buy_trend=buy_trend,
             sell_trend=sell_trend,
-        ).dict(),
+        ).model_dump(),
     )

@@ -170,5 +170,5 @@ def check_handler(request: Request, data: CheckRequest) -> HTTPResponse:
             release_time=int(release_time.timestamp()),
             check_passed=check_passed,
             check_items=check_items,
-        ).dict(),
+        ).model_dump(),
     )

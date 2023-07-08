@@ -36,12 +36,12 @@ def user_name_autocomplete_handler(
     if not 0 < len(data.name_part) <= 15:
         return sanic_response_json(
             code=CODE.SUCCESS,
-            data=UserNameAutocompleteResponse(possible_names=[]).dict(),
+            data=UserNameAutocompleteResponse(possible_names=[]).model_dump(),
         )
     if has_banned_chars(data.name_part):
         return sanic_response_json(
             code=CODE.SUCCESS,
-            data=UserNameAutocompleteResponse(possible_names=[]).dict(),
+            data=UserNameAutocompleteResponse(possible_names=[]).model_dump(),
         )
 
     result: List[str] = (
@@ -57,13 +57,13 @@ def user_name_autocomplete_handler(
 
     return sanic_response_json(
         code=CODE.SUCCESS,
-        data=UserNameAutocompleteResponse(possible_names=result).dict(),
+        data=UserNameAutocompleteResponse(possible_names=result).model_dump(),
     )
 
 
 class OnRankRecordsRequest(BaseModel):
-    user_url: Optional[str]
-    user_name: Optional[str]
+    user_url: Optional[str] = None
+    user_name: Optional[str] = None
     offset: int
 
 
@@ -120,7 +120,7 @@ def on_rank_records_handler(
         data=OnRankRecordsResponse(
             records=[
                 OnRankRecordItem(
-                    date=x["date"].timestamp(),
+                    date=int(x["date"].timestamp()),
                     ranking=x["ranking"],
                     title=x["article"]["title"],
                     url=x["article"]["url"],
@@ -129,5 +129,5 @@ def on_rank_records_handler(
                 for x in result
             ],
             total=total,
-        ).dict(),
+        ).model_dump(),
     )
