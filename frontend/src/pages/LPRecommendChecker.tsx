@@ -17,13 +17,12 @@ import { fetchData } from "../utils/fetchData";
 import { getDatetime, parseTime } from "../utils/timeHelper";
 
 const articleURL = signal("");
-const hasResult = signal(false);
 const isLoading = signal(false);
-const articleTitle = signal("");
+const articleTitle = signal<string | undefined>(undefined);
 const releaseTime = signal<Date | undefined>(undefined);
-const releaseTimeHumanReadable = signal("");
-const checkPassed = signal(false);
-const checkItems = signal<CheckItem[]>([]);
+const releaseTimeHumanReadable = signal<string | undefined>("");
+const checkPassed = signal<boolean | undefined>(undefined);
+const checkItems = signal<CheckItem[] | undefined>(undefined);
 
 function handleCheck() {
   if (articleURL.value.length === 0) {
@@ -49,7 +48,6 @@ function handleCheck() {
         checkItems.value = data.check_items;
       }),
     commonAPIErrorHandler,
-    hasResult,
     isLoading
   );
 }
@@ -61,8 +59,9 @@ export default function LPRecommendChecker() {
       <SSButton onClick={handleCheck} loading={isLoading.value}>
         查询
       </SSButton>
-      {hasResult.value && (
-        <>
+
+      {typeof articleTitle.value !== "undefined" &&
+        typeof articleURL.value !== "undefined" && (
           <SSText center>
             文章标题：
             <SSLink
@@ -71,50 +70,56 @@ export default function LPRecommendChecker() {
               isExternal
             />
           </SSText>
+        )}
+      {typeof releaseTime.value !== "undefined" &&
+        typeof releaseTimeHumanReadable.value !== "undefined" && (
           <SSText center>{`发布于 ${getDatetime(releaseTime.value!)}（${
             releaseTimeHumanReadable.value
           }前）`}</SSText>
-          <SSText
-            color={checkPassed.value ? "text-green-600" : "text-red-500"}
-            bold
-            xlarge
-            center
-          >
-            {checkPassed.value ? "符合推荐标准" : "不符合推荐标准"}
-          </SSText>
-          <SSScolllable>
-            <Table className="min-w-[480px]">
-              <thead>
-                <tr>
-                  <th>项目</th>
-                  <th>检测结果</th>
-                  <th className="min-w-fit">限制值</th>
-                  <th className="min-w-fit">实际值</th>
+        )}
+      {typeof checkPassed.value !== "undefined" && (
+        <SSText
+          color={checkPassed.value ? "text-green-600" : "text-red-500"}
+          bold
+          xlarge
+          center
+        >
+          {checkPassed.value ? "符合推荐标准" : "不符合推荐标准"}
+        </SSText>
+      )}
+      {typeof checkItems.value !== "undefined" && (
+        <SSScolllable>
+          <Table className="min-w-[480px]">
+            <thead>
+              <tr>
+                <th>项目</th>
+                <th>检测结果</th>
+                <th className="min-w-fit">限制值</th>
+                <th className="min-w-fit">实际值</th>
+              </tr>
+            </thead>
+            <tbody>
+              {checkItems.value.map((item) => (
+                <tr key={item.name}>
+                  <td>{item.name}</td>
+                  <td>
+                    <SSBadge
+                      className={
+                        item.item_passed
+                          ? "bg-green-200 text-green-600 dark:bg-green-950"
+                          : "bg-red-200 text-red-500 dark:bg-red-950"
+                      }
+                    >
+                      {item.item_passed ? "符合" : "不符合"}
+                    </SSBadge>
+                  </td>
+                  <td>{`${item.operator} ${item.limit_value}`}</td>
+                  <td>{item.actual_value}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {checkItems.value.map((item) => (
-                  <tr key={item.name}>
-                    <td>{item.name}</td>
-                    <td>
-                      <SSBadge
-                        className={
-                          item.item_passed
-                            ? "bg-green-200 text-green-600 dark:bg-green-950"
-                            : "bg-red-200 text-red-500 dark:bg-red-950"
-                        }
-                      >
-                        {item.item_passed ? "符合" : "不符合"}
-                      </SSBadge>
-                    </td>
-                    <td>{`${item.operator} ${item.limit_value}`}</td>
-                    <td>{item.actual_value}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </SSScolllable>
-        </>
+              ))}
+            </tbody>
+          </Table>
+        </SSScolllable>
       )}
     </div>
   );

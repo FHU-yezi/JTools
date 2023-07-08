@@ -1,5 +1,5 @@
 import { notifications } from "@mantine/notifications";
-import { Signal, batch, signal } from "@preact/signals";
+import { batch, signal } from "@preact/signals";
 import { Chart as ChartInstance, Colors, LinearScale } from "chart.js";
 import { WordCloudController, WordElement } from "chartjs-chart-wordcloud";
 import { Chart } from "react-chartjs-2";
@@ -19,13 +19,12 @@ import { fetchData } from "../utils/fetchData";
 ChartInstance.register(Colors, LinearScale, WordCloudController, WordElement);
 
 const articleURL = signal("");
-const hasResult = signal(false);
 const isLoading = signal(false);
-const articleTitle = signal("");
-const wordFreqData = signal<WordFreqDataItem>({});
+const articleTitle = signal<string | undefined>(undefined);
+const wordFreqData = signal<WordFreqDataItem | undefined>(undefined);
 
 interface WordcloudProps {
-  data: Signal<WordFreqDataItem>;
+  data: WordFreqDataItem;
 }
 
 function handleGenerate() {
@@ -49,22 +48,21 @@ function handleGenerate() {
         wordFreqData.value = data.word_freq;
       }),
     commonAPIErrorHandler,
-    hasResult,
     isLoading
   );
 }
 
 function Wordcloud({ data }: WordcloudProps) {
-  const scale = 120 / Math.max(...Object.values(data.value));
+  const scale = 120 / Math.max(...Object.values(data));
   return (
     <Chart
       type="wordCloud"
       data={{
-        labels: Object.keys(data.value),
+        labels: Object.keys(data),
         datasets: [
           {
             // 使用最高频词的出现次数调整每个词的大小，使高频词不至于过大而溢出画面
-            data: Object.values(data.value).map((item) => item * scale),
+            data: Object.values(data).map((item) => item * scale),
             color: "#EA6F5A",
           },
         ],
@@ -92,8 +90,9 @@ export default function ArticleWordcloudGenerator() {
       <SSButton onClick={handleGenerate} loading={isLoading.value}>
         查询
       </SSButton>
-      {hasResult.value && (
-        <>
+
+      {typeof articleTitle.value !== "undefined" &&
+        typeof articleURL.value !== "undefined" && (
           <SSText center>
             文章：
             <SSLink
@@ -106,15 +105,17 @@ export default function ArticleWordcloudGenerator() {
               isExternal
             />
           </SSText>
-          <ChartWrapper
-            chartType="radial"
-            minWidth={800}
-            height={500}
-            allowOverflow
-          >
-            <Wordcloud data={wordFreqData} />
-          </ChartWrapper>
-        </>
+        )}
+
+      {typeof wordFreqData.value !== "undefined" && (
+        <ChartWrapper
+          chartType="radial"
+          minWidth={800}
+          height={500}
+          allowOverflow
+        >
+          <Wordcloud data={wordFreqData.value} />
+        </ChartWrapper>
       )}
     </div>
   );

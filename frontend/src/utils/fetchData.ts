@@ -13,13 +13,9 @@ export async function fetchData<TRequest, TResponse>(
   // eslint-disable-next-line no-shadow
   onOK?: (data: TResponse) => void,
   onError?: (code: number, message: string) => void,
-  hasResult?: Signal<boolean>,
   isLoading?: Signal<boolean>,
   timeout?: number
 ) {
-  if (hasResult) {
-    hasResult.value = false;
-  }
   if (isLoading) {
     // 如果数据正在加载，不再发起新的请求
     if (isLoading.value === true) {
@@ -91,9 +87,6 @@ export async function fetchData<TRequest, TResponse>(
     if (responseJSON.ok) {
       if (onOK) {
         onOK(responseJSON.data);
-        if (hasResult) {
-          hasResult.value = true;
-        }
       }
     } else if (onError) {
       onError(responseJSON.code, responseJSON.message);

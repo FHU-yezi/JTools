@@ -20,12 +20,11 @@ import { getDatetime, parseTime } from "../utils/timeHelper";
 
 const PAGE_SIZE = 100;
 
-const rewards = signal<string[]>([]);
+const rewards = signal<string[] | undefined>(undefined);
 const userURL = signal("");
 const selectedRewards = signal<string[]>([]);
-const hasResult = signal(false);
 const isLoading = signal(false);
-const result = signal<LotteryRecordItem[]>([]);
+const result = signal<LotteryRecordItem[] | undefined>(undefined);
 const resultTotalCount = signal<number | undefined>(undefined);
 const currentPage = signal(1);
 
@@ -52,8 +51,7 @@ function handleQuery(offset: number) {
         resultTotalCount.value = data.total;
       },
       commonAPIErrorHandler,
-      result.value.length === 0 ? hasResult : undefined,
-      result.value.length === 0 ? isLoading : undefined
+      isLoading
     );
   } catch {}
 }
@@ -113,7 +111,7 @@ export default function LotteryRewardRecordViewer() {
         value={userURL}
         onEnter={() => handleQuery(0)}
       />
-      {rewards.value.length !== 0 ? (
+      {typeof rewards.value !== "undefined" ? (
         <>
           <SSText bold>奖项筛选</SSText>
           <Chip.Group
@@ -142,7 +140,8 @@ export default function LotteryRewardRecordViewer() {
       <SSButton onClick={() => handleQuery(0)} loading={isLoading.value}>
         查询
       </SSButton>
-      {hasResult.value &&
+
+      {typeof result.value !== "undefined" &&
         (result.value.length !== 0 ? (
           <ResultTable />
         ) : (

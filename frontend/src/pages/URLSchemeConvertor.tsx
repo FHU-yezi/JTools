@@ -47,7 +47,7 @@ const URLTypesArray = [
 
 const jianshuURL = signal("");
 const hasResult = signal(false);
-const result = signal("");
+const result = signal<string | undefined>(undefined);
 
 function isJianshuURL(url: Signal<string>) {
   return url.value.startsWith("https://www.jianshu.com/");
@@ -110,7 +110,8 @@ export default function URLSchemeConvertor() {
         onEnter={handleConvert}
       />
       <SSButton onClick={handleConvert}>转换</SSButton>
-      {hasResult.value && (
+
+      {typeof result.value !== "undefined" && (
         <div className="grid place-content-center">
           <div className="mt-12 flex flex-col gap-4">
             <div className="flex gap-2">

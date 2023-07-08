@@ -1,5 +1,5 @@
 import { SegmentedControl, Skeleton, Table } from "@mantine/core";
-import { Signal, batch, signal } from "@preact/signals";
+import { batch, signal } from "@preact/signals";
 import {
   ArcElement,
   CategoryScale,
@@ -66,7 +66,7 @@ const timeRangeWithoutAllSCData = buildSegmentedControlDataFromRecord({
 });
 
 const perPrizeAnalyzeTimeRange = signal<TimeRange>("1d");
-const perPrizeAnalyzeData = signal<PerPrizeDataItem[]>([]);
+const perPrizeAnalyzeData = signal<PerPrizeDataItem[] | undefined>([]);
 const RewardWinsCountPieTimeRange = signal<TimeRange>("1d");
 const RewardWinsCountData = signal<RewardsWinsCountDataItem | undefined>(
   undefined
@@ -77,15 +77,15 @@ const RewardWinsTrendData = signal<RewardWinsTrendDataItem | undefined>(
 );
 
 interface PerPrizeAnalyzeTableProps {
-  data: Signal<PerPrizeDataItem[]>;
+  data: PerPrizeDataItem[];
 }
 
 interface RewardWinsCountPieProps {
-  data: Signal<RewardsWinsCountDataItem>;
+  data: RewardsWinsCountDataItem;
 }
 
 interface RewardWinsTrendLineProps {
-  data: Signal<RewardWinsTrendDataItem>;
+  data: RewardWinsTrendDataItem;
 }
 
 function handlePerPrizeAnalayzeDataFetch() {
@@ -131,8 +131,8 @@ function handleRewardWinsTrendDataFetch() {
 }
 
 function PerPrizeAnalyzeTable({ data }: PerPrizeAnalyzeTableProps) {
-  const totalWins = data.value.reduce((a, b) => a + b.wins_count, 0);
-  const totalWinners = data.value.reduce((a, b) => a + b.winners_count, 0);
+  const totalWins = data.reduce((a, b) => a + b.wins_count, 0);
+  const totalWinners = data.reduce((a, b) => a + b.winners_count, 0);
   const totalAvagaeWinsCountPerWinner = totalWins / totalWinners;
 
   return (
@@ -149,7 +149,7 @@ function PerPrizeAnalyzeTable({ data }: PerPrizeAnalyzeTableProps) {
           </tr>
         </thead>
         <tbody>
-          {data.value.map((item) => (
+          {data.map((item) => (
             <tr key={item.reward_name}>
               <td>{item.reward_name}</td>
               <td>{item.wins_count}</td>
@@ -160,16 +160,18 @@ function PerPrizeAnalyzeTable({ data }: PerPrizeAnalyzeTableProps) {
             </tr>
           ))}
         </tbody>
-        <tfoot>
-          <tr>
-            <th>总计</th>
-            <th>{totalWins}</th>
-            <th>{totalWinners}</th>
-            <th>{RoundFloat(totalAvagaeWinsCountPerWinner, 3)}</th>
-            <th />
-            <th />
-          </tr>
-        </tfoot>
+        {data.length !== 0 && (
+          <tfoot>
+            <tr>
+              <th>总计</th>
+              <th>{totalWins}</th>
+              <th>{totalWinners}</th>
+              <th>{RoundFloat(totalAvagaeWinsCountPerWinner, 3)}</th>
+              <th />
+              <th />
+            </tr>
+          </tfoot>
+        )}
       </Table>
     </SSScolllable>
   );
@@ -179,8 +181,8 @@ function RewardWinsCountPie({ data }: RewardWinsCountPieProps) {
   return (
     <Pie
       data={{
-        labels: Object.keys(data.value),
-        datasets: [{ data: Object.values(data.value) }],
+        labels: Object.keys(data),
+        datasets: [{ data: Object.values(data) }],
       }}
     />
   );
@@ -190,10 +192,10 @@ function RewardWinsTrendLine({ data }: RewardWinsTrendLineProps) {
   return (
     <Line
       data={{
-        labels: Object.keys(data.value),
+        labels: Object.keys(data),
         datasets: [
           {
-            data: Object.values(data.value),
+            data: Object.values(data),
             cubicInterpolationMode: "monotone",
           },
         ],
@@ -233,14 +235,15 @@ export default function LotteryAnalyzer() {
         }}
         data={timeRangeSCData}
       />
-      {perPrizeAnalyzeData.value.length !== 0 ? (
-        <PerPrizeAnalyzeTable data={perPrizeAnalyzeData} />
+      {typeof perPrizeAnalyzeData.value !== "undefined" ? (
+        <PerPrizeAnalyzeTable data={perPrizeAnalyzeData.value} />
       ) : (
         <Skeleton h={291} />
       )}
       <SSTooltip tooltip="受简书接口限制，我们无法获取这两种奖品的中奖情况，故表中未予统计">
         关于免费开 1 次连载 / 锦鲤头像框
       </SSTooltip>
+
       <SSText xlarge xbold>
         中奖次数分布
       </SSText>
@@ -259,12 +262,9 @@ export default function LotteryAnalyzer() {
         chartType="pie"
         show={typeof RewardWinsCountData.value !== "undefined"}
       >
-        <RewardWinsCountPie
-          data={
-            RewardWinsCountData as unknown as Signal<RewardsWinsCountDataItem>
-          }
-        />
+        <RewardWinsCountPie data={RewardWinsCountData.value!} />
       </ChartWrapper>
+
       <SSText xlarge xbold>
         中奖次数趋势
       </SSText>
@@ -283,11 +283,7 @@ export default function LotteryAnalyzer() {
         chartType="radial"
         show={typeof RewardWinsTrendData.value !== "undefined"}
       >
-        <RewardWinsTrendLine
-          data={
-            RewardWinsTrendData as unknown as Signal<RewardWinsTrendDataItem>
-          }
-        />
+        <RewardWinsTrendLine data={RewardWinsTrendData.value!} />
       </ChartWrapper>
     </div>
   );

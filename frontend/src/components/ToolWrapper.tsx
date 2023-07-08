@@ -83,7 +83,6 @@ export default function ToolWrapper({ Component, toolName }: Props) {
           }
         },
         commonAPIErrorHandler,
-        undefined,
         isLoading
       );
     } catch {}

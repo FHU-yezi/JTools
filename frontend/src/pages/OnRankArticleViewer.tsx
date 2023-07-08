@@ -23,8 +23,7 @@ const PAGE_SIZE = 50;
 const userURLOrUserName = signal("");
 const completeItems = signal<string[]>([]);
 const isLoading = signal(false);
-const hasResult = signal(false);
-const result = signal<OnRankRecordItem[]>([]);
+const result = signal<OnRankRecordItem[] | undefined>(undefined);
 const resultTotalCount = signal<number | undefined>(undefined);
 const currentPage = signal(1);
 const resultTableSortStatus = signal<DataTableSortStatus>({
@@ -80,8 +79,7 @@ function handleQuery(offset: number) {
         resultTotalCount.value = data.total;
       },
       commonAPIErrorHandler,
-      result.value.length === 0 ? hasResult : undefined,
-      result.value.length === 0 ? isLoading : undefined
+      isLoading
     );
   } catch {}
 }
@@ -91,7 +89,7 @@ function handleResultTableSort() {
   const sortDirection = resultTableSortStatus.value.direction;
   let resultToSort = result.value;
 
-  resultToSort = resultToSort.map((item) => {
+  resultToSort = resultToSort!.map((item) => {
     item.date = parseTime(item.date).getTime();
     return item;
   });
@@ -183,11 +181,12 @@ export default function OnRankArticleViewer() {
       <SSButton onClick={() => handleQuery(0)} loading={isLoading.value}>
         查询
       </SSButton>
-      {hasResult.value &&
+
+      {typeof result.value !== "undefined" &&
         (result.value.length !== 0 ? (
           <ResultTable />
         ) : (
-          <SSText className="m-6" large bold center>
+          <SSText className="m-6" bold large center>
             没有查询到数据
           </SSText>
         ))}

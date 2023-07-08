@@ -19,12 +19,11 @@ import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";
 import VIPBadgeSilverURL from "/vip_badges/vip_badge_silver.png";
 
 const userURL = signal("");
-const hasResult = signal(false);
-const userName = signal("");
+const userName = signal<string | undefined>(undefined);
 const isLoading = signal(false);
-const VIPType = signal("");
+const VIPType = signal<string | undefined>(undefined);
 const VIPExpireTime = signal<Date | undefined>(undefined);
-const VIPExpireTimeToNowHumanReadable = signal("");
+const VIPExpireTimeToNowHumanReadable = signal<string | undefined>(undefined);
 
 const VIPTypeToBadgeImageURL: Record<string, string> = {
   铜牌: VIPBadgeBronzeURL,
@@ -64,7 +63,6 @@ function handleQuery() {
           }
         }),
       commonAPIErrorHandler,
-      hasResult,
       isLoading
     );
   } catch {}
@@ -81,12 +79,16 @@ export default function VIPInfoViewer() {
       <SSButton onClick={handleQuery} loading={isLoading.value}>
         查询
       </SSButton>
-      {hasResult.value && (
+
+      {typeof userName.value !== "undefined" && (
+        <SSText>
+          昵称：
+          <SSLink url={userURL.value} label={userName.value} isExternal />
+        </SSText>
+      )}
+
+      {typeof VIPType.value !== "undefined" && (
         <>
-          <SSText>
-            昵称：
-            <SSLink url={userURL.value} label={userName.value} isExternal />
-          </SSText>
           <div className="flex max-w-fit items-center gap-1">
             <SSText>会员级别：</SSText>
             <Avatar

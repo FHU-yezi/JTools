@@ -15,7 +15,7 @@ export default function SSLink({
 }: Props) {
   return (
     <a
-      className="flex items-center gap-1 break-all text-blue-500 hover:text-blue-600"
+      className="inline-flex items-center gap-1 break-all text-blue-500 hover:text-blue-600"
       href={url}
       target={isExternal ? "_blank" : "_self"}
       rel="noreferrer"
