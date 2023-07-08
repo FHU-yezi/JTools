@@ -1,7 +1,7 @@
-import { JSX } from "preact/jsx-runtime";
+import type { ComponentChildren } from "preact";
 
 interface Props {
-  children: JSX.Element | (() => JSX.Element);
+  children: ComponentChildren;
 }
 
 export default function SSScolllable({ children }: Props) {
