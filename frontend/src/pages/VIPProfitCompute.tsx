@@ -98,6 +98,23 @@ const promoterLevelToLevel2MembersFPEarningRate: Record<
   supreme: 0.012,
 };
 
+const VIPLevelSCData = Object.entries(VIPLevelToText).map(([key, value]) => ({
+  label: (
+    <div className="grid place-content-center">
+      <SSText className="flex">
+        {" "}
+        <Avatar
+          size={20}
+          mr={8}
+          src={VIPLevelToBadgeImageURL[key as VIPLevelType]}
+        />
+        {value.replace("会员", "")}
+      </SSText>
+    </div>
+  ),
+  value: key,
+}));
+
 const VIPLevel = signal<VIPLevelType>("bronze");
 const VIPText = computed(() => VIPLevelToText[VIPLevel.value]);
 const VIPPrice = computed(() => VIPLevelToPrice[VIPLevel.value]);
@@ -240,56 +257,7 @@ export default function VIPProfitCompute() {
           mt={6}
           value={VIPLevel.value}
           onChange={(newValue: VIPLevelType) => (VIPLevel.value = newValue)}
-          data={[
-            {
-              label: (
-                <div className="grid place-content-center">
-                  <SSText className="flex">
-                    {" "}
-                    <Avatar size={20} mr={8} src={VIPBadgeBronzeURL} />
-                    铜牌
-                  </SSText>
-                </div>
-              ),
-              value: "bronze",
-            },
-            {
-              label: (
-                <div className="grid place-content-center">
-                  <SSText className="flex">
-                    {" "}
-                    <Avatar size={20} mr={8} src={VIPBadgeSilverURL} />
-                    银牌
-                  </SSText>
-                </div>
-              ),
-              value: "silver",
-            },
-            {
-              label: (
-                <div className="grid place-content-center">
-                  <SSText className="flex">
-                    {" "}
-                    <Avatar size={20} mr={8} src={VIPBadgeGoldURL} />
-                    金牌
-                  </SSText>
-                </div>
-              ),
-              value: "gold",
-            },
-            {
-              label: (
-                <div className="grid place-content-center">
-                  <SSText className="flex">
-                    {" "}
-                    <Avatar size={20} mr={8} src={VIPBadgePlatinaURL} />
-                    白金
-                  </SSText>
-                </div>
-              ),
-              value: "platina",
-            },
-          ]}
+          data={VIPLevelSCData}
         />
       </div>
       <SSNumberInput label="持钻量" value={FPCount} min={0} />

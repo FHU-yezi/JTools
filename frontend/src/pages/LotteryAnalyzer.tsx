@@ -35,7 +35,7 @@ import {
   RewardsWinsTrendDataResponse,
 } from "../models/LotteryAnalyzer/RewardWinsTrendData";
 import { TimeRange, TimeRangeWithoutAll } from "../models/LotteryAnalyzer/base";
-import { buildSegmentedControlDataFromRecord } from "../utils/data_helper";
+import { buildSegmentedControlDataFromRecord } from "../utils/dataHelper";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import { RoundFloat } from "../utils/numberHelper";

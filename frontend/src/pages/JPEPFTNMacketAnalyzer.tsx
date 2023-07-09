@@ -31,7 +31,7 @@ import {
   PriceTrendDataResponse,
 } from "../models/JPEPFTNMacketAnalyzer/PriceTrendData";
 import { TimeRange } from "../models/JPEPFTNMacketAnalyzer/base";
-import { buildSegmentedControlDataFromRecord } from "../utils/data_helper";
+import { buildSegmentedControlDataFromRecord } from "../utils/dataHelper";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 
