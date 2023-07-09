@@ -9,10 +9,9 @@ from JianshuResearchTools.objects import Article, set_cache_status
 from sanic import Blueprint, HTTPResponse, Request
 from sspeedup.api import CODE, sanic_response_json
 from sspeedup.cache.timeout import timeout_cache
+from sspeedup.data_validation import BaseModel, sanic_inject_pydantic_model
 
 from utils.db import LP_collections_db, article_FP_rank_db
-from utils.inject_data_model import inject_data_model_from_body
-from utils.pydantic_base import BaseModel
 
 set_cache_status(False)
 
@@ -128,7 +127,7 @@ class CheckResponse(BaseModel):
 
 
 @LP_recommend_checker_blueprint.post("/check")
-@inject_data_model_from_body(CheckRequest)
+@sanic_inject_pydantic_model(CheckRequest)
 def check_handler(request: Request, data: CheckRequest) -> HTTPResponse:
     del request
 

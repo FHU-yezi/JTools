@@ -4,10 +4,10 @@ from typing import Dict, List, Literal, Optional
 from pydantic import Field
 from sanic import Blueprint, HTTPResponse, Request
 from sspeedup.api import CODE, sanic_response_json
+from sspeedup.data_validation import BaseModel
 from yaml import safe_load
 
 from utils.config import config
-from utils.pydantic_base import BaseModel
 
 status_blueprint = Blueprint("status", url_prefix="/status")
 

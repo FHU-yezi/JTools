@@ -4,13 +4,9 @@ from JianshuResearchTools.assert_funcs import AssertUserUrl
 from JianshuResearchTools.exceptions import InputError
 from sanic import Blueprint, HTTPResponse, Request
 from sspeedup.api import CODE, sanic_response_json
+from sspeedup.data_validation import BaseModel, sanic_inject_pydantic_model
 
 from utils.db import article_FP_rank_db
-from utils.inject_data_model import (
-    inject_data_model_from_body,
-    inject_data_model_from_query_args,
-)
-from utils.pydantic_base import BaseModel
 from utils.text_filter import has_banned_chars
 
 on_rank_article_viewer_blueprint = Blueprint(
@@ -27,7 +23,7 @@ class UserNameAutocompleteResponse(BaseModel):
 
 
 @on_rank_article_viewer_blueprint.get("/user_name_autocomplete")
-@inject_data_model_from_query_args(UserNameAutocompleteRequest)
+@sanic_inject_pydantic_model(UserNameAutocompleteRequest, source="query_args")
 def user_name_autocomplete_handler(
     request: Request, data: UserNameAutocompleteRequest
 ) -> HTTPResponse:
@@ -81,7 +77,7 @@ class OnRankRecordsResponse(BaseModel):
 
 
 @on_rank_article_viewer_blueprint.post("/on_rank_records")
-@inject_data_model_from_body(OnRankRecordsRequest)
+@sanic_inject_pydantic_model(OnRankRecordsRequest)
 def on_rank_records_handler(
     request: Request, data: OnRankRecordsRequest
 ) -> HTTPResponse:

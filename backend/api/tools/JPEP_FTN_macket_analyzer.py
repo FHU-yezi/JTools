@@ -5,11 +5,10 @@ from httpx import Client
 from sanic import Blueprint, HTTPResponse, Request
 from sspeedup.api import CODE, sanic_response_json
 from sspeedup.cache.timeout import timeout_cache
+from sspeedup.data_validation import BaseModel, sanic_inject_pydantic_model
+from sspeedup.time_helper import get_start_time
 
 from utils.db import JPEP_FTN_market_db
-from utils.inject_data_model import inject_data_model_from_query_args
-from utils.pydantic_base import BaseModel
-from utils.time_helper import get_data_start_time
 
 TEXT_TO_TIMEDELTA: Dict[str, timedelta] = {
     "24h": timedelta(hours=24),
@@ -87,7 +86,7 @@ def get_price_trend_data(
             {
                 "$match": {
                     "fetch_time": {
-                        "$gte": get_data_start_time(td),
+                        "$gte": get_start_time(td),
                     },
                     "trade_type": type_,
                 }
@@ -132,7 +131,7 @@ def get_pool_amount_trend_data(
                 "$match": {
                     "trade_type": type_,
                     "fetch_time": {
-                        "$gte": get_data_start_time(td),
+                        "$gte": get_start_time(td),
                     },
                 },
             },
@@ -282,7 +281,7 @@ class PriceTrendDataResponse(BaseModel):
 
 
 @JPEP_FTN_market_analyzer_blueprint.get("/price_trend_data")
-@inject_data_model_from_query_args(PriceTrendDataRequest)
+@sanic_inject_pydantic_model(PriceTrendDataRequest, source="query_args")
 def price_trend_data_handler(
     request: Request, data: PriceTrendDataRequest
 ) -> HTTPResponse:
@@ -310,7 +309,7 @@ class PoolAmountTrendDataResponse(BaseModel):
 
 
 @JPEP_FTN_market_analyzer_blueprint.get("/pool_amount_trend_data")
-@inject_data_model_from_query_args(PoolAmountTrendDataRequest)
+@sanic_inject_pydantic_model(PoolAmountTrendDataRequest, source="query_args")
 def pool_amount_trend_data_handler(
     request: Request, data: PoolAmountTrendDataRequest
 ) -> HTTPResponse:

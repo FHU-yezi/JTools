@@ -6,6 +6,8 @@ from pydantic import Field
 from pymongo.collection import Collection
 from sanic import Blueprint, HTTPResponse, Request
 from sspeedup.api import CODE, sanic_response_json
+from sspeedup.data_validation import BaseModel, sanic_inject_pydantic_model
+from sspeedup.dict_helper import filter_null_value
 from yaml import safe_load
 
 from utils.db import (
@@ -14,9 +16,6 @@ from utils.db import (
     article_FP_rank_db,
     lottery_db,
 )
-from utils.dict_helper import filter_null_value
-from utils.inject_data_model import inject_data_model_from_query_args
-from utils.pydantic_base import BaseModel
 
 DB_STRING_TO_OBJ: Dict[str, Collection] = {
     "article_FP_rank": article_FP_rank_db,
@@ -85,7 +84,7 @@ class InfoResponse(BaseModel):
 
 
 @info_blueprint.get("/")
-@inject_data_model_from_query_args(InfoRequest)
+@sanic_inject_pydantic_model(InfoRequest, source="query_args")
 def info_handler(request: Request, data: InfoRequest) -> HTTPResponse:
     del request
 

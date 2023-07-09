@@ -5,9 +5,7 @@ from JianshuResearchTools.exceptions import InputError, ResourceError  # noqa: N
 from JianshuResearchTools.objects import User, set_cache_status
 from sanic import Blueprint, HTTPResponse, Request
 from sspeedup.api import CODE, sanic_response_json
-
-from utils.inject_data_model import inject_data_model_from_body
-from utils.pydantic_base import BaseModel
+from sspeedup.data_validation import BaseModel, sanic_inject_pydantic_model
 
 set_cache_status(False)
 
@@ -25,7 +23,7 @@ class VIPInfoResponse(BaseModel):
 
 
 @VIP_info_viewer_blueprint.post("/VIP_info")
-@inject_data_model_from_body(VIPInfoRequest)
+@sanic_inject_pydantic_model(VIPInfoRequest)
 def VIP_info_handler(  # noqa: N802
     request: Request, data: VIPInfoRequest
 ) -> HTTPResponse:
