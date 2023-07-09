@@ -1,6 +1,8 @@
+import clsx from "clsx";
 import { BiLinkExternal } from "react-icons/bi";
 
 interface Props {
+  className?: string;
   url: string;
   label?: string;
   isExternal?: boolean;
@@ -8,6 +10,7 @@ interface Props {
 }
 
 export default function SSLink({
+  className,
   url,
   label,
   isExternal = false,
@@ -15,7 +18,10 @@ export default function SSLink({
 }: Props) {
   return (
     <a
-      className="inline-flex items-center gap-1 break-all text-blue-500 hover:text-blue-600"
+      className={clsx(
+        className,
+        "inline-flex items-center gap-1 break-all text-blue-500 hover:text-blue-600"
+      )}
       href={url}
       target={isExternal ? "_blank" : "_self"}
       rel="noreferrer"
