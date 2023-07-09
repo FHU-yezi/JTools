@@ -20,6 +20,8 @@ export default defineConfig({
         name: "简书小工具集",
         short_name: "简书小工具集",
         description: "探索未知",
+        lang: "zh-CN",
+        dir: "ltr",
         theme_color: "#FFFFFF",
         icons: [
           {
