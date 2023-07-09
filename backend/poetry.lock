@@ -986,24 +986,26 @@ files = [
 
 [[package]]
 name = "sspeedup"
-version = "0.11.1"
+version = "0.12.0"
 description = "开发工具箱"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "sspeedup-0.11.1-py3-none-any.whl", hash = "sha256:0be9983c9ef4fc73c5fa1effe18aaceb38158df406e13df7e3645c7d155dd0fd"},
-    {file = "sspeedup-0.11.1.tar.gz", hash = "sha256:df8191291522091cdd651101f2ae503499c5669ccebc7d5d5f2a95ebc2656cd7"},
+    {file = "sspeedup-0.12.0-py3-none-any.whl", hash = "sha256:97b9e0cd6d08b253602328eed222b0753e90e5fb9b9eabff43bd2c1ecadf7cd6"},
+    {file = "sspeedup-0.12.0.tar.gz", hash = "sha256:848e87ce953d98c724a766c35c8351fff22bcd262bfa28557e5f51583f2a3a9c"},
 ]
 
 [package.dependencies]
-httpx = {version = ">=0.24.0,<0.25.0", optional = true, markers = "extra == \"ability-word-split\""}
+httpx = {version = ">=0.24.1,<0.25.0", optional = true, markers = "extra == \"ability-word-split\""}
+pydantic = {version = ">=2.0.2,<3.0.0", optional = true, markers = "extra == \"data-validation\""}
 pymongo = {version = ">=4.3.3,<5.0.0", optional = true, markers = "extra == \"logging\""}
 sanic = {version = ">=23.3.0,<24.0.0", optional = true, markers = "extra == \"api-response-sanic\""}
-ujson = {version = ">=5.7.0,<6.0.0", optional = true, markers = "extra == \"api-response-sanic\""}
+ujson = {version = ">=5.8.0,<6.0.0", optional = true, markers = "extra == \"api-response-sanic\""}
 
 [package.extras]
-ability-word-split = ["httpx (>=0.24.0,<0.25.0)"]
-api-response-sanic = ["sanic (>=23.3.0,<24.0.0)", "ujson (>=5.7.0,<6.0.0)"]
+ability-word-split = ["httpx (>=0.24.1,<0.25.0)"]
+api-response-sanic = ["sanic (>=23.3.0,<24.0.0)", "ujson (>=5.8.0,<6.0.0)"]
+data-validation = ["pydantic (>=2.0.2,<3.0.0)"]
 logging = ["pymongo (>=4.3.3,<5.0.0)"]
 pywebio = ["pywebio (>=1.8.2,<2.0.0)"]
 qrcode = ["qrcode (>=7.4.2,<8.0.0)"]
@@ -1251,4 +1253,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "e428091fe9bee3a6b8b2ea55553398c5a94ca9d4bea3807747494e9a905b8382"
+content-hash = "2e183c8821fe40a733b7e5558573a51574c8c138d3ee1013b50544e87de7c3b4"
