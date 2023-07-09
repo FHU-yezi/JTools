@@ -10,28 +10,179 @@
     "幽夜蛙": "https://www.jianshu.com/u/e3d9895f67a7"
   },
   "opensourcePackages": {
-    "Preact": "https://github.com/preactjs/preact",
-    "Mantine": "https://github.com/mantinedev/mantine",
-    "JianshuResearchTools": "https://github.com/FHU-yezi/JianshuResearchTools",
-    "Wouter": "https://github.com/molefrog/wouter",
-    "Chart.js": "https://github.com/chartjs/Chart.js",
-    "mantine-datatable": "https://github.com/icflorescu/mantine-datatable",
-    "PyMongo": "https://github.com/mongodb/mongo-python-driver",
-    "CutUp": "https://github.com/FHU-yezi/CutUp",
-    "Jieba": "https://github.com/fxsjy/jieba",
-    "Vite": "https://github.com/vitejs/vite",
-    "react-chartjs-2": "https://github.com/reactchartjs/react-chartjs-2",
-    "sspeedup": "https://github.com/FHU-yezi/sspeedup",
-    "resize-observer": "https://github.com/devrelm/resize-observer",
-    "eslint-plugin-react": "https://github.com/jsx-eslint/eslint-plugin-react",
-    "vite-plugin-compression": "https://github.com/vbenjs/vite-plugin-compression",
-    "react-qr-code": "https://github.com/rosskhanas/react-qr-code",
-    "react-icons": "https://github.com/react-icons/react-icons",
-    "chartjs-chart-wordcloud": "https://github.com/sgratzl/chartjs-chart-wordcloud",
-    "eslint-config-airbnb": "https://github.com/airbnb/javascript",
-    "TypeScript": "https://github.com/microsoft/TypeScript",
-    "rollup-plugin-visualizer": "https://github.com/btd/rollup-plugin-visualizer",
-    "react-error-boundary": "https://github.com/bvaughn/react-error-boundary"
+    "前端": [
+      {
+        "name": "Preact",
+        "desc": "视图",
+        "url": "https://github.com/preactjs/preact"
+      },
+      {
+        "name": "Preact Signals",
+        "desc": "状态管理",
+        "url": "https://github.com/preactjs/signals"
+      },
+      {
+        "name": "Chart.js",
+        "desc": "图表",
+        "url": "https://github.com/chartjs/Chart.js"
+      },
+      {
+        "name": "Mantine",
+        "desc": "组件库",
+        "url": "https://github.com/mantinedev/mantine"
+      },
+      {
+        "name": "Mantine DataTable",
+        "desc": "DataTable 组件",
+        "url": "https://github.com/icflorescu/mantine-datatable"
+      },
+      {
+        "name": "Chart.js Wordcloud",
+        "desc": "词云图",
+        "url": "https://github.com/sgratzl/chartjs-chart-wordcloud"
+      },
+      {
+        "name": "React Chart.js 2",
+        "desc": "Chart.js React 包装层",
+        "url": "https://github.com/reactchartjs/react-chartjs-2"
+      },
+      {
+        "name": "React Error Boundary",
+        "desc": "React 错误边界封装",
+        "url": "https://github.com/bvaughn/react-error-boundary"
+      },
+      {
+        "name": "React Icons",
+        "desc": "图标",
+        "url": "https://github.com/react-icons/react-icons"
+      },
+      {
+        "name": "React QR Code",
+        "desc": "二维码",
+        "url": "https://github.com/rosskhanas/react-qr-code"
+      },
+      {
+        "name": "Wouter",
+        "desc": "路由",
+        "url": "https://github.com/molefrog/wouter"
+      },
+      {
+        "name": "Tailwind CSS",
+        "desc": "原子化 CSS",
+        "url": "https://github.com/tailwindlabs/tailwindcss"
+      },
+      {
+        "name": "clsx",
+        "desc": "ClassName 增强",
+        "url": "https://github.com/lukeed/clsx"
+      },
+      {
+        "name": "Day.js",
+        "desc": "日期处理",
+        "url": "https://github.com/iamkun/dayjs"
+      },
+      {
+        "name": "Vite",
+        "desc": "构建",
+        "url": "https://github.com/vitejs/vite"
+      },
+      {
+        "name": "Vite Plugin PWA",
+        "desc": "PWA 支持",
+        "url": "https://github.com/vite-pwa/vite-plugin-pwa"
+      },
+      {
+        "name": "Vite Plugin Compression",
+        "desc": "构建产物压缩",
+        "url": "https://github.com/vbenjs/vite-plugin-compression"
+      },
+      {
+        "name": "Resize Observer",
+        "desc": "Resize Observer Polyfill",
+        "url": "https://github.com/devrelm/resize-observer"
+      }
+    ],
+    "后端": [
+      {
+        "name": "JianshuResearchTools",
+        "desc": "数据采集",
+        "url": "https://github.com/FHU-yezi/JianshuResearchTools"
+      },
+      {
+        "name": "Sanic",
+        "desc": "API 服务框架",
+        "url": "https://github.com/sanic-org/sanic"
+      },
+      {
+        "name": "Pydantic",
+        "desc": "数据校验",
+        "url": "https://github.com/pydantic/pydantic"
+      },
+      {
+        "name": "PyMongo",
+        "desc": "MongoDB 数据库操作",
+        "url": "https://github.com/mongodb/mongo-python-driver"
+      },
+      {
+        "name": "PyYAML",
+        "desc": "YAML 文件读取",
+        "url": "https://github.com/yaml/pyyaml"
+      },
+      {
+        "name": "SSpeedup",
+        "desc": "开发工具箱",
+        "url": "https://github.com/FHU-yezi/sspeedup"
+      },
+      {
+        "name": "Tomd",
+        "desc": "Markdown 转换",
+        "url": "https://github.com/gaojiuli/tomd"
+      }
+    ],
+    "代码质量": [
+      {
+        "name": "ESLint",
+        "desc": "TypeScript 静态分析",
+        "url": "https://github.com/eslint/eslint"
+      },
+      {
+        "name": "ESLint Config Airbnb",
+        "desc": "ESLint 规则集",
+        "url": "https://www.npmjs.com/package/eslint-config-airbnb"
+      },
+      {
+        "name": "Prettier",
+        "desc": "TypeScript 格式化",
+        "url": "https://github.com/prettier/prettier"
+      },
+      {
+        "name": "Rollup Plugin Visualizer",
+        "desc": "前端资源文件分析",
+        "url": "https://github.com/btd/rollup-plugin-visualizer"
+      },
+      {
+        "name": "Ruff",
+        "desc": "Python 静态分析",
+        "url": "https://github.com/astral-sh/ruff"
+      },
+      {
+        "name": "Pyright",
+        "desc": "Python 类型检查",
+        "url": "https://github.com/microsoft/pyright"
+      },
+      {
+        "name": "Black",
+        "desc": "Python 格式化",
+        "url": "https://github.com/psf/black"
+      }
+    ],
+    "能力服务": [
+      {
+        "name": "CutUp",
+        "desc": "分词",
+        "url": "https://github.com/FHU-yezi/CutUp"
+      }
+    ]
   },
   "debugProjectRecords": [
     {
