@@ -1,6 +1,7 @@
 import { Avatar, SegmentedControl } from "@mantine/core";
 import { computed, signal } from "@preact/signals";
 import { JSX } from "preact/jsx-runtime";
+import SSCard from "../components/SSCard";
 import SSNumberInput from "../components/SSNumberInput";
 import SSText from "../components/SSText";
 import { RoundFloat } from "../utils/numberHelper";
@@ -224,12 +225,9 @@ interface ResultGroupProps {
 
 function ResultGroup({ children, label }: ResultGroupProps) {
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border bg-white p-5 shadow dark:border-gray-700 dark:bg-gray-900">
-      <SSText xlarge bold>
-        {label}
-      </SSText>
+    <SSCard title={label}>
       <div className="flex flex-col gap-3">{children}</div>
-    </div>
+    </SSCard>
   );
 }
 
