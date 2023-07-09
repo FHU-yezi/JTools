@@ -7,6 +7,7 @@ import SSText from "./SSText";
 interface Props {
   label: string;
   value: Signal<string>;
+  description?: string;
   onEnter?: () => void;
   onValueChange(value: string): void;
   completeItems: Signal<string[]>;
@@ -17,6 +18,7 @@ interface Props {
 export default function SSAutocomplete({
   label,
   value,
+  description,
   onEnter,
   onValueChange,
   completeItems,
@@ -31,9 +33,10 @@ export default function SSAutocomplete({
 
   return (
     <div>
-      <SSText bold>{label}</SSText>
+      <SSText className="mb-1.5" bold>
+        {label}
+      </SSText>
       <Autocomplete
-        mt={6}
         value={value.value}
         onChange={(newValue: string) => {
           value.value = newValue;
@@ -54,6 +57,11 @@ export default function SSAutocomplete({
         aria-label={label}
         spellcheck={false}
       />
+      {description && (
+        <SSText className="mt-1.5" gray small>
+          {description}
+        </SSText>
+      )}
     </div>
   );
 }

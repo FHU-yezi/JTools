@@ -4,6 +4,7 @@ import SSText from "./SSText";
 interface Props {
   label: string;
   value: Signal<string>;
+  description?: string;
   onEnter?(): void;
   noSelectOnFocus?: boolean;
 }
@@ -11,15 +12,18 @@ interface Props {
 export default function SSTextInput({
   label,
   value,
+  description,
   onEnter,
   noSelectOnFocus = false,
 }: Props) {
   return (
     <div>
-      <SSText bold>{label}</SSText>
+      <SSText className="mb-1.5" bold>
+        {label}
+      </SSText>
       <input
         type="text"
-        className="mt-1.5 w-full rounded-lg border border-gray-200 bg-white p-1.5 px-3 text-gray-900 focus:!border-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
+        className="w-full rounded-lg border border-gray-200 bg-white p-1.5 px-3 text-gray-900 focus:!border-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
         value={value.value}
         onChange={(event: any) => (value.value = event.currentTarget.value)}
         onKeyUp={
@@ -37,6 +41,11 @@ export default function SSTextInput({
         aria-label={label}
         spellCheck={false}
       />
+      {description && (
+        <SSText className="mt-1.5" gray small>
+          {description}
+        </SSText>
+      )}
     </div>
   );
 }
