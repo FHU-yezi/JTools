@@ -1,6 +1,6 @@
-import { Skeleton } from "@mantine/core";
 import { JSX } from "preact/jsx-runtime";
 import SSScolllable from "./SSScollable";
+import SSSkeleton from "./SSSkeleton";
 
 interface Props {
   children: JSX.Element | (() => JSX.Element);
@@ -21,13 +21,15 @@ export default function ChartWrapper({
 }: Props) {
   if (!show) {
     return (
-      <Skeleton
-        h={
-          height ??
-          (chartType === "radial"
-            ? (window.innerWidth * 0.9) / 2
-            : window.innerWidth)
-        }
+      <SSSkeleton
+        className="w-full"
+        style={{
+          height:
+            height ??
+            (chartType === "radial"
+              ? (window.innerWidth * 0.9) / 2
+              : window.innerWidth),
+        }}
       />
     );
   }

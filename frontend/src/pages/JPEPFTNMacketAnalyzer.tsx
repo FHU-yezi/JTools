@@ -1,4 +1,4 @@
-import { SegmentedControl, Skeleton } from "@mantine/core";
+import { SegmentedControl } from "@mantine/core";
 import { Signal, batch, computed, signal } from "@preact/signals";
 import {
   ArcElement,
@@ -15,6 +15,7 @@ import {
 import { useEffect } from "preact/hooks";
 import { Line } from "react-chartjs-2";
 import ChartWrapper from "../components/ChartWrapper";
+import SSSkeleton from "../components/SSSkeleton";
 import SSStat from "../components/SSStat";
 import SSText from "../components/SSText";
 import { JPEPRulesResponse } from "../models/JPEPFTNMacketAnalyzer/JPEP_rules";
@@ -295,7 +296,7 @@ export default function JPEPFTNMarketAnalyzer() {
           />
         </div>
       ) : (
-        <Skeleton h={85.5} />
+        <SSSkeleton className="h-[85.5px]" />
       )}
       <SSText xlarge xbold>
         实时挂单量
@@ -323,7 +324,7 @@ export default function JPEPFTNMarketAnalyzer() {
           />
         </div>
       ) : (
-        <Skeleton h={85.5} />
+        <SSSkeleton className="h-[85.5px]" />
       )}
 
       <SSText xlarge xbold>

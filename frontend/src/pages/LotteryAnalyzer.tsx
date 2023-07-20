@@ -1,4 +1,4 @@
-import { SegmentedControl, Skeleton, Table } from "@mantine/core";
+import { SegmentedControl, Table } from "@mantine/core";
 import { batch, signal } from "@preact/signals";
 import {
   ArcElement,
@@ -17,6 +17,7 @@ import { useEffect } from "preact/hooks";
 import { Line, Pie } from "react-chartjs-2";
 import ChartWrapper from "../components/ChartWrapper";
 import SSScolllable from "../components/SSScollable";
+import SSSkeleton from "../components/SSSkeleton";
 import SSText from "../components/SSText";
 import SSTooltip from "../components/SSTooltip";
 import {
@@ -238,7 +239,7 @@ export default function LotteryAnalyzer() {
       {typeof perPrizeAnalyzeData.value !== "undefined" ? (
         <PerPrizeAnalyzeTable data={perPrizeAnalyzeData.value} />
       ) : (
-        <Skeleton h={291} />
+        <SSSkeleton className="h-[291px]" />
       )}
       <SSTooltip tooltip="受简书接口限制，我们无法获取这两种奖品的中奖情况，故表中未予统计">
         关于免费开 1 次连载 / 锦鲤头像框

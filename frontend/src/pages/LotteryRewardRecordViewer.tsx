@@ -1,9 +1,10 @@
-import { Chip, Skeleton } from "@mantine/core";
+import { Chip } from "@mantine/core";
 import { batch, signal } from "@preact/signals";
 import { DataTable } from "mantine-datatable";
 import { useEffect } from "preact/hooks";
 import toast from "react-hot-toast";
 import SSButton from "../components/SSButton";
+import SSSkeleton from "../components/SSSkeleton";
 import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
 import SSTooltip from "../components/SSTooltip";
@@ -131,7 +132,7 @@ export default function LotteryRewardRecordViewer() {
           </Chip.Group>
         </>
       ) : (
-        <Skeleton height={64} />
+        <SSSkeleton className="h-16" />
       )}
       <SSTooltip tooltip="受简书接口限制，我们无法获取这两种奖品的中奖情况，故无法进行查询">
         关于免费开 1 次连载 / 锦鲤头像框
