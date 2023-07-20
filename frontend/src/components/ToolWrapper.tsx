@@ -1,4 +1,3 @@
-import { Modal } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { batch, useSignal } from "@preact/signals";
 import clsx from "clsx";
@@ -16,6 +15,7 @@ import Header from "./Header";
 import Loading from "./Loading";
 import SSButton from "./SSButton";
 import SSLink from "./SSLink";
+import SSModal from "./SSModal";
 import SSStat from "./SSStat";
 import SSText from "./SSText";
 
@@ -134,20 +134,22 @@ export default function ToolWrapper({ Component, toolName }: Props) {
         <Loading />
       )}
 
-      <Modal
-        opened={showUnavaliableModal.value}
+      <SSModal
+        isOpen={showUnavaliableModal}
         onClose={() => null}
         title="服务不可用"
-        closeOnClickOutside={false}
-        closeOnEscape={false}
-        withCloseButton={false}
+        hideCloseButton
+        preventCloseByClickMask
+        preventCloseByEsc
       >
         <div className="flex flex-col gap-4">
-          {unavaliableReason.value ??
-            "该小工具由于数据准确性、体验或安全性等原因暂时不可用，请稍后再尝试访问，并留意相关公告。"}
+          <SSText>
+            {unavaliableReason.value ??
+              "该小工具暂时不可用，请稍后再尝试访问，并留意相关公告。"}
+          </SSText>
           <SSButton onClick={() => setLocation("/")}>返回首页</SSButton>
         </div>
-      </Modal>
+      </SSModal>
     </>
   );
 }
