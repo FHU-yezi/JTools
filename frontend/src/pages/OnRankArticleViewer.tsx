@@ -1,6 +1,6 @@
-import { notifications } from "@mantine/notifications";
 import { signal } from "@preact/signals";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
+import toast from "react-hot-toast";
 import SSAutocomplete from "../components/SSAutocomplete";
 import SSButton from "../components/SSButton";
 import SSLink from "../components/SSLink";
@@ -58,9 +58,8 @@ function handleCompleteItemUpdate(value: string) {
 
 function handleQuery(offset: number) {
   if (userURLOrUserName.value.length === 0) {
-    notifications.show({
-      message: "请输入用户昵称或个人主页链接",
-      color: "blue",
+    toast("请输入用户昵称或个人主页链接", {
+      icon: " ⚠️",
     });
     return;
   }

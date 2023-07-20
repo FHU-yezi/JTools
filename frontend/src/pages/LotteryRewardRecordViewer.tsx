@@ -1,8 +1,8 @@
 import { Chip, Skeleton } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
 import { DataTable } from "mantine-datatable";
 import { useEffect } from "preact/hooks";
+import toast from "react-hot-toast";
 import SSButton from "../components/SSButton";
 import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
@@ -30,9 +30,8 @@ const currentPage = signal(1);
 
 function handleQuery(offset: number) {
   if (userURL.value.length === 0) {
-    notifications.show({
-      message: "请输入用户个人主页链接",
-      color: "blue",
+    toast("请输入用户个人主页链接", {
+      icon: " ⚠️",
     });
     return;
   }

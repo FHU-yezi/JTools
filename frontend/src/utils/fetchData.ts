@@ -1,5 +1,5 @@
-import { notifications } from "@mantine/notifications";
 import { Signal } from "@preact/signals";
+import toast from "react-hot-toast";
 import { Response } from "../models/base";
 import { getBaseURL } from "./URLHelper";
 
@@ -55,18 +55,15 @@ export async function fetchData<TRequest, TResponse>(
       isLoading.value = false;
     }
     if ((error as any).name === "AbortError") {
-      notifications.show({
-        title: `请求超时（${timeout ?? defaultTimeout}ms）`,
-        message: "请尝试刷新页面，如该问题反复出现，请向开发者反馈",
-        color: "red",
-      });
+      toast.error(
+        `请求超时（${
+          timeout ?? defaultTimeout
+        }ms）\n请尝试刷新页面，如该问题反复出现，请向开发者反馈`
+      );
       throw new Error("请求超时");
     }
-    notifications.show({
-      title: "网络异常",
-      message: "请尝试刷新页面，如该问题反复出现，请向开发者反馈",
-      color: "red",
-    });
+
+    toast.error("网络异常\n请尝试刷新页面，如该问题反复出现，请向开发者反馈");
     throw new Error("网络异常");
   }
 
@@ -74,11 +71,9 @@ export async function fetchData<TRequest, TResponse>(
     if (isLoading) {
       isLoading.value = false;
     }
-    notifications.show({
-      title: "API 请求失败",
-      message: `HTTP ${response.status}（${response.statusText}）`,
-      color: "red",
-    });
+    toast.error(
+      `API 请求失败\nHTTP ${response.status}（${response.statusText}）`
+    );
     throw new Error(
       `API 请求失败：HTTP ${response.status}（${response.statusText}）`
     );

@@ -1,7 +1,7 @@
 import { Table } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
 import type { Dayjs } from "dayjs";
+import toast from "react-hot-toast";
 import SSBadge from "../components/SSBadge";
 import SSButton from "../components/SSButton";
 import SSLink from "../components/SSLink";
@@ -30,9 +30,8 @@ const checkItems = signal<CheckItem[] | undefined>(undefined);
 
 function handleCheck() {
   if (articleURL.value.length === 0) {
-    notifications.show({
-      message: "请输入文章链接",
-      color: "blue",
+    toast("请输入文章链接", {
+      icon: " ⚠️",
     });
     return;
   }

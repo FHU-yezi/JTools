@@ -1,12 +1,11 @@
 import { Modal } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
-import { notifications } from "@mantine/notifications";
 import { batch, useSignal } from "@preact/signals";
 import clsx from "clsx";
 import type { Dayjs } from "dayjs";
 import type { JSX } from "preact";
 import { Suspense, useEffect } from "preact/compat";
-import { AiOutlineArrowDown } from "react-icons/ai";
+import toast from "react-hot-toast";
 import { useLocation } from "wouter-preact";
 import { InfoRequest, InfoResponse, InfoStatus } from "../models/info";
 import { getToolSlug } from "../utils/URLHelper";
@@ -68,15 +67,16 @@ export default function ToolWrapper({ Component, toolName }: Props) {
           });
 
           if (toolStatus.value === InfoStatus.DOWNGRADED) {
-            notifications.show({
-              title: "服务降级",
-              message:
+            toast(
+              `服务降级\n${
                 downgradedReason.value ??
-                "该小工具处于降级状态，其数据准确性、展示效果及性能可能受到影响，请您留意。",
-              color: "orange",
-              autoClose: false,
-              icon: <AiOutlineArrowDown size="1.2em" color="white" />,
-            });
+                "该小工具处于降级状态，其数据准确性、展示效果及性能可能受到影响，请您留意。"
+              }`,
+              {
+                duration: 4000,
+                icon: " 🔻",
+              }
+            );
           }
 
           if (toolStatus.value === InfoStatus.UNAVALIABLE) {

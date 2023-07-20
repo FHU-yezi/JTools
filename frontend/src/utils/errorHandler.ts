@@ -1,22 +1,13 @@
-import { notifications } from "@mantine/notifications";
+import toast from "react-hot-toast";
 
-export function commonAPIErrorHandler(
-  code: number,
-  message: string,
-  userErrorToastColor?: string
-) {
+export function commonAPIErrorHandler(code: number, message: string) {
   // 参数异常，一般是用户问题
   if (code === 412) {
-    notifications.show({
-      message,
-      color: userErrorToastColor ?? "orange",
+    toast(message, {
+      icon: " ⚠️",
     });
     return;
   }
 
-  notifications.show({
-    title: `API 请求失败（${code}）`,
-    message,
-    color: "orange",
-  });
+  toast.error(`API 请求失败（${code}）\n${message}`);
 }

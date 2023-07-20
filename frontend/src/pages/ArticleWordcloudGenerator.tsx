@@ -1,8 +1,8 @@
-import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
 import { Chart as ChartInstance, Colors, LinearScale } from "chart.js";
 import { WordCloudController, WordElement } from "chartjs-chart-wordcloud";
 import { Chart } from "react-chartjs-2";
+import toast from "react-hot-toast";
 import ChartWrapper from "../components/ChartWrapper";
 import SSButton from "../components/SSButton";
 import SSLink from "../components/SSLink";
@@ -29,9 +29,8 @@ interface WordcloudProps {
 
 function handleGenerate() {
   if (articleURL.value.length === 0) {
-    notifications.show({
-      message: "请输入文章链接",
-      color: "blue",
+    toast("请输入文章链接", {
+      icon: " ⚠️",
     });
     return;
   }

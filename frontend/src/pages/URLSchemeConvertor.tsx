@@ -1,6 +1,6 @@
 import { useClipboard } from "@mantine/hooks";
-import { notifications } from "@mantine/notifications";
 import { Signal, signal } from "@preact/signals";
+import toast from "react-hot-toast";
 import { AiOutlineCheck } from "react-icons/ai";
 import { BiCopy, BiRightArrowAlt } from "react-icons/bi";
 import QRCode from "react-qr-code";
@@ -85,9 +85,8 @@ function handleConvert() {
   const urlType = getURLType(jianshuURL);
 
   if (urlType === "unknown") {
-    notifications.show({
-      message: "输入的不是有效的简书链接，请检查",
-      color: "orange",
+    toast("输入的不是有效的简书链接，请检查", {
+      icon: " ⚠️",
     });
     return;
   }

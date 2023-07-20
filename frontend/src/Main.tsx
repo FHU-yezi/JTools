@@ -1,5 +1,5 @@
-import { Notifications } from "@mantine/notifications";
 import { ErrorBoundary } from "react-error-boundary";
+import { Toaster } from "react-hot-toast";
 import { AiOutlineSearch } from "react-icons/ai";
 import { install } from "resize-observer";
 import { registerSW } from "virtual:pwa-register";
@@ -66,10 +66,22 @@ function Main() {
                 <App />
               </div>
             </ErrorBoundary>
-            <Notifications position="top-right" autoClose={2000} />
           </SpotlightProvider>
         </MantineProvider>
       </ColorSchemeProvider>
+
+      <Toaster
+        toastOptions={{
+          style: {
+            background: colorScheme === "dark" ? "#3f3f46" : undefined,
+            color: colorScheme === "dark" ? "#f4f4f5" : undefined,
+          },
+
+          blank: {
+            duration: 2000,
+          },
+        }}
+      />
     </React.StrictMode>
   );
 }
