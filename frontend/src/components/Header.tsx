@@ -1,10 +1,9 @@
-import { Switch, useMantineColorScheme } from "@mantine/core";
 import { spotlight } from "@mantine/spotlight";
 import { AiOutlineSearch } from "react-icons/ai";
-import { BsMoonStars, BsSun } from "react-icons/bs";
 import { IoIosArrowBack } from "react-icons/io";
 import { useLocation } from "wouter-preact";
 import umamiTrack from "../utils/umamiTrack";
+import SSColorSchemeSwitch from "./SSColorSchemeSwitch";
 import SSText from "./SSText";
 
 interface Props {
@@ -13,7 +12,6 @@ interface Props {
 }
 
 export default function Header({ toolName, showBackArrow }: Props) {
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const [, setLocation] = useLocation();
 
   return (
@@ -53,18 +51,7 @@ export default function Header({ toolName, showBackArrow }: Props) {
               size={22}
             />
           </button>
-          <Switch
-            size="md"
-            color={colorScheme === "dark" ? "gray" : "dark"}
-            onLabel={<BsMoonStars size={16} />}
-            offLabel={<BsSun size={16} />}
-            checked={colorScheme === "dark"}
-            onChange={() => {
-              toggleColorScheme();
-              umamiTrack("toggle-color-scheme");
-            }}
-            aria-label="Toggle Color Scheme"
-          />
+          <SSColorSchemeSwitch />
         </div>
       </div>
       <div className="h-12" />
