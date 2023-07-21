@@ -1,5 +1,5 @@
-import { SegmentedControl, Table } from "@mantine/core";
-import { batch, signal } from "@preact/signals";
+import { Table } from "@mantine/core";
+import { signal } from "@preact/signals";
 import {
   ArcElement,
   CategoryScale,
@@ -17,6 +17,7 @@ import { useEffect } from "preact/hooks";
 import { Line, Pie } from "react-chartjs-2";
 import ChartWrapper from "../components/ChartWrapper";
 import SSScolllable from "../components/SSScollable";
+import SSSegmentedControl from "../components/SSSegmentedControl";
 import SSSkeleton from "../components/SSSkeleton";
 import SSText from "../components/SSText";
 import SSTooltip from "../components/SSTooltip";
@@ -36,7 +37,6 @@ import {
   RewardsWinsTrendDataResponse,
 } from "../models/LotteryAnalyzer/RewardWinsTrendData";
 import { TimeRange, TimeRangeWithoutAll } from "../models/LotteryAnalyzer/base";
-import { buildSegmentedControlDataFromRecord } from "../utils/dataHelper";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import { RoundFloat } from "../utils/numberHelper";
@@ -54,17 +54,17 @@ Chart.register(
   Tooltip
 );
 
-const timeRangeSCData = buildSegmentedControlDataFromRecord({
+const timeRangeSCData = {
   "1 天": "1d",
   "7 天": "7d",
   "30 天": "30d",
   全部: "all",
-});
-const timeRangeWithoutAllSCData = buildSegmentedControlDataFromRecord({
+};
+const timeRangeWithoutAllSCData = {
   "1 天": "1d",
   "7 天": "7d",
   "30 天": "30d",
-});
+};
 
 const perPrizeAnalyzeTimeRange = signal<TimeRange>("1d");
 const perPrizeAnalyzeData = signal<PerPrizeDataItem[] | undefined>([]);
@@ -223,19 +223,33 @@ export default function LotteryAnalyzer() {
     handleRewardWinsTrendDataFetch();
   }, []);
 
+  useEffect(
+    () => handlePerPrizeAnalayzeDataFetch(),
+    [perPrizeAnalyzeTimeRange.value]
+  );
+
+  useEffect(() => {
+    RewardWinsCountData.value = undefined;
+    handleRewardWinsCountDataFetch();
+  }, [RewardWinsCountPieTimeRange.value]);
+
+  useEffect(() => {
+    RewardWinsTrendData.value = undefined;
+    handleRewardWinsTrendDataFetch();
+  }, [RewardWinsTrendLineTimeRange.value]);
+
   return (
     <div className="flex flex-col gap-4">
       <SSText xlarge xbold>
         综合统计
       </SSText>
-      <SegmentedControl
-        value={perPrizeAnalyzeTimeRange.value}
-        onChange={(newValue: TimeRange) => {
-          perPrizeAnalyzeTimeRange.value = newValue;
-          handlePerPrizeAnalayzeDataFetch();
-        }}
-        data={timeRangeSCData}
-      />
+      <div className="grid place-content-center">
+        <SSSegmentedControl
+          label=""
+          value={perPrizeAnalyzeTimeRange}
+          data={timeRangeSCData}
+        />
+      </div>
       {typeof perPrizeAnalyzeData.value !== "undefined" ? (
         <PerPrizeAnalyzeTable data={perPrizeAnalyzeData.value} />
       ) : (
@@ -248,17 +262,13 @@ export default function LotteryAnalyzer() {
       <SSText xlarge xbold>
         中奖次数分布
       </SSText>
-      <SegmentedControl
-        value={RewardWinsCountPieTimeRange.value}
-        onChange={(newValue: TimeRange) => {
-          batch(() => {
-            RewardWinsCountPieTimeRange.value = newValue;
-            RewardWinsCountData.value = undefined;
-          });
-          handleRewardWinsCountDataFetch();
-        }}
-        data={timeRangeSCData}
-      />
+      <div className="grid place-content-center">
+        <SSSegmentedControl
+          label=""
+          value={RewardWinsCountPieTimeRange}
+          data={timeRangeSCData}
+        />
+      </div>
       <ChartWrapper
         chartType="pie"
         show={typeof RewardWinsCountData.value !== "undefined"}
@@ -269,17 +279,13 @@ export default function LotteryAnalyzer() {
       <SSText xlarge xbold>
         中奖次数趋势
       </SSText>
-      <SegmentedControl
-        value={RewardWinsTrendLineTimeRange.value}
-        onChange={(newValue: TimeRangeWithoutAll) => {
-          batch(() => {
-            RewardWinsTrendLineTimeRange.value = newValue;
-            RewardWinsTrendData.value = undefined;
-          });
-          handleRewardWinsTrendDataFetch();
-        }}
-        data={timeRangeWithoutAllSCData}
-      />
+      <div className="grid place-content-center">
+        <SSSegmentedControl
+          label=""
+          value={RewardWinsTrendLineTimeRange}
+          data={timeRangeWithoutAllSCData}
+        />
+      </div>
       <ChartWrapper
         chartType="radial"
         show={typeof RewardWinsTrendData.value !== "undefined"}

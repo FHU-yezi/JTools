@@ -1,8 +1,9 @@
-import { Avatar, SegmentedControl } from "@mantine/core";
+import { Avatar } from "@mantine/core";
 import { computed, signal } from "@preact/signals";
 import { JSX } from "preact/jsx-runtime";
 import SSCard from "../components/SSCard";
 import SSNumberInput from "../components/SSNumberInput";
+import SSSegmentedControl from "../components/SSSegmentedControl";
 import SSText from "../components/SSText";
 import { RoundFloat } from "../utils/numberHelper";
 import VIPBadgeBronzeURL from "/vip_badges/vip_badge_bronze.png";
@@ -98,22 +99,12 @@ const promoterLevelToLevel2MembersFPEarningRate: Record<
   supreme: 0.012,
 };
 
-const VIPLevelSCData = Object.entries(VIPLevelToText).map(([key, value]) => ({
-  label: (
-    <div className="grid place-content-center">
-      <SSText className="flex">
-        {" "}
-        <Avatar
-          size={20}
-          mr={8}
-          src={VIPLevelToBadgeImageURL[key as VIPLevelType]}
-        />
-        {value.replace("会员", "")}
-      </SSText>
-    </div>
-  ),
-  value: key,
-}));
+const VIPLevelSCData: Record<string, VIPLevelType> = {
+  铜牌: "bronze",
+  银牌: "silver",
+  金牌: "gold",
+  白金: "platina",
+};
 
 const VIPLevel = signal<VIPLevelType>("bronze");
 const VIPText = computed(() => VIPLevelToText[VIPLevel.value]);
@@ -251,15 +242,11 @@ function ResultGroup({ children, label }: ResultGroupProps) {
 export default function VIPProfitCompute() {
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col">
-        <SSText bold>会员等级</SSText>
-        <SegmentedControl
-          mt={6}
-          value={VIPLevel.value}
-          onChange={(newValue: VIPLevelType) => (VIPLevel.value = newValue)}
-          data={VIPLevelSCData}
-        />
-      </div>
+      <SSSegmentedControl
+        label="会员等级"
+        value={VIPLevel}
+        data={VIPLevelSCData}
+      />
       <SSNumberInput label="持钻量" value={FPCount} min={0} />
       <SSNumberInput label="旗下会员数" value={membersCount} min={0} />
       <SSNumberInput

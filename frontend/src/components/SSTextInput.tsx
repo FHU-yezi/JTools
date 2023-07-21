@@ -9,7 +9,7 @@ interface Props {
   placeholder?: string;
   onEnter?(): void;
   noSelectOnFocus?: boolean;
-  inputRef: Ref<HTMLInputElement>;
+  inputRef?: Ref<HTMLInputElement>;
 }
 
 export default function SSTextInput({
