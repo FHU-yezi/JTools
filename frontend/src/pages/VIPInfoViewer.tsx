@@ -1,7 +1,7 @@
-import { Avatar } from "@mantine/core";
 import { batch, signal } from "@preact/signals";
 import type { Dayjs } from "dayjs";
 import toast from "react-hot-toast";
+import SSAvatar from "../components/SSAvatar";
 import SSBadge from "../components/SSBadge";
 import SSButton from "../components/SSButton";
 import SSLink from "../components/SSLink";
@@ -92,11 +92,10 @@ export default function VIPInfoViewer() {
         <>
           <div className="flex max-w-fit items-center gap-1">
             <SSText>会员级别：</SSText>
-            <Avatar
-              alt={`${VIPType.value} 徽章图标`}
-              size={24}
-              mr={6}
+            <SSAvatar
+              className="mr-1.5 h-6 w-6"
               src={VIPTypeToBadgeImageURL[VIPType.value]}
+              alt={`${VIPType.value} 徽章图标`}
             />
             <SSBadge className="bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
               {VIPType.value}

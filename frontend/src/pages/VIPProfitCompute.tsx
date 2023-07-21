@@ -1,4 +1,5 @@
-import { Avatar } from "@mantine/core";
+// TODO: 由于 SegmentedControl 实现问题，暂时不展示会员图标
+// import { Avatar } from "@mantine/core";
 import { computed, signal } from "@preact/signals";
 import { JSX } from "preact/jsx-runtime";
 import SSCard from "../components/SSCard";
@@ -6,10 +7,10 @@ import SSNumberInput from "../components/SSNumberInput";
 import SSSegmentedControl from "../components/SSSegmentedControl";
 import SSText from "../components/SSText";
 import { RoundFloat } from "../utils/numberHelper";
-import VIPBadgeBronzeURL from "/vip_badges/vip_badge_bronze.png";
-import VIPBadgeGoldURL from "/vip_badges/vip_badge_gold.png";
-import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";
-import VIPBadgeSilverURL from "/vip_badges/vip_badge_silver.png";
+// import VIPBadgeBronzeURL from "/vip_badges/vip_badge_bronze.png";
+// import VIPBadgeGoldURL from "/vip_badges/vip_badge_gold.png";
+// import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";
+// import VIPBadgeSilverURL from "/vip_badges/vip_badge_silver.png";
 
 type VIPLevelType = "bronze" | "silver" | "gold" | "platina";
 
@@ -27,12 +28,12 @@ const VIPLevelToPrice: Record<VIPLevelType, number> = {
   platina: 64980,
 };
 
-const VIPLevelToBadgeImageURL: Record<VIPLevelType, string> = {
-  bronze: VIPBadgeBronzeURL,
-  silver: VIPBadgeSilverURL,
-  gold: VIPBadgeGoldURL,
-  platina: VIPBadgePlatinaURL,
-};
+// const VIPLevelToBadgeImageURL: Record<VIPLevelType, string> = {
+//   bronze: VIPBadgeBronzeURL,
+//   silver: VIPBadgeSilverURL,
+//   gold: VIPBadgeGoldURL,
+//   platina: VIPBadgePlatinaURL,
+// };
 
 const VIPLevelToBaseEarningRate: Record<VIPLevelType, number> = {
   bronze: 0.048,
