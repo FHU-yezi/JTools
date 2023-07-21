@@ -1,10 +1,8 @@
-import { spotlight } from "@mantine/spotlight";
-import { AiOutlineSearch } from "react-icons/ai";
 import { IoIosArrowBack } from "react-icons/io";
 import { useLocation } from "wouter-preact";
-import umamiTrack from "../utils/umamiTrack";
 import SSColorSchemeSwitch from "./SSColorSchemeSwitch";
 import SSText from "./SSText";
+import SearchModal from "./SearchModal";
 
 interface Props {
   toolName: string;
@@ -37,20 +35,8 @@ export default function Header({ toolName, showBackArrow }: Props) {
             {toolName}
           </SSText>
         </div>
-        <div className="flex flex-nowrap items-center gap-x-4">
-          <button
-            type="button"
-            onClick={() => {
-              umamiTrack("click-search-button");
-              spotlight.open();
-            }}
-            aria-label="Search"
-          >
-            <AiOutlineSearch
-              className="text-gray-500 dark:text-gray-300"
-              size={22}
-            />
-          </button>
+        <div className="flex flex-nowrap items-center gap-x-3">
+          <SearchModal />
           <SSColorSchemeSwitch />
         </div>
       </div>

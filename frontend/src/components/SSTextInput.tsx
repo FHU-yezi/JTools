@@ -1,20 +1,25 @@
 import { Signal } from "@preact/signals";
+import type { Ref } from "preact";
 import SSText from "./SSText";
 
 interface Props {
   label: string;
   value: Signal<string>;
   description?: string;
+  placeholder?: string;
   onEnter?(): void;
   noSelectOnFocus?: boolean;
+  inputRef: Ref<HTMLInputElement>;
 }
 
 export default function SSTextInput({
   label,
   value,
   description,
+  placeholder,
   onEnter,
   noSelectOnFocus = false,
+  inputRef,
 }: Props) {
   return (
     <div>
@@ -25,6 +30,7 @@ export default function SSTextInput({
         type="text"
         className="w-full rounded-lg border border-gray-200 bg-white p-1.5 px-3 text-gray-900 focus:!border-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
         value={value.value}
+        placeholder={placeholder}
         onChange={(event: any) => (value.value = event.currentTarget.value)}
         onKeyUp={
           onEnter
@@ -40,6 +46,7 @@ export default function SSTextInput({
         }
         aria-label={label}
         spellCheck={false}
+        ref={inputRef}
       />
       {description && (
         <SSText className="mt-1.5" gray small>

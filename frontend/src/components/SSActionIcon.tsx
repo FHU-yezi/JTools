@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { VNode } from "preact";
+import SSText from "./SSText";
 
 interface Props {
   children: Element | VNode;
@@ -18,7 +19,7 @@ export default function SSActionIcon({
       className={clsx(color, "rounded-md p-2")}
       onClick={onClick}
     >
-      {children}
+      <SSText>{children}</SSText>
     </button>
   );
 }
