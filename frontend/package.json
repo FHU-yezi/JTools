@@ -13,7 +13,6 @@
     "@emotion/styled": "^11.11.0",
     "@mantine/core": "^6.0.15",
     "@mantine/hooks": "^6.0.15",
-    "@mantine/spotlight": "^6.0.15",
     "@preact/preset-vite": "^2.5.0",
     "@preact/signals": "^1.1.4",
     "autoprefixer": "^10.4.14",

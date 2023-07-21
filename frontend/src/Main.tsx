@@ -1,6 +1,5 @@
 import { ErrorBoundary } from "react-error-boundary";
 import { Toaster } from "react-hot-toast";
-import { AiOutlineSearch } from "react-icons/ai";
 import { install } from "resize-observer";
 import { registerSW } from "virtual:pwa-register";
 
@@ -9,13 +8,11 @@ import {
   ColorSchemeProvider,
   MantineProvider,
 } from "@mantine/core";
-import { SpotlightProvider } from "@mantine/spotlight";
 
 import { useLocalStorage } from "@mantine/hooks";
 import React, { render, useEffect } from "preact/compat";
 import App from "./App";
 import ErrorFallback from "./components/ErrorFallback";
-import { spotlightActions } from "./routes";
 
 // 处理 Safari 浏览器上的 ResizeObserver 兼容性问题
 if (!window.ResizeObserver) {
@@ -55,18 +52,11 @@ function Main() {
         toggleColorScheme={toggleColorScheme}
       >
         <MantineProvider theme={{ colorScheme }}>
-          <SpotlightProvider
-            actions={spotlightActions}
-            searchIcon={<AiOutlineSearch size="1.2rem" />}
-            searchPlaceholder="查找小工具..."
-            nothingFoundMessage="无结果"
-          >
-            <ErrorBoundary FallbackComponent={ErrorFallback}>
-              <div className="mx-auto my-7 w-[90vw] max-w-4xl">
-                <App />
-              </div>
-            </ErrorBoundary>
-          </SpotlightProvider>
+          <ErrorBoundary FallbackComponent={ErrorFallback}>
+            <div className="mx-auto my-7 w-[90vw] max-w-4xl">
+              <App />
+            </div>
+          </ErrorBoundary>
         </MantineProvider>
       </ColorSchemeProvider>
 
