@@ -1,6 +1,6 @@
-import { Loader } from "@mantine/core";
 import { useSignal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
+import SSLoader from "./SSLoader";
 
 export default function Loading() {
   const showLoader = useSignal(false);
@@ -11,7 +11,7 @@ export default function Loading() {
 
   return (
     <div className="mt-[20vh] grid place-content-center">
-      {showLoader.value && <Loader size="lg" variant="dots" />}
+      {showLoader.value && <SSLoader />}
     </div>
   );
 }
