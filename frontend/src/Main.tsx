@@ -28,23 +28,17 @@ function Main() {
     key: "jtools-color-scheme",
     defaultValue: "light",
   });
+
   const toggleColorScheme = () => {
     setColorScheme(colorScheme === "dark" ? "light" : "dark");
-
-    // Tailwind CSS 深色模式
-    if (colorScheme === "dark") {
-      document.documentElement.classList.remove("dark");
-    } else {
-      document.documentElement.classList.add("dark");
-    }
   };
 
   useEffect(() => {
     // Tailwind CSS 深色模式
-    if (localStorage.getItem("jtools-color-scheme") === '"dark"') {
-      document.documentElement.classList.add("dark");
+    if (colorScheme === "dark") {
+      document.documentElement.className = "dark";
     }
-  }, []);
+  }, [colorScheme]);
 
   return (
     <React.StrictMode>
