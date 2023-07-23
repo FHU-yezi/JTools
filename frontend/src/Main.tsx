@@ -13,6 +13,7 @@ import { useLocalStorage } from "@mantine/hooks";
 import React, { render, useEffect } from "preact/compat";
 import App from "./App";
 import ErrorFallback from "./components/ErrorFallback";
+import Footer from "./components/Footer";
 
 // 处理 Safari 浏览器上的 ResizeObserver 兼容性问题
 if (!window.ResizeObserver) {
@@ -53,9 +54,10 @@ function Main() {
       >
         <MantineProvider theme={{ colorScheme }}>
           <ErrorBoundary FallbackComponent={ErrorFallback}>
-            <div className="mx-auto my-7 w-[90vw] max-w-4xl">
+            <div className="mx-auto my-7 min-h-screen w-[90vw] max-w-4xl">
               <App />
             </div>
+            <Footer />
           </ErrorBoundary>
         </MantineProvider>
       </ColorSchemeProvider>

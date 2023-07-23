@@ -8,8 +8,6 @@ import {
   V2UnimplementedRoutes,
 } from "../V2RedirectRoutes";
 import Header from "../components/Header";
-import SSButton from "../components/SSButton";
-import SSText from "../components/SSText";
 import SSTooltip from "../components/SSTooltip";
 import ToolCard from "../components/ToolCard";
 import { StatusResponse } from "../models/status";
@@ -18,7 +16,6 @@ import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import umamiTrack from "../utils/umamiTrack";
 
-const version = signal<string | undefined>(undefined);
 const downgradedTools = signal<string[]>([]);
 const unavaliableTools = signal<string[]>([]);
 
@@ -65,7 +62,6 @@ export default function MainPage() {
       {},
       (data) =>
         batch(() => {
-          version.value = data.version;
           downgradedTools.value = data.downgraded_tools;
           unavaliableTools.value = data.unavaliable_tools;
         }),
@@ -76,11 +72,7 @@ export default function MainPage() {
   return (
     <>
       <Header toolName="简书小工具集" showBackArrow={false} />
-      <div className="flex flex-col gap-4">
-        <SSText small gray>
-          版本：
-          {version.value ?? "获取中..."}
-        </SSText>
+      <div className="mt-4 flex flex-col gap-4">
         {routes.map((item) => (
           <ToolCard
             key={item.toolName}
@@ -91,28 +83,7 @@ export default function MainPage() {
             unavaliable={unavaliableTools.value.includes(item.path.slice(1))}
           />
         ))}
-        <SSButton onClick={() => setLocation("/thanks")} light>
-          鸣谢 &gt;
-        </SSButton>
-        <SSButton
-          onClick={() =>
-            window.open(
-              "https://wenjuan.feishu.cn/m?t=sjQp3W8yUrNi-g37f",
-              "_blank"
-            )
-          }
-          light
-        >
-          反馈 &gt;
-        </SSButton>
-        <SSButton
-          onClick={() =>
-            window.open("https://status.sscreator.com/status/jtools", "_blank")
-          }
-          light
-        >
-          服务状态 &gt;
-        </SSButton>
+
         <SSTooltip tooltip="消零派辅助工具已在小工具集 v3 中下线，我们即将发布更强大的工具，敬请期待">
           关于消零派辅助工具
         </SSTooltip>
