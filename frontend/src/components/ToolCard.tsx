@@ -1,4 +1,5 @@
-import { AiOutlineArrowRight } from "react-icons/ai";
+import clsx from "clsx";
+import { AiOutlineRight } from "react-icons/ai";
 import { useLocation } from "wouter-preact";
 import SSBadge from "./SSBadge";
 import SSText from "./SSText";
@@ -22,7 +23,14 @@ export default function ToolCard({
   return (
     <button
       type="button"
-      className="flex w-full items-center justify-between rounded-2xl border bg-white p-5 shadow transition-colors hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
+      className={clsx(
+        "gray-border flex w-full items-center justify-between gap-4 rounded-xl bg-white p-5 shadow dark:bg-gray-900",
+        {
+          "transition-colors hover:bg-gray-100 dark:hover:bg-gray-800":
+            !unavaliable,
+          "cursor-not-allowed": unavaliable,
+        }
+      )}
       onClick={!unavaliable ? () => setLocation(path) : undefined}
     >
       <div className="flex flex-col gap-3">
@@ -44,10 +52,9 @@ export default function ToolCard({
         <SSText className="text-left">{description}</SSText>
       </div>
       {!unavaliable && (
-        <AiOutlineArrowRight
-          className="text-gray-900 dark:text-gray-300"
-          size={24}
-        />
+        <SSText>
+          <AiOutlineRight size={24} />
+        </SSText>
       )}
     </button>
   );
