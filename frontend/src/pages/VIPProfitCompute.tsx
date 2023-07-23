@@ -1,5 +1,4 @@
 // TODO: 由于 SegmentedControl 实现问题，暂时不展示会员图标
-// import { Avatar } from "@mantine/core";
 import { computed, signal } from "@preact/signals";
 import { JSX } from "preact/jsx-runtime";
 import SSCard from "../components/SSCard";

@@ -1,4 +1,3 @@
-import { Table } from "@mantine/core";
 import { signal } from "@preact/signals";
 import {
   ArcElement,
@@ -13,12 +12,13 @@ import {
   PointElement,
   Tooltip,
 } from "chart.js";
+import type { ComponentChildren } from "preact";
 import { useEffect } from "preact/hooks";
 import { Line, Pie } from "react-chartjs-2";
 import ChartWrapper from "../components/ChartWrapper";
-import SSScolllable from "../components/SSScollable";
 import SSSegmentedControl from "../components/SSSegmentedControl";
 import SSSkeleton from "../components/SSSkeleton";
+import SSTable from "../components/SSTable";
 import SSText from "../components/SSText";
 import SSTooltip from "../components/SSTooltip";
 import {
@@ -67,7 +67,7 @@ const timeRangeWithoutAllSCData = {
 };
 
 const perPrizeAnalyzeTimeRange = signal<TimeRange>("1d");
-const perPrizeAnalyzeData = signal<PerPrizeDataItem[] | undefined>([]);
+const perPrizeAnalyzeData = signal<PerPrizeDataItem[] | undefined>(undefined);
 const RewardWinsCountPieTimeRange = signal<TimeRange>("1d");
 const RewardWinsCountData = signal<RewardsWinsCountDataItem | undefined>(
   undefined
@@ -137,44 +137,36 @@ function PerPrizeAnalyzeTable({ data }: PerPrizeAnalyzeTableProps) {
   const totalAvagaeWinsCountPerWinner = totalWins / totalWinners;
 
   return (
-    <SSScolllable>
-      <Table className="min-w-[670px]">
-        <thead>
-          <tr>
-            <th>奖品名称</th>
-            <th>中奖次数</th>
-            <th>中奖人数</th>
-            <th>平均每人中奖次数</th>
-            <th>中奖率</th>
-            <th>稀有度</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item) => (
-            <tr key={item.reward_name}>
-              <td>{item.reward_name}</td>
-              <td>{item.wins_count}</td>
-              <td>{item.winners_count}</td>
-              <td>{item.average_wins_count_per_winner}</td>
-              <td>{RoundFloat(item.winning_rate * 100, 3)}%</td>
-              <td>{item.rarity}</td>
-            </tr>
-          ))}
-        </tbody>
-        {data.length !== 0 && (
-          <tfoot>
-            <tr>
-              <th>总计</th>
-              <th>{totalWins}</th>
-              <th>{totalWinners}</th>
-              <th>{RoundFloat(totalAvagaeWinsCountPerWinner, 3)}</th>
-              <th />
-              <th />
-            </tr>
-          </tfoot>
+    <SSTable
+      className="min-w-[670px]"
+      data={data
+        .map<Record<string, ComponentChildren>>((item) => ({
+          奖品名称: item.reward_name,
+          中奖次数: item.wins_count,
+          中奖人数: item.winners_count,
+          平均每人中奖次数: item.average_wins_count_per_winner,
+          中奖率: RoundFloat(item.winning_rate * 100, 3),
+          稀有度: item.rarity,
+        }))
+        .concat(
+          data.length !== 0
+            ? [
+                {
+                  奖品名称: "总计",
+                  中奖次数: totalWins,
+                  中奖人数: totalWinners,
+                  平均每人中奖次数: RoundFloat(
+                    totalAvagaeWinsCountPerWinner,
+                    3
+                  ),
+                  中奖率: undefined,
+                  稀有度: undefined,
+                },
+              ]
+            : []
         )}
-      </Table>
-    </SSScolllable>
+      tableItemKey="reward_name"
+    />
   );
 }
 
