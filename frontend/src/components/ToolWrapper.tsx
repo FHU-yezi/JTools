@@ -12,7 +12,7 @@ import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import { getDateTimeWithoutSecond, parseTime } from "../utils/timeHelper";
 import Header from "./Header";
-import Loading from "./Loading";
+import LoadingPage from "./LoadingPage";
 import SSButton from "./SSButton";
 import SSLink from "./SSLink";
 import SSModal from "./SSModal";
@@ -126,12 +126,12 @@ export default function ToolWrapper({ Component, toolName }: Props) {
             </div>
           )}
 
-          <Suspense fallback={<Loading />}>
+          <Suspense fallback={<LoadingPage />}>
             {!isLoading.value && <Component />}
           </Suspense>
         </>
       ) : (
-        <Loading />
+        <LoadingPage />
       )}
 
       <SSModal

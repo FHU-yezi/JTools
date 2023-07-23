@@ -2,7 +2,7 @@ import { useSignal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
 import SSLoader from "./SSLoader";
 
-export default function Loading() {
+export default function LoadingPage() {
   const showLoader = useSignal(false);
 
   useEffect(() => {
