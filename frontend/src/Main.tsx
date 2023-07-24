@@ -3,12 +3,6 @@ import { Toaster } from "react-hot-toast";
 import { install } from "resize-observer";
 import { registerSW } from "virtual:pwa-register";
 
-import {
-  ColorScheme,
-  ColorSchemeProvider,
-  MantineProvider,
-} from "@mantine/core";
-
 import { useLocalStorage } from "@mantine/hooks";
 import React, { render, useEffect } from "preact/compat";
 import App from "./App";
@@ -24,14 +18,10 @@ if (!window.ResizeObserver) {
 registerSW({ immediate: true });
 
 function Main() {
-  const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
+  const [colorScheme] = useLocalStorage<"light" | "dark">({
     key: "jtools-color-scheme",
     defaultValue: "light",
   });
-
-  const toggleColorScheme = () => {
-    setColorScheme(colorScheme === "dark" ? "light" : "dark");
-  };
 
   useEffect(() => {
     // Tailwind CSS 深色模式
@@ -42,19 +32,12 @@ function Main() {
 
   return (
     <React.StrictMode>
-      <ColorSchemeProvider
-        colorScheme={colorScheme}
-        toggleColorScheme={toggleColorScheme}
-      >
-        <MantineProvider theme={{ colorScheme }}>
-          <ErrorBoundary FallbackComponent={ErrorFallback}>
-            <div className="mx-auto my-7 min-h-screen w-[90vw] max-w-4xl">
-              <App />
-            </div>
-            <Footer />
-          </ErrorBoundary>
-        </MantineProvider>
-      </ColorSchemeProvider>
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
+        <div className="mx-auto my-7 min-h-screen w-[90vw] max-w-4xl">
+          <App />
+        </div>
+        <Footer />
+      </ErrorBoundary>
 
       <Toaster
         toastOptions={{

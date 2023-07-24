@@ -126,7 +126,7 @@ export default function URLSchemeConvertor() {
               >
                 <SSActionIcon
                   onClick={() => clipboard.copy(result.value)}
-                  color={!clipboard.copied ? undefined : "bg-green-100"}
+                  className={!clipboard.copied ? undefined : "bg-green-100"}
                 >
                   {!clipboard.copied ? <BiCopy /> : <AiOutlineCheck />}
                 </SSActionIcon>
