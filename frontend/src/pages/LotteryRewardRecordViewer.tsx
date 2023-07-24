@@ -1,9 +1,9 @@
 import { Signal, batch, effect, signal, useSignal } from "@preact/signals";
-import { DataTable } from "mantine-datatable";
 import { useEffect } from "preact/hooks";
 import toast from "react-hot-toast";
 import SSButton from "../components/SSButton";
 import SSCheckbox from "../components/SSCheckbox";
+import SSLazyLoadTable from "../components/SSLazyLoadTable";
 import SSSkeleton from "../components/SSSkeleton";
 import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
@@ -16,20 +16,17 @@ import {
 import { RewardResponse } from "../models/LotteryRewardRecordViewer/Rewards";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
-import { replaceAll } from "../utils/textHelper";
+import { removeSpace } from "../utils/textHelper";
 import { getDatetime, parseTime } from "../utils/timeHelper";
-
-const PAGE_SIZE = 100;
 
 const rewards = signal<string[] | undefined>(undefined);
 const userURL = signal("");
 const selectedRewards = signal<string[]>([]);
 const isLoading = signal(false);
+const hasMore = signal(true);
 const result = signal<LotteryRecordItem[] | undefined>(undefined);
-const resultTotalCount = signal<number | undefined>(undefined);
-const currentPage = signal(1);
 
-function handleQuery(offset: number) {
+function handleQuery() {
   if (userURL.value.length === 0) {
     toast("请输入用户个人主页链接", {
       icon: " ⚠️",
@@ -44,11 +41,35 @@ function handleQuery(offset: number) {
       {
         user_url: userURL.value,
         target_rewards: selectedRewards.value,
-        offset,
+        offset: 0,
       },
       (data) => {
         result.value = data.records;
-        resultTotalCount.value = data.total;
+        if (data.records.length === 0) {
+          hasMore.value = false;
+        }
+      },
+      commonAPIErrorHandler,
+      isLoading
+    );
+  } catch {}
+}
+
+function handleLoadMore() {
+  try {
+    fetchData<LotteryRecordsRequest, LotteryRecordsResponse>(
+      "POST",
+      "/tools/lottery_reward_record_viewer/lottery_records",
+      {
+        user_url: userURL.value,
+        target_rewards: selectedRewards.value,
+        offset: result.value!.length + 1,
+      },
+      (data) => {
+        result.value = result.value!.concat(data.records);
+        if (data.records.length === 0) {
+          hasMore.value = false;
+        }
       },
       commonAPIErrorHandler,
       isLoading
@@ -69,8 +90,8 @@ function RewardsFliter() {
         (data) =>
           batch(() => {
             rewards.value = data.rewards;
-            selectedRewards.value = data.rewards.map((item) =>
-              replaceAll(item, " ", "")
+            selectedRewards.value = rewards.value.map((item) =>
+              removeSpace(item)
             );
             rewards.value.forEach(
               (name) => (rewardSelectedSignals.value[name] = signal(false))
@@ -84,9 +105,9 @@ function RewardsFliter() {
 
   effect(
     () =>
-      (selectedRewards.value = Object.keys(rewardSelectedSignals.value).filter(
-        (name) => rewardSelectedSignals.value[name].value === true
-      ))
+      (selectedRewards.value = Object.keys(rewardSelectedSignals.value)
+        .filter((name) => rewardSelectedSignals.value[name].value === true)
+        .map((item) => removeSpace(item)))
   );
 
   return (
@@ -109,29 +130,14 @@ function RewardsFliter() {
 
 function ResultTable() {
   return (
-    <DataTable
-      height={600}
-      records={result.value}
-      columns={[
-        {
-          accessor: "time",
-          title: "时间",
-          noWrap: true,
-          render: (record) => getDatetime(parseTime(record.time)),
-        },
-        {
-          accessor: "reward_name",
-          title: "奖项",
-          noWrap: true,
-        },
-      ]}
-      totalRecords={resultTotalCount.value}
-      recordsPerPage={PAGE_SIZE}
-      page={currentPage.value}
-      onPageChange={(page) => {
-        handleQuery((page - 1) * PAGE_SIZE);
-        currentPage.value = page;
-      }}
+    <SSLazyLoadTable
+      data={result.value!.map((item) => ({
+        时间: getDatetime(parseTime(item.time)),
+        奖项: item.reward_name,
+      }))}
+      onLoadMore={handleLoadMore}
+      hasMore={hasMore}
+      isLoading={isLoading}
     />
   );
 }
@@ -142,13 +148,13 @@ export default function LotteryRewardRecordViewer() {
       <SSTextInput
         label="用户个人主页链接"
         value={userURL}
-        onEnter={() => handleQuery(0)}
+        onEnter={handleQuery}
       />
       <RewardsFliter />
       <SSTooltip tooltip="受简书接口限制，我们无法获取这两种奖品的中奖情况，故无法进行查询">
         关于免费开 1 次连载 / 锦鲤头像框
       </SSTooltip>
-      <SSButton onClick={() => handleQuery(0)} loading={isLoading.value}>
+      <SSButton onClick={handleQuery} loading={isLoading.value}>
         查询
       </SSButton>
 
