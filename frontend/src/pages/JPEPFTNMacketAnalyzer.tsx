@@ -1,6 +1,8 @@
 import { Signal, batch, computed, signal } from "@preact/signals";
 import {
   ArcElement,
+  BarController,
+  BarElement,
   CategoryScale,
   Chart,
   Colors,
@@ -12,13 +14,17 @@ import {
   Tooltip,
 } from "chart.js";
 import { useEffect } from "preact/hooks";
-import { Line } from "react-chartjs-2";
+import { Bar, Line } from "react-chartjs-2";
 import ChartWrapper from "../components/ChartWrapper";
 import SSSegmentedControl from "../components/SSSegmentedControl";
 import SSSkeleton from "../components/SSSkeleton";
 import SSStat from "../components/SSStat";
 import SSText from "../components/SSText";
-import { JPEPRulesResponse } from "../models/JPEPFTNMacketAnalyzer/JPEP_rules";
+import { JPEPRulesResponse } from "../models/JPEPFTNMacketAnalyzer/JPEPRules";
+import {
+  PerPriceAmountDataRequest,
+  PerPriceAmountDataResponse,
+} from "../models/JPEPFTNMacketAnalyzer/PerPriceAmountData";
 import { PoolAmountResponse } from "../models/JPEPFTNMacketAnalyzer/PoolAmount";
 import {
   PoolAmountTrendDataItem,
@@ -37,6 +43,8 @@ import { fetchData } from "../utils/fetchData";
 
 Chart.register(
   ArcElement,
+  BarController,
+  BarElement,
   CategoryScale,
   Colors,
   Legend,
@@ -67,6 +75,10 @@ const totalPoolAmount = computed(() =>
   typeof sellPoolAmount.value !== "undefined"
     ? buyPoolAmount.value + sellPoolAmount.value
     : null
+);
+const perPriceAmountDataTradeType = signal<"buy" | "sell">("buy");
+const perPriceAmountData = signal<Record<number, number> | undefined>(
+  undefined
 );
 const PriceTrendLineTimeRange = signal<TimeRange>("6h");
 const BuyPriceTrendData = signal<PriceTrendDataItem | undefined>(undefined);
@@ -138,6 +150,20 @@ function handlePoolAmountFetch() {
   } catch {}
 }
 
+function handlePerPriceAmountDataFetch() {
+  try {
+    fetchData<PerPriceAmountDataRequest, PerPriceAmountDataResponse>(
+      "GET",
+      "/tools/JPEP_FTN_market_analyzer/per_price_amount_data",
+      {
+        trade_type: perPriceAmountDataTradeType.value,
+      },
+      (data) => (perPriceAmountData.value = data.per_price_amount_data),
+      commonAPIErrorHandler
+    );
+  } catch {}
+}
+
 function handlePriceTrendDataFetch() {
   try {
     fetchData<PriceTrendDataRequest, PriceTrendDataResponse>(
@@ -172,6 +198,35 @@ function handlePoolAmountTrendDataFetch() {
       commonAPIErrorHandler
     );
   } catch {}
+}
+
+function PerPriceAmountDataBar() {
+  return (
+    <Bar
+      data={{
+        labels: Object.keys(perPriceAmountData.value!),
+        datasets: [
+          {
+            data: Object.values(perPriceAmountData.value!),
+          },
+        ],
+      }}
+      options={{
+        interaction: {
+          intersect: false,
+          axis: "x",
+        },
+        plugins: {
+          colors: {
+            forceOverride: true,
+          },
+          legend: {
+            display: false,
+          },
+        },
+      }}
+    />
+  );
 }
 
 function PriceTrendLine({ buy, sell }: PriceTrendLineProps) {
@@ -262,9 +317,15 @@ export default function JPEPFTNMarketAnalyzer() {
     handleJPEPRulesFetch();
     handlePriceFetch();
     handlePoolAmountFetch();
+    handlePerPriceAmountDataFetch();
     handlePriceTrendDataFetch();
     handlePoolAmountTrendDataFetch();
   }, []);
+
+  useEffect(() => {
+    perPriceAmountData.value = undefined;
+    handlePerPriceAmountDataFetch();
+  }, [perPriceAmountDataTradeType.value]);
 
   useEffect(() => {
     batch(() => {
@@ -342,6 +403,23 @@ export default function JPEPFTNMarketAnalyzer() {
       ) : (
         <SSSkeleton className="h-[85.5px]" />
       )}
+
+      <SSText xlarge xbold>
+        实时挂单量分布
+      </SSText>
+      <div className="grid place-content-center">
+        <SSSegmentedControl
+          label=""
+          value={perPriceAmountDataTradeType}
+          data={{ 买单: "buy", 卖单: "sell" }}
+        />
+      </div>
+      <ChartWrapper
+        chartType="radial"
+        show={perPriceAmountData.value !== undefined}
+      >
+        <PerPriceAmountDataBar />
+      </ChartWrapper>
 
       <SSText xlarge xbold>
         贝价趋势
