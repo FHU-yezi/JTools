@@ -122,7 +122,7 @@ function RewardsFliter() {
           ))}
         </div>
       ) : (
-        <SSSkeleton className="h-9 w-full" />
+        <SSSkeleton className="h-36 w-full sm:h-16" />
       )}
     </div>
   );
