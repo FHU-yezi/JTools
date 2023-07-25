@@ -5,3 +5,7 @@ export function replaceAll(
 ): string {
   return originalString.split(from).join(to);
 }
+
+export function removeSpace(string: string): string {
+  return replaceAll(string, " ", "");
+}

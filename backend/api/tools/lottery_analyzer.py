@@ -3,11 +3,10 @@ from typing import Dict, List, Literal, Optional
 
 from sanic import Blueprint, HTTPResponse, Request
 from sspeedup.api import CODE, sanic_response_json
+from sspeedup.data_validation import BaseModel, sanic_inject_pydantic_model
+from sspeedup.time_helper import get_start_time
 
 from utils.db import lottery_db
-from utils.inject_data_model import inject_data_model_from_query_args
-from utils.pydantic_base import BaseModel
-from utils.time_helper import get_data_start_time
 
 REWARDS: Dict[str, str] = {
     "收益加成卡100": "收益加成卡 100",
@@ -34,7 +33,7 @@ def get_all_rewards_wins_count(td: Optional[timedelta]) -> Dict[str, int]:
             {
                 "$match": {
                     "time": {
-                        "$gte": get_data_start_time(td),
+                        "$gte": get_start_time(td),
                     },
                 },
             },
@@ -64,7 +63,7 @@ def get_all_rewards_winners_count(td: Optional[timedelta]) -> Dict[str, int]:
                 {
                     "reward_name": reward_name_without_whitespace,
                     "time": {
-                        "$gte": get_data_start_time(td),
+                        "$gte": get_start_time(td),
                     },
                 },
             )
@@ -118,7 +117,7 @@ def get_period_wins_count(td: Optional[timedelta]) -> Dict[str, int]:
             {
                 "$match": {
                     "time": {
-                        "$gt": get_data_start_time(td),
+                        "$gt": get_start_time(td),
                     },
                 }
             },
@@ -168,7 +167,7 @@ class PerPrizeDataResponse(BaseModel):
 
 
 @lottery_analyzer_blueprint.get("/per_prize_data")
-@inject_data_model_from_query_args(PerPrizeDataRequest)
+@sanic_inject_pydantic_model(PerPrizeDataRequest, source="query_args")
 def per_prize_data_handler(request: Request, data: PerPrizeDataRequest) -> HTTPResponse:
     del request
 
@@ -196,7 +195,7 @@ def per_prize_data_handler(request: Request, data: PerPrizeDataRequest) -> HTTPR
         )
 
     return sanic_response_json(
-        code=CODE.SUCCESS, data=PerPrizeDataResponse(rewards=rewards).dict()
+        code=CODE.SUCCESS, data=PerPrizeDataResponse(rewards=rewards).model_dump()
     )
 
 
@@ -209,7 +208,7 @@ class RewardWinsCountDataResponse(BaseModel):
 
 
 @lottery_analyzer_blueprint.get("/reward_wins_count_data")
-@inject_data_model_from_query_args(RewardWinsCountDataRequest)
+@sanic_inject_pydantic_model(RewardWinsCountDataRequest, source="query_args")
 def reward_wins_count_data_handler(
     request: Request, data: RewardWinsCountDataRequest
 ) -> HTTPResponse:
@@ -219,7 +218,7 @@ def reward_wins_count_data_handler(
 
     return sanic_response_json(
         code=CODE.SUCCESS,
-        data=RewardWinsCountDataResponse(wins_count_data=wins_count_data).dict(),
+        data=RewardWinsCountDataResponse(wins_count_data=wins_count_data).model_dump(),
     )
 
 
@@ -232,7 +231,7 @@ class RewardWinsDataResponse(BaseModel):
 
 
 @lottery_analyzer_blueprint.get("/reward_wins_trend_data")
-@inject_data_model_from_query_args(RewardWinsDataRequest)
+@sanic_inject_pydantic_model(RewardWinsDataRequest, source="query_args")
 def reward_wins_trend_data_handler(
     request: Request, data: RewardWinsDataRequest
 ) -> HTTPResponse:
@@ -242,5 +241,5 @@ def reward_wins_trend_data_handler(
 
     return sanic_response_json(
         code=CODE.SUCCESS,
-        data=RewardWinsDataResponse(trend_data=trend_data).dict(),
+        data=RewardWinsDataResponse(trend_data=trend_data).model_dump(),
     )

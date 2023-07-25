@@ -1,7 +1,8 @@
-import { Accordion, Kbd } from "@mantine/core";
 import { BiError } from "react-icons/bi";
 import { useLocation } from "wouter-preact";
+import SSAccordion from "./SSAccordion";
 import SSButton from "./SSButton";
+import SSKey from "./SSKey";
 import SSLink from "./SSLink";
 import SSText from "./SSText";
 
@@ -18,7 +19,9 @@ export default function ErrorFallback({ error }: Props) {
   return (
     <div className="grid h-[100vh] place-content-center">
       <div className="flex w-[90vw] max-w-4xl flex-col gap-4">
-        <BiError size={48} />
+        <SSText>
+          <BiError size={48} />
+        </SSText>
         <SSText xlarge xbold>
           发生意外错误
         </SSText>
@@ -32,6 +35,7 @@ export default function ErrorFallback({ error }: Props) {
           isExternal
         />
         <SSText gray>{error.toString()}</SSText>
+
         <SSButton onClick={() => window.location.reload()}>刷新</SSButton>
         <SSButton
           onClick={() => {
@@ -41,16 +45,14 @@ export default function ErrorFallback({ error }: Props) {
         >
           返回首页
         </SSButton>
-        <Accordion variant="contained">
-          <Accordion.Item value="more-tech-info">
-            <Accordion.Control>我如何提供更多技术信息？</Accordion.Control>
-            <Accordion.Panel>
-              如果您使用电脑访问本服务，请按下 <Kbd>F12</Kbd>{" "}
-              打开开发者工具，在顶栏中选择
-              Console（控制台）选项，截图其内容并在反馈时一并发送。
-            </Accordion.Panel>
-          </Accordion.Item>
-        </Accordion>
+
+        <SSAccordion title="我如何提供更多技术信息？">
+          <SSText>
+            如果您使用电脑访问本服务，请按下<SSKey>F12</SSKey>
+            打开开发者工具，在顶栏中选择
+            Console（控制台）选项，截图其内容并在反馈时一并发送。
+          </SSText>
+        </SSAccordion>
       </div>
     </div>
   );

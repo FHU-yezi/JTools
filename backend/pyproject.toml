@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "jtools"
-version = "3.2.0"
+version = "3.3.0"
 description = "探索未知"
 authors = ["yezi <yehaowei20060411@qq.com>"]
 license = "MIT"
@@ -12,12 +12,12 @@ jianshuresearchtools = "2.11.0"
 pyyaml = "^6.0"
 tomd = "^0.1.3"
 pymongo = "^4.2.0"
-sspeedup = {version = "^0.11.1", extras = ["logging", "api-response-sanic", "ability-word-split"]}
+sspeedup = {version = "^0.12.0", extras = ["logging", "api-response-sanic", "ability-word-split", "data-validation"]}
 sanic = "^23.3.0"
-pydantic = "^1.10.7"
+pydantic = "^2.0.2"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.0.269"
+ruff = "^0.0.277"
 pyright = "^1.1.309"
 black = "^23.3.0"
 

@@ -1,6 +1,6 @@
 import { useClipboard } from "@mantine/hooks";
-import { notifications } from "@mantine/notifications";
 import { Signal, signal } from "@preact/signals";
+import toast from "react-hot-toast";
 import { AiOutlineCheck } from "react-icons/ai";
 import { BiCopy, BiRightArrowAlt } from "react-icons/bi";
 import QRCode from "react-qr-code";
@@ -47,7 +47,7 @@ const URLTypesArray = [
 
 const jianshuURL = signal("");
 const hasResult = signal(false);
-const result = signal("");
+const result = signal<string | undefined>(undefined);
 
 function isJianshuURL(url: Signal<string>) {
   return url.value.startsWith("https://www.jianshu.com/");
@@ -67,7 +67,6 @@ function getURLType(url: Signal<string>): JianshuURLType | "unknown" {
   } catch {
     return "unknown";
   }
-  // eslint-disable-next-line no-restricted-syntax
   for (const URLType of URLTypesArray) {
     if (perfix === URLType.URLPrefix) {
       if (
@@ -86,9 +85,8 @@ function handleConvert() {
   const urlType = getURLType(jianshuURL);
 
   if (urlType === "unknown") {
-    notifications.show({
-      message: "输入的不是有效的简书链接，请检查",
-      color: "orange",
+    toast("输入的不是有效的简书链接，请检查", {
+      icon: " ⚠️",
     });
     return;
   }
@@ -111,7 +109,8 @@ export default function URLSchemeConvertor() {
         onEnter={handleConvert}
       />
       <SSButton onClick={handleConvert}>转换</SSButton>
-      {hasResult.value && (
+
+      {typeof result.value !== "undefined" && (
         <div className="grid place-content-center">
           <div className="mt-12 flex flex-col gap-4">
             <div className="flex gap-2">
@@ -127,7 +126,7 @@ export default function URLSchemeConvertor() {
               >
                 <SSActionIcon
                   onClick={() => clipboard.copy(result.value)}
-                  color={!clipboard.copied ? undefined : "bg-green-100"}
+                  className={!clipboard.copied ? undefined : "bg-green-100"}
                 >
                   {!clipboard.copied ? <BiCopy /> : <AiOutlineCheck />}
                 </SSActionIcon>

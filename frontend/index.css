@@ -7,3 +7,18 @@
     @apply bg-white selection:bg-gray-300 dark:bg-gray-950 dark:selection:bg-gray-700;
   }
 }
+
+@layer utilities {
+  .text-primary {
+    @apply text-gray-900 dark:text-gray-300
+  }
+  .gray-border {
+    @apply border border-gray-200 dark:border-gray-600
+  }
+  .color-layer-1 {
+    @apply bg-white dark:bg-gray-900
+  }
+  .color-layer-2 {
+    @apply bg-gray-50 dark:bg-gray-800
+  }
+}

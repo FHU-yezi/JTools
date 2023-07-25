@@ -1,7 +1,8 @@
-import { SegmentedControl, Skeleton } from "@mantine/core";
 import { Signal, batch, computed, signal } from "@preact/signals";
 import {
   ArcElement,
+  BarController,
+  BarElement,
   CategoryScale,
   Chart,
   Colors,
@@ -13,11 +14,17 @@ import {
   Tooltip,
 } from "chart.js";
 import { useEffect } from "preact/hooks";
-import { Line } from "react-chartjs-2";
+import { Bar, Line } from "react-chartjs-2";
 import ChartWrapper from "../components/ChartWrapper";
+import SSSegmentedControl from "../components/SSSegmentedControl";
+import SSSkeleton from "../components/SSSkeleton";
 import SSStat from "../components/SSStat";
 import SSText from "../components/SSText";
-import { JPEPRulesResponse } from "../models/JPEPFTNMacketAnalyzer/JPEP_rules";
+import { JPEPRulesResponse } from "../models/JPEPFTNMacketAnalyzer/JPEPRules";
+import {
+  PerPriceAmountDataRequest,
+  PerPriceAmountDataResponse,
+} from "../models/JPEPFTNMacketAnalyzer/PerPriceAmountData";
 import { PoolAmountResponse } from "../models/JPEPFTNMacketAnalyzer/PoolAmount";
 import {
   PoolAmountTrendDataItem,
@@ -31,12 +38,13 @@ import {
   PriceTrendDataResponse,
 } from "../models/JPEPFTNMacketAnalyzer/PriceTrendData";
 import { TimeRange } from "../models/JPEPFTNMacketAnalyzer/base";
-import { buildSegmentedControlDataFromRecord } from "../utils/data_helper";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 
 Chart.register(
   ArcElement,
+  BarController,
+  BarElement,
   CategoryScale,
   Colors,
   Legend,
@@ -47,12 +55,13 @@ Chart.register(
   Tooltip
 );
 
-const TimeRangeSCData = buildSegmentedControlDataFromRecord({
+const TimeRangeSCData = {
+  "6 小时": "6h",
   "24 小时": "24h",
   "7 天": "7d",
   "15 天": "15d",
   "30 天": "30d",
-});
+};
 
 const tradeFeePercent = signal<number | undefined>(undefined);
 const buyPrice = signal<number | null | undefined>(undefined);
@@ -67,10 +76,14 @@ const totalPoolAmount = computed(() =>
     ? buyPoolAmount.value + sellPoolAmount.value
     : null
 );
-const PriceTrendLineTimeRange = signal<TimeRange>("24h");
+const perPriceAmountDataTradeType = signal<"buy" | "sell">("buy");
+const perPriceAmountData = signal<Record<number, number> | undefined>(
+  undefined
+);
+const PriceTrendLineTimeRange = signal<TimeRange>("6h");
 const BuyPriceTrendData = signal<PriceTrendDataItem | undefined>(undefined);
 const SellPriceTrendData = signal<PriceTrendDataItem | undefined>(undefined);
-const PoolAmountTrendLineTimeRange = signal<TimeRange>("24h");
+const PoolAmountTrendLineTimeRange = signal<TimeRange>("6h");
 const BuyPoolAmountTrendData = signal<PoolAmountTrendDataItem | undefined>(
   undefined
 );
@@ -137,6 +150,20 @@ function handlePoolAmountFetch() {
   } catch {}
 }
 
+function handlePerPriceAmountDataFetch() {
+  try {
+    fetchData<PerPriceAmountDataRequest, PerPriceAmountDataResponse>(
+      "GET",
+      "/tools/JPEP_FTN_market_analyzer/per_price_amount_data",
+      {
+        trade_type: perPriceAmountDataTradeType.value,
+      },
+      (data) => (perPriceAmountData.value = data.per_price_amount_data),
+      commonAPIErrorHandler
+    );
+  } catch {}
+}
+
 function handlePriceTrendDataFetch() {
   try {
     fetchData<PriceTrendDataRequest, PriceTrendDataResponse>(
@@ -171,6 +198,35 @@ function handlePoolAmountTrendDataFetch() {
       commonAPIErrorHandler
     );
   } catch {}
+}
+
+function PerPriceAmountDataBar() {
+  return (
+    <Bar
+      data={{
+        labels: Object.keys(perPriceAmountData.value!),
+        datasets: [
+          {
+            data: Object.values(perPriceAmountData.value!),
+          },
+        ],
+      }}
+      options={{
+        interaction: {
+          intersect: false,
+          axis: "x",
+        },
+        plugins: {
+          colors: {
+            forceOverride: true,
+          },
+          legend: {
+            display: false,
+          },
+        },
+      }}
+    />
+  );
 }
 
 function PriceTrendLine({ buy, sell }: PriceTrendLineProps) {
@@ -261,9 +317,31 @@ export default function JPEPFTNMarketAnalyzer() {
     handleJPEPRulesFetch();
     handlePriceFetch();
     handlePoolAmountFetch();
+    handlePerPriceAmountDataFetch();
     handlePriceTrendDataFetch();
     handlePoolAmountTrendDataFetch();
   }, []);
+
+  useEffect(() => {
+    perPriceAmountData.value = undefined;
+    handlePerPriceAmountDataFetch();
+  }, [perPriceAmountDataTradeType.value]);
+
+  useEffect(() => {
+    batch(() => {
+      BuyPriceTrendData.value = undefined;
+      SellPriceTrendData.value = undefined;
+    });
+    handlePriceTrendDataFetch();
+  }, [PriceTrendLineTimeRange.value]);
+
+  useEffect(() => {
+    batch(() => {
+      BuyPoolAmountTrendData.value = undefined;
+      SellPoolAmountTrendData.value = undefined;
+    });
+    handlePoolAmountTrendDataFetch();
+  }, [PoolAmountTrendLineTimeRange.value]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -295,7 +373,7 @@ export default function JPEPFTNMarketAnalyzer() {
           />
         </div>
       ) : (
-        <Skeleton h={85.5} />
+        <SSSkeleton className="h-[85.5px]" />
       )}
       <SSText xlarge xbold>
         实时挂单量
@@ -323,24 +401,36 @@ export default function JPEPFTNMarketAnalyzer() {
           />
         </div>
       ) : (
-        <Skeleton h={85.5} />
+        <SSSkeleton className="h-[85.5px]" />
       )}
+
+      <SSText xlarge xbold>
+        实时挂单量分布
+      </SSText>
+      <div className="grid place-content-center">
+        <SSSegmentedControl
+          label=""
+          value={perPriceAmountDataTradeType}
+          data={{ 买单: "buy", 卖单: "sell" }}
+        />
+      </div>
+      <ChartWrapper
+        chartType="radial"
+        show={perPriceAmountData.value !== undefined}
+      >
+        <PerPriceAmountDataBar />
+      </ChartWrapper>
 
       <SSText xlarge xbold>
         贝价趋势
       </SSText>
-      <SegmentedControl
-        value={PriceTrendLineTimeRange.value}
-        onChange={(newValue: TimeRange) => {
-          batch(() => {
-            PriceTrendLineTimeRange.value = newValue;
-            BuyPriceTrendData.value = undefined;
-            SellPriceTrendData.value = undefined;
-          });
-          handlePriceTrendDataFetch();
-        }}
-        data={TimeRangeSCData}
-      />
+      <div className="grid place-content-center">
+        <SSSegmentedControl
+          label=""
+          value={PriceTrendLineTimeRange}
+          data={TimeRangeSCData}
+        />
+      </div>
       <ChartWrapper
         chartType="radial"
         show={typeof BuyPriceTrendData.value !== "undefined"}
@@ -354,18 +444,13 @@ export default function JPEPFTNMarketAnalyzer() {
       <SSText xlarge xbold>
         挂单量趋势
       </SSText>
-      <SegmentedControl
-        value={PoolAmountTrendLineTimeRange.value}
-        onChange={(newValue: TimeRange) => {
-          batch(() => {
-            PoolAmountTrendLineTimeRange.value = newValue;
-            BuyPoolAmountTrendData.value = undefined;
-            SellPoolAmountTrendData.value = undefined;
-          });
-          handlePoolAmountTrendDataFetch();
-        }}
-        data={TimeRangeSCData}
-      />
+      <div className="grid place-content-center">
+        <SSSegmentedControl
+          label=""
+          value={PoolAmountTrendLineTimeRange}
+          data={TimeRangeSCData}
+        />
+      </div>
       <ChartWrapper
         chartType="radial"
         show={typeof BuyPoolAmountTrendData.value !== "undefined"}

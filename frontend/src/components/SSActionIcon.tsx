@@ -1,24 +1,24 @@
 import clsx from "clsx";
 import { VNode } from "preact";
+import SSText from "./SSText";
 
 interface Props {
+  className?: string;
   children: Element | VNode;
-  onClick: () => void;
-  color?: string;
+  onClick(): void;
 }
 
-export default function SSActionIcon({
-  children,
-  onClick,
-  color = "hover:bg-gray-100 active:bg-gray-200",
-}: Props) {
+export default function SSActionIcon({ className, children, onClick }: Props) {
   return (
     <button
       type="button"
-      className={clsx(color, "rounded-md p-2")}
+      className={clsx(
+        className,
+        "rounded-md p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+      )}
       onClick={onClick}
     >
-      {children}
+      <SSText>{children}</SSText>
     </button>
   );
 }

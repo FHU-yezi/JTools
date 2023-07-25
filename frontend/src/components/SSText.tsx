@@ -1,13 +1,8 @@
 import clsx from "clsx";
-import { VNode } from "preact";
+import type { ComponentChildren } from "preact";
 
 interface Props {
-  children:
-    | string
-    | number
-    | boolean
-    | Element
-    | (string | number | boolean | Element | VNode)[];
+  children: ComponentChildren;
   className?: string;
   gray?: boolean;
   color?: string;

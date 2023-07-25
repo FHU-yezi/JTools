@@ -2,9 +2,12 @@ from datetime import datetime
 from enum import IntEnum
 from typing import Dict, Literal, Optional
 
+from pydantic import Field
 from pymongo.collection import Collection
 from sanic import Blueprint, HTTPResponse, Request
 from sspeedup.api import CODE, sanic_response_json
+from sspeedup.data_validation import BaseModel, sanic_inject_pydantic_model
+from sspeedup.dict_helper import filter_null_value
 from yaml import safe_load
 
 from utils.db import (
@@ -13,9 +16,6 @@ from utils.db import (
     article_FP_rank_db,
     lottery_db,
 )
-from utils.dict_helper import filter_null_value
-from utils.inject_data_model import inject_data_model_from_query_args
-from utils.pydantic_base import BaseModel
 
 DB_STRING_TO_OBJ: Dict[str, Collection] = {
     "article_FP_rank": article_FP_rank_db,
@@ -57,16 +57,16 @@ class InfoStatus(IntEnum):
 
 
 class InfoItem(BaseModel):
-    status: InfoStatus
+    status: InfoStatus = Field(InfoStatus, strict=False)
     unavaliable_reason: str
     downgraded_reason: str
     enable_data_update_time: bool
     enable_data_count: bool
-    db: Optional[str]
-    data_update_time_key: Optional[str]
-    data_update_time_sort_direction: Optional[Literal["asc", "desc"]]
-    data_update_freq_desc: Optional[str]
-    data_source: Optional[Dict[str, str]]
+    db: Optional[str] = None
+    data_update_time_key: Optional[str] = None
+    data_update_time_sort_direction: Optional[Literal["asc", "desc"]] = None
+    data_update_freq_desc: Optional[str] = None
+    data_source: Optional[Dict[str, str]] = None
 
 
 class InfoRequest(BaseModel):
@@ -74,17 +74,17 @@ class InfoRequest(BaseModel):
 
 
 class InfoResponse(BaseModel):
-    status: InfoStatus
+    status: InfoStatus = Field(InfoStatus, strict=False)
     unavaliable_reason: str
     downgraded_reason: str
-    data_update_time: Optional[int]
-    data_update_freq_desc: Optional[str]
-    data_count: Optional[int]
-    data_source: Optional[Dict[str, str]]
+    data_update_time: Optional[int] = None
+    data_update_freq_desc: Optional[str] = None
+    data_count: Optional[int] = None
+    data_source: Optional[Dict[str, str]] = None
 
 
 @info_blueprint.get("/")
-@inject_data_model_from_query_args(InfoRequest)
+@sanic_inject_pydantic_model(InfoRequest, source="query_args")
 def info_handler(request: Request, data: InfoRequest) -> HTTPResponse:
     del request
 
@@ -122,6 +122,6 @@ def info_handler(request: Request, data: InfoRequest) -> HTTPResponse:
                 data_count=data_count,
                 data_update_freq_desc=data_update_freq_desc,
                 data_source=data_source,
-            ).dict()
+            ).model_dump()
         ),
     )

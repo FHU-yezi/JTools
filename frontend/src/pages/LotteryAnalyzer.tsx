@@ -1,5 +1,4 @@
-import { SegmentedControl, Skeleton, Table } from "@mantine/core";
-import { Signal, batch, signal } from "@preact/signals";
+import { signal } from "@preact/signals";
 import {
   ArcElement,
   CategoryScale,
@@ -13,10 +12,13 @@ import {
   PointElement,
   Tooltip,
 } from "chart.js";
+import type { ComponentChildren } from "preact";
 import { useEffect } from "preact/hooks";
 import { Line, Pie } from "react-chartjs-2";
 import ChartWrapper from "../components/ChartWrapper";
-import SSScolllable from "../components/SSScollable";
+import SSSegmentedControl from "../components/SSSegmentedControl";
+import SSSkeleton from "../components/SSSkeleton";
+import SSTable from "../components/SSTable";
 import SSText from "../components/SSText";
 import SSTooltip from "../components/SSTooltip";
 import {
@@ -35,7 +37,6 @@ import {
   RewardsWinsTrendDataResponse,
 } from "../models/LotteryAnalyzer/RewardWinsTrendData";
 import { TimeRange, TimeRangeWithoutAll } from "../models/LotteryAnalyzer/base";
-import { buildSegmentedControlDataFromRecord } from "../utils/data_helper";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import { RoundFloat } from "../utils/numberHelper";
@@ -53,20 +54,20 @@ Chart.register(
   Tooltip
 );
 
-const timeRangeSCData = buildSegmentedControlDataFromRecord({
+const timeRangeSCData = {
   "1 天": "1d",
   "7 天": "7d",
   "30 天": "30d",
   全部: "all",
-});
-const timeRangeWithoutAllSCData = buildSegmentedControlDataFromRecord({
+};
+const timeRangeWithoutAllSCData = {
   "1 天": "1d",
   "7 天": "7d",
   "30 天": "30d",
-});
+};
 
 const perPrizeAnalyzeTimeRange = signal<TimeRange>("1d");
-const perPrizeAnalyzeData = signal<PerPrizeDataItem[]>([]);
+const perPrizeAnalyzeData = signal<PerPrizeDataItem[] | undefined>(undefined);
 const RewardWinsCountPieTimeRange = signal<TimeRange>("1d");
 const RewardWinsCountData = signal<RewardsWinsCountDataItem | undefined>(
   undefined
@@ -77,15 +78,15 @@ const RewardWinsTrendData = signal<RewardWinsTrendDataItem | undefined>(
 );
 
 interface PerPrizeAnalyzeTableProps {
-  data: Signal<PerPrizeDataItem[]>;
+  data: PerPrizeDataItem[];
 }
 
 interface RewardWinsCountPieProps {
-  data: Signal<RewardsWinsCountDataItem>;
+  data: RewardsWinsCountDataItem;
 }
 
 interface RewardWinsTrendLineProps {
-  data: Signal<RewardWinsTrendDataItem>;
+  data: RewardWinsTrendDataItem;
 }
 
 function handlePerPrizeAnalayzeDataFetch() {
@@ -131,47 +132,41 @@ function handleRewardWinsTrendDataFetch() {
 }
 
 function PerPrizeAnalyzeTable({ data }: PerPrizeAnalyzeTableProps) {
-  const totalWins = data.value.reduce((a, b) => a + b.wins_count, 0);
-  const totalWinners = data.value.reduce((a, b) => a + b.winners_count, 0);
+  const totalWins = data.reduce((a, b) => a + b.wins_count, 0);
+  const totalWinners = data.reduce((a, b) => a + b.winners_count, 0);
   const totalAvagaeWinsCountPerWinner = totalWins / totalWinners;
 
   return (
-    <SSScolllable>
-      <Table className="min-w-[670px]">
-        <thead>
-          <tr>
-            <th>奖品名称</th>
-            <th>中奖次数</th>
-            <th>中奖人数</th>
-            <th>平均每人中奖次数</th>
-            <th>中奖率</th>
-            <th>稀有度</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.value.map((item) => (
-            <tr key={item.reward_name}>
-              <td>{item.reward_name}</td>
-              <td>{item.wins_count}</td>
-              <td>{item.winners_count}</td>
-              <td>{item.average_wins_count_per_winner}</td>
-              <td>{RoundFloat(item.winning_rate * 100, 3)}%</td>
-              <td>{item.rarity}</td>
-            </tr>
-          ))}
-        </tbody>
-        <tfoot>
-          <tr>
-            <th>总计</th>
-            <th>{totalWins}</th>
-            <th>{totalWinners}</th>
-            <th>{RoundFloat(totalAvagaeWinsCountPerWinner, 3)}</th>
-            <th />
-            <th />
-          </tr>
-        </tfoot>
-      </Table>
-    </SSScolllable>
+    <SSTable
+      className="min-w-[670px]"
+      data={data
+        .map<Record<string, ComponentChildren>>((item) => ({
+          奖品名称: item.reward_name,
+          中奖次数: item.wins_count,
+          中奖人数: item.winners_count,
+          平均每人中奖次数: item.average_wins_count_per_winner,
+          中奖率: RoundFloat(item.winning_rate * 100, 3),
+          稀有度: item.rarity,
+        }))
+        .concat(
+          data.length !== 0
+            ? [
+                {
+                  奖品名称: "总计",
+                  中奖次数: totalWins,
+                  中奖人数: totalWinners,
+                  平均每人中奖次数: RoundFloat(
+                    totalAvagaeWinsCountPerWinner,
+                    3
+                  ),
+                  中奖率: undefined,
+                  稀有度: undefined,
+                },
+              ]
+            : []
+        )}
+      tableItemKey="reward_name"
+    />
   );
 }
 
@@ -179,8 +174,8 @@ function RewardWinsCountPie({ data }: RewardWinsCountPieProps) {
   return (
     <Pie
       data={{
-        labels: Object.keys(data.value),
-        datasets: [{ data: Object.values(data.value) }],
+        labels: Object.keys(data),
+        datasets: [{ data: Object.values(data) }],
       }}
     />
   );
@@ -190,10 +185,10 @@ function RewardWinsTrendLine({ data }: RewardWinsTrendLineProps) {
   return (
     <Line
       data={{
-        labels: Object.keys(data.value),
+        labels: Object.keys(data),
         datasets: [
           {
-            data: Object.values(data.value),
+            data: Object.values(data),
             cubicInterpolationMode: "monotone",
           },
         ],
@@ -220,74 +215,74 @@ export default function LotteryAnalyzer() {
     handleRewardWinsTrendDataFetch();
   }, []);
 
+  useEffect(
+    () => handlePerPrizeAnalayzeDataFetch(),
+    [perPrizeAnalyzeTimeRange.value]
+  );
+
+  useEffect(() => {
+    RewardWinsCountData.value = undefined;
+    handleRewardWinsCountDataFetch();
+  }, [RewardWinsCountPieTimeRange.value]);
+
+  useEffect(() => {
+    RewardWinsTrendData.value = undefined;
+    handleRewardWinsTrendDataFetch();
+  }, [RewardWinsTrendLineTimeRange.value]);
+
   return (
     <div className="flex flex-col gap-4">
       <SSText xlarge xbold>
         综合统计
       </SSText>
-      <SegmentedControl
-        value={perPrizeAnalyzeTimeRange.value}
-        onChange={(newValue: TimeRange) => {
-          perPrizeAnalyzeTimeRange.value = newValue;
-          handlePerPrizeAnalayzeDataFetch();
-        }}
-        data={timeRangeSCData}
-      />
-      {perPrizeAnalyzeData.value.length !== 0 ? (
-        <PerPrizeAnalyzeTable data={perPrizeAnalyzeData} />
+      <div className="grid place-content-center">
+        <SSSegmentedControl
+          label=""
+          value={perPrizeAnalyzeTimeRange}
+          data={timeRangeSCData}
+        />
+      </div>
+      {typeof perPrizeAnalyzeData.value !== "undefined" ? (
+        <PerPrizeAnalyzeTable data={perPrizeAnalyzeData.value} />
       ) : (
-        <Skeleton h={291} />
+        <SSSkeleton className="h-[291px]" />
       )}
       <SSTooltip tooltip="受简书接口限制，我们无法获取这两种奖品的中奖情况，故表中未予统计">
         关于免费开 1 次连载 / 锦鲤头像框
       </SSTooltip>
+
       <SSText xlarge xbold>
         中奖次数分布
       </SSText>
-      <SegmentedControl
-        value={RewardWinsCountPieTimeRange.value}
-        onChange={(newValue: TimeRange) => {
-          batch(() => {
-            RewardWinsCountPieTimeRange.value = newValue;
-            RewardWinsCountData.value = undefined;
-          });
-          handleRewardWinsCountDataFetch();
-        }}
-        data={timeRangeSCData}
-      />
+      <div className="grid place-content-center">
+        <SSSegmentedControl
+          label=""
+          value={RewardWinsCountPieTimeRange}
+          data={timeRangeSCData}
+        />
+      </div>
       <ChartWrapper
         chartType="pie"
         show={typeof RewardWinsCountData.value !== "undefined"}
       >
-        <RewardWinsCountPie
-          data={
-            RewardWinsCountData as unknown as Signal<RewardsWinsCountDataItem>
-          }
-        />
+        <RewardWinsCountPie data={RewardWinsCountData.value!} />
       </ChartWrapper>
+
       <SSText xlarge xbold>
         中奖次数趋势
       </SSText>
-      <SegmentedControl
-        value={RewardWinsTrendLineTimeRange.value}
-        onChange={(newValue: TimeRangeWithoutAll) => {
-          batch(() => {
-            RewardWinsTrendLineTimeRange.value = newValue;
-            RewardWinsTrendData.value = undefined;
-          });
-          handleRewardWinsTrendDataFetch();
-        }}
-        data={timeRangeWithoutAllSCData}
-      />
+      <div className="grid place-content-center">
+        <SSSegmentedControl
+          label=""
+          value={RewardWinsTrendLineTimeRange}
+          data={timeRangeWithoutAllSCData}
+        />
+      </div>
       <ChartWrapper
         chartType="radial"
         show={typeof RewardWinsTrendData.value !== "undefined"}
       >
-        <RewardWinsTrendLine
-          data={
-            RewardWinsTrendData as unknown as Signal<RewardWinsTrendDataItem>
-          }
-        />
+        <RewardWinsTrendLine data={RewardWinsTrendData.value!} />
       </ChartWrapper>
     </div>
   );

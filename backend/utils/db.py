@@ -20,7 +20,7 @@ def get_collection(collection_name: str) -> Collection:
 run_log_db = db.run_log
 
 _jfetcher_data_db = init_db("JFetcherData")
-article_FP_rank_db = _jfetcher_data_db.article_FP_rank
+article_FP_rank_db = _jfetcher_data_db.article_FP_rank  # noqa: N816
 lottery_db = _jfetcher_data_db.lottery_data
 LP_collections_db = _jfetcher_data_db.LP_collections
 JPEP_FTN_market_db = _jfetcher_data_db.JPEP_FTN_macket

@@ -1,0 +1,279 @@
+{
+  "v3BetaPaticipants": {
+    "6g 选手": "https://www.jianshu.com/u/43c3a5c5aca3",
+    "海泩": "https://www.jianshu.com/u/22784ff6c0aa",
+    "睿希颖瑶": "https://www.jianshu.com/u/4b86da352f87",
+    "晨曦载曜": "https://www.jianshu.com/u/da53b65bacb8",
+    "晴源": "https://www.jianshu.com/u/362ee17accd1",
+    "白首卧松云": "https://www.jianshu.com/u/2350b4ff48ed",
+    "侏罗纪的天空": "https://www.jianshu.com/u/7a6bf1236c8c",
+    "幽夜蛙": "https://www.jianshu.com/u/e3d9895f67a7"
+  },
+  "opensourcePackages": {
+    "前端": [
+      {
+        "name": "Preact",
+        "desc": "视图",
+        "url": "https://github.com/preactjs/preact"
+      },
+      {
+        "name": "Preact Signals",
+        "desc": "状态管理",
+        "url": "https://github.com/preactjs/signals"
+      },
+      {
+        "name": "Chart.js",
+        "desc": "图表",
+        "url": "https://github.com/chartjs/Chart.js"
+      },
+      {
+        "name": "Mantine",
+        "desc": "组件库",
+        "url": "https://github.com/mantinedev/mantine"
+      },
+      {
+        "name": "Mantine DataTable",
+        "desc": "DataTable 组件",
+        "url": "https://github.com/icflorescu/mantine-datatable"
+      },
+      {
+        "name": "Chart.js Wordcloud",
+        "desc": "词云图",
+        "url": "https://github.com/sgratzl/chartjs-chart-wordcloud"
+      },
+      {
+        "name": "React Chart.js 2",
+        "desc": "Chart.js React 包装层",
+        "url": "https://github.com/reactchartjs/react-chartjs-2"
+      },
+      {
+        "name": "React Error Boundary",
+        "desc": "React 错误边界封装",
+        "url": "https://github.com/bvaughn/react-error-boundary"
+      },
+      {
+        "name": "React Icons",
+        "desc": "图标",
+        "url": "https://github.com/react-icons/react-icons"
+      },
+      {
+        "name": "React QR Code",
+        "desc": "二维码",
+        "url": "https://github.com/rosskhanas/react-qr-code"
+      },
+      {
+        "name": "Wouter",
+        "desc": "路由",
+        "url": "https://github.com/molefrog/wouter"
+      },
+      {
+        "name": "Tailwind CSS",
+        "desc": "原子化 CSS",
+        "url": "https://github.com/tailwindlabs/tailwindcss"
+      },
+      {
+        "name": "clsx",
+        "desc": "ClassName 增强",
+        "url": "https://github.com/lukeed/clsx"
+      },
+      {
+        "name": "Day.js",
+        "desc": "日期处理",
+        "url": "https://github.com/iamkun/dayjs"
+      },
+      {
+        "name": "Vite",
+        "desc": "构建",
+        "url": "https://github.com/vitejs/vite"
+      },
+      {
+        "name": "Vite Plugin PWA",
+        "desc": "PWA 支持",
+        "url": "https://github.com/vite-pwa/vite-plugin-pwa"
+      },
+      {
+        "name": "Vite Plugin Compression",
+        "desc": "构建产物压缩",
+        "url": "https://github.com/vbenjs/vite-plugin-compression"
+      },
+      {
+        "name": "Resize Observer",
+        "desc": "Resize Observer Polyfill",
+        "url": "https://github.com/devrelm/resize-observer"
+      }
+    ],
+    "后端": [
+      {
+        "name": "JianshuResearchTools",
+        "desc": "数据采集",
+        "url": "https://github.com/FHU-yezi/JianshuResearchTools"
+      },
+      {
+        "name": "Sanic",
+        "desc": "API 服务框架",
+        "url": "https://github.com/sanic-org/sanic"
+      },
+      {
+        "name": "Pydantic",
+        "desc": "数据校验",
+        "url": "https://github.com/pydantic/pydantic"
+      },
+      {
+        "name": "PyMongo",
+        "desc": "MongoDB 数据库操作",
+        "url": "https://github.com/mongodb/mongo-python-driver"
+      },
+      {
+        "name": "PyYAML",
+        "desc": "YAML 文件读取",
+        "url": "https://github.com/yaml/pyyaml"
+      },
+      {
+        "name": "SSpeedup",
+        "desc": "开发工具箱",
+        "url": "https://github.com/FHU-yezi/sspeedup"
+      },
+      {
+        "name": "Tomd",
+        "desc": "Markdown 转换",
+        "url": "https://github.com/gaojiuli/tomd"
+      }
+    ],
+    "代码质量": [
+      {
+        "name": "ESLint",
+        "desc": "TypeScript 静态分析",
+        "url": "https://github.com/eslint/eslint"
+      },
+      {
+        "name": "ESLint Config Airbnb",
+        "desc": "ESLint 规则集",
+        "url": "https://www.npmjs.com/package/eslint-config-airbnb"
+      },
+      {
+        "name": "Prettier",
+        "desc": "TypeScript 格式化",
+        "url": "https://github.com/prettier/prettier"
+      },
+      {
+        "name": "Rollup Plugin Visualizer",
+        "desc": "前端资源文件分析",
+        "url": "https://github.com/btd/rollup-plugin-visualizer"
+      },
+      {
+        "name": "Ruff",
+        "desc": "Python 静态分析",
+        "url": "https://github.com/astral-sh/ruff"
+      },
+      {
+        "name": "Pyright",
+        "desc": "Python 类型检查",
+        "url": "https://github.com/microsoft/pyright"
+      },
+      {
+        "name": "Black",
+        "desc": "Python 格式化",
+        "url": "https://github.com/psf/black"
+      }
+    ],
+    "能力服务": [
+      {
+        "name": "CutUp",
+        "desc": "分词",
+        "url": "https://github.com/FHU-yezi/CutUp"
+      }
+    ]
+  },
+  "debugProjectRecords": [
+    {
+      "time": "2022-09-01",
+      "type": "数据异常",
+      "module": "上榜文章查询工具",
+      "desc": "显示与实际上榜日期相差一天",
+      "user_name": "心有玲兮",
+      "user_url": "https://www.jianshu.com/u/15bae9b0b85f",
+      "award": "50"
+    },
+    {
+      "time": "2022-09-23",
+      "type": "功能优化",
+      "module": "文章词云图生成工具 ",
+      "desc": "去除非必要文字说明，提高清晰度",
+      "user_name": "小慢可",
+      "user_url": "https://www.jianshu.com/u/b39317ace723",
+      "award": "30"
+    },
+    {
+      "time": "2022-10-24",
+      "type": "数据异常",
+      "module": "上榜文章查询工具",
+      "desc": "文章因采集时被作者私密而无法查询到",
+      "user_name": "非村",
+      "user_url": "https://www.jianshu.com/u/df68a42402fc",
+      "award": "20"
+    },
+    {
+      "time": "2022-10-26",
+      "type": "数据异常",
+      "module": "上榜文章查询工具",
+      "desc": "文章因采集时被作者私密而无法查询到",
+      "user_name": "睿希颖瑶",
+      "user_url": "https://www.jianshu.com/u/4b86da352f87",
+      "award": "20"
+    },
+    {
+      "time": "2022-12-03",
+      "type": "数据异常",
+      "module": "LP 理事会推文检测工具",
+      "desc": "未能正确检测到作者历史上榜记录",
+      "user_name": "晨曦载曜",
+      "user_url": "https://www.jianshu.com/u/da53b65bacb8",
+      "award": "200"
+    },
+    {
+      "time": "2022-12-05",
+      "type": "功能优化",
+      "module": "所有模块",
+      "desc": "根据功能使用频率调整首页排列顺序",
+      "user_name": "晨曦载曜",
+      "user_url": "https://www.jianshu.com/u/da53b65bacb8",
+      "award": "40"
+    },
+    {
+      "time": "2022-12-05",
+      "type": "非主流程功能异常",
+      "module": "上榜文章查询工具",
+      "desc": "输入作者名后不显示下拉菜单",
+      "user_name": "晨曦载曜",
+      "user_url": "https://www.jianshu.com/u/da53b65bacb8",
+      "award": "30"
+    },
+    {
+      "time": "2022-12-12",
+      "type": "数据异常",
+      "module": "上榜文章查询工具",
+      "desc": "查询结果重复",
+      "user_name": "晨曦载曜",
+      "user_url": "https://www.jianshu.com/u/da53b65bacb8",
+      "award": "30"
+    },
+    {
+      "time": "2023-01-29",
+      "type": "数据异常",
+      "module": "上榜文章查询工具",
+      "desc": "2023.01.29 数据缺失",
+      "user_name": "蓝川予鹤",
+      "user_url": "https://www.jianshu.com/u/394834beb291",
+      "award": "30"
+    },
+    {
+      "time": "2023-04-13",
+      "type": "数据异常",
+      "module": "上榜文章查询工具",
+      "desc": "2023.04.08、2023.04.10 数据缺失",
+      "user_name": "非村",
+      "user_url": "https://www.jianshu.com/u/df68a42402fc",
+      "award": "40"
+    }
+  ]
+}

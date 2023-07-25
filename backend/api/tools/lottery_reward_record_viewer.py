@@ -4,10 +4,9 @@ from JianshuResearchTools.assert_funcs import AssertUserUrl
 from JianshuResearchTools.exceptions import InputError
 from sanic import Blueprint, HTTPResponse, Request
 from sspeedup.api import CODE, sanic_response_json
+from sspeedup.data_validation import BaseModel, sanic_inject_pydantic_model
 
 from utils.db import lottery_db
-from utils.inject_data_model import inject_data_model_from_body
-from utils.pydantic_base import BaseModel
 
 REWARDS: Set[str] = {
     "收益加成卡 100",
@@ -33,7 +32,7 @@ async def rewards_handler(request: Request) -> HTTPResponse:
         code=CODE.SUCCESS,
         data=RewardsResponse(
             rewards=list(REWARDS),
-        ).dict(),
+        ).model_dump(),
     )
 
 
@@ -54,7 +53,7 @@ class LotteryRecordsResponse(BaseModel):
 
 
 @lottery_reward_record_viewer_blueprint.post("/lottery_records")
-@inject_data_model_from_body(LotteryRecordsRequest)
+@sanic_inject_pydantic_model(LotteryRecordsRequest)
 def lottery_records_handler(
     request: Request, data: LotteryRecordsRequest
 ) -> HTTPResponse:
@@ -86,5 +85,5 @@ def lottery_records_handler(
                 for x in result
             ],
             total=total,
-        ).dict(),
+        ).model_dump(),
     )

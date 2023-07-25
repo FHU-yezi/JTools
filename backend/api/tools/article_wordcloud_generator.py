@@ -5,10 +5,9 @@ from JianshuResearchTools.objects import Article, set_cache_status
 from sanic import Blueprint, HTTPResponse, Request
 from sspeedup.ability.word_split.jieba import AbilityJiebaPossegSplitterV1
 from sspeedup.api import CODE, sanic_response_json
+from sspeedup.data_validation import BaseModel, sanic_inject_pydantic_model
 
 from utils.config import config
-from utils.inject_data_model import inject_data_model_from_body
-from utils.pydantic_base import BaseModel
 
 set_cache_status(False)
 
@@ -33,7 +32,7 @@ class WordFreqDataResponse(BaseModel):
 
 
 @article_wordcloud_generator_blueprint.post("/word_freq_data")
-@inject_data_model_from_body(WordFreqDataRequest)
+@sanic_inject_pydantic_model(WordFreqDataRequest)
 def word_freq_data_handler(request: Request, data: WordFreqDataRequest) -> HTTPResponse:
     del request
 
@@ -52,5 +51,5 @@ def word_freq_data_handler(request: Request, data: WordFreqDataRequest) -> HTTPR
 
     return sanic_response_json(
         code=CODE.SUCCESS,
-        data=WordFreqDataResponse(title=title, word_freq=word_freq).dict(),
+        data=WordFreqDataResponse(title=title, word_freq=word_freq).model_dump(),
     )

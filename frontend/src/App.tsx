@@ -1,6 +1,7 @@
+import type { VNode } from "preact";
 import { Suspense, lazy } from "preact/compat";
-import { Route, Switch } from "wouter-preact";
-import Loading from "./components/Loading";
+import { Route, RouteProps, Switch } from "wouter-preact";
+import LoadingPage from "./components/LoadingPage";
 import ToolWrapper from "./components/ToolWrapper";
 import MainPage from "./pages/MainPage";
 import ThanksPage from "./pages/ThanksPage";
@@ -16,28 +17,30 @@ export default function App() {
       <Route path="/">
         <MainPage />
       </Route>
-      {routes.map((item) => (
-        <Route key={item.path} path={item.path}>
-          <ToolWrapper toolName={item.toolName} Component={item.component} />
-        </Route>
-      ))}
+      {
+        routes.map((item) => (
+          <Route key={item.path} path={item.path}>
+            <ToolWrapper toolName={item.toolName} Component={item.component} />
+          </Route>
+        )) as unknown as VNode<RouteProps<undefined, string>>
+      }
       <Route path="/thanks">
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<LoadingPage />}>
           <ThanksPage />
         </Suspense>
       </Route>
       <Route path="/v2-unimplemented">
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<LoadingPage />}>
           <V2UnimplementedPage />
         </Suspense>
       </Route>
       <Route path="/v2-unavaliable">
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<LoadingPage />}>
           <V2UnavaliablePage />
         </Suspense>
       </Route>
       <Route>
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<LoadingPage />}>
           <NotFoundPage />
         </Suspense>
       </Route>

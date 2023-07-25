@@ -1,17 +1,17 @@
 from datetime import datetime, timedelta  # noqa: N999
-from typing import Dict, Literal, Optional
+from typing import Dict, Literal
 
 from httpx import Client
 from sanic import Blueprint, HTTPResponse, Request
 from sspeedup.api import CODE, sanic_response_json
 from sspeedup.cache.timeout import timeout_cache
+from sspeedup.data_validation import BaseModel, sanic_inject_pydantic_model
+from sspeedup.time_helper import get_start_time
 
 from utils.db import JPEP_FTN_market_db
-from utils.inject_data_model import inject_data_model_from_query_args
-from utils.pydantic_base import BaseModel
-from utils.time_helper import get_data_start_time
 
 TEXT_TO_TIMEDELTA: Dict[str, timedelta] = {
+    "6h": timedelta(hours=6),
     "24h": timedelta(hours=24),
     "7d": timedelta(days=7),
     "15d": timedelta(days=15),
@@ -87,19 +87,23 @@ def get_price_trend_data(
             {
                 "$match": {
                     "fetch_time": {
-                        "$gte": get_data_start_time(td),
+                        "$gte": get_start_time(td),
                     },
                     "trade_type": type_,
                 }
             },
             {
                 "$group": {
-                    "_id": {
-                        "$dateTrunc": {
-                            "date": "$fetch_time",
-                            "unit": unit,
-                        },
-                    },
+                    "_id": (
+                        {
+                            "$dateTrunc": {
+                                "date": "$fetch_time",
+                                "unit": unit,
+                            },
+                        }
+                    )
+                    if td >= timedelta(hours=24)
+                    else "$fetch_time",
                     "price": {
                         "$min" if type_ == "buy" else "$max": "$price",
                     },
@@ -132,7 +136,7 @@ def get_pool_amount_trend_data(
                 "$match": {
                     "trade_type": type_,
                     "fetch_time": {
-                        "$gte": get_data_start_time(td),
+                        "$gte": get_start_time(td),
                     },
                 },
             },
@@ -146,12 +150,16 @@ def get_pool_amount_trend_data(
             },
             {
                 "$group": {
-                    "_id": {
-                        "$dateTrunc": {
-                            "date": "$_id",
-                            "unit": "hour",
-                        },
-                    },
+                    "_id": (
+                        {
+                            "$dateTrunc": {
+                                "date": "$_id",
+                                "unit": "hour",
+                            },
+                        }
+                    )
+                    if td >= timedelta(hours=24)
+                    else "$_id",
                     "amount": {
                         "$avg": "$amount",
                     },
@@ -176,6 +184,46 @@ def get_pool_amount_trend_data(
     }
 
 
+def get_per_price_amount_data(
+    type_: Literal["buy", "sell"], time: datetime
+) -> Dict[float, int]:
+    db_result = JPEP_FTN_market_db.aggregate(
+        [
+            {
+                "$match": {
+                    "fetch_time": time,
+                    "trade_type": type_,
+                },
+            },
+            {
+                "$group": {
+                    "_id": "$price",
+                    "amount": {
+                        "$sum": "$amount.tradable",
+                    },
+                },
+            },
+            {
+                "$match": {
+                    "amount": {
+                        "$ne": 0,
+                    },
+                },
+            },
+            {
+                "$sort": {
+                    "_id": 1 if type_ == "buy" else -1,
+                },
+            },
+            {
+                "$limit": 10,
+            },
+        ]
+    )
+
+    return {item["_id"]: item["amount"] for item in db_result}
+
+
 class DataUpdateTimeResponse(BaseModel):
     data_update_time: int
 
@@ -190,13 +238,13 @@ def data_update_time_handler(request: Request) -> HTTPResponse:
         code=CODE.SUCCESS,
         data=DataUpdateTimeResponse(
             data_update_time=int(data_update_time.timestamp())
-        ).dict(),
+        ).model_dump(),
     )
 
 
 class PriceResponse(BaseModel):
-    buy_price: Optional[float]
-    sell_price: Optional[float]
+    buy_price: float
+    sell_price: float
 
 
 @JPEP_FTN_market_analyzer_blueprint.get("/price")
@@ -210,7 +258,7 @@ def price_handler(request: Request) -> HTTPResponse:
 
     return sanic_response_json(
         code=CODE.SUCCESS,
-        data=PriceResponse(buy_price=buy_price, sell_price=sell_price).dict(),
+        data=PriceResponse(buy_price=buy_price, sell_price=sell_price).model_dump(),
     )
 
 
@@ -230,7 +278,9 @@ def pool_amount_handler(request: Request) -> HTTPResponse:
 
     return sanic_response_json(
         code=CODE.SUCCESS,
-        data=PoolAmountResponse(buy_amount=buy_amount, sell_amount=sell_amount).dict(),
+        data=PoolAmountResponse(
+            buy_amount=buy_amount, sell_amount=sell_amount
+        ).model_dump(),
     )
 
 
@@ -266,12 +316,12 @@ def JPEP_rules_handler(request: Request) -> HTTPResponse:  # noqa: N802
             buy_order_minimum_price=buy_order_minimum_price,
             sell_order_minimum_price=sell_order_minimum_price,
             trade_fee_percent=trade_fee_percent,
-        ).dict(),
+        ).model_dump(),
     )
 
 
 class PriceTrendDataRequest(BaseModel):
-    time_range: Literal["24h", "7d", "15d", "30d"]
+    time_range: Literal["6h", "24h", "7d", "15d", "30d"]
 
 
 class PriceTrendDataResponse(BaseModel):
@@ -280,7 +330,7 @@ class PriceTrendDataResponse(BaseModel):
 
 
 @JPEP_FTN_market_analyzer_blueprint.get("/price_trend_data")
-@inject_data_model_from_query_args(PriceTrendDataRequest)
+@sanic_inject_pydantic_model(PriceTrendDataRequest, source="query_args")
 def price_trend_data_handler(
     request: Request, data: PriceTrendDataRequest
 ) -> HTTPResponse:
@@ -294,12 +344,12 @@ def price_trend_data_handler(
         data=PriceTrendDataResponse(
             buy_trend=buy_trend,
             sell_trend=sell_trend,
-        ).dict(),
+        ).model_dump(),
     )
 
 
 class PoolAmountTrendDataRequest(BaseModel):
-    time_range: Literal["24h", "7d", "15d", "30d"]
+    time_range: Literal["6h", "24h", "7d", "15d", "30d"]
 
 
 class PoolAmountTrendDataResponse(BaseModel):
@@ -308,7 +358,7 @@ class PoolAmountTrendDataResponse(BaseModel):
 
 
 @JPEP_FTN_market_analyzer_blueprint.get("/pool_amount_trend_data")
-@inject_data_model_from_query_args(PoolAmountTrendDataRequest)
+@sanic_inject_pydantic_model(PoolAmountTrendDataRequest, source="query_args")
 def pool_amount_trend_data_handler(
     request: Request, data: PoolAmountTrendDataRequest
 ) -> HTTPResponse:
@@ -322,5 +372,32 @@ def pool_amount_trend_data_handler(
         data=PoolAmountTrendDataResponse(
             buy_trend=buy_trend,
             sell_trend=sell_trend,
-        ).dict(),
+        ).model_dump(),
+    )
+
+
+class PerPriceAmountRequest(BaseModel):
+    trade_type: Literal["buy", "sell"]
+
+
+class PerPriceAmountResponse(BaseModel):
+    per_price_amount_data: Dict[float, int]
+
+
+@JPEP_FTN_market_analyzer_blueprint.get("/per_price_amount_data")
+@sanic_inject_pydantic_model(PerPriceAmountRequest, source="query_args")
+def per_price_amount_data_handler(
+    request: Request, data: PerPriceAmountRequest
+) -> HTTPResponse:
+    del request
+
+    data_update_time = get_data_update_time()
+
+    per_price_amount_data = get_per_price_amount_data(data.trade_type, data_update_time)
+
+    return sanic_response_json(
+        code=CODE.SUCCESS,
+        data=PerPriceAmountResponse(
+            per_price_amount_data=per_price_amount_data
+        ).model_dump(),
     )

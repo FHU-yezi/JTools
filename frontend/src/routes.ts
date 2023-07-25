@@ -1,9 +1,8 @@
-import type { SpotlightAction } from "@mantine/spotlight";
 import { lazy } from "preact/compat";
 import { JSX } from "preact/jsx-runtime";
 
 export interface RouteItem {
-  component: () => JSX.Element;
+  component(): JSX.Element;
   path: string;
   toolName: string;
   description: string;
@@ -65,9 +64,3 @@ export const routes: RouteItem[] = [
     description: "查询简书会员等级和过期时间。",
   },
 ];
-
-export const spotlightActions: SpotlightAction[] = routes.map((item) => ({
-  title: item.toolName,
-  description: item.description,
-  onTrigger: () => window.open(window.location.origin + item.path, "_self"),
-}));

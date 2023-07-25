@@ -13,7 +13,6 @@ export interface CheckItem {
 export interface CheckResponse {
   title: string;
   release_time: number;
-  release_time_human_readable: string;
   check_passed: boolean;
   check_items: CheckItem[];
 }

@@ -1,11 +1,8 @@
-import { Switch, useMantineColorScheme } from "@mantine/core";
-import { spotlight } from "@mantine/spotlight";
-import { AiOutlineSearch } from "react-icons/ai";
-import { BsMoonStars, BsSun } from "react-icons/bs";
 import { IoIosArrowBack } from "react-icons/io";
 import { useLocation } from "wouter-preact";
-import umamiTrack from "../utils/umamiTrack";
+import SSColorSchemeSwitch from "./SSColorSchemeSwitch";
 import SSText from "./SSText";
+import SearchModal from "./SearchModal";
 
 interface Props {
   toolName: string;
@@ -13,12 +10,11 @@ interface Props {
 }
 
 export default function Header({ toolName, showBackArrow }: Props) {
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const [, setLocation] = useLocation();
 
   return (
     <>
-      <div className="fixed left-0 top-0 z-40 flex h-16 w-full flex-nowrap justify-between bg-gray-50 px-[5vw] shadow-sm dark:bg-gray-800">
+      <div className="color-layer-2 fixed left-0 top-0 z-10 flex h-16 w-full flex-nowrap items-center justify-between px-[5vw] shadow-sm">
         <div className="flex flex-nowrap items-center gap-x-2">
           {showBackArrow && (
             <button
@@ -33,38 +29,15 @@ export default function Header({ toolName, showBackArrow }: Props) {
             </button>
           )}
           <SSText
-            className="max-w-[calc(90vw - 150px)] overflow-hidden text-ellipsis whitespace-nowrap font-bold"
+            className="max-w-[50vw] overflow-x-hidden text-ellipsis whitespace-nowrap font-bold"
             large
           >
             {toolName}
           </SSText>
         </div>
-        <div className="flex flex-nowrap items-center gap-x-4">
-          <button
-            type="button"
-            onClick={() => {
-              umamiTrack("click-search-button");
-              spotlight.open();
-            }}
-            aria-label="Search"
-          >
-            <AiOutlineSearch
-              className="text-gray-500 dark:text-gray-300"
-              size={22}
-            />
-          </button>
-          <Switch
-            size="md"
-            color={colorScheme === "dark" ? "gray" : "dark"}
-            onLabel={<BsMoonStars size={16} />}
-            offLabel={<BsSun size={16} />}
-            checked={colorScheme === "dark"}
-            onChange={() => {
-              toggleColorScheme();
-              umamiTrack("toggle-color-scheme");
-            }}
-            aria-label="Toggle Color Scheme"
-          />
+        <div className="flex flex-nowrap items-center gap-x-3">
+          <SearchModal />
+          <SSColorSchemeSwitch />
         </div>
       </div>
       <div className="h-12" />

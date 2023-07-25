@@ -2,7 +2,7 @@ import clsx from "clsx";
 
 interface Props {
   children: string;
-  className: string;
+  className?: string;
   large?: boolean;
 }
 

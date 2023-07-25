@@ -1,13 +1,15 @@
-import { Avatar, SegmentedControl } from "@mantine/core";
+// TODO: 由于 SegmentedControl 实现问题，暂时不展示会员图标
 import { computed, signal } from "@preact/signals";
 import { JSX } from "preact/jsx-runtime";
+import SSCard from "../components/SSCard";
 import SSNumberInput from "../components/SSNumberInput";
+import SSSegmentedControl from "../components/SSSegmentedControl";
 import SSText from "../components/SSText";
 import { RoundFloat } from "../utils/numberHelper";
-import VIPBadgeBronzeURL from "/vip_badges/vip_badge_bronze.png";
-import VIPBadgeGoldURL from "/vip_badges/vip_badge_gold.png";
-import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";
-import VIPBadgeSilverURL from "/vip_badges/vip_badge_silver.png";
+// import VIPBadgeBronzeURL from "/vip_badges/vip_badge_bronze.png";
+// import VIPBadgeGoldURL from "/vip_badges/vip_badge_gold.png";
+// import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";
+// import VIPBadgeSilverURL from "/vip_badges/vip_badge_silver.png";
 
 type VIPLevelType = "bronze" | "silver" | "gold" | "platina";
 
@@ -25,12 +27,12 @@ const VIPLevelToPrice: Record<VIPLevelType, number> = {
   platina: 64980,
 };
 
-const VIPLevelToBadgeImageURL: Record<VIPLevelType, string> = {
-  bronze: VIPBadgeBronzeURL,
-  silver: VIPBadgeSilverURL,
-  gold: VIPBadgeGoldURL,
-  platina: VIPBadgePlatinaURL,
-};
+// const VIPLevelToBadgeImageURL: Record<VIPLevelType, string> = {
+//   bronze: VIPBadgeBronzeURL,
+//   silver: VIPBadgeSilverURL,
+//   gold: VIPBadgeGoldURL,
+//   platina: VIPBadgePlatinaURL,
+// };
 
 const VIPLevelToBaseEarningRate: Record<VIPLevelType, number> = {
   bronze: 0.048,
@@ -97,6 +99,13 @@ const promoterLevelToLevel2MembersFPEarningRate: Record<
   supreme: 0.012,
 };
 
+const VIPLevelSCData: Record<string, VIPLevelType> = {
+  铜牌: "bronze",
+  银牌: "silver",
+  金牌: "gold",
+  白金: "platina",
+};
+
 const VIPLevel = signal<VIPLevelType>("bronze");
 const VIPText = computed(() => VIPLevelToText[VIPLevel.value]);
 const VIPPrice = computed(() => VIPLevelToPrice[VIPLevel.value]);
@@ -107,7 +116,7 @@ const FPCount = signal(0);
 const FPCountEarningRateFactor = computed(() => {
   // eslint-disable-next-line no-restricted-syntax
   for (const targetFPCount in FPCountToFPCountEarningRateFactor) {
-    if (FPCount <= targetFPCount) {
+    if (FPCount.value <= parseFloat(targetFPCount)) {
       return FPCountToFPCountEarningRateFactor[targetFPCount];
     }
   }
@@ -117,7 +126,7 @@ const membersCount = signal(0);
 const promoterLevel = computed(() => {
   // eslint-disable-next-line no-restricted-syntax
   for (const targetMembersCount in membersCountToPromoterLevel) {
-    if (membersCount <= targetMembersCount) {
+    if (membersCount.value <= parseInt(targetMembersCount, 10)) {
       return membersCountToPromoterLevel[targetMembersCount];
     }
   }
@@ -148,13 +157,13 @@ const earningFromLevel2Members = computed(
     promoterLevelToLevel2MembersFPEarningRate[promoterLevel.value]
 );
 const earningFromMembers = computed(
-  () => earningFromLevel1Members + earningFromLevel2Members
+  () => earningFromLevel1Members.value + earningFromLevel2Members.value
 );
 const earningFromCreation = signal(0);
 const earningFromCreationToFP = computed(() => earningFromCreation.value / 2); // 创作收益一半是简书钻
 const annualEarning = computed(() => {
   let nowFPCount = FPCount.value;
-  for (let i = 0; i < 366; i++) {
+  for (let i = 0; i < 366; i += 1) {
     const earningFromFP = nowFPCount * (earningRate.value / 365);
     nowFPCount += earningFromFP;
     nowFPCount += earningFromCreationToFP.value;
@@ -224,76 +233,20 @@ interface ResultGroupProps {
 
 function ResultGroup({ children, label }: ResultGroupProps) {
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border bg-white p-5 shadow dark:border-gray-700 dark:bg-gray-900">
-      <SSText xlarge bold>
-        {label}
-      </SSText>
+    <SSCard title={label}>
       <div className="flex flex-col gap-3">{children}</div>
-    </div>
+    </SSCard>
   );
 }
 
 export default function VIPProfitCompute() {
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col">
-        <SSText bold>会员等级</SSText>
-        <SegmentedControl
-          mt={6}
-          value={VIPLevel.value}
-          onChange={(newValue: VIPLevelType) => (VIPLevel.value = newValue)}
-          data={[
-            {
-              label: (
-                <div className="grid place-content-center">
-                  <SSText className="flex">
-                    {" "}
-                    <Avatar size={20} mr={8} src={VIPBadgeBronzeURL} />
-                    铜牌
-                  </SSText>
-                </div>
-              ),
-              value: "bronze",
-            },
-            {
-              label: (
-                <div className="grid place-content-center">
-                  <SSText className="flex">
-                    {" "}
-                    <Avatar size={20} mr={8} src={VIPBadgeSilverURL} />
-                    银牌
-                  </SSText>
-                </div>
-              ),
-              value: "silver",
-            },
-            {
-              label: (
-                <div className="grid place-content-center">
-                  <SSText className="flex">
-                    {" "}
-                    <Avatar size={20} mr={8} src={VIPBadgeGoldURL} />
-                    金牌
-                  </SSText>
-                </div>
-              ),
-              value: "gold",
-            },
-            {
-              label: (
-                <div className="grid place-content-center">
-                  <SSText className="flex">
-                    {" "}
-                    <Avatar size={20} mr={8} src={VIPBadgePlatinaURL} />
-                    白金
-                  </SSText>
-                </div>
-              ),
-              value: "platina",
-            },
-          ]}
-        />
-      </div>
+      <SSSegmentedControl
+        label="会员等级"
+        value={VIPLevel}
+        data={VIPLevelSCData}
+      />
       <SSNumberInput label="持钻量" value={FPCount} min={0} />
       <SSNumberInput label="旗下会员数" value={membersCount} min={0} />
       <SSNumberInput
@@ -308,7 +261,7 @@ export default function VIPProfitCompute() {
       />
       <SSNumberInput label="每日创作收益" value={earningFromCreation} min={0} />
 
-      <div className="md: mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <ResultGroup label="会员持钻收益">
           <ResultItem
             label="基础收益率"

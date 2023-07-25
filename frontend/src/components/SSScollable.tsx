@@ -1,9 +1,9 @@
-import { JSX } from "preact/jsx-runtime";
+import type { ComponentChildren } from "preact";
 
 interface Props {
-  children: JSX.Element | (() => JSX.Element);
+  children: ComponentChildren;
 }
 
 export default function SSScolllable({ children }: Props) {
-  return <div className="overflow-x-scroll">{children}</div>;
+  return <div className="overflow-x-auto">{children}</div>;
 }

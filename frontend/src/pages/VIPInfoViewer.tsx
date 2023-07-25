@@ -1,6 +1,7 @@
-import { Avatar } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
 import { batch, signal } from "@preact/signals";
+import type { Dayjs } from "dayjs";
+import toast from "react-hot-toast";
+import SSAvatar from "../components/SSAvatar";
 import SSBadge from "../components/SSBadge";
 import SSButton from "../components/SSButton";
 import SSLink from "../components/SSLink";
@@ -12,19 +13,21 @@ import {
 } from "../models/VIPInfoViewer/VIPInfo";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
-import { getDate, parseTime } from "../utils/timeHelper";
+import {
+  getDate,
+  getHumanReadableTimeDelta,
+  parseTime,
+} from "../utils/timeHelper";
 import VIPBadgeBronzeURL from "/vip_badges/vip_badge_bronze.png";
 import VIPBadgeGoldURL from "/vip_badges/vip_badge_gold.png";
 import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";
 import VIPBadgeSilverURL from "/vip_badges/vip_badge_silver.png";
 
 const userURL = signal("");
-const hasResult = signal(false);
-const userName = signal("");
+const userName = signal<string | undefined>(undefined);
 const isLoading = signal(false);
-const VIPType = signal("");
-const VIPExpireTime = signal<Date | undefined>(undefined);
-const VIPExpireTimeToNowHumanReadable = signal("");
+const VIPType = signal<string | undefined>(undefined);
+const VIPExpireTime = signal<Dayjs | undefined>(undefined);
 
 const VIPTypeToBadgeImageURL: Record<string, string> = {
   铜牌: VIPBadgeBronzeURL,
@@ -39,9 +42,8 @@ function handleQuery() {
   }
 
   if (userURL.value.length === 0) {
-    notifications.show({
-      message: "请输入用户个人主页链接",
-      color: "blue",
+    toast("请输入用户个人主页链接", {
+      icon: " ⚠️",
     });
     return;
   }
@@ -59,12 +61,9 @@ function handleQuery() {
           VIPType.value = data.VIP_type;
           if (typeof data.VIP_expire_time !== "undefined") {
             VIPExpireTime.value = parseTime(data.VIP_expire_time);
-            VIPExpireTimeToNowHumanReadable.value =
-              data.VIP_expire_time_to_now_human_readable!;
           }
         }),
       commonAPIErrorHandler,
-      hasResult,
       isLoading
     );
   } catch {}
@@ -81,19 +80,22 @@ export default function VIPInfoViewer() {
       <SSButton onClick={handleQuery} loading={isLoading.value}>
         查询
       </SSButton>
-      {hasResult.value && (
+
+      {typeof userName.value !== "undefined" && (
+        <SSText>
+          昵称：
+          <SSLink url={userURL.value} label={userName.value} isExternal />
+        </SSText>
+      )}
+
+      {typeof VIPType.value !== "undefined" && (
         <>
-          <SSText>
-            昵称：
-            <SSLink url={userURL.value} label={userName.value} isExternal />
-          </SSText>
           <div className="flex max-w-fit items-center gap-1">
             <SSText>会员级别：</SSText>
-            <Avatar
-              alt={`${VIPType.value} 徽章图片`}
-              size={24}
-              mr={6}
+            <SSAvatar
+              className="mr-1.5 h-6 w-6"
               src={VIPTypeToBadgeImageURL[VIPType.value]}
+              alt={`${VIPType.value} 徽章图标`}
             />
             <SSBadge className="bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
               {VIPType.value}
@@ -102,8 +104,8 @@ export default function VIPInfoViewer() {
           {VIPType.value !== "无会员" && (
             <SSText>
               到期时间：
-              {getDate(VIPExpireTime.value!)}
-              （剩余 {VIPExpireTimeToNowHumanReadable.value}）
+              {getDate(VIPExpireTime.value!)}（
+              {getHumanReadableTimeDelta(VIPExpireTime.value!)}）
             </SSText>
           )}
         </>
