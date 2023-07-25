@@ -94,7 +94,7 @@ function RewardsFliter() {
               removeSpace(item)
             );
             rewards.value.forEach(
-              (name) => (rewardSelectedSignals.value[name] = signal(false))
+              (name) => (rewardSelectedSignals.value[name] = signal(true))
             );
             dataReady.value = true;
           }),
