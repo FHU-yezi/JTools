@@ -1,9 +1,10 @@
-import { signal } from "@preact/signals";
-import { DataTable, DataTableSortStatus } from "mantine-datatable";
+import { computed, signal } from "@preact/signals";
 import toast from "react-hot-toast";
 import SSAutocomplete from "../components/SSAutocomplete";
 import SSButton from "../components/SSButton";
+import SSLazyLoadTable from "../components/SSLazyLoadTable";
 import SSLink from "../components/SSLink";
+import SSSegmentedControl from "../components/SSSegmentedControl";
 import SSText from "../components/SSText";
 import {
   OnRankRecordItem,
@@ -18,18 +19,20 @@ import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import { getDate, parseTime } from "../utils/timeHelper";
 
-const PAGE_SIZE = 50;
-
 const userURLOrUserName = signal("");
+const sortSelect = signal<
+  "onrank_date desc" | "onrank_date asc" | "ranking desc" | "ranking asc"
+>("onrank_date desc");
+const sortBy = computed<"onrank_date" | "ranking">(
+  () => sortSelect.value.split(" ")[0] as any
+);
+const sortOrder = computed<"asc" | "desc">(
+  () => sortSelect.value.split(" ")[1] as any
+);
 const completeItems = signal<string[]>([]);
 const isLoading = signal(false);
+const hasMore = signal(true);
 const result = signal<OnRankRecordItem[] | undefined>(undefined);
-const resultTotalCount = signal<number | undefined>(undefined);
-const currentPage = signal(1);
-const resultTableSortStatus = signal<DataTableSortStatus>({
-  columnAccessor: "date",
-  direction: "desc",
-});
 
 function isURL(string: string): boolean {
   return string.startsWith("https://");
@@ -56,7 +59,7 @@ function handleCompleteItemUpdate(value: string) {
   } catch {}
 }
 
-function handleQuery(offset: number) {
+function handleQuery() {
   if (userURLOrUserName.value.length === 0) {
     toast("请输入用户昵称或个人主页链接", {
       icon: " ⚠️",
@@ -65,8 +68,18 @@ function handleQuery(offset: number) {
   }
 
   const requestBody: OnRankRecordsRequest = isURL(userURLOrUserName.value)
-    ? { user_url: userURLOrUserName.value, offset }
-    : { user_name: userURLOrUserName.value.trim(), offset };
+    ? {
+        user_url: userURLOrUserName.value,
+        sort_by: sortBy.value,
+        sort_order: sortOrder.value,
+        offset: 0,
+      }
+    : {
+        user_name: userURLOrUserName.value.trim(),
+        sort_by: sortBy.value,
+        sort_order: sortOrder.value,
+        offset: 0,
+      };
 
   try {
     fetchData<OnRankRecordsRequest, OnRankRecordsResponse>(
@@ -75,7 +88,9 @@ function handleQuery(offset: number) {
       requestBody,
       (data) => {
         result.value = data.records;
-        resultTotalCount.value = data.total;
+        if (data.records.length === 0) {
+          hasMore.value = false;
+        }
       },
       commonAPIErrorHandler,
       isLoading
@@ -83,81 +98,61 @@ function handleQuery(offset: number) {
   } catch {}
 }
 
-function handleResultTableSort() {
-  const sortKey = resultTableSortStatus.value.columnAccessor;
-  const sortDirection = resultTableSortStatus.value.direction;
-  let resultToSort = result.value;
+function handleLoadMore() {
+  const requestBody: OnRankRecordsRequest = isURL(userURLOrUserName.value)
+    ? {
+        user_url: userURLOrUserName.value,
+        sort_by: sortBy.value,
+        sort_order: sortOrder.value,
+        offset: result.value!.length + 1,
+      }
+    : {
+        user_name: userURLOrUserName.value.trim(),
+        sort_by: sortBy.value,
+        sort_order: sortOrder.value,
+        offset: result.value!.length + 1,
+      };
 
-  resultToSort = resultToSort!.map((item) => {
-    item.date = parseTime(item.date).unix();
-    return item;
-  });
-
-  resultToSort.sort(
-    (a: Record<string, any>, b: Record<string, any>) => a[sortKey] - b[sortKey]
-  );
-
-  if (sortDirection === "desc") {
-    result.value = resultToSort.reverse();
-  } else {
-    result.value = resultToSort;
-  }
+  try {
+    fetchData<OnRankRecordsRequest, OnRankRecordsResponse>(
+      "POST",
+      "/tools/on_rank_article_viewer/on_rank_records",
+      requestBody,
+      (data) => {
+        result.value = result.value!.concat(data.records);
+        if (data.records.length === 0) {
+          hasMore.value = false;
+        }
+      },
+      commonAPIErrorHandler,
+      isLoading
+    );
+  } catch {}
 }
 
 function ResultTable() {
   return (
-    <DataTable
-      height={600}
-      records={result.value}
-      columns={[
-        {
-          accessor: "date",
-          title: "日期",
-          sortable: true,
-          noWrap: true,
-          render: (record) => getDate(parseTime(record.date)),
-        },
-        {
-          accessor: "ranking",
-          title: "排名",
-          noWrap: true,
-          sortable: true,
-        },
-        {
-          accessor: "title",
-          title: "文章",
-          render: (record) => (
-            <SSLink
-              url={record.url}
-              label={
-                record.title.length <= 30
-                  ? record.title
-                  : `${record.title.substring(0, 30)}...`
-              }
-              isExternal
-              hideIcon
-            />
-          ),
-        },
-        {
-          accessor: "FP_reward_count",
-          title: "获钻量",
-          noWrap: true,
-          sortable: true,
-        },
-      ]}
-      sortStatus={resultTableSortStatus.value}
-      onSortStatusChange={(newStatus) => {
-        resultTableSortStatus.value = newStatus;
-        handleResultTableSort();
-      }}
-      totalRecords={resultTotalCount.value}
-      recordsPerPage={PAGE_SIZE}
-      page={currentPage.value}
-      onPageChange={(page) => {
-        handleQuery((page - 1) * PAGE_SIZE);
-        currentPage.value = page;
-      }}
+    <SSLazyLoadTable
+      data={result.value!.map((item) => ({
+        日期: getDate(parseTime(item.date)),
+        排名: item.ranking,
+        文章: (
+          <SSLink
+            url={item.url}
+            label={
+              item.title.length <= 30
+                ? item.title
+                : `${item.title.substring(0, 30)}...`
+            }
+            isExternal
+            hideIcon
+          />
+        ),
+        获钻量: item.FP_reward_count,
+      }))}
+      onLoadMore={handleLoadMore}
+      hasMore={hasMore}
+      isLoading={isLoading}
     />
   );
 }
@@ -168,11 +163,21 @@ export default function OnRankArticleViewer() {
       <SSAutocomplete
         label="用户昵称 / 个人主页链接"
         value={userURLOrUserName}
-        onEnter={() => handleQuery(0)}
+        onEnter={handleQuery}
         onValueChange={handleCompleteItemUpdate}
         completeItems={completeItems}
       />
-      <SSButton onClick={() => handleQuery(0)} loading={isLoading.value}>
+      <SSSegmentedControl
+        label="排序依据"
+        value={sortSelect}
+        data={{
+          "上榜日期（倒序）": "onrank_date desc",
+          "上榜日期（正序）": "onrank_date asc",
+          "排名（倒序）": "ranking desc",
+          "排名（正序）": "ranking asc",
+        }}
+      />
+      <SSButton onClick={handleQuery} loading={isLoading.value}>
         查询
       </SSButton>
 

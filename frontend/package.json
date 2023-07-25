@@ -17,7 +17,6 @@
     "chartjs-chart-wordcloud": "^4.2.0",
     "clsx": "^1.2.1",
     "dayjs": "^1.11.9",
-    "mantine-datatable": "^2.7.1",
     "postcss": "^8.4.24",
     "preact": "^10.15.1",
     "react-chartjs-2": "^5.2.0",

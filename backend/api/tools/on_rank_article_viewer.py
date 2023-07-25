@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Literal, Optional
 
 from JianshuResearchTools.assert_funcs import AssertUserUrl
 from JianshuResearchTools.exceptions import InputError
@@ -60,6 +60,8 @@ def user_name_autocomplete_handler(
 class OnRankRecordsRequest(BaseModel):
     user_url: Optional[str] = None
     user_name: Optional[str] = None
+    sort_by: Literal["onrank_date", "ranking"]
+    sort_order: Literal["asc", "desc"]
     offset: int
 
 
@@ -95,7 +97,10 @@ def on_rank_records_handler(
         try:
             AssertUserUrl(data.user_url)
         except InputError:
-            return sanic_response_json(code=CODE.BAD_ARGUMENTS, message="输入的用户个人主页链接无效")
+            return sanic_response_json(
+                code=CODE.BAD_ARGUMENTS,
+                message="输入的用户个人主页链接无效",
+            )
 
     filter_dict: Dict[str, Any] = (
         {"author.name": data.user_name}
@@ -105,7 +110,10 @@ def on_rank_records_handler(
 
     result: List[Dict] = (
         article_FP_rank_db.find(filter_dict)
-        .sort("date", -1)
+        .sort(
+            "date" if data.sort_by == "onrank_date" else "ranking",
+            1 if data.sort_order == "asc" else -1,
+        )
         .skip(data.offset)
         .limit(50)
     )  # type: ignore

@@ -1,6 +1,8 @@
 export interface OnRankRecordsRequest {
   user_url?: string;
   user_name?: string;
+  sort_by: "onrank_date" | "ranking";
+  sort_order: "asc" | "desc";
   offset: number;
 }
 
