@@ -48,6 +48,7 @@ Chart.register(
 );
 
 const TimeRangeSCData = {
+  "6 小时": "6h",
   "24 小时": "24h",
   "7 天": "7d",
   "15 天": "15d",
@@ -67,10 +68,10 @@ const totalPoolAmount = computed(() =>
     ? buyPoolAmount.value + sellPoolAmount.value
     : null
 );
-const PriceTrendLineTimeRange = signal<TimeRange>("24h");
+const PriceTrendLineTimeRange = signal<TimeRange>("6h");
 const BuyPriceTrendData = signal<PriceTrendDataItem | undefined>(undefined);
 const SellPriceTrendData = signal<PriceTrendDataItem | undefined>(undefined);
-const PoolAmountTrendLineTimeRange = signal<TimeRange>("24h");
+const PoolAmountTrendLineTimeRange = signal<TimeRange>("6h");
 const BuyPoolAmountTrendData = signal<PoolAmountTrendDataItem | undefined>(
   undefined
 );

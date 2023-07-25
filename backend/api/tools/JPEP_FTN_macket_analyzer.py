@@ -11,6 +11,7 @@ from sspeedup.time_helper import get_start_time
 from utils.db import JPEP_FTN_market_db
 
 TEXT_TO_TIMEDELTA: Dict[str, timedelta] = {
+    "6h": timedelta(hours=6),
     "24h": timedelta(hours=24),
     "7d": timedelta(days=7),
     "15d": timedelta(days=15),
@@ -93,12 +94,12 @@ def get_price_trend_data(
             },
             {
                 "$group": {
-                    "_id": {
+                    "_id": ({
                         "$dateTrunc": {
                             "date": "$fetch_time",
                             "unit": unit,
                         },
-                    },
+                    }) if td >= timedelta(hours=24) else "$fetch_time" ,
                     "price": {
                         "$min" if type_ == "buy" else "$max": "$price",
                     },
@@ -145,12 +146,12 @@ def get_pool_amount_trend_data(
             },
             {
                 "$group": {
-                    "_id": {
+                    "_id": ({
                         "$dateTrunc": {
                             "date": "$_id",
                             "unit": "hour",
                         },
-                    },
+                    }) if td >= timedelta(hours=24) else "$_id" ,
                     "amount": {
                         "$avg": "$amount",
                     },
@@ -272,7 +273,7 @@ def JPEP_rules_handler(request: Request) -> HTTPResponse:  # noqa: N802
 
 
 class PriceTrendDataRequest(BaseModel):
-    time_range: Literal["24h", "7d", "15d", "30d"]
+    time_range: Literal["6h", "24h", "7d", "15d", "30d"]
 
 
 class PriceTrendDataResponse(BaseModel):
@@ -300,7 +301,7 @@ def price_trend_data_handler(
 
 
 class PoolAmountTrendDataRequest(BaseModel):
-    time_range: Literal["24h", "7d", "15d", "30d"]
+    time_range: Literal["6h", "24h", "7d", "15d", "30d"]
 
 
 class PoolAmountTrendDataResponse(BaseModel):
