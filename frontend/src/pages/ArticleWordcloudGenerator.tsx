@@ -1,13 +1,10 @@
 import { batch, signal } from "@preact/signals";
-import { Chart as ChartInstance, Colors, LinearScale } from "chart.js";
-import { WordCloudController, WordElement } from "chartjs-chart-wordcloud";
-import { Chart } from "react-chartjs-2";
 import toast from "react-hot-toast";
-import ChartWrapper from "../components/ChartWrapper";
 import SSButton from "../components/SSButton";
 import SSLink from "../components/SSLink";
 import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
+import SSWordcloud from "../components/charts/SSWordcloud";
 import {
   WordFreqDataItem,
   WordFreqDataRequest,
@@ -16,16 +13,10 @@ import {
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 
-ChartInstance.register(Colors, LinearScale, WordCloudController, WordElement);
-
 const articleURL = signal("");
 const isLoading = signal(false);
 const articleTitle = signal<string | undefined>(undefined);
 const wordFreqData = signal<WordFreqDataItem | undefined>(undefined);
-
-interface WordcloudProps {
-  data: WordFreqDataItem;
-}
 
 function handleGenerate() {
   if (articleURL.value.length === 0) {
@@ -51,29 +42,13 @@ function handleGenerate() {
   );
 }
 
-function Wordcloud({ data }: WordcloudProps) {
-  const scale = 120 / Math.max(...Object.values(data));
+function Wordcloud() {
   return (
-    <Chart
-      type="wordCloud"
-      data={{
-        labels: Object.keys(data),
-        datasets: [
-          {
-            // 使用最高频词的出现次数调整每个词的大小，使高频词不至于过大而溢出画面
-            data: Object.values(data).map((item) => item * scale),
-            color: "#EA6F5A",
-          },
-        ],
-      }}
-      options={{
-        events: [],
-        plugins: {
-          legend: {
-            display: false,
-          },
-        },
-      }}
+    <SSWordcloud
+      data={Object.entries(wordFreqData.value!).map(([text, value]) => ({
+        text,
+        value,
+      }))}
     />
   );
 }
@@ -106,16 +81,7 @@ export default function ArticleWordcloudGenerator() {
           </SSText>
         )}
 
-      {typeof wordFreqData.value !== "undefined" && (
-        <ChartWrapper
-          chartType="radial"
-          minWidth={800}
-          height={500}
-          allowOverflow
-        >
-          <Wordcloud data={wordFreqData.value} />
-        </ChartWrapper>
-      )}
+      {wordFreqData.value !== undefined && <Wordcloud />}
     </div>
   );
 }
