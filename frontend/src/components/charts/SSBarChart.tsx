@@ -89,6 +89,7 @@ export default function SSBarChart({
           lineWidth: 2,
         });
       } else {
+        echartObject.value.setOption(options);
         echartObject.value.hideLoading();
       }
     }

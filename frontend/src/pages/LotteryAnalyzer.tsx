@@ -1,26 +1,13 @@
 import { signal } from "@preact/signals";
-import {
-  ArcElement,
-  CategoryScale,
-  Chart,
-  Colors,
-  Legend,
-  LineController,
-  LineElement,
-  LinearScale,
-  PieController,
-  PointElement,
-  Tooltip,
-} from "chart.js";
 import type { ComponentChildren } from "preact";
 import { useEffect } from "preact/hooks";
-import { Line, Pie } from "react-chartjs-2";
-import ChartWrapper from "../components/ChartWrapper";
 import SSSegmentedControl from "../components/SSSegmentedControl";
 import SSSkeleton from "../components/SSSkeleton";
 import SSTable from "../components/SSTable";
 import SSText from "../components/SSText";
 import SSTooltip from "../components/SSTooltip";
+import SSLineChart from "../components/charts/SSLineChart";
+import SSPieChart from "../components/charts/SSPieChart";
 import {
   PerPrizeDataItem,
   PerPrizeDataRequest,
@@ -40,19 +27,6 @@ import { TimeRange, TimeRangeWithoutAll } from "../models/LotteryAnalyzer/base";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import { RoundFloat } from "../utils/numberHelper";
-
-Chart.register(
-  ArcElement,
-  CategoryScale,
-  Colors,
-  Legend,
-  LineController,
-  LineElement,
-  LinearScale,
-  PieController,
-  PointElement,
-  Tooltip
-);
 
 const timeRangeSCData = {
   "1 天": "1d",
@@ -166,10 +140,30 @@ function PerPrizeAnalyzeTable() {
 
 function RewardWinsCountPie() {
   return (
-    <Pie
-      data={{
-        labels: Object.keys(rewardWinsCountData.value!),
-        datasets: [{ data: Object.values(rewardWinsCountData.value!) }],
+    <SSPieChart
+      className="h-96 w-full"
+      dataReady={rewardWinsCountData.value !== undefined}
+      options={{
+        series: [
+          {
+            type: "pie",
+            silent: true,
+            radius: ["30%", "50%"],
+            label: {
+              overflow: "breakAll",
+              formatter: "{b}：{c} 次 ({d}%)",
+            },
+            data:
+              rewardWinsCountData.value === undefined
+                ? undefined
+                : Object.entries(rewardWinsCountData.value).map(
+                    ([name, value]) => ({ name, value })
+                  ),
+          },
+        ],
+        legend: {
+          show: true,
+        },
       }}
     />
   );
@@ -177,25 +171,33 @@ function RewardWinsCountPie() {
 
 function RewardWinsTrendLine() {
   return (
-    <Line
-      data={{
-        labels: Object.keys(rewardWinsTrendData.value!),
-        datasets: [
+    <SSLineChart
+      className="h-72 w-full"
+      dataReady={rewardWinsTrendData.value !== undefined}
+      options={{
+        xAxis: {
+          type: "category",
+          data:
+            rewardWinsTrendData.value === undefined
+              ? undefined
+              : Object.keys(rewardWinsTrendData.value),
+        },
+        yAxis: {
+          type: "value",
+        },
+        series: [
           {
-            data: Object.values(rewardWinsTrendData.value!),
-            cubicInterpolationMode: "monotone",
+            type: "line",
+            smooth: true,
+            data:
+              rewardWinsTrendData.value === undefined
+                ? undefined
+                : Object.values(rewardWinsTrendData.value),
           },
         ],
-      }}
-      options={{
-        interaction: {
-          intersect: false,
-          axis: "x",
-        },
-        plugins: {
-          legend: {
-            display: false,
-          },
+        tooltip: {
+          show: true,
+          trigger: "axis",
         },
       }}
     />
@@ -255,12 +257,7 @@ export default function LotteryAnalyzer() {
           data={timeRangeSCData}
         />
       </div>
-      <ChartWrapper
-        chartType="pie"
-        show={typeof rewardWinsCountData.value !== "undefined"}
-      >
-        <RewardWinsCountPie />
-      </ChartWrapper>
+      <RewardWinsCountPie />
 
       <SSText xlarge xbold>
         中奖次数趋势
@@ -272,12 +269,7 @@ export default function LotteryAnalyzer() {
           data={timeRangeWithoutAllSCData}
         />
       </div>
-      <ChartWrapper
-        chartType="radial"
-        show={typeof rewardWinsTrendData.value !== "undefined"}
-      >
-        <RewardWinsTrendLine />
-      </ChartWrapper>
+      <RewardWinsTrendLine />
     </div>
   );
 }

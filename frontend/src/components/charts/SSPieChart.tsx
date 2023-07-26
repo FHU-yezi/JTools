@@ -75,6 +75,7 @@ export default function SSPieChart({
           lineWidth: 2,
         });
       } else {
+        echartObject.value.setOption(options);
         echartObject.value.hideLoading();
       }
     }
