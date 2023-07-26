@@ -1,5 +1,6 @@
 import { useLocalStorage } from "@mantine/hooks";
 import { useSignal } from "@preact/signals";
+import clsx from "clsx";
 import type { PieSeriesOption } from "echarts/charts";
 import { PieChart } from "echarts/charts";
 import type {
@@ -39,11 +40,16 @@ export default function SSPieChart({
 
   const observer = new ResizeObserver(() => echartObject.value!.resize());
 
+  const optionsToApply = {
+    ...options,
+    // 透明背景
+    backgroundColor: "",
+  };
+
   useEffect(() => {
     if (echartObject.value === undefined && chartDivRef.current !== null) {
       echartObject.value = echarts.init(chartDivRef.current);
-      // 透明背景
-      echartObject.value.setOption({ ...options, backgroundColor: "" });
+      echartObject.value.setOption(optionsToApply);
       observer.observe(chartDivRef.current);
 
       return () => {
@@ -60,8 +66,7 @@ export default function SSPieChart({
         chartDivRef.current,
         colorScheme === "dark" ? "dark" : undefined
       );
-      // 透明背景
-      echartObject.value.setOption({ ...options, backgroundColor: "" });
+      echartObject.value.setOption(optionsToApply);
     }
   }, [colorScheme]);
 
@@ -75,11 +80,11 @@ export default function SSPieChart({
           lineWidth: 2,
         });
       } else {
-        echartObject.value.setOption(options);
+        echartObject.value.setOption(optionsToApply);
         echartObject.value.hideLoading();
       }
     }
   }, [dataReady]);
 
-  return <div className={className} ref={chartDivRef} />;
+  return <div className={clsx(className, "mx-auto")} ref={chartDivRef} />;
 }

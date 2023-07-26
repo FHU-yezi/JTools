@@ -1,5 +1,6 @@
 import { useLocalStorage } from "@mantine/hooks";
 import { useSignal } from "@preact/signals";
+import clsx from "clsx";
 import type { BarSeriesOption } from "echarts/charts";
 import { BarChart } from "echarts/charts";
 import type {
@@ -53,11 +54,22 @@ export default function SSBarChart({
 
   const observer = new ResizeObserver(() => echartObject.value!.resize());
 
+  const optionsToApply = {
+    ...options,
+    // 透明背景
+    backgroundColor: "",
+    // 移除左右边距
+    grid: {
+      left: 0,
+      right: 0,
+      containLabel: true,
+    },
+  };
+
   useEffect(() => {
     if (echartObject.value === undefined && chartDivRef.current !== null) {
       echartObject.value = echarts.init(chartDivRef.current);
-      // 透明背景
-      echartObject.value.setOption({ ...options, backgroundColor: "" });
+      echartObject.value.setOption(optionsToApply);
       observer.observe(chartDivRef.current);
 
       return () => {
@@ -74,8 +86,7 @@ export default function SSBarChart({
         chartDivRef.current,
         colorScheme === "dark" ? "dark" : undefined
       );
-      // 透明背景
-      echartObject.value.setOption({ ...options, backgroundColor: "" });
+      echartObject.value.setOption(optionsToApply);
     }
   }, [colorScheme]);
 
@@ -89,11 +100,11 @@ export default function SSBarChart({
           lineWidth: 2,
         });
       } else {
-        echartObject.value.setOption(options);
+        echartObject.value.setOption(optionsToApply);
         echartObject.value.hideLoading();
       }
     }
   }, [dataReady]);
 
-  return <div className={className} ref={chartDivRef} />;
+  return <div className={clsx(className, "mx-auto")} ref={chartDivRef} />;
 }
