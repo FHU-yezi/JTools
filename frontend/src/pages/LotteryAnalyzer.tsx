@@ -68,26 +68,14 @@ const timeRangeWithoutAllSCData = {
 
 const perPrizeAnalyzeTimeRange = signal<TimeRange>("1d");
 const perPrizeAnalyzeData = signal<PerPrizeDataItem[] | undefined>(undefined);
-const RewardWinsCountPieTimeRange = signal<TimeRange>("1d");
-const RewardWinsCountData = signal<RewardsWinsCountDataItem | undefined>(
+const rewardWinsCountPieTimeRange = signal<TimeRange>("1d");
+const rewardWinsCountData = signal<RewardsWinsCountDataItem | undefined>(
   undefined
 );
-const RewardWinsTrendLineTimeRange = signal<TimeRangeWithoutAll>("1d");
-const RewardWinsTrendData = signal<RewardWinsTrendDataItem | undefined>(
+const rewardWinsTrendLineTimeRange = signal<TimeRangeWithoutAll>("1d");
+const rewardWinsTrendData = signal<RewardWinsTrendDataItem | undefined>(
   undefined
 );
-
-interface PerPrizeAnalyzeTableProps {
-  data: PerPrizeDataItem[];
-}
-
-interface RewardWinsCountPieProps {
-  data: RewardsWinsCountDataItem;
-}
-
-interface RewardWinsTrendLineProps {
-  data: RewardWinsTrendDataItem;
-}
 
 function handlePerPrizeAnalayzeDataFetch() {
   try {
@@ -109,9 +97,9 @@ function handleRewardWinsCountDataFetch() {
       "GET",
       "/tools/lottery_analyzer/reward_wins_count_data",
       {
-        time_range: RewardWinsCountPieTimeRange.value,
+        time_range: rewardWinsCountPieTimeRange.value,
       },
-      (data) => (RewardWinsCountData.value = data.wins_count_data),
+      (data) => (rewardWinsCountData.value = data.wins_count_data),
       commonAPIErrorHandler
     );
   } catch {}
@@ -123,24 +111,30 @@ function handleRewardWinsTrendDataFetch() {
       "GET",
       "/tools/lottery_analyzer/reward_wins_trend_data",
       {
-        time_range: RewardWinsTrendLineTimeRange.value,
+        time_range: rewardWinsTrendLineTimeRange.value,
       },
-      (data) => (RewardWinsTrendData.value = data.trend_data),
+      (data) => (rewardWinsTrendData.value = data.trend_data),
       commonAPIErrorHandler
     );
   } catch {}
 }
 
-function PerPrizeAnalyzeTable({ data }: PerPrizeAnalyzeTableProps) {
-  const totalWins = data.reduce((a, b) => a + b.wins_count, 0);
-  const totalWinners = data.reduce((a, b) => a + b.winners_count, 0);
+function PerPrizeAnalyzeTable() {
+  const totalWins = perPrizeAnalyzeData.value!.reduce(
+    (a, b) => a + b.wins_count,
+    0
+  );
+  const totalWinners = perPrizeAnalyzeData.value!.reduce(
+    (a, b) => a + b.winners_count,
+    0
+  );
   const totalAvagaeWinsCountPerWinner = totalWins / totalWinners;
 
   return (
     <SSTable
       className="min-w-[670px]"
-      data={data
-        .map<Record<string, ComponentChildren>>((item) => ({
+      data={perPrizeAnalyzeData
+        .value!.map<Record<string, ComponentChildren>>((item) => ({
           奖品名称: item.reward_name,
           中奖次数: item.wins_count,
           中奖人数: item.winners_count,
@@ -149,7 +143,7 @@ function PerPrizeAnalyzeTable({ data }: PerPrizeAnalyzeTableProps) {
           稀有度: item.rarity,
         }))
         .concat(
-          data.length !== 0
+          perPrizeAnalyzeData.value!.length !== 0
             ? [
                 {
                   奖品名称: "总计",
@@ -170,25 +164,25 @@ function PerPrizeAnalyzeTable({ data }: PerPrizeAnalyzeTableProps) {
   );
 }
 
-function RewardWinsCountPie({ data }: RewardWinsCountPieProps) {
+function RewardWinsCountPie() {
   return (
     <Pie
       data={{
-        labels: Object.keys(data),
-        datasets: [{ data: Object.values(data) }],
+        labels: Object.keys(rewardWinsCountData.value!),
+        datasets: [{ data: Object.values(rewardWinsCountData.value!) }],
       }}
     />
   );
 }
 
-function RewardWinsTrendLine({ data }: RewardWinsTrendLineProps) {
+function RewardWinsTrendLine() {
   return (
     <Line
       data={{
-        labels: Object.keys(data),
+        labels: Object.keys(rewardWinsTrendData.value!),
         datasets: [
           {
-            data: Object.values(data),
+            data: Object.values(rewardWinsTrendData.value!),
             cubicInterpolationMode: "monotone",
           },
         ],
@@ -221,14 +215,14 @@ export default function LotteryAnalyzer() {
   );
 
   useEffect(() => {
-    RewardWinsCountData.value = undefined;
+    rewardWinsCountData.value = undefined;
     handleRewardWinsCountDataFetch();
-  }, [RewardWinsCountPieTimeRange.value]);
+  }, [rewardWinsCountPieTimeRange.value]);
 
   useEffect(() => {
-    RewardWinsTrendData.value = undefined;
+    rewardWinsTrendData.value = undefined;
     handleRewardWinsTrendDataFetch();
-  }, [RewardWinsTrendLineTimeRange.value]);
+  }, [rewardWinsTrendLineTimeRange.value]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -243,7 +237,7 @@ export default function LotteryAnalyzer() {
         />
       </div>
       {typeof perPrizeAnalyzeData.value !== "undefined" ? (
-        <PerPrizeAnalyzeTable data={perPrizeAnalyzeData.value} />
+        <PerPrizeAnalyzeTable />
       ) : (
         <SSSkeleton className="h-[291px]" />
       )}
@@ -257,15 +251,15 @@ export default function LotteryAnalyzer() {
       <div className="grid place-content-center">
         <SSSegmentedControl
           label=""
-          value={RewardWinsCountPieTimeRange}
+          value={rewardWinsCountPieTimeRange}
           data={timeRangeSCData}
         />
       </div>
       <ChartWrapper
         chartType="pie"
-        show={typeof RewardWinsCountData.value !== "undefined"}
+        show={typeof rewardWinsCountData.value !== "undefined"}
       >
-        <RewardWinsCountPie data={RewardWinsCountData.value!} />
+        <RewardWinsCountPie />
       </ChartWrapper>
 
       <SSText xlarge xbold>
@@ -274,15 +268,15 @@ export default function LotteryAnalyzer() {
       <div className="grid place-content-center">
         <SSSegmentedControl
           label=""
-          value={RewardWinsTrendLineTimeRange}
+          value={rewardWinsTrendLineTimeRange}
           data={timeRangeWithoutAllSCData}
         />
       </div>
       <ChartWrapper
         chartType="radial"
-        show={typeof RewardWinsTrendData.value !== "undefined"}
+        show={typeof rewardWinsTrendData.value !== "undefined"}
       >
-        <RewardWinsTrendLine data={RewardWinsTrendData.value!} />
+        <RewardWinsTrendLine />
       </ChartWrapper>
     </div>
   );
