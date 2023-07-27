@@ -25,7 +25,7 @@ export async function fetchData<TRequest, TResponse>(
   }
 
   url = `${baseURL}/api${url}`;
-  if (method === "GET" && typeof data !== "undefined") {
+  if (method === "GET" && data !== undefined) {
     const params: string[] = [];
     Object.entries(data as object).forEach(([key, value]) =>
       params.push(`${key}=${value}`)

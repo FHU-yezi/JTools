@@ -97,11 +97,11 @@ export default function ToolWrapper({ Component, toolName }: Props) {
           <div
             className={clsx("flex gap-6", {
               "my-4":
-                typeof dataUpdateTime.value !== "undefined" &&
-                typeof dataCount.value !== "undefined",
+                dataUpdateTime.value !== undefined &&
+                dataCount.value !== undefined,
             })}
           >
-            {typeof dataUpdateTime.value !== "undefined" && (
+            {dataUpdateTime.value !== undefined && (
               <SSStat
                 className="flex-grow"
                 title="数据更新时间"
@@ -109,7 +109,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
                 desc={dataUpdateFreqDesc.value}
               />
             )}
-            {typeof dataCount.value !== "undefined" && (
+            {dataCount.value !== undefined && (
               <SSStat
                 className="flex-grow"
                 title="总数据量"
@@ -117,7 +117,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
               />
             )}
           </div>
-          {typeof dataSource.value !== "undefined" && (
+          {dataSource.value !== undefined && (
             <div className="my-4 flex flex-col gap-1">
               <SSText bold>数据来源</SSText>
               {Object.entries(dataSource.value).map(([name, url]) => (

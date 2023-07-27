@@ -158,7 +158,7 @@ export default function LotteryRewardRecordViewer() {
         查询
       </SSButton>
 
-      {typeof result.value !== "undefined" &&
+      {result.value !== undefined &&
         (result.value.length !== 0 ? (
           <ResultTable />
         ) : (

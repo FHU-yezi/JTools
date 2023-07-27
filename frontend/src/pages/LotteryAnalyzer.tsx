@@ -238,7 +238,7 @@ export default function LotteryAnalyzer() {
           data={timeRangeSCData}
         />
       </div>
-      {typeof perPrizeAnalyzeData.value !== "undefined" ? (
+      {perPrizeAnalyzeData.value !== undefined ? (
         <PerPrizeAnalyzeTable />
       ) : (
         <SSSkeleton className="h-[291px]" />

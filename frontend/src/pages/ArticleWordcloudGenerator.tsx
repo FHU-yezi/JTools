@@ -65,21 +65,20 @@ export default function ArticleWordcloudGenerator() {
         查询
       </SSButton>
 
-      {typeof articleTitle.value !== "undefined" &&
-        typeof articleURL.value !== "undefined" && (
-          <SSText center>
-            文章：
-            <SSLink
-              url={articleURL.value}
-              label={
-                articleTitle.value.length <= 17
-                  ? articleTitle.value
-                  : `${articleTitle.value.substring(0, 17)}...`
-              }
-              isExternal
-            />
-          </SSText>
-        )}
+      {articleTitle.value !== undefined && articleURL.value !== undefined && (
+        <SSText center>
+          文章：
+          <SSLink
+            url={articleURL.value}
+            label={
+              articleTitle.value.length <= 17
+                ? articleTitle.value
+                : `${articleTitle.value.substring(0, 17)}...`
+            }
+            isExternal
+          />
+        </SSText>
+      )}
 
       {wordFreqData.value !== undefined && <Wordcloud />}
     </div>

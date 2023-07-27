@@ -61,23 +61,22 @@ export default function LPRecommendChecker() {
         查询
       </SSButton>
 
-      {typeof articleTitle.value !== "undefined" &&
-        typeof articleURL.value !== "undefined" && (
-          <SSText center>
-            文章标题：
-            <SSLink
-              url={articleURL.value}
-              label={articleTitle.value}
-              isExternal
-            />
-          </SSText>
-        )}
-      {typeof releaseTime.value !== "undefined" && (
+      {articleTitle.value !== undefined && articleURL.value !== undefined && (
+        <SSText center>
+          文章标题：
+          <SSLink
+            url={articleURL.value}
+            label={articleTitle.value}
+            isExternal
+          />
+        </SSText>
+      )}
+      {releaseTime.value !== undefined && (
         <SSText center>{`发布于 ${getDatetime(
           releaseTime.value!
         )}（${getHumanReadableTimeDelta(releaseTime.value!)}）`}</SSText>
       )}
-      {typeof checkPassed.value !== "undefined" && (
+      {checkPassed.value !== undefined && (
         <SSText
           color={checkPassed.value ? "text-green-600" : "text-red-500"}
           bold
@@ -87,7 +86,7 @@ export default function LPRecommendChecker() {
           {checkPassed.value ? "符合推荐标准" : "不符合推荐标准"}
         </SSText>
       )}
-      {typeof checkItems.value !== "undefined" && (
+      {checkItems.value !== undefined && (
         <SSTable
           className="min-w-[540px]"
           data={checkItems.value.map((item) => ({

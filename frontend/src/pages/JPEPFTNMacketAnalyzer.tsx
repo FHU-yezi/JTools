@@ -43,8 +43,7 @@ const sellOrderMinimumPrice = signal<number | undefined>(undefined);
 const buyPoolAmount = signal<number | undefined>(undefined);
 const sellPoolAmount = signal<number | undefined>(undefined);
 const totalPoolAmount = computed(() =>
-  typeof buyPoolAmount.value !== "undefined" &&
-  typeof sellPoolAmount.value !== "undefined"
+  buyPoolAmount.value !== undefined && sellPoolAmount.value !== undefined
     ? buyPoolAmount.value + sellPoolAmount.value
     : undefined
 );
@@ -345,7 +344,7 @@ export default function JPEPFTNMarketAnalyzer() {
       <SSStat
         title="交易手续费"
         value={
-          typeof tradeFeePercent.value !== "undefined"
+          tradeFeePercent.value !== undefined
             ? `${tradeFeePercent.value * 100}%`
             : "获取中..."
         }

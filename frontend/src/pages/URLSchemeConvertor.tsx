@@ -110,7 +110,7 @@ export default function URLSchemeConvertor() {
       />
       <SSButton onClick={handleConvert}>转换</SSButton>
 
-      {typeof result.value !== "undefined" && (
+      {result.value !== undefined && (
         <div className="grid place-content-center">
           <div className="mt-12 flex flex-col gap-4">
             <div className="flex gap-2">

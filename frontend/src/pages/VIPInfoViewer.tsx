@@ -59,7 +59,7 @@ function handleQuery() {
         batch(() => {
           userName.value = data.name;
           VIPType.value = data.VIP_type;
-          if (typeof data.VIP_expire_time !== "undefined") {
+          if (data.VIP_expire_time !== undefined) {
             VIPExpireTime.value = parseTime(data.VIP_expire_time);
           }
         }),
@@ -81,14 +81,14 @@ export default function VIPInfoViewer() {
         查询
       </SSButton>
 
-      {typeof userName.value !== "undefined" && (
+      {userName.value !== undefined && (
         <SSText>
           昵称：
           <SSLink url={userURL.value} label={userName.value} isExternal />
         </SSText>
       )}
 
-      {typeof VIPType.value !== "undefined" && (
+      {VIPType.value !== undefined && (
         <>
           <div className="flex max-w-fit items-center gap-1">
             <SSText>会员级别：</SSText>
