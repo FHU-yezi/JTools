@@ -136,7 +136,7 @@ function PerPrizeAnalyzeTable() {
 function RewardWinsCountPie() {
   return (
     <SSPieChart
-      className="h-96 w-full max-w-md"
+      className="h-96 w-full max-w-lg"
       dataReady={rewardWinsCountData.value !== undefined}
       options={{
         series: [
@@ -167,7 +167,7 @@ function RewardWinsCountPie() {
 function RewardWinsTrendLine() {
   return (
     <SSLineChart
-      className="h-72 w-full max-w-md"
+      className="h-72 w-full max-w-lg"
       dataReady={rewardWinsTrendData.value !== undefined}
       options={{
         xAxis: {

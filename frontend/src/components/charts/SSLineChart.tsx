@@ -58,8 +58,10 @@ export default function SSLineChart({
     ...options,
     // 透明背景
     backgroundColor: "",
-    // 移除左右边距
+    // 移除边距
     grid: {
+      top: options.legend ? "15%" : 20,
+      bottom: 0,
       left: 0,
       right: 0,
       containLabel: true,

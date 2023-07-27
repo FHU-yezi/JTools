@@ -44,6 +44,14 @@ export default function SSPieChart({
     ...options,
     // 透明背景
     backgroundColor: "",
+    // 移除边距
+    grid: {
+      top: "15%",
+      bottom: 0,
+      left: 0,
+      right: 0,
+      containLabel: true,
+    },
   };
 
   useEffect(() => {
