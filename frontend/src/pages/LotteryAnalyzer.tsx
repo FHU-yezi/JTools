@@ -53,45 +53,39 @@ const rewardWinsTrendData = signal<RewardWinsTrendDataItem | undefined>(
 );
 
 function handlePerPrizeAnalayzeDataFetch() {
-  try {
-    fetchData<PerPrizeDataRequest, PerPrizeDataResponse>(
-      "GET",
-      "/tools/lottery_analyzer/per_prize_data",
-      {
-        time_range: perPrizeAnalyzeTimeRange.value,
-      },
-      (data) => (perPrizeAnalyzeData.value = data.rewards),
-      commonAPIErrorHandler
-    );
-  } catch {}
+  fetchData<PerPrizeDataRequest, PerPrizeDataResponse>(
+    "GET",
+    "/tools/lottery_analyzer/per_prize_data",
+    {
+      time_range: perPrizeAnalyzeTimeRange.value,
+    },
+    (data) => (perPrizeAnalyzeData.value = data.rewards),
+    commonAPIErrorHandler
+  );
 }
 
 function handleRewardWinsCountDataFetch() {
-  try {
-    fetchData<RewardsWinsCountDataRequest, RewardsWinsCountDataResponse>(
-      "GET",
-      "/tools/lottery_analyzer/reward_wins_count_data",
-      {
-        time_range: rewardWinsCountPieTimeRange.value,
-      },
-      (data) => (rewardWinsCountData.value = data.wins_count_data),
-      commonAPIErrorHandler
-    );
-  } catch {}
+  fetchData<RewardsWinsCountDataRequest, RewardsWinsCountDataResponse>(
+    "GET",
+    "/tools/lottery_analyzer/reward_wins_count_data",
+    {
+      time_range: rewardWinsCountPieTimeRange.value,
+    },
+    (data) => (rewardWinsCountData.value = data.wins_count_data),
+    commonAPIErrorHandler
+  );
 }
 
 function handleRewardWinsTrendDataFetch() {
-  try {
-    fetchData<RewardWinsTrendDataRequest, RewardsWinsTrendDataResponse>(
-      "GET",
-      "/tools/lottery_analyzer/reward_wins_trend_data",
-      {
-        time_range: rewardWinsTrendLineTimeRange.value,
-      },
-      (data) => (rewardWinsTrendData.value = data.trend_data),
-      commonAPIErrorHandler
-    );
-  } catch {}
+  fetchData<RewardWinsTrendDataRequest, RewardsWinsTrendDataResponse>(
+    "GET",
+    "/tools/lottery_analyzer/reward_wins_trend_data",
+    {
+      time_range: rewardWinsTrendLineTimeRange.value,
+    },
+    (data) => (rewardWinsTrendData.value = data.trend_data),
+    commonAPIErrorHandler
+  );
 }
 
 function PerPrizeAnalyzeTable() {

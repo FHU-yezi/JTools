@@ -63,102 +63,90 @@ const sellPoolAmountTrendData = signal<PoolAmountTrendDataItem | undefined>(
 );
 
 function handleJPEPRulesFetch() {
-  try {
-    fetchData<Record<string, never>, JPEPRulesResponse>(
-      "GET",
-      "/tools/JPEP_FTN_market_analyzer/JPEP_rules",
-      {},
-      (data) =>
-        batch(() => {
-          tradeFeePercent.value = data.trade_fee_percent;
-          buyOrderMinimumPrice.value = data.buy_order_minimum_price;
-          sellOrderMinimumPrice.value = data.sell_order_minimum_price;
-        }),
-      commonAPIErrorHandler
-    );
-  } catch {}
+  fetchData<Record<string, never>, JPEPRulesResponse>(
+    "GET",
+    "/tools/JPEP_FTN_market_analyzer/JPEP_rules",
+    {},
+    (data) =>
+      batch(() => {
+        tradeFeePercent.value = data.trade_fee_percent;
+        buyOrderMinimumPrice.value = data.buy_order_minimum_price;
+        sellOrderMinimumPrice.value = data.sell_order_minimum_price;
+      }),
+    commonAPIErrorHandler
+  );
 }
 
 function handlePriceFetch() {
-  try {
-    fetchData<Record<string, never>, PriceResponse>(
-      "GET",
-      "/tools/JPEP_FTN_market_analyzer/price",
-      {},
-      (data) =>
-        batch(() => {
-          buyPrice.value = data.buy_price;
-          sellPrice.value = data.sell_price;
-        }),
-      commonAPIErrorHandler
-    );
-  } catch {}
+  fetchData<Record<string, never>, PriceResponse>(
+    "GET",
+    "/tools/JPEP_FTN_market_analyzer/price",
+    {},
+    (data) =>
+      batch(() => {
+        buyPrice.value = data.buy_price;
+        sellPrice.value = data.sell_price;
+      }),
+    commonAPIErrorHandler
+  );
 }
 
 function handlePoolAmountFetch() {
-  try {
-    fetchData<Record<string, never>, PoolAmountResponse>(
-      "GET",
-      "/tools/JPEP_FTN_market_analyzer/pool_amount",
-      {},
-      (data) =>
-        batch(() => {
-          buyPoolAmount.value = data.buy_amount;
-          sellPoolAmount.value = data.sell_amount;
-        }),
-      commonAPIErrorHandler
-    );
-  } catch {}
+  fetchData<Record<string, never>, PoolAmountResponse>(
+    "GET",
+    "/tools/JPEP_FTN_market_analyzer/pool_amount",
+    {},
+    (data) =>
+      batch(() => {
+        buyPoolAmount.value = data.buy_amount;
+        sellPoolAmount.value = data.sell_amount;
+      }),
+    commonAPIErrorHandler
+  );
 }
 
 function handlePerPriceAmountDataFetch() {
-  try {
-    fetchData<PerPriceAmountDataRequest, PerPriceAmountDataResponse>(
-      "GET",
-      "/tools/JPEP_FTN_market_analyzer/per_price_amount_data",
-      {
-        trade_type: perPriceAmountDataTradeType.value,
-      },
-      (data) => (perPriceAmountData.value = data.per_price_amount_data),
-      commonAPIErrorHandler
-    );
-  } catch {}
+  fetchData<PerPriceAmountDataRequest, PerPriceAmountDataResponse>(
+    "GET",
+    "/tools/JPEP_FTN_market_analyzer/per_price_amount_data",
+    {
+      trade_type: perPriceAmountDataTradeType.value,
+    },
+    (data) => (perPriceAmountData.value = data.per_price_amount_data),
+    commonAPIErrorHandler
+  );
 }
 
 function handlePriceTrendDataFetch() {
-  try {
-    fetchData<PriceTrendDataRequest, PriceTrendDataResponse>(
-      "GET",
-      "/tools/JPEP_FTN_market_analyzer/price_trend_data",
-      {
-        time_range: priceTrendLineTimeRange.value,
-      },
-      (data) =>
-        batch(() => {
-          buyPriceTrendData.value = data.buy_trend;
-          sellPriceTrendData.value = data.sell_trend;
-        }),
-      commonAPIErrorHandler
-    );
-  } catch {}
+  fetchData<PriceTrendDataRequest, PriceTrendDataResponse>(
+    "GET",
+    "/tools/JPEP_FTN_market_analyzer/price_trend_data",
+    {
+      time_range: priceTrendLineTimeRange.value,
+    },
+    (data) =>
+      batch(() => {
+        buyPriceTrendData.value = data.buy_trend;
+        sellPriceTrendData.value = data.sell_trend;
+      }),
+    commonAPIErrorHandler
+  );
 }
 
 function handlePoolAmountTrendDataFetch() {
-  try {
-    fetchData<PoolAmountTrendDataRequest, PoolAmountTrendDataResponse>(
-      "GET",
-      "/tools/JPEP_FTN_market_analyzer/pool_amount_trend_data",
-      {
-        time_range: poolAmountTrendLineTimeRange.value,
-      },
-      (data) =>
-        batch(() => {
-          buyPoolAmountTrendData.value = data.buy_trend;
-          sellPoolAmountTrendData.value = data.sell_trend;
-        }),
-      commonAPIErrorHandler
-    );
-  } catch {}
+  fetchData<PoolAmountTrendDataRequest, PoolAmountTrendDataResponse>(
+    "GET",
+    "/tools/JPEP_FTN_market_analyzer/pool_amount_trend_data",
+    {
+      time_range: poolAmountTrendLineTimeRange.value,
+    },
+    (data) =>
+      batch(() => {
+        buyPoolAmountTrendData.value = data.buy_trend;
+        sellPoolAmountTrendData.value = data.sell_trend;
+      }),
+    commonAPIErrorHandler
+  );
 }
 
 function PerPriceAmountDataBar() {

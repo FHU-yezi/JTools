@@ -44,49 +44,47 @@ export default function ToolWrapper({ Component, toolName }: Props) {
   useEffect(() => window.scrollTo(0, 0), []);
 
   useEffect(() => {
-    try {
-      fetchData<InfoRequest, InfoResponse>(
-        "GET",
-        "/info",
-        {
-          tool_slug: getToolSlug(),
-        },
-        (data) => {
-          batch(() => {
-            toolStatus.value = data.status;
-            unavaliableReason.value = data.unavaliable_reason;
-            downgradedReason.value = data.downgraded_reason;
-            dataSource.value = data.data_source;
-            if (data.data_update_time) {
-              dataUpdateTime.value = parseTime(data.data_update_time);
-              dataUpdateFreqDesc.value = data.data_update_freq_desc!;
-            }
-            if (data.data_count) {
-              dataCount.value = data.data_count;
-            }
-          });
-
-          if (toolStatus.value === InfoStatus.DOWNGRADED) {
-            toast(
-              `服务降级\n${
-                downgradedReason.value ??
-                "该小工具处于降级状态，其数据准确性、展示效果及性能可能受到影响，请您留意。"
-              }`,
-              {
-                duration: 4000,
-                icon: " 🔻",
-              }
-            );
+    fetchData<InfoRequest, InfoResponse>(
+      "GET",
+      "/info",
+      {
+        tool_slug: getToolSlug(),
+      },
+      (data) => {
+        batch(() => {
+          toolStatus.value = data.status;
+          unavaliableReason.value = data.unavaliable_reason;
+          downgradedReason.value = data.downgraded_reason;
+          dataSource.value = data.data_source;
+          if (data.data_update_time) {
+            dataUpdateTime.value = parseTime(data.data_update_time);
+            dataUpdateFreqDesc.value = data.data_update_freq_desc!;
           }
-
-          if (toolStatus.value === InfoStatus.UNAVALIABLE) {
-            showUnavaliableModal.value = true;
+          if (data.data_count) {
+            dataCount.value = data.data_count;
           }
-        },
-        commonAPIErrorHandler,
-        isLoading
-      );
-    } catch {}
+        });
+
+        if (toolStatus.value === InfoStatus.DOWNGRADED) {
+          toast(
+            `服务降级\n${
+              downgradedReason.value ??
+              "该小工具处于降级状态，其数据准确性、展示效果及性能可能受到影响，请您留意。"
+            }`,
+            {
+              duration: 4000,
+              icon: " 🔻",
+            }
+          );
+        }
+
+        if (toolStatus.value === InfoStatus.UNAVALIABLE) {
+          showUnavaliableModal.value = true;
+        }
+      },
+      commonAPIErrorHandler,
+      isLoading
+    );
   }, []);
 
   return (

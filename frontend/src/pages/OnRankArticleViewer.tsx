@@ -46,17 +46,15 @@ function handleCompleteItemUpdate(value: string) {
     return;
   }
 
-  try {
-    fetchData<UserNameAutocompleteRequest, UserNameAutocompleteResponse>(
-      "GET",
-      "/tools/on_rank_article_viewer/user_name_autocomplete",
-      {
-        name_part: value.trim(),
-      },
-      (data) => (completeItems.value = data.possible_names),
-      commonAPIErrorHandler
-    );
-  } catch {}
+  fetchData<UserNameAutocompleteRequest, UserNameAutocompleteResponse>(
+    "GET",
+    "/tools/on_rank_article_viewer/user_name_autocomplete",
+    {
+      name_part: value.trim(),
+    },
+    (data) => (completeItems.value = data.possible_names),
+    commonAPIErrorHandler
+  );
 }
 
 function handleQuery() {
@@ -81,21 +79,19 @@ function handleQuery() {
         offset: 0,
       };
 
-  try {
-    fetchData<OnRankRecordsRequest, OnRankRecordsResponse>(
-      "POST",
-      "/tools/on_rank_article_viewer/on_rank_records",
-      requestBody,
-      (data) => {
-        result.value = data.records;
-        if (data.records.length === 0) {
-          hasMore.value = false;
-        }
-      },
-      commonAPIErrorHandler,
-      isLoading
-    );
-  } catch {}
+  fetchData<OnRankRecordsRequest, OnRankRecordsResponse>(
+    "POST",
+    "/tools/on_rank_article_viewer/on_rank_records",
+    requestBody,
+    (data) => {
+      result.value = data.records;
+      if (data.records.length === 0) {
+        hasMore.value = false;
+      }
+    },
+    commonAPIErrorHandler,
+    isLoading
+  );
 }
 
 function handleLoadMore() {
@@ -113,21 +109,19 @@ function handleLoadMore() {
         offset: result.value!.length + 1,
       };
 
-  try {
-    fetchData<OnRankRecordsRequest, OnRankRecordsResponse>(
-      "POST",
-      "/tools/on_rank_article_viewer/on_rank_records",
-      requestBody,
-      (data) => {
-        result.value = result.value!.concat(data.records);
-        if (data.records.length === 0) {
-          hasMore.value = false;
-        }
-      },
-      commonAPIErrorHandler,
-      isLoading
-    );
-  } catch {}
+  fetchData<OnRankRecordsRequest, OnRankRecordsResponse>(
+    "POST",
+    "/tools/on_rank_article_viewer/on_rank_records",
+    requestBody,
+    (data) => {
+      result.value = result.value!.concat(data.records);
+      if (data.records.length === 0) {
+        hasMore.value = false;
+      }
+    },
+    commonAPIErrorHandler,
+    isLoading
+  );
 }
 
 function ResultTable() {
