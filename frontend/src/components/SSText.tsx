@@ -31,7 +31,7 @@ export default function SSText({
       className={clsx(className, {
         "text-gray-900 dark:text-gray-300": !gray && color.length === 0,
         [color]: color.length !== 0,
-        "text-gray-500": gray,
+        "text-gray-500 dark:text-gray-400": gray,
         "font-semibold": bold,
         "font-bold": xbold,
         "text-sm": small,
