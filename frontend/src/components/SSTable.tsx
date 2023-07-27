@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import type { ComponentChildren } from "preact";
+import SSCenter from "./SSCenter";
 import SSScolllable from "./SSScollable";
 import SSText from "./SSText";
 
@@ -28,8 +29,10 @@ export default function SSTable({ className, data, tableItemKey }: Props) {
           {data.map((line) => (
             <tr key={tableItemKey && line[tableItemKey]}>
               {Object.values(line).map((item) => (
-                <td className="gray-border color-layer-1 place-content-center py-1.5">
-                  <SSText className="grid place-content-center">{item}</SSText>
+                <td className="gray-border color-layer-1 py-1.5">
+                  <SSCenter>
+                    <SSText>{item}</SSText>
+                  </SSCenter>
                 </td>
               ))}
             </tr>

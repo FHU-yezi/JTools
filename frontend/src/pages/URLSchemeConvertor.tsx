@@ -6,6 +6,7 @@ import { BiCopy, BiRightArrowAlt } from "react-icons/bi";
 import QRCode from "react-qr-code";
 import SSActionIcon from "../components/SSActionIcon";
 import SSButton from "../components/SSButton";
+import SSCenter from "../components/SSCenter";
 import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
 import SSTooltip from "../components/SSTooltip";
@@ -111,7 +112,7 @@ export default function URLSchemeConvertor() {
       <SSButton onClick={handleConvert}>转换</SSButton>
 
       {result.value !== undefined && (
-        <div className="grid place-content-center">
+        <SSCenter>
           <div className="mt-12 flex flex-col gap-4">
             <div className="flex gap-2">
               <SSText>{result.value}</SSText>
@@ -138,7 +139,7 @@ export default function URLSchemeConvertor() {
             </div>
             <QRCode value={result.value} />
           </div>
-        </div>
+        </SSCenter>
       )}
     </div>
   );

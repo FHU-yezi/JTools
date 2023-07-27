@@ -1,6 +1,7 @@
 import { signal } from "@preact/signals";
 import type { ComponentChildren } from "preact";
 import { useEffect } from "preact/hooks";
+import SSCenter from "../components/SSCenter";
 import SSSegmentedControl from "../components/SSSegmentedControl";
 import SSSkeleton from "../components/SSSkeleton";
 import SSTable from "../components/SSTable";
@@ -231,13 +232,13 @@ export default function LotteryAnalyzer() {
       <SSText xlarge xbold>
         综合统计
       </SSText>
-      <div className="grid place-content-center">
+      <SSCenter>
         <SSSegmentedControl
           label=""
           value={perPrizeAnalyzeTimeRange}
           data={timeRangeSCData}
         />
-      </div>
+      </SSCenter>
       {perPrizeAnalyzeData.value !== undefined ? (
         <PerPrizeAnalyzeTable />
       ) : (
@@ -250,25 +251,25 @@ export default function LotteryAnalyzer() {
       <SSText xlarge xbold>
         中奖次数分布
       </SSText>
-      <div className="grid place-content-center">
+      <SSCenter>
         <SSSegmentedControl
           label=""
           value={rewardWinsCountPieTimeRange}
           data={timeRangeSCData}
         />
-      </div>
+      </SSCenter>
       <RewardWinsCountPie />
 
       <SSText xlarge xbold>
         中奖次数趋势
       </SSText>
-      <div className="grid place-content-center">
+      <SSCenter>
         <SSSegmentedControl
           label=""
           value={rewardWinsTrendLineTimeRange}
           data={timeRangeWithoutAllSCData}
         />
-      </div>
+      </SSCenter>
       <RewardWinsTrendLine />
     </div>
   );

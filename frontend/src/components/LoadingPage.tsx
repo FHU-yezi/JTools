@@ -1,5 +1,6 @@
 import { useSignal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
+import SSCenter from "./SSCenter";
 import SSLoader from "./SSLoader";
 
 export default function LoadingPage() {
@@ -10,8 +11,8 @@ export default function LoadingPage() {
   }, []);
 
   return (
-    <div className="mt-[20vh] grid place-content-center">
+    <SSCenter className="mt-[20vh]">
       {showLoader.value && <SSLoader />}
-    </div>
+    </SSCenter>
   );
 }

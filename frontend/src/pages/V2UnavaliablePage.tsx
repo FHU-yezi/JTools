@@ -1,13 +1,14 @@
 import { LuConstruction } from "react-icons/lu";
 import { useLocation } from "wouter-preact";
 import SSButton from "../components/SSButton";
+import SSCenter from "../components/SSCenter";
 import SSText from "../components/SSText";
 
 export default function V2UnavaliablePage() {
   const [, setLocation] = useLocation();
 
   return (
-    <div className="grid h-[100vh] place-content-center">
+    <SSCenter className="h-[100vh]">
       <div className="flex w-[90vw] max-w-4xl flex-col gap-4">
         <LuConstruction size={48} />
         <SSText xlarge xbold>
@@ -17,6 +18,6 @@ export default function V2UnavaliablePage() {
         <SSText>如有问题，请联系开发者。</SSText>
         <SSButton onClick={() => setLocation("/")}>返回首页</SSButton>
       </div>
-    </div>
+    </SSCenter>
   );
 }

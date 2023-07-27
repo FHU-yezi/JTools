@@ -2,6 +2,7 @@ import { Signal, useSignal } from "@preact/signals";
 import clsx from "clsx";
 import { ComponentChildren } from "preact";
 import { useEffect, useMemo, useRef } from "preact/hooks";
+import SSCenter from "./SSCenter";
 import SSLoader from "./SSLoader";
 import SSScolllable from "./SSScollable";
 import SSText from "./SSText";
@@ -74,10 +75,10 @@ export default function SSLazyLoadTable({
             {data.map((line) => (
               <tr key={tableItemKey && line[tableItemKey]}>
                 {Object.values(line).map((item) => (
-                  <td className="gray-border color-layer-1 place-content-center py-1.5">
-                    <SSText className="grid place-content-center">
-                      {item}
-                    </SSText>
+                  <td className="gray-border color-layer-1 py-1.5">
+                    <SSCenter>
+                      <SSText>{item}</SSText>
+                    </SSCenter>
                   </td>
                 ))}
               </tr>
@@ -91,9 +92,9 @@ export default function SSLazyLoadTable({
         style={{ marginBottom: threshold }}
       />
       {isLoading.value && (
-        <div className="mt-2 grid h-12 w-full place-items-center">
+        <SSCenter className="mt-2 h-12 w-full">
           <SSLoader />
-        </div>
+        </SSCenter>
       )}
     </div>
   );
