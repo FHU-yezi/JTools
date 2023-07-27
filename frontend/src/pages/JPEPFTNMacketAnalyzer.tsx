@@ -46,7 +46,7 @@ const totalPoolAmount = computed(() =>
   typeof buyPoolAmount.value !== "undefined" &&
   typeof sellPoolAmount.value !== "undefined"
     ? buyPoolAmount.value + sellPoolAmount.value
-    : null
+    : undefined
 );
 const perPriceAmountDataTradeType = signal<"buy" | "sell">("buy");
 const perPriceAmountData = signal<Record<number, number> | undefined>(
@@ -353,53 +353,53 @@ export default function JPEPFTNMarketAnalyzer() {
       <SSText xlarge xbold>
         实时贝价
       </SSText>
-      {typeof buyPrice.value !== "undefined" &&
-      typeof sellPrice.value !== "undefined" ? (
-        <div className="flex gap-2">
-          <SSStat
-            className="flex-grow"
-            title="买单"
-            value={buyPrice.value ?? "不可用"}
-            desc={`限价：${buyOrderMinimumPrice.value ?? "获取中..."}`}
-          />
-          <SSStat
-            className="flex-grow"
-            title="卖单"
-            value={sellPrice.value ?? "不可用"}
-            desc={`限价：${sellOrderMinimumPrice.value ?? "获取中..."}`}
-          />
-        </div>
-      ) : (
-        <SSSkeleton className="h-[85.5px]" />
-      )}
+      <div className="flex gap-2">
+        <SSStat
+          className="flex-grow"
+          title="买单"
+          value={buyPrice.value ?? "获取中..."}
+          desc={`限价：${buyOrderMinimumPrice.value ?? "获取中..."}`}
+        />
+        <SSStat
+          className="flex-grow"
+          title="卖单"
+          value={sellPrice.value ?? "获取中..."}
+          desc={`限价：${sellOrderMinimumPrice.value ?? "获取中..."}`}
+        />
+      </div>
       <SSText xlarge xbold>
         实时挂单量
       </SSText>
-      {typeof buyPoolAmount.value !== "undefined" &&
-      typeof sellPoolAmount.value !== "undefined" ? (
-        <div className="flex gap-2">
-          <SSStat
-            className="flex-grow"
-            title="买单"
-            value={buyPoolAmount.value}
-            desc={`占比 ${(
-              (buyPoolAmount.value / totalPoolAmount.value!) *
-              100
-            ).toFixed(2)}%`}
-          />
-          <SSStat
-            className="flex-grow"
-            title="卖单"
-            value={sellPoolAmount.value}
-            desc={`占比 ${(
-              (sellPoolAmount.value / totalPoolAmount.value!) *
-              100
-            ).toFixed(2)}%`}
-          />
-        </div>
-      ) : (
-        <SSSkeleton className="h-[85.5px]" />
-      )}
+      <div className="flex gap-2">
+        <SSStat
+          className="flex-grow"
+          title="买单"
+          value={buyPoolAmount.value ?? "获取中..."}
+          desc={
+            buyPoolAmount.value !== undefined &&
+            totalPoolAmount.value !== undefined
+              ? `占比 ${(
+                  (buyPoolAmount.value / totalPoolAmount.value) *
+                  100
+                ).toFixed(2)}%`
+              : "获取中..."
+          }
+        />
+        <SSStat
+          className="flex-grow"
+          title="卖单"
+          value={sellPoolAmount.value ?? "获取中..."}
+          desc={
+            sellPoolAmount.value !== undefined &&
+            totalPoolAmount.value !== undefined
+              ? `占比 ${(
+                  (sellPoolAmount.value / totalPoolAmount.value) *
+                  100
+                ).toFixed(2)}%`
+              : "获取中..."
+          }
+        />
+      </div>
 
       <SSText xlarge xbold>
         实时挂单量分布
