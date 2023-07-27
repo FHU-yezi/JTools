@@ -44,7 +44,13 @@ def get_data_update_time() -> datetime:
 def get_price(type_: Literal["buy", "sell"], time: datetime) -> float:
     try:
         return (
-            JPEP_FTN_market_db.find({"fetch_time": time, "trade_type": type_})
+            JPEP_FTN_market_db.find(
+                {
+                    "fetch_time": time,
+                    "trade_type": type_,
+                    "amount.tradable": {"$ne": 0},
+                }
+            )
             .sort("price", 1 if type_ == "buy" else -1)
             .limit(1)
             .next()["price"]
