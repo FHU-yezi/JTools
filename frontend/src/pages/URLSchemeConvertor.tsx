@@ -116,7 +116,10 @@ export default function URLSchemeConvertor() {
             <div className="flex gap-2">
               <SSText>{result.value}</SSText>
               <SSTooltip tooltip="访问" hideIcon>
-                <SSActionIcon onClick={() => window.open(result.value)}>
+                <SSActionIcon
+                  label="访问"
+                  onClick={() => window.open(result.value)}
+                >
                   <BiRightArrowAlt />
                 </SSActionIcon>
               </SSTooltip>
@@ -125,8 +128,9 @@ export default function URLSchemeConvertor() {
                 hideIcon
               >
                 <SSActionIcon
-                  onClick={() => clipboard.copy(result.value)}
                   className={!clipboard.copied ? undefined : "bg-green-100"}
+                  label="复制"
+                  onClick={() => clipboard.copy(result.value)}
                 >
                   {!clipboard.copied ? <BiCopy /> : <AiOutlineCheck />}
                 </SSActionIcon>

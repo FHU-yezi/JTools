@@ -59,6 +59,7 @@ export default function SearchModal() {
     <>
       <SSActionIcon
         className="dark:hover:!bg-gray-700"
+        label="搜索"
         onClick={() => {
           searchModalOpen.value = true;
           umamiTrack("click-search-button");

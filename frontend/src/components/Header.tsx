@@ -20,7 +20,7 @@ export default function Header({ toolName, showBackArrow }: Props) {
             <button
               type="button"
               onClick={() => setLocation("/")}
-              aria-label="Back"
+              aria-label="返回"
             >
               <IoIosArrowBack
                 className="text-gray-500 dark:text-gray-300"
