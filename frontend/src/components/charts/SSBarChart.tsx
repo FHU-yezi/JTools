@@ -98,6 +98,8 @@ export default function SSBarChart({
           fontSize: 16,
           spinnerRadius: 15,
           lineWidth: 2,
+          textColor: colorScheme === "dark" ? "#f4f4f5" : undefined,
+          maskColor: colorScheme === "dark" ? "rgba(9, 9, 11, 0.8)" : undefined,
         });
       } else {
         echartObject.value.setOption(optionsToApply);
