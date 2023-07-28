@@ -1,6 +1,7 @@
 import { Signal } from "@preact/signals";
 import clsx from "clsx";
 import { BiCheck } from "react-icons/bi";
+import SSCenter from "./SSCenter";
 import SSText from "./SSText";
 
 interface Props {
@@ -20,20 +21,17 @@ export default function SSCheckbox({ label, value }: Props) {
       onKeyPress={() => (value.value = !value.value)}
     >
       <SSText className="flex select-none items-center gap-2">
-        <div
-          className={clsx(
-            "grid h-5 w-5 place-content-center rounded transition-colors duration-100",
-            {
-              "gray-border color-layer-1 hover:bg-gray-100 dark:hover:bg-gray-700":
-                !value.value,
-              "bg-gray-800 hover:bg-gray-700": value.value,
-            }
-          )}
+        <SSCenter
+          className={clsx("h-5 w-5 rounded transition-colors duration-100", {
+            "gray-border color-layer-1 hover:bg-gray-100 dark:hover:bg-gray-700":
+              !value.value,
+            "bg-gray-800 hover:bg-gray-700": value.value,
+          })}
         >
           {value.value && (
             <BiCheck className="stroke-gray-100 stroke-2 dark:stroke-gray-300" />
           )}
-        </div>
+        </SSCenter>
         {label}
       </SSText>
     </button>

@@ -48,25 +48,23 @@ function handleQuery() {
     return;
   }
 
-  try {
-    fetchData<VIPInfoRequest, VIPInfoResponse>(
-      "POST",
-      "/tools/VIP_info_viewer/VIP_info",
-      {
-        user_url: userURL.value,
-      },
-      (data) =>
-        batch(() => {
-          userName.value = data.name;
-          VIPType.value = data.VIP_type;
-          if (typeof data.VIP_expire_time !== "undefined") {
-            VIPExpireTime.value = parseTime(data.VIP_expire_time);
-          }
-        }),
-      commonAPIErrorHandler,
-      isLoading
-    );
-  } catch {}
+  fetchData<VIPInfoRequest, VIPInfoResponse>(
+    "POST",
+    "/tools/VIP_info_viewer/VIP_info",
+    {
+      user_url: userURL.value,
+    },
+    (data) =>
+      batch(() => {
+        userName.value = data.name;
+        VIPType.value = data.VIP_type;
+        if (data.VIP_expire_time !== undefined) {
+          VIPExpireTime.value = parseTime(data.VIP_expire_time);
+        }
+      }),
+    commonAPIErrorHandler,
+    isLoading
+  );
 }
 
 export default function VIPInfoViewer() {
@@ -81,14 +79,14 @@ export default function VIPInfoViewer() {
         查询
       </SSButton>
 
-      {typeof userName.value !== "undefined" && (
+      {userName.value !== undefined && (
         <SSText>
           昵称：
           <SSLink url={userURL.value} label={userName.value} isExternal />
         </SSText>
       )}
 
-      {typeof VIPType.value !== "undefined" && (
+      {VIPType.value !== undefined && (
         <>
           <div className="flex max-w-fit items-center gap-1">
             <SSText>会员级别：</SSText>

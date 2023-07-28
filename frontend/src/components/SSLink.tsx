@@ -18,7 +18,10 @@ export default function SSLink({
 }: Props) {
   return (
     <a
-      className={clsx(className, "break-all text-blue-500 hover:text-blue-600")}
+      className={clsx(
+        className,
+        "w-fit break-all text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500"
+      )}
       href={url}
       target={isExternal ? "_blank" : "_self"}
       rel="noreferrer"

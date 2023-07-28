@@ -3,6 +3,7 @@ import type { Dayjs } from "dayjs";
 import toast from "react-hot-toast";
 import SSBadge from "../components/SSBadge";
 import SSButton from "../components/SSButton";
+import SSCenter from "../components/SSCenter";
 import SSLink from "../components/SSLink";
 import SSTable from "../components/SSTable";
 import SSText from "../components/SSText";
@@ -61,23 +62,22 @@ export default function LPRecommendChecker() {
         查询
       </SSButton>
 
-      {typeof articleTitle.value !== "undefined" &&
-        typeof articleURL.value !== "undefined" && (
-          <SSText center>
-            文章标题：
-            <SSLink
-              url={articleURL.value}
-              label={articleTitle.value}
-              isExternal
-            />
-          </SSText>
-        )}
-      {typeof releaseTime.value !== "undefined" && (
+      {articleTitle.value !== undefined && articleURL.value !== undefined && (
+        <SSText center>
+          文章标题：
+          <SSLink
+            url={articleURL.value}
+            label={articleTitle.value}
+            isExternal
+          />
+        </SSText>
+      )}
+      {releaseTime.value !== undefined && (
         <SSText center>{`发布于 ${getDatetime(
           releaseTime.value!
         )}（${getHumanReadableTimeDelta(releaseTime.value!)}）`}</SSText>
       )}
-      {typeof checkPassed.value !== "undefined" && (
+      {checkPassed.value !== undefined && (
         <SSText
           color={checkPassed.value ? "text-green-600" : "text-red-500"}
           bold
@@ -87,24 +87,30 @@ export default function LPRecommendChecker() {
           {checkPassed.value ? "符合推荐标准" : "不符合推荐标准"}
         </SSText>
       )}
-      {typeof checkItems.value !== "undefined" && (
+      {checkItems.value !== undefined && (
         <SSTable
           className="min-w-[540px]"
           data={checkItems.value.map((item) => ({
-            项目: item.name,
+            项目: <SSText center>{item.name}</SSText>,
             检测结果: (
-              <SSBadge
-                className={
-                  item.item_passed
-                    ? "bg-green-200 text-green-600 dark:bg-green-950"
-                    : "bg-red-200 text-red-500 dark:bg-red-950"
-                }
-              >
-                {item.item_passed ? "符合" : "不符合"}
-              </SSBadge>
+              <SSCenter>
+                <SSBadge
+                  className={
+                    item.item_passed
+                      ? "bg-green-200 text-green-600 dark:bg-green-950"
+                      : "bg-red-200 text-red-500 dark:bg-red-950"
+                  }
+                >
+                  {item.item_passed ? "符合" : "不符合"}
+                </SSBadge>
+              </SSCenter>
             ),
-            限制值: `${item.operator} ${item.limit_value}`,
-            实际值: item.actual_value,
+            限制值: (
+              <SSText center>
+                {item.operator} {item.limit_value}
+              </SSText>
+            ),
+            实际值: <SSText center>{item.actual_value}</SSText>,
           }))}
           tableItemKey="name"
         />

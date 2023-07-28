@@ -1,7 +1,8 @@
-import { Signal, useSignal } from "@preact/signals";
+import { Signal } from "@preact/signals";
 import clsx from "clsx";
 import { ComponentChildren } from "preact";
 import { useEffect, useMemo, useRef } from "preact/hooks";
+import SSCenter from "./SSCenter";
 import SSLoader from "./SSLoader";
 import SSScolllable from "./SSScollable";
 import SSText from "./SSText";
@@ -25,8 +26,6 @@ export default function SSLazyLoadTable({
   threshold = 300,
   tableItemKey,
 }: Props) {
-  const observerRegistered = useSignal(false);
-
   const detector = useRef<HTMLDivElement>(null);
   const observer = useMemo(
     () =>
@@ -39,19 +38,16 @@ export default function SSLazyLoadTable({
   );
 
   useEffect(() => {
-    if (!observerRegistered.value && hasMore.value) {
+    if (hasMore.value) {
       observer.observe(detector.current!);
-      observerRegistered.value = true;
     }
 
-    return () =>
-      observerRegistered.value && observer.unobserve(detector.current!);
-  }, []);
+    return () => observer.unobserve(detector.current!);
+  }, [hasMore.value]);
 
   useEffect(() => {
-    if (observerRegistered.value && !hasMore.value) {
+    if (!hasMore.value) {
       observer.unobserve(detector.current!);
-      observerRegistered.value = false;
     }
   }, [hasMore.value]);
 
@@ -62,8 +58,8 @@ export default function SSLazyLoadTable({
           <thead className="color-layer-2">
             <tr>
               {Object.keys(data[0]).map((item) => (
-                <th className="gray-border py-2">
-                  <SSText bold center>
+                <th className="gray-border px-2 py-1.5">
+                  <SSText className="whitespace-nowrap" bold center>
                     {item}
                   </SSText>
                 </th>
@@ -74,10 +70,8 @@ export default function SSLazyLoadTable({
             {data.map((line) => (
               <tr key={tableItemKey && line[tableItemKey]}>
                 {Object.values(line).map((item) => (
-                  <td className="gray-border color-layer-1 place-content-center py-1.5">
-                    <SSText className="grid place-content-center">
-                      {item}
-                    </SSText>
+                  <td className="gray-border color-layer-1 px-2 py-1.5">
+                    {item}
                   </td>
                 ))}
               </tr>
@@ -91,9 +85,9 @@ export default function SSLazyLoadTable({
         style={{ marginBottom: threshold }}
       />
       {isLoading.value && (
-        <div className="mt-2 grid h-12 w-full place-items-center">
+        <SSCenter className="mt-2 h-12 w-full">
           <SSLoader />
-        </div>
+        </SSCenter>
       )}
     </div>
   );

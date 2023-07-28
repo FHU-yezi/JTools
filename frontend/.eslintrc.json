@@ -22,6 +22,7 @@
     "react/require-default-props": "off",
     "no-return-assign": "off",
     "no-restricted-syntax": "off",
-    "jsx-a11y/control-has-associated-label": "off"
+    "jsx-a11y/control-has-associated-label": "off",
+    "consistent-return": "off"
   }
 }

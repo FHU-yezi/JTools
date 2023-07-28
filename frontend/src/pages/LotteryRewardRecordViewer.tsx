@@ -34,47 +34,43 @@ function handleQuery() {
     return;
   }
 
-  try {
-    fetchData<LotteryRecordsRequest, LotteryRecordsResponse>(
-      "POST",
-      "/tools/lottery_reward_record_viewer/lottery_records",
-      {
-        user_url: userURL.value,
-        target_rewards: selectedRewards.value,
-        offset: 0,
-      },
-      (data) => {
-        result.value = data.records;
-        if (data.records.length === 0) {
-          hasMore.value = false;
-        }
-      },
-      commonAPIErrorHandler,
-      isLoading
-    );
-  } catch {}
+  fetchData<LotteryRecordsRequest, LotteryRecordsResponse>(
+    "POST",
+    "/tools/lottery_reward_record_viewer/lottery_records",
+    {
+      user_url: userURL.value,
+      target_rewards: selectedRewards.value,
+      offset: 0,
+    },
+    (data) => {
+      result.value = data.records;
+      if (data.records.length === 0) {
+        hasMore.value = false;
+      }
+    },
+    commonAPIErrorHandler,
+    isLoading
+  );
 }
 
 function handleLoadMore() {
-  try {
-    fetchData<LotteryRecordsRequest, LotteryRecordsResponse>(
-      "POST",
-      "/tools/lottery_reward_record_viewer/lottery_records",
-      {
-        user_url: userURL.value,
-        target_rewards: selectedRewards.value,
-        offset: result.value!.length + 1,
-      },
-      (data) => {
-        result.value = result.value!.concat(data.records);
-        if (data.records.length === 0) {
-          hasMore.value = false;
-        }
-      },
-      commonAPIErrorHandler,
-      isLoading
-    );
-  } catch {}
+  fetchData<LotteryRecordsRequest, LotteryRecordsResponse>(
+    "POST",
+    "/tools/lottery_reward_record_viewer/lottery_records",
+    {
+      user_url: userURL.value,
+      target_rewards: selectedRewards.value,
+      offset: result.value!.length + 1,
+    },
+    (data) => {
+      result.value = result.value!.concat(data.records);
+      if (data.records.length === 0) {
+        hasMore.value = false;
+      }
+    },
+    commonAPIErrorHandler,
+    isLoading
+  );
 }
 
 function RewardsFliter() {
@@ -82,25 +78,23 @@ function RewardsFliter() {
   const dataReady = useSignal(false);
 
   useEffect(() => {
-    try {
-      fetchData<Record<string, never>, RewardResponse>(
-        "GET",
-        "/tools/lottery_reward_record_viewer/rewards",
-        {},
-        (data) =>
-          batch(() => {
-            rewards.value = data.rewards;
-            selectedRewards.value = rewards.value.map((item) =>
-              removeSpace(item)
-            );
-            rewards.value.forEach(
-              (name) => (rewardSelectedSignals.value[name] = signal(true))
-            );
-            dataReady.value = true;
-          }),
-        commonAPIErrorHandler
-      );
-    } catch {}
+    fetchData<Record<string, never>, RewardResponse>(
+      "GET",
+      "/tools/lottery_reward_record_viewer/rewards",
+      {},
+      (data) =>
+        batch(() => {
+          rewards.value = data.rewards;
+          selectedRewards.value = rewards.value.map((item) =>
+            removeSpace(item)
+          );
+          rewards.value.forEach(
+            (name) => (rewardSelectedSignals.value[name] = signal(true))
+          );
+          dataReady.value = true;
+        }),
+      commonAPIErrorHandler
+    );
   }, []);
 
   effect(
@@ -132,8 +126,8 @@ function ResultTable() {
   return (
     <SSLazyLoadTable
       data={result.value!.map((item) => ({
-        时间: getDatetime(parseTime(item.time)),
-        奖项: item.reward_name,
+        时间: <SSText center>{getDatetime(parseTime(item.time))}</SSText>,
+        奖项: <SSText center>{item.reward_name}</SSText>,
       }))}
       onLoadMore={handleLoadMore}
       hasMore={hasMore}
@@ -158,7 +152,7 @@ export default function LotteryRewardRecordViewer() {
         查询
       </SSButton>
 
-      {typeof result.value !== "undefined" &&
+      {result.value !== undefined &&
         (result.value.length !== 0 ? (
           <ResultTable />
         ) : (

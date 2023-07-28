@@ -2,6 +2,7 @@ import { BiError } from "react-icons/bi";
 import { useLocation } from "wouter-preact";
 import SSAccordion from "./SSAccordion";
 import SSButton from "./SSButton";
+import SSCenter from "./SSCenter";
 import SSKey from "./SSKey";
 import SSLink from "./SSLink";
 import SSText from "./SSText";
@@ -17,7 +18,7 @@ export default function ErrorFallback({ error }: Props) {
   console.error(`${error.name}: ${error.message}\n${error.stack}`);
 
   return (
-    <div className="grid h-[100vh] place-content-center">
+    <SSCenter className="h-[100vh]">
       <div className="flex w-[90vw] max-w-4xl flex-col gap-4">
         <SSText>
           <BiError size={48} />
@@ -54,6 +55,6 @@ export default function ErrorFallback({ error }: Props) {
           </SSText>
         </SSAccordion>
       </div>
-    </div>
+    </SSCenter>
   );
 }

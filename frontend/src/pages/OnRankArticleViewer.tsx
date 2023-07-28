@@ -1,15 +1,18 @@
-import { computed, signal } from "@preact/signals";
+import { batch, computed, signal } from "@preact/signals";
 import toast from "react-hot-toast";
 import SSAutocomplete from "../components/SSAutocomplete";
 import SSButton from "../components/SSButton";
 import SSLazyLoadTable from "../components/SSLazyLoadTable";
 import SSLink from "../components/SSLink";
 import SSSegmentedControl from "../components/SSSegmentedControl";
+import SSStat from "../components/SSStat";
 import SSText from "../components/SSText";
 import {
   OnRankRecordItem,
   OnRankRecordsRequest,
   OnRankRecordsResponse,
+  RankingSummaryRequest,
+  RankingSummaryResponse,
 } from "../models/OnRankArticleViewer/OnRankRecords";
 import {
   UserNameAutocompleteRequest,
@@ -33,6 +36,10 @@ const completeItems = signal<string[]>([]);
 const isLoading = signal(false);
 const hasMore = signal(true);
 const result = signal<OnRankRecordItem[] | undefined>(undefined);
+const top10Count = signal<number | undefined>(undefined);
+const top30Count = signal<number | undefined>(undefined);
+const top50Count = signal<number | undefined>(undefined);
+const totalCount = signal<number | undefined>(undefined);
 
 function isURL(string: string): boolean {
   return string.startsWith("https://");
@@ -46,17 +53,15 @@ function handleCompleteItemUpdate(value: string) {
     return;
   }
 
-  try {
-    fetchData<UserNameAutocompleteRequest, UserNameAutocompleteResponse>(
-      "GET",
-      "/tools/on_rank_article_viewer/user_name_autocomplete",
-      {
-        name_part: value.trim(),
-      },
-      (data) => (completeItems.value = data.possible_names),
-      commonAPIErrorHandler
-    );
-  } catch {}
+  fetchData<UserNameAutocompleteRequest, UserNameAutocompleteResponse>(
+    "GET",
+    "/tools/on_rank_article_viewer/user_name_autocomplete",
+    {
+      name_part: value.trim(),
+    },
+    (data) => (completeItems.value = data.possible_names),
+    commonAPIErrorHandler
+  );
 }
 
 function handleQuery() {
@@ -67,7 +72,11 @@ function handleQuery() {
     return;
   }
 
-  const requestBody: OnRankRecordsRequest = isURL(userURLOrUserName.value)
+  hasMore.value = true;
+
+  const requestBodyForRecords: OnRankRecordsRequest = isURL(
+    userURLOrUserName.value
+  )
     ? {
         user_url: userURLOrUserName.value,
         sort_by: sortBy.value,
@@ -81,21 +90,46 @@ function handleQuery() {
         offset: 0,
       };
 
-  try {
-    fetchData<OnRankRecordsRequest, OnRankRecordsResponse>(
-      "POST",
-      "/tools/on_rank_article_viewer/on_rank_records",
-      requestBody,
-      (data) => {
+  fetchData<OnRankRecordsRequest, OnRankRecordsResponse>(
+    "POST",
+    "/tools/on_rank_article_viewer/on_rank_records",
+    requestBodyForRecords,
+    (data) => {
+      batch(() => {
         result.value = data.records;
         if (data.records.length === 0) {
           hasMore.value = false;
         }
-      },
-      commonAPIErrorHandler,
-      isLoading
-    );
-  } catch {}
+      });
+    },
+    commonAPIErrorHandler,
+    isLoading
+  );
+
+  const requestBodyForRankingSummary: RankingSummaryRequest = isURL(
+    userURLOrUserName.value
+  )
+    ? {
+        user_url: userURLOrUserName.value,
+      }
+    : {
+        user_name: userURLOrUserName.value.trim(),
+      };
+
+  fetchData<RankingSummaryRequest, RankingSummaryResponse>(
+    "POST",
+    "/tools/on_rank_article_viewer/ranking_summary",
+    requestBodyForRankingSummary,
+    (data) => {
+      batch(() => {
+        top10Count.value = data.top10_count;
+        top30Count.value = data.top30_count;
+        top50Count.value = data.top50_count;
+        totalCount.value = data.total;
+      });
+    },
+    commonAPIErrorHandler
+  );
 }
 
 function handleLoadMore() {
@@ -113,42 +147,37 @@ function handleLoadMore() {
         offset: result.value!.length + 1,
       };
 
-  try {
-    fetchData<OnRankRecordsRequest, OnRankRecordsResponse>(
-      "POST",
-      "/tools/on_rank_article_viewer/on_rank_records",
-      requestBody,
-      (data) => {
-        result.value = result.value!.concat(data.records);
-        if (data.records.length === 0) {
-          hasMore.value = false;
-        }
-      },
-      commonAPIErrorHandler,
-      isLoading
-    );
-  } catch {}
+  fetchData<OnRankRecordsRequest, OnRankRecordsResponse>(
+    "POST",
+    "/tools/on_rank_article_viewer/on_rank_records",
+    requestBody,
+    (data) => {
+      result.value = result.value!.concat(data.records);
+      if (data.records.length === 0) {
+        hasMore.value = false;
+      }
+    },
+    commonAPIErrorHandler,
+    isLoading
+  );
 }
 
 function ResultTable() {
   return (
     <SSLazyLoadTable
       data={result.value!.map((item) => ({
-        日期: getDate(parseTime(item.date)),
-        排名: item.ranking,
+        日期: <SSText center>{getDate(parseTime(item.date))}</SSText>,
+        排名: <SSText center>{item.ranking}</SSText>,
         文章: (
           <SSLink
+            className="block max-w-[60vw] overflow-hidden text-ellipsis whitespace-nowrap"
             url={item.url}
-            label={
-              item.title.length <= 30
-                ? item.title
-                : `${item.title.substring(0, 30)}...`
-            }
+            label={item.title}
             isExternal
             hideIcon
           />
         ),
-        获钻量: item.FP_reward_count,
+        获钻量: <SSText center>{item.FP_reward_count}</SSText>,
       }))}
       onLoadMore={handleLoadMore}
       hasMore={hasMore}
@@ -181,7 +210,19 @@ export default function OnRankArticleViewer() {
         查询
       </SSButton>
 
-      {typeof result.value !== "undefined" &&
+      {top10Count.value !== undefined &&
+        top30Count.value !== undefined &&
+        top50Count.value !== undefined &&
+        totalCount.value !== undefined && (
+          <div className="grid grid-cols-2 place-items-center gap-6">
+            <SSStat title="前 10 名次数" value={top10Count.value} />
+            <SSStat title="前 30 名次数" value={top30Count.value} />
+            <SSStat title="前 50 名次数" value={top50Count.value} />
+            <SSStat title="总上榜次数" value={totalCount.value} />
+          </div>
+        )}
+
+      {result.value !== undefined &&
         (result.value.length !== 0 ? (
           <ResultTable />
         ) : (

@@ -14,6 +14,15 @@ on_rank_article_viewer_blueprint = Blueprint(
 )
 
 
+def get_topn_count(filter_dict: Dict[str, Any], n: int) -> int:
+    return article_FP_rank_db.count_documents(
+        {
+            **filter_dict,
+            "ranking": {"$lte": n},
+        }
+    )
+
+
 class UserNameAutocompleteRequest(BaseModel):
     name_part: str
 
@@ -75,7 +84,6 @@ class OnRankRecordItem(BaseModel):
 
 class OnRankRecordsResponse(BaseModel):
     records: List[OnRankRecordItem]
-    total: int
 
 
 @on_rank_article_viewer_blueprint.post("/on_rank_records")
@@ -117,7 +125,6 @@ def on_rank_records_handler(
         .skip(data.offset)
         .limit(50)
     )  # type: ignore
-    total = article_FP_rank_db.count_documents(filter_dict)
 
     return sanic_response_json(
         code=CODE.SUCCESS,
@@ -132,6 +139,63 @@ def on_rank_records_handler(
                 )
                 for x in result
             ],
+        ).model_dump(),
+    )
+
+
+class RankingSummaryRequest(BaseModel):
+    user_url: Optional[str] = None
+    user_name: Optional[str] = None
+
+
+class RankingSummaryResponse(BaseModel):
+    top10_count: int
+    top30_count: int
+    top50_count: int
+    total: int
+
+
+@on_rank_article_viewer_blueprint.post("/ranking_summary")
+@sanic_inject_pydantic_model(RankingSummaryRequest)
+def handle_ranking_summary(
+    request: Request, data: RankingSummaryRequest
+) -> HTTPResponse:
+    del request
+
+    if not data.user_url and not data.user_name:
+        return sanic_response_json(
+            code=CODE.BAD_ARGUMENTS, message="用户个人主页链接或用户昵称必须至少传入一个"
+        )
+    if data.user_url and data.user_name:
+        return sanic_response_json(
+            code=CODE.BAD_ARGUMENTS, message="用户个人主页链接和用户昵称不能同时传入"
+        )
+    if data.user_url:
+        try:
+            AssertUserUrl(data.user_url)
+        except InputError:
+            return sanic_response_json(
+                code=CODE.BAD_ARGUMENTS,
+                message="输入的用户个人主页链接无效",
+            )
+
+    filter_dict: Dict[str, Any] = (
+        {"author.name": data.user_name}
+        if data.user_name
+        else {"author.url": data.user_url}
+    )
+
+    top10_count = get_topn_count(filter_dict, 10)
+    top30_count = get_topn_count(filter_dict, 30)
+    top50_count = get_topn_count(filter_dict, 50)
+    total = article_FP_rank_db.count_documents(filter_dict)
+
+    return sanic_response_json(
+        code=CODE.SUCCESS,
+        data=RankingSummaryResponse(
+            top10_count=top10_count,
+            top30_count=top30_count,
+            top50_count=top50_count,
             total=total,
         ).model_dump(),
     )

@@ -16,5 +16,16 @@ export interface OnRankRecordItem {
 
 export interface OnRankRecordsResponse {
   records: OnRankRecordItem[];
+}
+
+export interface RankingSummaryRequest {
+  user_url?: string;
+  user_name?: string;
+}
+
+export interface RankingSummaryResponse {
+  top10_count: number;
+  top30_count: number;
+  top50_count: number;
   total: number;
 }

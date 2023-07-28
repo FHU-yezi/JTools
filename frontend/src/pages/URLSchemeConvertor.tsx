@@ -6,6 +6,7 @@ import { BiCopy, BiRightArrowAlt } from "react-icons/bi";
 import QRCode from "react-qr-code";
 import SSActionIcon from "../components/SSActionIcon";
 import SSButton from "../components/SSButton";
+import SSCenter from "../components/SSCenter";
 import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
 import SSTooltip from "../components/SSTooltip";
@@ -110,13 +111,16 @@ export default function URLSchemeConvertor() {
       />
       <SSButton onClick={handleConvert}>转换</SSButton>
 
-      {typeof result.value !== "undefined" && (
-        <div className="grid place-content-center">
+      {result.value !== undefined && (
+        <SSCenter>
           <div className="mt-12 flex flex-col gap-4">
             <div className="flex gap-2">
               <SSText>{result.value}</SSText>
               <SSTooltip tooltip="访问" hideIcon>
-                <SSActionIcon onClick={() => window.open(result.value)}>
+                <SSActionIcon
+                  label="访问"
+                  onClick={() => window.open(result.value)}
+                >
                   <BiRightArrowAlt />
                 </SSActionIcon>
               </SSTooltip>
@@ -125,8 +129,9 @@ export default function URLSchemeConvertor() {
                 hideIcon
               >
                 <SSActionIcon
-                  onClick={() => clipboard.copy(result.value)}
                   className={!clipboard.copied ? undefined : "bg-green-100"}
+                  label="复制"
+                  onClick={() => clipboard.copy(result.value)}
                 >
                   {!clipboard.copied ? <BiCopy /> : <AiOutlineCheck />}
                 </SSActionIcon>
@@ -134,7 +139,7 @@ export default function URLSchemeConvertor() {
             </div>
             <QRCode value={result.value} />
           </div>
-        </div>
+        </SSCenter>
       )}
     </div>
   );
