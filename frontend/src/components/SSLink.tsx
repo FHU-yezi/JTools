@@ -20,7 +20,7 @@ export default function SSLink({
     <a
       className={clsx(
         className,
-        "break-all text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500"
+        "w-fit break-all text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500"
       )}
       href={url}
       target={isExternal ? "_blank" : "_self"}
