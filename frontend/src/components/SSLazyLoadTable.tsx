@@ -1,4 +1,4 @@
-import { Signal, useSignal } from "@preact/signals";
+import { Signal } from "@preact/signals";
 import clsx from "clsx";
 import { ComponentChildren } from "preact";
 import { useEffect, useMemo, useRef } from "preact/hooks";
@@ -26,8 +26,6 @@ export default function SSLazyLoadTable({
   threshold = 300,
   tableItemKey,
 }: Props) {
-  const observerRegistered = useSignal(false);
-
   const detector = useRef<HTMLDivElement>(null);
   const observer = useMemo(
     () =>
@@ -40,19 +38,16 @@ export default function SSLazyLoadTable({
   );
 
   useEffect(() => {
-    if (!observerRegistered.value && hasMore.value) {
+    if (hasMore.value) {
       observer.observe(detector.current!);
-      observerRegistered.value = true;
     }
 
-    return () =>
-      observerRegistered.value && observer.unobserve(detector.current!);
-  }, []);
+    return () => observer.unobserve(detector.current!);
+  }, [hasMore.value]);
 
   useEffect(() => {
-    if (observerRegistered.value && !hasMore.value) {
+    if (!hasMore.value) {
       observer.unobserve(detector.current!);
-      observerRegistered.value = false;
     }
   }, [hasMore.value]);
 

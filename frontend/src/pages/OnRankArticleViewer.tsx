@@ -72,6 +72,8 @@ function handleQuery() {
     return;
   }
 
+  hasMore.value = true;
+
   const requestBodyForRecords: OnRankRecordsRequest = isURL(
     userURLOrUserName.value
   )
