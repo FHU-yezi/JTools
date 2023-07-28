@@ -22,29 +22,14 @@
         "url": "https://github.com/preactjs/signals"
       },
       {
-        "name": "Chart.js",
+        "name": "ECharts",
         "desc": "图表",
-        "url": "https://github.com/chartjs/Chart.js"
+        "url": "https://github.com/apache/echarts"
       },
       {
-        "name": "Mantine",
-        "desc": "组件库",
-        "url": "https://github.com/mantinedev/mantine"
-      },
-      {
-        "name": "Mantine DataTable",
-        "desc": "DataTable 组件",
-        "url": "https://github.com/icflorescu/mantine-datatable"
-      },
-      {
-        "name": "Chart.js Wordcloud",
+        "name": "React D3 Cloud",
         "desc": "词云图",
-        "url": "https://github.com/sgratzl/chartjs-chart-wordcloud"
-      },
-      {
-        "name": "React Chart.js 2",
-        "desc": "Chart.js React 包装层",
-        "url": "https://github.com/reactchartjs/react-chartjs-2"
+        "url": "https://github.com/Yoctol/react-d3-cloud"
       },
       {
         "name": "React Error Boundary",
