@@ -104,23 +104,52 @@ function PerPrizeAnalyzeTable() {
       className="min-w-[670px]"
       data={perPrizeAnalyzeData
         .value!.map<Record<string, ComponentChildren>>((item) => ({
-          奖品名称: item.reward_name,
-          中奖次数: item.wins_count,
-          中奖人数: item.winners_count,
-          平均每人中奖次数: item.average_wins_count_per_winner,
-          中奖率: RoundFloat(item.winning_rate * 100, 3),
-          稀有度: item.rarity,
+          奖品名称: <SSText center>{item.reward_name}</SSText>,
+          中奖次数: <SSText center>{item.wins_count}</SSText>,
+          中奖人数: <SSText center>{item.winners_count}</SSText>,
+          平均每人中奖次数: (
+            <SSText center>
+              {item.wins_count !== 0
+                ? item.average_wins_count_per_winner
+                : "---"}
+            </SSText>
+          ),
+          中奖率: (
+            <SSText center>
+              {item.wins_count !== 0
+                ? `${RoundFloat(item.winning_rate * 100, 2)}%`
+                : "---"}
+            </SSText>
+          ),
+          稀有度: (
+            <SSText center>
+              {item.wins_count !== 0 ? item.rarity : "---"}
+            </SSText>
+          ),
         }))
         .concat(
           perPrizeAnalyzeData.value!.length !== 0
             ? [
                 {
-                  奖品名称: "总计",
-                  中奖次数: totalWins,
-                  中奖人数: totalWinners,
-                  平均每人中奖次数: RoundFloat(
-                    totalAvagaeWinsCountPerWinner,
-                    3
+                  奖品名称: (
+                    <SSText bold center>
+                      总计
+                    </SSText>
+                  ),
+                  中奖次数: (
+                    <SSText bold center>
+                      {totalWins}
+                    </SSText>
+                  ),
+                  中奖人数: (
+                    <SSText bold center>
+                      {totalWinners}
+                    </SSText>
+                  ),
+                  平均每人中奖次数: (
+                    <SSText bold center>
+                      {RoundFloat(totalAvagaeWinsCountPerWinner, 3)}
+                    </SSText>
                   ),
                   中奖率: undefined,
                   稀有度: undefined,

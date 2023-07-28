@@ -128,21 +128,18 @@ function ResultTable() {
   return (
     <SSLazyLoadTable
       data={result.value!.map((item) => ({
-        日期: getDate(parseTime(item.date)),
-        排名: item.ranking,
+        日期: <SSText center>{getDate(parseTime(item.date))}</SSText>,
+        排名: <SSText center>{item.ranking}</SSText>,
         文章: (
           <SSLink
+            className="block max-w-[60vw] overflow-hidden text-ellipsis whitespace-nowrap"
             url={item.url}
-            label={
-              item.title.length <= 30
-                ? item.title
-                : `${item.title.substring(0, 30)}...`
-            }
+            label={item.title}
             isExternal
             hideIcon
           />
         ),
-        获钻量: item.FP_reward_count,
+        获钻量: <SSText center>{item.FP_reward_count}</SSText>,
       }))}
       onLoadMore={handleLoadMore}
       hasMore={hasMore}

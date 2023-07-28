@@ -126,8 +126,8 @@ function ResultTable() {
   return (
     <SSLazyLoadTable
       data={result.value!.map((item) => ({
-        时间: getDatetime(parseTime(item.time)),
-        奖项: item.reward_name,
+        时间: <SSText center>{getDatetime(parseTime(item.time))}</SSText>,
+        奖项: <SSText center>{item.reward_name}</SSText>,
       }))}
       onLoadMore={handleLoadMore}
       hasMore={hasMore}
