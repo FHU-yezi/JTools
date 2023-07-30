@@ -7,7 +7,7 @@ import SSButton from "../components/SSButton";
 import SSLink from "../components/SSLink";
 import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
-import {
+import type {
   VIPInfoRequest,
   VIPInfoResponse,
 } from "../models/VIPInfoViewer/VIPInfo";

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { ComponentChildren } from "preact";
+import type { ComponentChildren } from "preact";
 import SSText from "./SSText";
 
 interface Props {

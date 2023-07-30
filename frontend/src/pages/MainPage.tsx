@@ -10,7 +10,7 @@ import {
 import Header from "../components/Header";
 import SSTooltip from "../components/SSTooltip";
 import ToolCard from "../components/ToolCard";
-import { StatusResponse } from "../models/status";
+import type { StatusResponse } from "../models/status";
 import { routes } from "../routes";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";

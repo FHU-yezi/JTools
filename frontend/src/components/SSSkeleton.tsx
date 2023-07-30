@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { JSX } from "preact/jsx-runtime";
+import type { JSX } from "preact/jsx-runtime";
 
 interface Props {
   className: string;

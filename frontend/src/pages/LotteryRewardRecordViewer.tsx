@@ -1,4 +1,5 @@
-import { Signal, batch, effect, signal, useSignal } from "@preact/signals";
+import type { Signal } from "@preact/signals";
+import { batch, effect, signal, useSignal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
 import toast from "react-hot-toast";
 import SSButton from "../components/SSButton";
@@ -8,12 +9,12 @@ import SSSkeleton from "../components/SSSkeleton";
 import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
 import SSTooltip from "../components/SSTooltip";
-import {
+import type {
   LotteryRecordItem,
   LotteryRecordsRequest,
   LotteryRecordsResponse,
 } from "../models/LotteryRewardRecordViewer/LotteryRecords";
-import { RewardResponse } from "../models/LotteryRewardRecordViewer/Rewards";
+import type { RewardResponse } from "../models/LotteryRewardRecordViewer/Rewards";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import { removeSpace } from "../utils/textHelper";

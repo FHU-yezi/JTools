@@ -6,24 +6,24 @@ import SSStat from "../components/SSStat";
 import SSText from "../components/SSText";
 import SSBarChart from "../components/charts/SSBarChart";
 import SSLineChart from "../components/charts/SSLineChart";
-import { JPEPRulesResponse } from "../models/JPEPFTNMacketAnalyzer/JPEPRules";
-import {
+import type { JPEPRulesResponse } from "../models/JPEPFTNMacketAnalyzer/JPEPRules";
+import type {
   PerPriceAmountDataRequest,
   PerPriceAmountDataResponse,
 } from "../models/JPEPFTNMacketAnalyzer/PerPriceAmountData";
-import { PoolAmountResponse } from "../models/JPEPFTNMacketAnalyzer/PoolAmount";
-import {
+import type { PoolAmountResponse } from "../models/JPEPFTNMacketAnalyzer/PoolAmount";
+import type {
   PoolAmountTrendDataItem,
   PoolAmountTrendDataRequest,
   PoolAmountTrendDataResponse,
 } from "../models/JPEPFTNMacketAnalyzer/PoolAmountTrendData";
-import { PriceResponse } from "../models/JPEPFTNMacketAnalyzer/Price";
-import {
+import type { PriceResponse } from "../models/JPEPFTNMacketAnalyzer/Price";
+import type {
   PriceTrendDataItem,
   PriceTrendDataRequest,
   PriceTrendDataResponse,
 } from "../models/JPEPFTNMacketAnalyzer/PriceTrendData";
-import { TimeRange } from "../models/JPEPFTNMacketAnalyzer/base";
+import type { TimeRange } from "../models/JPEPFTNMacketAnalyzer/base";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 

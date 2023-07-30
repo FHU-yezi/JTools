@@ -7,14 +7,14 @@ import SSLink from "../components/SSLink";
 import SSSegmentedControl from "../components/SSSegmentedControl";
 import SSStat from "../components/SSStat";
 import SSText from "../components/SSText";
-import {
+import type {
   OnRankRecordItem,
   OnRankRecordsRequest,
   OnRankRecordsResponse,
   RankingSummaryRequest,
   RankingSummaryResponse,
 } from "../models/OnRankArticleViewer/OnRankRecords";
-import {
+import type {
   UserNameAutocompleteRequest,
   UserNameAutocompleteResponse,
 } from "../models/OnRankArticleViewer/UserNameAutocomplete";

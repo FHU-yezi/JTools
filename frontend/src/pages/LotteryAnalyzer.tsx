@@ -9,22 +9,25 @@ import SSText from "../components/SSText";
 import SSTooltip from "../components/SSTooltip";
 import SSLineChart from "../components/charts/SSLineChart";
 import SSPieChart from "../components/charts/SSPieChart";
-import {
+import type {
   PerPrizeDataItem,
   PerPrizeDataRequest,
   PerPrizeDataResponse,
 } from "../models/LotteryAnalyzer/PerPrizeData";
-import {
+import type {
   RewardsWinsCountDataItem,
   RewardsWinsCountDataRequest,
   RewardsWinsCountDataResponse,
 } from "../models/LotteryAnalyzer/RewardWinsCountData";
-import {
+import type {
   RewardWinsTrendDataItem,
   RewardWinsTrendDataRequest,
   RewardsWinsTrendDataResponse,
 } from "../models/LotteryAnalyzer/RewardWinsTrendData";
-import { TimeRange, TimeRangeWithoutAll } from "../models/LotteryAnalyzer/base";
+import type {
+  TimeRange,
+  TimeRangeWithoutAll,
+} from "../models/LotteryAnalyzer/base";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import { RoundFloat } from "../utils/numberHelper";

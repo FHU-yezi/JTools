@@ -5,7 +5,7 @@ import SSLink from "../components/SSLink";
 import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
 import SSWordcloud from "../components/charts/SSWordcloud";
-import {
+import type {
   WordFreqDataItem,
   WordFreqDataRequest,
   WordFreqDataResponse,

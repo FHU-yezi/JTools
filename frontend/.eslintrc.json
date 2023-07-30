@@ -13,6 +13,9 @@
   },
   "plugins": ["@typescript-eslint", "prettier"],
   "rules": {
+    "@typescript-eslint/no-import-type-side-effects": "error",
+    "@typescript-eslint/consistent-type-imports": "error",
+    "@typescript-eslint/consistent-type-exports": "error",
     "prettier/prettier": "warn",
     "react/react-in-jsx-scope": "off",
     "no-param-reassign": "off",

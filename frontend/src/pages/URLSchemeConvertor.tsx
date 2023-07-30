@@ -1,5 +1,6 @@
 import { useClipboard } from "@mantine/hooks";
-import { Signal, signal } from "@preact/signals";
+import type { Signal } from "@preact/signals";
+import { signal } from "@preact/signals";
 import toast from "react-hot-toast";
 import { AiOutlineCheck } from "react-icons/ai";
 import { BiCopy, BiRightArrowAlt } from "react-icons/bi";

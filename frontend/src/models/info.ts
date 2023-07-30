@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-shadow
 export enum InfoStatus {
   NORMAL = 0,
   UNAVALIABLE = 1,

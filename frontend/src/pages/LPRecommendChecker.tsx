@@ -8,7 +8,7 @@ import SSLink from "../components/SSLink";
 import SSTable from "../components/SSTable";
 import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
-import {
+import type {
   CheckItem,
   CheckRequest,
   CheckResponse,

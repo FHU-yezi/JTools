@@ -1,4 +1,4 @@
-import { Signal } from "@preact/signals";
+import type { Signal } from "@preact/signals";
 import clsx from "clsx";
 import SSText from "./SSText";
 

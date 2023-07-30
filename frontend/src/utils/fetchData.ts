@@ -1,6 +1,6 @@
-import { Signal } from "@preact/signals";
+import type { Signal } from "@preact/signals";
 import toast from "react-hot-toast";
-import { Response } from "../models/base";
+import type { Response } from "../models/base";
 import { getBaseURL } from "./URLHelper";
 
 const baseURL = getBaseURL();
