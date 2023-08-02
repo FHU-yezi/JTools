@@ -13,7 +13,7 @@ export default function SSColorSchemeSwitch() {
   const toggleColorScheme = () => {
     setColorScheme(colorScheme === "dark" ? "light" : "dark");
 
-    // Tailwind CSS 深色模式
+    // UnoCSS 深色模式
     if (colorScheme === "dark") {
       document.documentElement.classList.remove("dark");
     } else {
@@ -36,14 +36,14 @@ export default function SSColorSchemeSwitch() {
     >
       <SSText
         className={clsx("p-2 transition-colors duration-300", {
-          "bg-gray-200": colorScheme === "light",
+          "bg-zinc-200": colorScheme === "light",
         })}
       >
         <BsSun size={14} />
       </SSText>
       <SSText
         className={clsx("p-2 transition-colors duration-300", {
-          "bg-gray-600": colorScheme === "dark",
+          "bg-zinc-600": colorScheme === "dark",
         })}
       >
         <BsMoon size={14} />

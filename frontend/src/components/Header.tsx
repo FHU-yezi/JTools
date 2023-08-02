@@ -23,7 +23,7 @@ export default function Header({ toolName, showBackArrow }: Props) {
               aria-label="返回"
             >
               <IoIosArrowBack
-                className="text-gray-500 dark:text-gray-300"
+                className="text-zinc-500 dark:text-zinc-300"
                 size={22}
               />
             </button>

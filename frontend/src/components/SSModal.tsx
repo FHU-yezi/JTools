@@ -77,7 +77,7 @@ export default function SSModal({
       />
       <div
         className={clsx(
-          "sm:gray-border fixed left-0 top-0 z-30 h-screen w-screen bg-white p-4 transition-all duration-200 dark:bg-gray-900 sm:left-[50vw] sm:top-[10vh] sm:h-fit sm:w-[60vw] sm:min-w-[36rem] sm:max-w-3xl sm:-translate-x-1/2 sm:rounded-lg sm:shadow",
+          "sm:gray-border fixed left-0 top-0 z-30 h-screen w-screen bg-white p-4 transition-all duration-200 dark:bg-zinc-900 sm:left-[50vw] sm:top-[10vh] sm:h-fit sm:w-[60vw] sm:min-w-[36rem] sm:max-w-3xl sm:-translate-x-1/2 sm:rounded-lg sm:shadow",
           {
             "pointer-events-none !opacity-0 sm:-translate-y-1/2": !isOpen.value,
           }

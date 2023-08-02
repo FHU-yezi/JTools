@@ -34,7 +34,7 @@ export default function SSNumberInput({
         min={min}
         max={max}
         step={step}
-        className="w-full rounded-lg border border-gray-200 bg-white p-1.5 px-3 text-gray-900 invalid:!border-red-500 focus:!border-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
+        className="w-full rounded-lg border border-zinc-200 bg-white p-1.5 px-3 text-zinc-900 invalid:!border-red-500 focus:!border-blue-500 focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
         value={value.value}
         onChange={(event: any) => {
           const parseResult = parseFloat(event.currentTarget.value);

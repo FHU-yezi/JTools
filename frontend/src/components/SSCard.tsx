@@ -28,7 +28,7 @@ export default function SSCard({
   return (
     <div
       className={clsx(
-        "flex flex-col border bg-white shadow dark:border-gray-700 dark:bg-gray-900",
+        "flex flex-col border bg-white shadow dark:border-zinc-700 dark:bg-zinc-900",
         className,
         round,
         padding,

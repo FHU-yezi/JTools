@@ -9,6 +9,9 @@ import App from "./App";
 import ErrorFallback from "./components/ErrorFallback";
 import Footer from "./components/Footer";
 
+import "@unocss/reset/tailwind.css";
+import "uno.css";
+
 // 处理 Safari 浏览器上的 ResizeObserver 兼容性问题
 if (!window.ResizeObserver) {
   install();
@@ -24,7 +27,7 @@ function Main() {
   });
 
   useEffect(() => {
-    // Tailwind CSS 深色模式
+    // UnoCSS 深色模式
     if (colorScheme === "dark") {
       document.documentElement.className = "dark";
     }

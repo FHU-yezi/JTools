@@ -58,7 +58,7 @@ export default function SearchModal() {
   return (
     <>
       <SSActionIcon
-        className="dark:hover:!bg-gray-700"
+        className="dark:hover:!bg-zinc-700"
         label="搜索"
         onClick={() => {
           searchModalOpen.value = true;
@@ -66,7 +66,7 @@ export default function SearchModal() {
         }}
       >
         <AiOutlineSearch
-          className="text-gray-500 dark:text-gray-300"
+          className="text-zinc-500 dark:text-zinc-300"
           size={22}
         />
       </SSActionIcon>

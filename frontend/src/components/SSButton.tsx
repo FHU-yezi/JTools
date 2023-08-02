@@ -24,9 +24,9 @@ export default function SSButton({
         className,
         "rounded-lg p-2 transition-colors focus:border-blue-500 focus:outline-none focus:ring",
         {
-          "bg-gray-900 hover:bg-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600":
+          "bg-zinc-900 hover:bg-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-600":
             !light,
-          "border border-gray-500 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-800":
+          "border border-zinc-500 hover:bg-zinc-100 dark:border-zinc-600 dark:hover:bg-zinc-800":
             light,
           "cursor-wait": loading,
         }
@@ -37,8 +37,8 @@ export default function SSButton({
         className={clsx(
           "flex items-center justify-center gap-3 font-semibold",
           {
-            "text-gray-100": !light,
-            "text-gray-900 dark:text-gray-300": light,
+            "text-zinc-100": !light,
+            "text-zinc-900 dark:text-zinc-300": light,
           }
         )}
       >
