@@ -8,7 +8,7 @@ export default function V2UnavaliablePage() {
   const [, setLocation] = useLocation();
 
   return (
-    <SSCenter className="h-[100vh]">
+    <SSCenter className="h-screen">
       <div className="max-w-4xl w-[90vw] flex flex-col gap-4">
         <LuConstruction size={48} />
         <SSText xlarge xbold>

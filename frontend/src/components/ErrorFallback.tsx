@@ -18,7 +18,7 @@ export default function ErrorFallback({ error }: Props) {
   console.error(`${error.name}: ${error.message}\n${error.stack}`);
 
   return (
-    <SSCenter className="h-[100vh]">
+    <SSCenter className="h-screen">
       <div className="max-w-4xl w-[90vw] flex flex-col gap-4">
         <SSText>
           <BiError size={48} />

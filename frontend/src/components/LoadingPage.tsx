@@ -11,7 +11,7 @@ export default function LoadingPage() {
   }, []);
 
   return (
-    <SSCenter className="mt-[20vh]">
+    <SSCenter className="grid h-screen place-content-center">
       {showLoader.value && <SSLoader />}
     </SSCenter>
   );

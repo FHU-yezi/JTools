@@ -20,17 +20,13 @@ export default function SSButton({
   return (
     <button
       type="button"
-      className={clsx(
-        className,
-        "rounded-lg p-2 transition-colors focus:border-blue-500 focus:outline-none focus:ring",
-        {
-          "bg-zinc-900 hover:bg-zinc-700 dark:(bg-zinc-800 hover:bg-zinc-600)":
-            !light,
-          "border border-zinc-500 hover:bg-zinc-100 dark:(border-zinc-600 hover:bg-zinc-800)":
-            light,
-          "cursor-wait": loading,
-        }
-      )}
+      className={clsx(className, "rounded-lg p-2 transition-colors", {
+        "bg-zinc-900 hover:bg-zinc-700 dark:(bg-zinc-800 hover:bg-zinc-600)":
+          !light,
+        "border border-zinc-500 hover:bg-zinc-100 dark:(border-zinc-600 hover:bg-zinc-800)":
+          light,
+        "cursor-wait": loading,
+      })}
       onClick={onClick}
     >
       <p
