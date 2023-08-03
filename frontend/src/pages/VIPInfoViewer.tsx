@@ -95,7 +95,7 @@ export default function VIPInfoViewer() {
               src={VIPTypeToBadgeImageURL[VIPType.value]}
               alt={`${VIPType.value} 徽章图标`}
             />
-            <SSBadge className="bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
+            <SSBadge className="bg-zinc-100 text-zinc-500 dark:(bg-zinc-800 text-zinc-400)">
               {VIPType.value}
             </SSBadge>
           </div>
