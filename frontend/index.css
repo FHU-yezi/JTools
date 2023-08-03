@@ -1,5 +1,8 @@
 body {
-  --at-apply: bg-white selection:bg-zinc-300 dark:bg-zinc-950 dark:selection:bg-zinc-700;
+  --at-apply: bg-white dark:bg-zinc-950;
+}
+body ::selection {
+  --at-apply: bg-zinc-300 dark:bg-zinc-700
 }
 
 .text-primary {
