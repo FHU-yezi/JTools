@@ -21,7 +21,7 @@ export default function Footer() {
 
   return (
     <div className="color-layer-2 mx-auto py-6">
-      <div className="mx-auto flex w-[90vw] max-w-4xl flex-col gap-2">
+      <div className="mx-auto max-w-4xl w-[90vw] flex flex-col gap-2">
         <SSLink
           label="服务状态"
           url="https://status.sscreator.com/status/jtools"

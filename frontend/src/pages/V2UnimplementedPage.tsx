@@ -9,7 +9,7 @@ export default function V2UnimplementedPage() {
 
   return (
     <SSCenter className="h-[100vh]">
-      <div className="flex w-[90vw] max-w-4xl flex-col gap-4">
+      <div className="max-w-4xl w-[90vw] flex flex-col gap-4">
         <LuServerOff size={48} />
         <SSText xlarge xbold>
           正在开发中

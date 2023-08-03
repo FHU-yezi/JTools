@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import { Signal, useSignal } from "@preact/signals";
+import type { Signal } from "@preact/signals";
+import { useSignal } from "@preact/signals";
 import clsx from "clsx";
 import type { ComponentChildren } from "preact";
 import { useEffect } from "preact/hooks";

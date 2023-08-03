@@ -1,3 +1,5 @@
+**/dev-dist
+**/dist
 *.config.js
 *.config.cjs
 *.config.ts

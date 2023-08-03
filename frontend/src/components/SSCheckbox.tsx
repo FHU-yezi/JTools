@@ -29,7 +29,7 @@ export default function SSCheckbox({ label, value }: Props) {
           })}
         >
           {value.value && (
-            <BiCheck className="stroke-zinc-100 stroke-2 dark:stroke-zinc-300" />
+            <BiCheck className="stroke-2 stroke-zinc-100 dark:stroke-zinc-300" />
           )}
         </SSCenter>
         {label}

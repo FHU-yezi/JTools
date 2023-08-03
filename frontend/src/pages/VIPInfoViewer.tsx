@@ -88,7 +88,7 @@ export default function VIPInfoViewer() {
 
       {VIPType.value !== undefined && (
         <>
-          <div className="flex max-w-fit items-center gap-1">
+          <div className="max-w-fit flex items-center gap-1">
             <SSText>会员级别：</SSText>
             <SSAvatar
               className="mr-1.5 h-6 w-6"

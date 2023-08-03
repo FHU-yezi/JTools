@@ -152,7 +152,7 @@ function handlePoolAmountTrendDataFetch() {
 function PerPriceAmountDataBar() {
   return (
     <SSBarChart
-      className="h-72 w-full max-w-xl"
+      className="h-72 max-w-xl w-full"
       dataReady={perPriceAmountData.value !== undefined}
       options={{
         xAxis: {
@@ -186,7 +186,7 @@ function PerPriceAmountDataBar() {
 function PriceTrendLine() {
   return (
     <SSLineChart
-      className="h-72 w-full max-w-lg"
+      className="h-72 max-w-lg w-full"
       dataReady={
         buyPriceTrendData.value !== undefined &&
         sellPriceTrendData.value !== undefined
@@ -251,7 +251,7 @@ function PriceTrendLine() {
 function PoolAmountTrendLine() {
   return (
     <SSLineChart
-      className="h-72 w-full max-w-lg"
+      className="h-72 max-w-lg w-full"
       dataReady={
         buyPoolAmountTrendData.value !== undefined &&
         sellPoolAmountTrendData.value !== undefined

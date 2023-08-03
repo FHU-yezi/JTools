@@ -14,7 +14,7 @@ export default function Header({ toolName, showBackArrow }: Props) {
 
   return (
     <>
-      <div className="color-layer-2 fixed left-0 top-0 z-10 flex h-16 w-full flex-nowrap items-center justify-between px-[5vw] shadow-sm">
+      <div className="color-layer-2 fixed left-0 top-0 z-10 h-16 w-full flex flex-nowrap items-center justify-between px-[5vw] shadow-sm">
         <div className="flex flex-nowrap items-center gap-x-2">
           {showBackArrow && (
             <button

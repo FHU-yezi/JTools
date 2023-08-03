@@ -36,7 +36,7 @@ function Main() {
   return (
     <React.StrictMode>
       <ErrorBoundary FallbackComponent={ErrorFallback}>
-        <div className="mx-auto my-7 min-h-screen w-[90vw] max-w-4xl">
+        <div className="mx-auto my-7 max-w-4xl min-h-screen w-[90vw]">
           <App />
         </div>
         <Footer />

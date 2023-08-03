@@ -261,7 +261,7 @@ export default function VIPProfitCompute() {
       />
       <SSNumberInput label="每日创作收益" value={earningFromCreation} min={0} />
 
-      <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 mt-5 gap-4 sm:grid-cols-2">
         <ResultGroup label="会员持钻收益">
           <ResultItem
             label="基础收益率"
