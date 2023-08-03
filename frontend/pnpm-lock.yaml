@@ -14,6 +14,9 @@ dependencies:
   '@preact/signals':
     specifier: ^1.1.5
     version: 1.1.5(preact@10.16.0)
+  '@unocss/preset-rem-to-px':
+    specifier: ^0.54.1
+    version: 0.54.1
   '@unocss/reset':
     specifier: ^0.54.1
     version: 0.54.1
@@ -2125,6 +2128,12 @@ packages:
     dependencies:
       '@unocss/core': 0.54.1
       '@unocss/extractor-arbitrary-variants': 0.54.1
+    dev: false
+
+  /@unocss/preset-rem-to-px@0.54.1:
+    resolution: {integrity: sha512-kdKPV0AfY/cNKTD7lcDn3GJL02/uXArYe8zD6zc4mweBTlbK8bWfn66ceRK3iNmNCuUuWMttIKv2Qxe6eZwEhg==}
+    dependencies:
+      '@unocss/core': 0.54.1
     dev: false
 
   /@unocss/preset-tagify@0.54.1:

@@ -12,6 +12,7 @@
     "@mantine/hooks": "^6.0.17",
     "@preact/preset-vite": "^2.5.0",
     "@preact/signals": "^1.1.5",
+    "@unocss/preset-rem-to-px": "^0.54.1",
     "@unocss/reset": "^0.54.1",
     "clsx": "^1.2.1",
     "dayjs": "^1.11.9",
