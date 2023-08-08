@@ -21,7 +21,7 @@ function ToolItem({ name, description, onClick }: ToolItemProps) {
     <div
       role="button"
       tabIndex={0}
-      className="hover:color-layer-2 w-full flex flex-col gap-1 rounded-lg p-2"
+      className="w-full flex flex-col gap-1 rounded-lg p-2 hover:(bg-zinc-100 dark:bg-zinc-800)"
       onClick={onClick}
       onKeyPress={onClick}
     >
