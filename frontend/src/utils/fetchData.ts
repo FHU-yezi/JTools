@@ -86,13 +86,13 @@ export async function fetchData<TRequest, TResponse>(
   }
 
   const responseJSON = (await response.json()) as Response<TResponse>;
-  if (!responseJSON.ok) {
+  if (responseJSON.ok) {
+    // API 状态码正常
+    onOK(responseJSON.data);
+  } else {
     // API 状态码异常
     onError(responseJSON.code, responseJSON.message);
   }
-
-  // API 状态码正常
-  onOK(responseJSON.data);
 
   if (isLoading) {
     isLoading.value = false;
