@@ -1,6 +1,5 @@
 import { batch, signal } from "@preact/signals";
 import type { Dayjs } from "dayjs";
-import toast from "react-hot-toast";
 import SSAvatar from "../components/SSAvatar";
 import SSBadge from "../components/SSBadge";
 import SSButton from "../components/SSButton";
@@ -18,6 +17,7 @@ import {
   getHumanReadableTimeDelta,
   parseTime,
 } from "../utils/timeHelper";
+import { toastWarning } from "../utils/toastHelper";
 import VIPBadgeBronzeURL from "/vip_badges/vip_badge_bronze.png";
 import VIPBadgeGoldURL from "/vip_badges/vip_badge_gold.png";
 import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";
@@ -42,9 +42,7 @@ function handleQuery() {
   }
 
   if (userURL.value.length === 0) {
-    toast("请输入用户个人主页链接", {
-      icon: " ⚠️",
-    });
+    toastWarning("请输入用户个人主页链接");
     return;
   }
 
@@ -82,7 +80,11 @@ export default function VIPInfoViewer() {
       {userName.value !== undefined && (
         <SSText>
           昵称：
-          <SSExternalLink url={userURL.value} label={userName.value} openInNewTab />
+          <SSExternalLink
+            url={userURL.value}
+            label={userName.value}
+            openInNewTab
+          />
         </SSText>
       )}
 

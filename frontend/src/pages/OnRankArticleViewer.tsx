@@ -1,9 +1,8 @@
 import { batch, computed, signal } from "@preact/signals";
-import toast from "react-hot-toast";
 import SSAutocomplete from "../components/SSAutocomplete";
 import SSButton from "../components/SSButton";
-import SSLazyLoadTable from "../components/SSLazyLoadTable";
 import SSExternalLink from "../components/SSExternalLink";
+import SSLazyLoadTable from "../components/SSLazyLoadTable";
 import SSSegmentedControl from "../components/SSSegmentedControl";
 import SSStat from "../components/SSStat";
 import SSText from "../components/SSText";
@@ -21,6 +20,7 @@ import type {
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import { getDate, parseTime } from "../utils/timeHelper";
+import { toastWarning } from "../utils/toastHelper";
 
 const userURLOrUserName = signal("");
 const sortSelect = signal<
@@ -66,9 +66,7 @@ function handleCompleteItemUpdate(value: string) {
 
 function handleQuery() {
   if (userURLOrUserName.value.length === 0) {
-    toast("请输入用户昵称或个人主页链接", {
-      icon: " ⚠️",
-    });
+    toastWarning("请输入用户昵称或个人主页链接");
     return;
   }
 

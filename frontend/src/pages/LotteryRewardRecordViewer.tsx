@@ -1,7 +1,6 @@
 import type { Signal } from "@preact/signals";
 import { batch, effect, signal, useSignal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
-import toast from "react-hot-toast";
 import SSButton from "../components/SSButton";
 import SSCheckbox from "../components/SSCheckbox";
 import SSLazyLoadTable from "../components/SSLazyLoadTable";
@@ -19,6 +18,7 @@ import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import { removeSpace } from "../utils/textHelper";
 import { getDatetime, parseTime } from "../utils/timeHelper";
+import { toastWarning } from "../utils/toastHelper";
 
 const rewards = signal<string[] | undefined>(undefined);
 const userURL = signal("");
@@ -29,9 +29,7 @@ const result = signal<LotteryRecordItem[] | undefined>(undefined);
 
 function handleQuery() {
   if (userURL.value.length === 0) {
-    toast("请输入用户个人主页链接", {
-      icon: " ⚠️",
-    });
+    toastWarning("请输入用户个人主页链接");
     return;
   }
 

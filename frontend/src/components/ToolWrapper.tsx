@@ -4,7 +4,6 @@ import clsx from "clsx";
 import type { Dayjs } from "dayjs";
 import type { JSX } from "preact";
 import { Suspense, useEffect } from "preact/compat";
-import toast from "react-hot-toast";
 import { useLocation } from "wouter-preact";
 import type { InfoRequest, InfoResponse } from "../models/info";
 import { InfoStatus } from "../models/info";
@@ -12,6 +11,7 @@ import { getToolSlug } from "../utils/URLHelper";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import { getDateTimeWithoutSecond, parseTime } from "../utils/timeHelper";
+import { toastWarning } from "../utils/toastHelper";
 import Header from "./Header";
 import LoadingPage from "./LoadingPage";
 import SSButton from "./SSButton";
@@ -67,15 +67,12 @@ export default function ToolWrapper({ Component, toolName }: Props) {
         });
 
         if (toolStatus.value === InfoStatus.DOWNGRADED) {
-          toast(
+          toastWarning(
             `服务降级\n${
               downgradedReason.value ??
               "该小工具处于降级状态，其数据准确性、展示效果及性能可能受到影响，请您留意。"
             }`,
-            {
-              duration: 4000,
-              icon: " 🔻",
-            }
+            4000
           );
         }
 

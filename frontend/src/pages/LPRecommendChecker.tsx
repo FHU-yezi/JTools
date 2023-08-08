@@ -1,6 +1,5 @@
 import { batch, signal } from "@preact/signals";
 import type { Dayjs } from "dayjs";
-import toast from "react-hot-toast";
 import SSBadge from "../components/SSBadge";
 import SSButton from "../components/SSButton";
 import SSCenter from "../components/SSCenter";
@@ -20,6 +19,7 @@ import {
   getHumanReadableTimeDelta,
   parseTime,
 } from "../utils/timeHelper";
+import { toastWarning } from "../utils/toastHelper";
 
 const articleURL = signal("");
 const isLoading = signal(false);
@@ -30,9 +30,7 @@ const checkItems = signal<CheckItem[] | undefined>(undefined);
 
 function handleCheck() {
   if (articleURL.value.length === 0) {
-    toast("请输入文章链接", {
-      icon: " ⚠️",
-    });
+    toastWarning("请输入文章链接");
     return;
   }
 

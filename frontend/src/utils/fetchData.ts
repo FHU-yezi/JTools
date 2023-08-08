@@ -1,7 +1,7 @@
 import type { Signal } from "@preact/signals";
-import toast from "react-hot-toast";
 import type { Response } from "../models/base";
 import { getBaseURL } from "./URLHelper";
+import { toastError } from "./toastHelper";
 
 const baseURL = getBaseURL();
 const defaultTimeout = 5000;
@@ -61,7 +61,7 @@ export async function fetchData<TRequest, TResponse>(
     }
 
     if ((error as any).name === "AbortError") {
-      toast.error(
+      toastError(
         `请求超时（${
           timeout ?? defaultTimeout
         }ms）\n请尝试刷新页面，如该问题反复出现，请向开发者反馈`
@@ -69,7 +69,7 @@ export async function fetchData<TRequest, TResponse>(
       return;
     }
 
-    toast.error("网络异常\n请尝试刷新页面，如该问题反复出现，请向开发者反馈");
+    toastError("网络异常\n请尝试刷新页面，如该问题反复出现，请向开发者反馈");
     return;
   }
 
@@ -79,7 +79,7 @@ export async function fetchData<TRequest, TResponse>(
       isLoading.value = false;
     }
 
-    toast.error(
+    toastError(
       `API 请求失败\nHTTP ${response.status}（${response.statusText}）`
     );
     return;
