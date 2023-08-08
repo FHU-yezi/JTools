@@ -5,15 +5,15 @@ interface Props {
   className?: string;
   url: string;
   label?: string;
-  isExternal?: boolean;
+  openInNewTab?: boolean;
   hideIcon?: boolean;
 }
 
-export default function SSLink({
+export default function SSExternalLink({
   className,
   url,
   label,
-  isExternal = false,
+  openInNewTab = false,
   hideIcon = false,
 }: Props) {
   return (
@@ -23,7 +23,7 @@ export default function SSLink({
         "w-fit break-all text-blue-600 transition-colors hover:text-blue-700 dark:(text-blue-400 hover:text-blue-500)"
       )}
       href={url}
-      target={isExternal ? "_blank" : "_self"}
+      target={openInNewTab ? "_blank" : "_self"}
       rel="noreferrer"
     >
       {label ?? url}

@@ -1,7 +1,7 @@
 import { useDocumentTitle } from "@mantine/hooks";
 import Header from "../components/Header";
 import SSCard from "../components/SSCard";
-import SSLink from "../components/SSLink";
+import SSExternalLink from "../components/SSExternalLink";
 import SSText from "../components/SSText";
 import {
   debugProjectRecords,
@@ -30,7 +30,7 @@ export default function ThanksPage() {
           <SSText>
             {name}
             ：
-            <SSLink url={url} isExternal />
+            <SSExternalLink url={url} openInNewTab />
           </SSText>
         ))}
 
@@ -43,7 +43,7 @@ export default function ThanksPage() {
               {part.map(({ name, desc, url }) => (
                 <SSText>
                   {desc}：
-                  <SSLink label={name} url={url} isExternal />
+                  <SSExternalLink label={name} url={url} openInNewTab />
                 </SSText>
               ))}
             </SSCard>
@@ -62,7 +62,7 @@ export default function ThanksPage() {
               <SSText>{item.desc}</SSText>
               <SSText>
                 反馈者：
-                <SSLink url={item.user_url} label={item.user_name} isExternal />
+                <SSExternalLink url={item.user_url} label={item.user_name} openInNewTab />
               </SSText>
               <SSText>{`奖励：${item.award} 简书贝`}</SSText>
             </SSCard>

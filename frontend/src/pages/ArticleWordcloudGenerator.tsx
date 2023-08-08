@@ -1,7 +1,7 @@
 import { batch, signal } from "@preact/signals";
 import toast from "react-hot-toast";
 import SSButton from "../components/SSButton";
-import SSLink from "../components/SSLink";
+import SSExternalLink from "../components/SSExternalLink";
 import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
 import SSWordcloud from "../components/charts/SSWordcloud";
@@ -68,14 +68,14 @@ export default function ArticleWordcloudGenerator() {
       {articleTitle.value !== undefined && articleURL.value !== undefined && (
         <SSText center>
           文章：
-          <SSLink
+          <SSExternalLink
             url={articleURL.value}
             label={
               articleTitle.value.length <= 17
                 ? articleTitle.value
                 : `${articleTitle.value.substring(0, 17)}...`
             }
-            isExternal
+            openInNewTab
           />
         </SSText>
       )}

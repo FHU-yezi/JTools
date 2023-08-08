@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import SSBadge from "../components/SSBadge";
 import SSButton from "../components/SSButton";
 import SSCenter from "../components/SSCenter";
-import SSLink from "../components/SSLink";
+import SSExternalLink from "../components/SSExternalLink";
 import SSTable from "../components/SSTable";
 import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
@@ -65,10 +65,10 @@ export default function LPRecommendChecker() {
       {articleTitle.value !== undefined && articleURL.value !== undefined && (
         <SSText center>
           文章标题：
-          <SSLink
+          <SSExternalLink
             url={articleURL.value}
             label={articleTitle.value}
-            isExternal
+            openInNewTab
           />
         </SSText>
       )}

@@ -15,7 +15,7 @@ import { getDateTimeWithoutSecond, parseTime } from "../utils/timeHelper";
 import Header from "./Header";
 import LoadingPage from "./LoadingPage";
 import SSButton from "./SSButton";
-import SSLink from "./SSLink";
+import SSExternalLink from "./SSExternalLink";
 import SSModal from "./SSModal";
 import SSStat from "./SSStat";
 import SSText from "./SSText";
@@ -120,7 +120,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
             <div className="my-4 flex flex-col gap-1">
               <SSText bold>数据来源</SSText>
               {Object.entries(dataSource.value).map(([name, url]) => (
-                <SSLink label={name} url={url} isExternal />
+                <SSExternalLink label={name} url={url} openInNewTab />
               ))}
             </div>
           )}

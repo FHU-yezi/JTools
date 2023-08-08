@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import SSAutocomplete from "../components/SSAutocomplete";
 import SSButton from "../components/SSButton";
 import SSLazyLoadTable from "../components/SSLazyLoadTable";
-import SSLink from "../components/SSLink";
+import SSExternalLink from "../components/SSExternalLink";
 import SSSegmentedControl from "../components/SSSegmentedControl";
 import SSStat from "../components/SSStat";
 import SSText from "../components/SSText";
@@ -169,11 +169,11 @@ function ResultTable() {
         日期: <SSText center>{getDate(parseTime(item.date))}</SSText>,
         排名: <SSText center>{item.ranking}</SSText>,
         文章: (
-          <SSLink
+          <SSExternalLink
             className="block max-w-[60vw] overflow-hidden text-ellipsis whitespace-nowrap"
             url={item.url}
             label={item.title}
-            isExternal
+            openInNewTab
             hideIcon
           />
         ),

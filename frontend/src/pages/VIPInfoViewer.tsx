@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import SSAvatar from "../components/SSAvatar";
 import SSBadge from "../components/SSBadge";
 import SSButton from "../components/SSButton";
-import SSLink from "../components/SSLink";
+import SSExternalLink from "../components/SSExternalLink";
 import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
 import type {
@@ -82,7 +82,7 @@ export default function VIPInfoViewer() {
       {userName.value !== undefined && (
         <SSText>
           昵称：
-          <SSLink url={userURL.value} label={userName.value} isExternal />
+          <SSExternalLink url={userURL.value} label={userName.value} openInNewTab />
         </SSText>
       )}
 

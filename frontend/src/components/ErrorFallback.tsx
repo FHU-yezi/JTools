@@ -4,7 +4,7 @@ import SSAccordion from "./SSAccordion";
 import SSButton from "./SSButton";
 import SSCenter from "./SSCenter";
 import SSKey from "./SSKey";
-import SSLink from "./SSLink";
+import SSExternalLink from "./SSExternalLink";
 import SSText from "./SSText";
 
 interface Props {
@@ -30,10 +30,10 @@ export default function ErrorFallback({ error }: Props) {
           非常抱歉给您带来不好的体验，您可尝试点击下方按钮刷新页面。
         </SSText>
         <SSText>如果您多次看到此页面，请向开发者反馈此问题。</SSText>
-        <SSLink
+        <SSExternalLink
           url="https://wenjuan.feishu.cn/m?t=sGzpuZGzUrNi-cbbb"
           label="前往反馈表单 >"
-          isExternal
+          openInNewTab
         />
         <SSText gray>{error.toString()}</SSText>
 
