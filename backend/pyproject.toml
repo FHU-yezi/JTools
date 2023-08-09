@@ -17,7 +17,7 @@ sanic = "^23.3.0"
 pydantic = "^2.0.2"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.0.277"
+ruff = "^0.0.283"
 pyright = "^1.1.309"
 black = "^23.3.0"
 
