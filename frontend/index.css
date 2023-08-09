@@ -1,5 +1,5 @@
 body {
-  --at-apply: bg-white dark:bg-zinc-950;
+  --at-apply: bg-white dark:bg-zinc-950 transition-colors;
 }
 body ::selection {
   --at-apply: bg-zinc-300 dark:bg-zinc-700

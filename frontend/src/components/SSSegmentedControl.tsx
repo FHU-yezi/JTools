@@ -25,7 +25,7 @@ export default function SSSegmentedControl<T>({
             tabIndex={0}
             aria-checked={value.value === itemValue}
             className={clsx(
-              "gray-border grid min-w-fit select-none place-content-center py-2 pl-3 pr-2 transition-colors duration-100 first:rounded-l-lg last:rounded-r-lg",
+              "gray-border grid min-w-fit select-none place-content-center py-2 pl-3 pr-2 transition-colors first:rounded-l-lg last:rounded-r-lg",
               {
                 "bg-zinc-100 dark:bg-zinc-900": value.value !== itemValue,
                 "bg-white dark:bg-zinc-700": value.value === itemValue,

@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@mantine/hooks": "^6.0.17",
+    "@mantine/hooks": "^6.0.18",
     "@preact/preset-vite": "^2.5.0",
     "@preact/signals": "^1.1.5",
     "@unocss/preset-rem-to-px": "^0.54.1",
