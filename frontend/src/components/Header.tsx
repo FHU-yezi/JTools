@@ -1,22 +1,30 @@
 import { IoIosArrowBack } from "react-icons/io";
 import { useLocation } from "wouter-preact";
+import SSAvatar from "./SSAvatar";
 import SSColorSchemeSwitch from "./SSColorSchemeSwitch";
 import SSText from "./SSText";
 import SearchModal from "./SearchModal";
+import Icon from "/favicon-64.png";
 
 interface Props {
   toolName: string;
-  showBackArrow: boolean;
+  showIcon?: boolean;
+  hideBackArrow?: boolean;
 }
 
-export default function Header({ toolName, showBackArrow }: Props) {
+export default function Header({
+  toolName,
+  showIcon = false,
+  hideBackArrow = false,
+}: Props) {
   const [, setLocation] = useLocation();
 
   return (
     <>
       <div className="color-layer-2 fixed left-0 top-0 z-10 h-16 w-full flex flex-nowrap items-center justify-between px-[5vw] shadow-sm">
         <div className="flex flex-nowrap items-center gap-x-2">
-          {showBackArrow && (
+          {showIcon && <SSAvatar className="h-10 w-10" src={Icon} />}
+          {!hideBackArrow && (
             <button
               type="button"
               onClick={() => setLocation("/")}

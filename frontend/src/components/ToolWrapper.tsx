@@ -87,7 +87,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
 
   return (
     <>
-      <Header toolName={toolName} showBackArrow />
+      <Header toolName={toolName} />
       {!isLoading.value ? (
         <>
           <div

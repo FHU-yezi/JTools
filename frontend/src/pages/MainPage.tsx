@@ -71,7 +71,7 @@ export default function MainPage() {
 
   return (
     <>
-      <Header toolName="简书小工具集" showBackArrow={false} />
+      <Header toolName="简书小工具集" hideBackArrow showIcon />
       <div className="mt-4 flex flex-col gap-4">
         {routes.map((item) => (
           <ToolCard

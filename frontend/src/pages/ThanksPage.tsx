@@ -15,7 +15,7 @@ export default function ThanksPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Header toolName="鸣谢" showBackArrow />
+      <Header toolName="鸣谢" hideBackArrow />
 
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-0.5">
@@ -62,7 +62,11 @@ export default function ThanksPage() {
               <SSText>{item.desc}</SSText>
               <SSText>
                 反馈者：
-                <SSExternalLink url={item.user_url} label={item.user_name} openInNewTab />
+                <SSExternalLink
+                  url={item.user_url}
+                  label={item.user_name}
+                  openInNewTab
+                />
               </SSText>
               <SSText>{`奖励：${item.award} 简书贝`}</SSText>
             </SSCard>
