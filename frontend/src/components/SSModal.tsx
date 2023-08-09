@@ -69,7 +69,7 @@ export default function SSModal({
     <>
       <div
         className={clsx(
-          "fixed left-0 top-0 z-20 h-screen w-screen bg-black opacity-10 transition-opacity duration-200 dark:opacity-50",
+          "fixed left-0 top-0 z-20 h-screen w-screen bg-black opacity-10 transition-opacity dark:opacity-50",
           {
             "pointer-events-none !opacity-0": !isOpen.value,
           }

@@ -22,7 +22,7 @@ export default function SSCheckbox({ label, value }: Props) {
     >
       <SSText className="flex select-none items-center gap-2">
         <SSCenter
-          className={clsx("h-5 w-5 rounded transition-colors duration-100", {
+          className={clsx("h-5 w-5 rounded transition-colors", {
             "gray-border color-layer-1 hover:bg-zinc-100 dark:hover:bg-zinc-700":
               !value.value,
             "bg-zinc-800 hover:bg-zinc-700": value.value,

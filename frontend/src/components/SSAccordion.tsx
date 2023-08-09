@@ -26,7 +26,7 @@ export default function SSAccordion({ children, title }: Props) {
         </SSText>
         <SSText>
           <BsChevronUp
-            className={clsx("transition-transform duration-500", {
+            className={clsx("transition-transform duration-200", {
               "-rotate-180": isOpened.value,
             })}
             size={14}
@@ -35,10 +35,13 @@ export default function SSAccordion({ children, title }: Props) {
       </div>
 
       <div
-        className={clsx("overflow-y-hidden", {
-          "h-fit p-4 pt-2": isOpened.value,
-          "h-0": !isOpened.value,
-        })}
+        className={clsx(
+          "overflow-y-hidden transition-all transition-ease-linear duration-200 px-4",
+          {
+            "h-fit py-2 pb-4": isOpened.value,
+            "h-0": !isOpened.value,
+          }
+        )}
       >
         {children}
       </div>
