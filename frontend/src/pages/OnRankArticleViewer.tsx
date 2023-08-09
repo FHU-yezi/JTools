@@ -203,6 +203,7 @@ export default function OnRankArticleViewer() {
           "排名（倒序）": "ranking desc",
           "排名（正序）": "ranking asc",
         }}
+        compact
       />
       <SSButton onClick={handleQuery} loading={isLoading.value}>
         查询
