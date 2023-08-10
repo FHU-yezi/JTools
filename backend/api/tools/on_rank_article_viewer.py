@@ -23,6 +23,41 @@ def get_topn_count(filter_dict: Dict[str, Any], n: int) -> int:
     )
 
 
+def get_url_from_name(name: str) -> Optional[str]:
+    result = article_FP_rank_db.find_one({"author.name": name})
+    if not result:  # 用昵称查询无上榜记录
+        return None
+
+    return result["author"]["url"]
+
+
+def get_same_url_records_summary(user_url: str, ignore_name: str) -> Dict[str, int]:
+    db_result = article_FP_rank_db.aggregate(
+        [
+            {
+                "$match": {
+                    "author.url": user_url,
+                },
+            },
+            {
+                "$group": {
+                    "_id": "$author.name",
+                    "count": {"$sum": 1},
+                }
+            },
+            # 排除当前昵称
+            {
+                "$match": {
+                    "_id": {
+                        "$ne": ignore_name,
+                    },
+                },
+            },
+        ]
+    )
+    return {item["_id"]: item["count"] for item in db_result}
+
+
 class UserNameAutocompleteRequest(BaseModel):
     name_part: str
 
@@ -157,7 +192,7 @@ class RankingSummaryResponse(BaseModel):
 
 @on_rank_article_viewer_blueprint.post("/ranking_summary")
 @sanic_inject_pydantic_model(RankingSummaryRequest)
-def handle_ranking_summary(
+def ranking_summary_handler(
     request: Request, data: RankingSummaryRequest
 ) -> HTTPResponse:
     del request
@@ -197,5 +232,36 @@ def handle_ranking_summary(
             top30_count=top30_count,
             top50_count=top50_count,
             total=total,
+        ).model_dump(),
+    )
+
+
+class SameURLRecordsSummaryRequest(BaseModel):
+    user_name: str
+
+
+class SameURLRecordsSummaryResponse(BaseModel):
+    records: Dict[str, int]
+    user_url: Optional[str] = None
+
+
+@on_rank_article_viewer_blueprint.get("/same_url_records_summary")
+@sanic_inject_pydantic_model(SameURLRecordsSummaryRequest, source="query_args")
+def same_url_records_summary_handler(
+    request: Request, data: SameURLRecordsSummaryRequest
+) -> HTTPResponse:
+    del request
+
+    user_url = get_url_from_name(data.user_name)
+    if not user_url:
+        records = {}
+    else:
+        records = get_same_url_records_summary(user_url, data.user_name)
+
+    return sanic_response_json(
+        code=CODE.SUCCESS,
+        data=SameURLRecordsSummaryResponse(
+            records=records,
+            user_url=user_url,
         ).model_dump(),
     )

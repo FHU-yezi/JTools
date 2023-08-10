@@ -14,6 +14,10 @@ import type {
   RankingSummaryResponse,
 } from "../models/OnRankArticleViewer/OnRankRecords";
 import type {
+  SameURLRecordsSummaryRequest,
+  SameURLRecordsSummaryResponse,
+} from "../models/OnRankArticleViewer/SameURLRecordsSummary";
+import type {
   UserNameAutocompleteRequest,
   UserNameAutocompleteResponse,
 } from "../models/OnRankArticleViewer/UserNameAutocomplete";
@@ -40,6 +44,10 @@ const top10Count = signal<number | undefined>(undefined);
 const top30Count = signal<number | undefined>(undefined);
 const top50Count = signal<number | undefined>(undefined);
 const totalCount = signal<number | undefined>(undefined);
+const sameURLRecordsSummary = signal<Record<string, number> | undefined>(
+  undefined,
+);
+const sameURLUserURL = signal<string | undefined>(undefined);
 
 function isURL(string: string): boolean {
   return string.startsWith("https://");
@@ -72,22 +80,21 @@ function handleQuery() {
 
   hasMore.value = true;
 
-  const requestBodyForRecords: OnRankRecordsRequest = isURL(
-    userURLOrUserName.value,
-  )
+  const isName = !isURL(userURLOrUserName.value);
+
+  const requestBodyForRecords: OnRankRecordsRequest = isName
     ? {
-        user_url: userURLOrUserName.value,
+        user_name: userURLOrUserName.value.trim(),
         sort_by: sortBy.value,
         sort_order: sortOrder.value,
         offset: 0,
       }
     : {
-        user_name: userURLOrUserName.value.trim(),
+        user_url: userURLOrUserName.value,
         sort_by: sortBy.value,
         sort_order: sortOrder.value,
         offset: 0,
       };
-
   fetchData<OnRankRecordsRequest, OnRankRecordsResponse>(
     "POST",
     "/tools/on_rank_article_viewer/on_rank_records",
@@ -104,16 +111,13 @@ function handleQuery() {
     isLoading,
   );
 
-  const requestBodyForRankingSummary: RankingSummaryRequest = isURL(
-    userURLOrUserName.value,
-  )
+  const requestBodyForRankingSummary: RankingSummaryRequest = isName
     ? {
-        user_url: userURLOrUserName.value,
+        user_name: userURLOrUserName.value.trim(),
       }
     : {
-        user_name: userURLOrUserName.value.trim(),
+        user_url: userURLOrUserName.value,
       };
-
   fetchData<RankingSummaryRequest, RankingSummaryResponse>(
     "POST",
     "/tools/on_rank_article_viewer/ranking_summary",
@@ -128,6 +132,21 @@ function handleQuery() {
     },
     commonAPIErrorHandler,
   );
+
+  if (isName) {
+    fetchData<SameURLRecordsSummaryRequest, SameURLRecordsSummaryResponse>(
+      "GET",
+      "/tools/on_rank_article_viewer/same_url_records_summary",
+      { user_name: userURLOrUserName.value.trim() },
+      (data) => {
+        batch(() => {
+          sameURLRecordsSummary.value = data.records;
+          sameURLUserURL.value = data.user_url;
+        });
+      },
+      commonAPIErrorHandler,
+    );
+  }
 }
 
 function handleLoadMore() {
@@ -157,6 +176,43 @@ function handleLoadMore() {
     },
     commonAPIErrorHandler,
     isLoading,
+  );
+}
+
+function SameURLRecordsFoundNotice() {
+  return (
+    <div className="flex flex-col gap-4 rounded-md bg-green-100 p-4 dark:bg-green-950">
+      <SSText bold large>
+        数据不完整
+      </SSText>
+
+      <SSText>您可能更改过简书昵称，我们找到了其它与您有关的上榜记录：</SSText>
+      <div className="flex flex-col gap-2">
+        {Object.entries(sameURLRecordsSummary.value!).map(
+          ([name, dataCount]) => (
+            <SSText>
+              {name}：{dataCount} 条上榜记录
+            </SSText>
+          ),
+        )}
+      </div>
+
+      <SSButton
+        light
+        onClick={() => {
+          batch(() => {
+            // 替换当前输入的昵称为个人主页链接，同时清空同链接记录数据，以隐藏该组件
+            userURLOrUserName.value = sameURLUserURL.value!;
+            sameURLRecordsSummary.value = undefined;
+            sameURLUserURL.value = undefined;
+          });
+          // 触发检索
+          handleQuery();
+        }}
+      >
+        查看完整数据
+      </SSButton>
+    </div>
   );
 }
 
@@ -208,6 +264,10 @@ export default function OnRankArticleViewer() {
       <SSButton onClick={handleQuery} loading={isLoading.value}>
         查询
       </SSButton>
+
+      {sameURLRecordsSummary.value !== undefined &&
+        Object.keys(sameURLRecordsSummary.value).length !== 0 &&
+        sameURLUserURL.value !== undefined && <SameURLRecordsFoundNotice />}
 
       {top10Count.value !== undefined &&
         top30Count.value !== undefined &&
