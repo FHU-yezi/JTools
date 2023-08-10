@@ -21,7 +21,7 @@ const unavaliableTools = signal<string[]>([]);
 
 function handleV2Redirect(
   appName: string,
-  setLocation: (location: string) => void
+  setLocation: (location: string) => void,
 ) {
   if (appName in V2RedirectRoutes) {
     umamiTrack("v2-redirect", { from: appName, to: V2RedirectRoutes[appName] });
@@ -65,7 +65,7 @@ export default function MainPage() {
           downgradedTools.value = data.downgraded_tools;
           unavaliableTools.value = data.unavaliable_tools;
         }),
-      commonAPIErrorHandler
+      commonAPIErrorHandler,
     );
   }, []);
 

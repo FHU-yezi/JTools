@@ -36,7 +36,7 @@ function handleGenerate() {
         wordFreqData.value = data.word_freq;
       }),
     commonAPIErrorHandler,
-    isLoading
+    isLoading,
   );
 }
 

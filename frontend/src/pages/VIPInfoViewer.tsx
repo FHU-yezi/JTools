@@ -61,7 +61,7 @@ function handleQuery() {
         }
       }),
     commonAPIErrorHandler,
-    isLoading
+    isLoading,
   );
 }
 

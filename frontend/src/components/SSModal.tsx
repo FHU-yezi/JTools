@@ -39,7 +39,7 @@ export default function SSModal({
   // 该组件假设 preventCloseByEsc 参数不会在运行时修改
   // 因此对于设置 preventCloseByEsc = true 的场景，不存储该函数以节省资源
   const usingEscEventHandlerFunc = useSignal(
-    !preventCloseByClickMask ? closeModalWhenEscPressed(onClose) : undefined
+    !preventCloseByClickMask ? closeModalWhenEscPressed(onClose) : undefined,
   );
 
   //  Modal 展示时禁止下层元素滚动
@@ -59,7 +59,7 @@ export default function SSModal({
       } else {
         document.removeEventListener(
           "keydown",
-          usingEscEventHandlerFunc.value!
+          usingEscEventHandlerFunc.value!,
         );
       }
     }
@@ -72,7 +72,7 @@ export default function SSModal({
           "fixed left-0 top-0 z-20 h-screen w-screen bg-black opacity-10 transition-opacity dark:opacity-50",
           {
             "pointer-events-none !opacity-0": !isOpen.value,
-          }
+          },
         )}
         onClick={!preventCloseByClickMask ? onClose : undefined}
       />
@@ -81,7 +81,7 @@ export default function SSModal({
           "sm:(gray-border left-[50vw] top-[10vh] h-fit w-[60vw] min-w-[36rem] max-w-3xl -translate-x-1/2 rounded-lg shadow) fixed left-0 top-0 z-30 h-screen w-screen bg-white p-4 transition-all duration-200 dark:bg-zinc-900",
           {
             "pointer-events-none !opacity-0 sm:-translate-y-1/2": !isOpen.value,
-          }
+          },
         )}
       >
         <div className="flex items-center justify-between p-2">

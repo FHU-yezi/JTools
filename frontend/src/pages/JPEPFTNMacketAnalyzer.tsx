@@ -45,21 +45,21 @@ const sellPoolAmount = signal<number | undefined>(undefined);
 const totalPoolAmount = computed(() =>
   buyPoolAmount.value !== undefined && sellPoolAmount.value !== undefined
     ? buyPoolAmount.value + sellPoolAmount.value
-    : undefined
+    : undefined,
 );
 const perPriceAmountDataTradeType = signal<"buy" | "sell">("buy");
 const perPriceAmountData = signal<Record<number, number> | undefined>(
-  undefined
+  undefined,
 );
 const priceTrendLineTimeRange = signal<TimeRange>("6h");
 const buyPriceTrendData = signal<PriceTrendDataItem | undefined>(undefined);
 const sellPriceTrendData = signal<PriceTrendDataItem | undefined>(undefined);
 const poolAmountTrendLineTimeRange = signal<TimeRange>("6h");
 const buyPoolAmountTrendData = signal<PoolAmountTrendDataItem | undefined>(
-  undefined
+  undefined,
 );
 const sellPoolAmountTrendData = signal<PoolAmountTrendDataItem | undefined>(
-  undefined
+  undefined,
 );
 
 function handleJPEPRulesFetch() {
@@ -73,7 +73,7 @@ function handleJPEPRulesFetch() {
         buyOrderMinimumPrice.value = data.buy_order_minimum_price;
         sellOrderMinimumPrice.value = data.sell_order_minimum_price;
       }),
-    commonAPIErrorHandler
+    commonAPIErrorHandler,
   );
 }
 
@@ -87,7 +87,7 @@ function handlePriceFetch() {
         buyPrice.value = data.buy_price;
         sellPrice.value = data.sell_price;
       }),
-    commonAPIErrorHandler
+    commonAPIErrorHandler,
   );
 }
 
@@ -101,7 +101,7 @@ function handlePoolAmountFetch() {
         buyPoolAmount.value = data.buy_amount;
         sellPoolAmount.value = data.sell_amount;
       }),
-    commonAPIErrorHandler
+    commonAPIErrorHandler,
   );
 }
 
@@ -113,7 +113,7 @@ function handlePerPriceAmountDataFetch() {
       trade_type: perPriceAmountDataTradeType.value,
     },
     (data) => (perPriceAmountData.value = data.per_price_amount_data),
-    commonAPIErrorHandler
+    commonAPIErrorHandler,
   );
 }
 
@@ -129,7 +129,7 @@ function handlePriceTrendDataFetch() {
         buyPriceTrendData.value = data.buy_trend;
         sellPriceTrendData.value = data.sell_trend;
       }),
-    commonAPIErrorHandler
+    commonAPIErrorHandler,
   );
 }
 
@@ -145,7 +145,7 @@ function handlePoolAmountTrendDataFetch() {
         buyPoolAmountTrendData.value = data.buy_trend;
         sellPoolAmountTrendData.value = data.sell_trend;
       }),
-    commonAPIErrorHandler
+    commonAPIErrorHandler,
   );
 }
 
@@ -228,7 +228,7 @@ function PriceTrendLine() {
               buyPriceTrendData.value === undefined
                 ? undefined
                 : new Array(Object.keys(buyPriceTrendData.value).length).fill(
-                    0.1
+                    0.1,
                   ),
             showSymbol: false,
             lineStyle: {

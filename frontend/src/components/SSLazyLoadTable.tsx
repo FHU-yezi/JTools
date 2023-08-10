@@ -34,7 +34,7 @@ export default function SSLazyLoadTable({
           onLoadMore();
         }
       }),
-    []
+    [],
   );
 
   useEffect(() => {

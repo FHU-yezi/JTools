@@ -70,7 +70,7 @@ export default function SSPieChart({
       echartObject.value.dispose();
       echartObject.value = echarts.init(
         chartDivRef.current,
-        colorScheme === "dark" ? "dark" : undefined
+        colorScheme === "dark" ? "dark" : undefined,
       );
       echartObject.value.setOption(optionsToApply);
     }

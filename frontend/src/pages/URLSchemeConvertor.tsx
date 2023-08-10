@@ -94,7 +94,7 @@ function handleConvert() {
   hasResult.value = true;
   result.value = jianshuURL.value.replace(
     `https://www.jianshu.com/${urlType.URLPrefix}/`,
-    `jianshu://${urlType.URLSchemePrefix}/`
+    `jianshu://${urlType.URLSchemePrefix}/`,
   );
 }
 

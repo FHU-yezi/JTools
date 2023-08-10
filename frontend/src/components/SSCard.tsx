@@ -33,7 +33,7 @@ export default function SSCard({
         round,
         padding,
         margin,
-        innerGap
+        innerGap,
       )}
     >
       <div className="flex flex-col gap-0.5">

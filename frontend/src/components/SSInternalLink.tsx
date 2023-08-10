@@ -23,7 +23,7 @@ export default function SSInternalLink({
       tabIndex={0}
       className={clsx(
         className,
-        "w-fit break-all text-blue-600 transition-colors hover:text-blue-700 cursor-pointer dark:(text-blue-400 hover:text-blue-500)"
+        "w-fit break-all text-blue-600 transition-colors hover:text-blue-700 cursor-pointer dark:(text-blue-400 hover:text-blue-500)",
       )}
       onClick={() => setLocation(url)}
       onKeyPress={() => setLocation(url)}

@@ -27,10 +27,10 @@ const sortSelect = signal<
   "onrank_date desc" | "onrank_date asc" | "ranking desc" | "ranking asc"
 >("onrank_date desc");
 const sortBy = computed<"onrank_date" | "ranking">(
-  () => sortSelect.value.split(" ")[0] as any
+  () => sortSelect.value.split(" ")[0] as any,
 );
 const sortOrder = computed<"asc" | "desc">(
-  () => sortSelect.value.split(" ")[1] as any
+  () => sortSelect.value.split(" ")[1] as any,
 );
 const completeItems = signal<string[]>([]);
 const isLoading = signal(false);
@@ -60,7 +60,7 @@ function handleCompleteItemUpdate(value: string) {
       name_part: value.trim(),
     },
     (data) => (completeItems.value = data.possible_names),
-    commonAPIErrorHandler
+    commonAPIErrorHandler,
   );
 }
 
@@ -73,7 +73,7 @@ function handleQuery() {
   hasMore.value = true;
 
   const requestBodyForRecords: OnRankRecordsRequest = isURL(
-    userURLOrUserName.value
+    userURLOrUserName.value,
   )
     ? {
         user_url: userURLOrUserName.value,
@@ -101,11 +101,11 @@ function handleQuery() {
       });
     },
     commonAPIErrorHandler,
-    isLoading
+    isLoading,
   );
 
   const requestBodyForRankingSummary: RankingSummaryRequest = isURL(
-    userURLOrUserName.value
+    userURLOrUserName.value,
   )
     ? {
         user_url: userURLOrUserName.value,
@@ -126,7 +126,7 @@ function handleQuery() {
         totalCount.value = data.total;
       });
     },
-    commonAPIErrorHandler
+    commonAPIErrorHandler,
   );
 }
 
@@ -156,7 +156,7 @@ function handleLoadMore() {
       }
     },
     commonAPIErrorHandler,
-    isLoading
+    isLoading,
   );
 }
 

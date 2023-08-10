@@ -35,7 +35,7 @@ export default function SSButton({
           {
             "text-zinc-100": !light,
             "text-zinc-900 dark:text-zinc-300": light,
-          }
+          },
         )}
       >
         {loading && (

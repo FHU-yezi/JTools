@@ -48,7 +48,7 @@ function handleCheck() {
         checkItems.value = data.check_items;
       }),
     commonAPIErrorHandler,
-    isLoading
+    isLoading,
   );
 }
 
@@ -72,7 +72,7 @@ export default function LPRecommendChecker() {
       )}
       {releaseTime.value !== undefined && (
         <SSText center>{`发布于 ${getDatetime(
-          releaseTime.value!
+          releaseTime.value!,
         )}（${getHumanReadableTimeDelta(releaseTime.value!)}）`}</SSText>
       )}
       {checkPassed.value !== undefined && (

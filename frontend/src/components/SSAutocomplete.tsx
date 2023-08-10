@@ -69,7 +69,7 @@ export default function SSAutocomplete({
               {
                 "opacity-0": !showDropdown.value,
                 "opacity-100": showDropdown.value,
-              }
+              },
             )}
           >
             {completeItems.value.map((item) => (

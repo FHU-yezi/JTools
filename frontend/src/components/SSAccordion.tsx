@@ -40,7 +40,7 @@ export default function SSAccordion({ children, title }: Props) {
           {
             "h-fit py-2 pb-4": isOpened.value,
             "h-0": !isOpened.value,
-          }
+          },
         )}
       >
         {children}

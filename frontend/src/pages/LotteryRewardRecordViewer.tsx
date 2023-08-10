@@ -48,7 +48,7 @@ function handleQuery() {
       }
     },
     commonAPIErrorHandler,
-    isLoading
+    isLoading,
   );
 }
 
@@ -68,7 +68,7 @@ function handleLoadMore() {
       }
     },
     commonAPIErrorHandler,
-    isLoading
+    isLoading,
   );
 }
 
@@ -85,14 +85,14 @@ function RewardsFliter() {
         batch(() => {
           rewards.value = data.rewards;
           selectedRewards.value = rewards.value.map((item) =>
-            removeSpace(item)
+            removeSpace(item),
           );
           rewards.value.forEach(
-            (name) => (rewardSelectedSignals.value[name] = signal(true))
+            (name) => (rewardSelectedSignals.value[name] = signal(true)),
           );
           dataReady.value = true;
         }),
-      commonAPIErrorHandler
+      commonAPIErrorHandler,
     );
   }, []);
 
@@ -100,7 +100,7 @@ function RewardsFliter() {
     () =>
       (selectedRewards.value = Object.keys(rewardSelectedSignals.value)
         .filter((name) => rewardSelectedSignals.value[name].value === true)
-        .map((item) => removeSpace(item)))
+        .map((item) => removeSpace(item))),
   );
 
   return (

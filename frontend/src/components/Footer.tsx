@@ -16,7 +16,7 @@ export default function Footer() {
       "/status",
       {},
       (data) => (version.value = data.version),
-      commonAPIErrorHandler
+      commonAPIErrorHandler,
     );
   }, []);
 

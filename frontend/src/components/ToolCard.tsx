@@ -29,7 +29,7 @@ export default function ToolCard({
           "transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800":
             !unavaliable,
           "cursor-not-allowed": unavaliable,
-        }
+        },
       )}
       onClick={!unavaliable ? () => setLocation(path) : undefined}
     >

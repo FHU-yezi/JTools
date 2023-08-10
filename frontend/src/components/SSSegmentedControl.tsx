@@ -33,7 +33,7 @@ export default function SSSegmentedControl<T>({
                 "bg-white dark:bg-zinc-700": value.value === itemValue,
                 "px-2": compact,
                 "px-4": !compact,
-              }
+              },
             )}
             onClick={() => (value.value = itemValue)}
             onKeyPress={() => (value.value = itemValue)}

@@ -43,16 +43,16 @@ export default function SearchModal() {
       ? routes
       : routes.filter((item) =>
           removeSpace(item.toolName).includes(
-            removeSpace(textInputContent.value)
-          )
-        )
+            removeSpace(textInputContent.value),
+          ),
+        ),
   );
   const textInputRef = useRef<HTMLInputElement>(null);
 
   // Modal 展开时聚焦到搜索框
   useEffect(
     () => (searchModalOpen.value ? textInputRef.current?.focus() : undefined),
-    [searchModalOpen.value]
+    [searchModalOpen.value],
   );
 
   return (

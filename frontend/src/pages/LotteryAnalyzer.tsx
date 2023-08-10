@@ -48,11 +48,11 @@ const perPrizeAnalyzeTimeRange = signal<TimeRange>("1d");
 const perPrizeAnalyzeData = signal<PerPrizeDataItem[] | undefined>(undefined);
 const rewardWinsCountPieTimeRange = signal<TimeRange>("1d");
 const rewardWinsCountData = signal<RewardsWinsCountDataItem | undefined>(
-  undefined
+  undefined,
 );
 const rewardWinsTrendLineTimeRange = signal<TimeRangeWithoutAll>("1d");
 const rewardWinsTrendData = signal<RewardWinsTrendDataItem | undefined>(
-  undefined
+  undefined,
 );
 
 function handlePerPrizeAnalayzeDataFetch() {
@@ -63,7 +63,7 @@ function handlePerPrizeAnalayzeDataFetch() {
       time_range: perPrizeAnalyzeTimeRange.value,
     },
     (data) => (perPrizeAnalyzeData.value = data.rewards),
-    commonAPIErrorHandler
+    commonAPIErrorHandler,
   );
 }
 
@@ -75,7 +75,7 @@ function handleRewardWinsCountDataFetch() {
       time_range: rewardWinsCountPieTimeRange.value,
     },
     (data) => (rewardWinsCountData.value = data.wins_count_data),
-    commonAPIErrorHandler
+    commonAPIErrorHandler,
   );
 }
 
@@ -87,18 +87,18 @@ function handleRewardWinsTrendDataFetch() {
       time_range: rewardWinsTrendLineTimeRange.value,
     },
     (data) => (rewardWinsTrendData.value = data.trend_data),
-    commonAPIErrorHandler
+    commonAPIErrorHandler,
   );
 }
 
 function PerPrizeAnalyzeTable() {
   const totalWins = perPrizeAnalyzeData.value!.reduce(
     (a, b) => a + b.wins_count,
-    0
+    0,
   );
   const totalWinners = perPrizeAnalyzeData.value!.reduce(
     (a, b) => a + b.winners_count,
-    0
+    0,
   );
   const totalAvagaeWinsCountPerWinner = totalWins / totalWinners;
 
@@ -158,7 +158,7 @@ function PerPrizeAnalyzeTable() {
                   稀有度: undefined,
                 },
               ]
-            : []
+            : [],
         )}
       tableItemKey="reward_name"
     />
@@ -184,7 +184,7 @@ function RewardWinsCountPie() {
               rewardWinsCountData.value === undefined
                 ? undefined
                 : Object.entries(rewardWinsCountData.value).map(
-                    ([name, value]) => ({ name, value })
+                    ([name, value]) => ({ name, value }),
                   ),
           },
         ],
@@ -240,7 +240,7 @@ export default function LotteryAnalyzer() {
 
   useEffect(
     () => handlePerPrizeAnalayzeDataFetch(),
-    [perPrizeAnalyzeTimeRange.value]
+    [perPrizeAnalyzeTimeRange.value],
   );
 
   useEffect(() => {

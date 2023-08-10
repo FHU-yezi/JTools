@@ -11,7 +11,7 @@ export default function SSSkeleton({ className, style }: Props) {
     <div
       className={clsx(
         "rounded bg-zinc-100 motion-safe:animate-pulse dark:bg-zinc-800",
-        className
+        className,
       )}
       style={style}
     />
