@@ -19,6 +19,7 @@ import { fetchData } from "../utils/fetchData";
 import { removeSpace } from "../utils/textHelper";
 import { getDatetime, parseTime } from "../utils/timeHelper";
 import { toastWarning } from "../utils/toastHelper";
+import SSDataNotFoundNotice from "../components/SSDataNotFoundNotice";
 
 const rewards = signal<string[] | undefined>(undefined);
 const userURL = signal("");
@@ -155,9 +156,7 @@ export default function LotteryRewardRecordViewer() {
         (result.value.length !== 0 ? (
           <ResultTable />
         ) : (
-          <SSText className="m-6" bold large center>
-            没有查询到数据
-          </SSText>
+          <SSDataNotFoundNotice message="无中奖记录" />
         ))}
     </div>
   );

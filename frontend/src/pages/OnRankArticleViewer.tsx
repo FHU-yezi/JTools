@@ -1,6 +1,7 @@
 import { batch, computed, signal } from "@preact/signals";
 import SSAutocomplete from "../components/SSAutocomplete";
 import SSButton from "../components/SSButton";
+import SSDataNotFoundNotice from "../components/SSDataNotFoundNotice";
 import SSExternalLink from "../components/SSExternalLink";
 import SSLazyLoadTable from "../components/SSLazyLoadTable";
 import SSSegmentedControl from "../components/SSSegmentedControl";
@@ -272,7 +273,8 @@ export default function OnRankArticleViewer() {
       {top10Count.value !== undefined &&
         top30Count.value !== undefined &&
         top50Count.value !== undefined &&
-        totalCount.value !== undefined && (
+        totalCount.value !== undefined &&
+        totalCount.value !== 0 && (
           <div className="grid grid-cols-2 place-items-center gap-6">
             <SSStat title="前 10 名次数" value={top10Count.value} />
             <SSStat title="前 30 名次数" value={top30Count.value} />
@@ -285,9 +287,7 @@ export default function OnRankArticleViewer() {
         (result.value.length !== 0 ? (
           <ResultTable />
         ) : (
-          <SSText className="m-6" bold large center>
-            没有查询到数据
-          </SSText>
+          <SSDataNotFoundNotice message="没有上榜记录" />
         ))}
     </div>
   );
