@@ -24,12 +24,12 @@ export default function ToolCard({
     <button
       type="button"
       className={clsx(
-        "gray-border flex w-full items-center justify-between gap-4 rounded-xl bg-white p-5 shadow dark:bg-gray-900",
+        "gray-border flex w-full items-center justify-between gap-4 rounded-xl bg-white p-5 shadow dark:bg-zinc-900",
         {
-          "transition-colors hover:bg-gray-100 dark:hover:bg-gray-800":
+          "transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800":
             !unavaliable,
           "cursor-not-allowed": unavaliable,
-        }
+        },
       )}
       onClick={!unavaliable ? () => setLocation(path) : undefined}
     >

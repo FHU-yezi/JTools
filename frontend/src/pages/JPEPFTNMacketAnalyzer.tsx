@@ -6,24 +6,24 @@ import SSStat from "../components/SSStat";
 import SSText from "../components/SSText";
 import SSBarChart from "../components/charts/SSBarChart";
 import SSLineChart from "../components/charts/SSLineChart";
-import { JPEPRulesResponse } from "../models/JPEPFTNMacketAnalyzer/JPEPRules";
-import {
+import type { JPEPRulesResponse } from "../models/JPEPFTNMacketAnalyzer/JPEPRules";
+import type {
   PerPriceAmountDataRequest,
   PerPriceAmountDataResponse,
 } from "../models/JPEPFTNMacketAnalyzer/PerPriceAmountData";
-import { PoolAmountResponse } from "../models/JPEPFTNMacketAnalyzer/PoolAmount";
-import {
+import type { PoolAmountResponse } from "../models/JPEPFTNMacketAnalyzer/PoolAmount";
+import type {
   PoolAmountTrendDataItem,
   PoolAmountTrendDataRequest,
   PoolAmountTrendDataResponse,
 } from "../models/JPEPFTNMacketAnalyzer/PoolAmountTrendData";
-import { PriceResponse } from "../models/JPEPFTNMacketAnalyzer/Price";
-import {
+import type { PriceResponse } from "../models/JPEPFTNMacketAnalyzer/Price";
+import type {
   PriceTrendDataItem,
   PriceTrendDataRequest,
   PriceTrendDataResponse,
 } from "../models/JPEPFTNMacketAnalyzer/PriceTrendData";
-import { TimeRange } from "../models/JPEPFTNMacketAnalyzer/base";
+import type { TimeRange } from "../models/JPEPFTNMacketAnalyzer/base";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 
@@ -45,21 +45,21 @@ const sellPoolAmount = signal<number | undefined>(undefined);
 const totalPoolAmount = computed(() =>
   buyPoolAmount.value !== undefined && sellPoolAmount.value !== undefined
     ? buyPoolAmount.value + sellPoolAmount.value
-    : undefined
+    : undefined,
 );
 const perPriceAmountDataTradeType = signal<"buy" | "sell">("buy");
 const perPriceAmountData = signal<Record<number, number> | undefined>(
-  undefined
+  undefined,
 );
 const priceTrendLineTimeRange = signal<TimeRange>("6h");
 const buyPriceTrendData = signal<PriceTrendDataItem | undefined>(undefined);
 const sellPriceTrendData = signal<PriceTrendDataItem | undefined>(undefined);
 const poolAmountTrendLineTimeRange = signal<TimeRange>("6h");
 const buyPoolAmountTrendData = signal<PoolAmountTrendDataItem | undefined>(
-  undefined
+  undefined,
 );
 const sellPoolAmountTrendData = signal<PoolAmountTrendDataItem | undefined>(
-  undefined
+  undefined,
 );
 
 function handleJPEPRulesFetch() {
@@ -73,7 +73,7 @@ function handleJPEPRulesFetch() {
         buyOrderMinimumPrice.value = data.buy_order_minimum_price;
         sellOrderMinimumPrice.value = data.sell_order_minimum_price;
       }),
-    commonAPIErrorHandler
+    commonAPIErrorHandler,
   );
 }
 
@@ -87,7 +87,7 @@ function handlePriceFetch() {
         buyPrice.value = data.buy_price;
         sellPrice.value = data.sell_price;
       }),
-    commonAPIErrorHandler
+    commonAPIErrorHandler,
   );
 }
 
@@ -101,7 +101,7 @@ function handlePoolAmountFetch() {
         buyPoolAmount.value = data.buy_amount;
         sellPoolAmount.value = data.sell_amount;
       }),
-    commonAPIErrorHandler
+    commonAPIErrorHandler,
   );
 }
 
@@ -113,7 +113,7 @@ function handlePerPriceAmountDataFetch() {
       trade_type: perPriceAmountDataTradeType.value,
     },
     (data) => (perPriceAmountData.value = data.per_price_amount_data),
-    commonAPIErrorHandler
+    commonAPIErrorHandler,
   );
 }
 
@@ -129,7 +129,7 @@ function handlePriceTrendDataFetch() {
         buyPriceTrendData.value = data.buy_trend;
         sellPriceTrendData.value = data.sell_trend;
       }),
-    commonAPIErrorHandler
+    commonAPIErrorHandler,
   );
 }
 
@@ -145,14 +145,14 @@ function handlePoolAmountTrendDataFetch() {
         buyPoolAmountTrendData.value = data.buy_trend;
         sellPoolAmountTrendData.value = data.sell_trend;
       }),
-    commonAPIErrorHandler
+    commonAPIErrorHandler,
   );
 }
 
 function PerPriceAmountDataBar() {
   return (
     <SSBarChart
-      className="h-72 w-full max-w-xl"
+      className="h-72 max-w-xl w-full"
       dataReady={perPriceAmountData.value !== undefined}
       options={{
         xAxis: {
@@ -186,7 +186,7 @@ function PerPriceAmountDataBar() {
 function PriceTrendLine() {
   return (
     <SSLineChart
-      className="h-72 w-full max-w-lg"
+      className="h-72 max-w-lg w-full"
       dataReady={
         buyPriceTrendData.value !== undefined &&
         sellPriceTrendData.value !== undefined
@@ -228,7 +228,7 @@ function PriceTrendLine() {
               buyPriceTrendData.value === undefined
                 ? undefined
                 : new Array(Object.keys(buyPriceTrendData.value).length).fill(
-                    0.1
+                    0.1,
                   ),
             showSymbol: false,
             lineStyle: {
@@ -251,7 +251,7 @@ function PriceTrendLine() {
 function PoolAmountTrendLine() {
   return (
     <SSLineChart
-      className="h-72 w-full max-w-lg"
+      className="h-72 max-w-lg w-full"
       dataReady={
         buyPoolAmountTrendData.value !== undefined &&
         sellPoolAmountTrendData.value !== undefined

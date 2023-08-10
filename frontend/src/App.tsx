@@ -1,6 +1,7 @@
 import type { VNode } from "preact";
 import { Suspense, lazy } from "preact/compat";
-import { Route, RouteProps, Switch } from "wouter-preact";
+import type { RouteProps } from "wouter-preact";
+import { Route, Switch } from "wouter-preact";
 import LoadingPage from "./components/LoadingPage";
 import ToolWrapper from "./components/ToolWrapper";
 import MainPage from "./pages/MainPage";

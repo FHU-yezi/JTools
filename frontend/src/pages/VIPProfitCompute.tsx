@@ -1,6 +1,6 @@
 // TODO: 由于 SegmentedControl 实现问题，暂时不展示会员图标
 import { computed, signal } from "@preact/signals";
-import { JSX } from "preact/jsx-runtime";
+import type { JSX } from "preact/jsx-runtime";
 import SSCard from "../components/SSCard";
 import SSNumberInput from "../components/SSNumberInput";
 import SSSegmentedControl from "../components/SSSegmentedControl";
@@ -110,7 +110,7 @@ const VIPLevel = signal<VIPLevelType>("bronze");
 const VIPText = computed(() => VIPLevelToText[VIPLevel.value]);
 const VIPPrice = computed(() => VIPLevelToPrice[VIPLevel.value]);
 const baseEarningRate = computed(
-  () => VIPLevelToBaseEarningRate[VIPLevel.value]
+  () => VIPLevelToBaseEarningRate[VIPLevel.value],
 );
 const FPCount = signal(0);
 const FPCountEarningRateFactor = computed(() => {
@@ -134,30 +134,30 @@ const promoterLevel = computed(() => {
 });
 const promoterText = computed(() => promoterLevelToText[promoterLevel.value]);
 const promoterLevelEarningRateFactor = computed(
-  () => promoterLevelToPromoterEarningRateFactor[promoterLevel.value]
+  () => promoterLevelToPromoterEarningRateFactor[promoterLevel.value],
 );
 const earningRate = computed(() =>
   RoundFloat(
     baseEarningRate.value *
       FPCountEarningRateFactor.value *
       promoterLevelEarningRateFactor.value,
-    4
-  )
+    4,
+  ),
 );
 const Level1MembersFPCount = signal(0);
 const Level2MembersFPCount = signal(0);
 const earningFromLevel1Members = computed(
   () =>
     Level1MembersFPCount.value *
-    promoterLevelToLevel1MembersFPEarningRate[promoterLevel.value]
+    promoterLevelToLevel1MembersFPEarningRate[promoterLevel.value],
 );
 const earningFromLevel2Members = computed(
   () =>
     Level2MembersFPCount.value *
-    promoterLevelToLevel2MembersFPEarningRate[promoterLevel.value]
+    promoterLevelToLevel2MembersFPEarningRate[promoterLevel.value],
 );
 const earningFromMembers = computed(
-  () => earningFromLevel1Members.value + earningFromLevel2Members.value
+  () => earningFromLevel1Members.value + earningFromLevel2Members.value,
 );
 const earningFromCreation = signal(0);
 const earningFromCreationToFP = computed(() => earningFromCreation.value / 2); // 创作收益一半是简书钻
@@ -175,7 +175,7 @@ const annualEarning = computed(() => {
 const pureAnnualEarning = computed(() => annualEarning.value - VIPPrice.value);
 const pureMonthlyEarning = computed(() => pureAnnualEarning.value / 12);
 const returnRate = computed(() =>
-  RoundFloat(pureAnnualEarning.value / (FPCount.value + VIPPrice.value), 4)
+  RoundFloat(pureAnnualEarning.value / (FPCount.value + VIPPrice.value), 4),
 );
 const canGetMoneyBack = computed(() => pureAnnualEarning.value >= 0);
 
@@ -261,7 +261,7 @@ export default function VIPProfitCompute() {
       />
       <SSNumberInput label="每日创作收益" value={earningFromCreation} min={0} />
 
-      <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 mt-5 gap-4 sm:grid-cols-2">
         <ResultGroup label="会员持钻收益">
           <ResultItem
             label="基础收益率"

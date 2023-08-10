@@ -1,13 +1,11 @@
 article-wordcloud-generator:
     status: 0
-    unavaliable_reason: ""
-    downgraded_reason: ""
+    reason: ""
     enable_data_update_time: false
     enable_data_count: false
 JPEP-FTN-market-analyzer:
     status: 0
-    unavaliable_reason: ""
-    downgraded_reason: ""
+    reason: ""
     enable_data_update_time: true
     enable_data_count: true
     db: JPEP_FTN_market
@@ -18,8 +16,7 @@ JPEP-FTN-market-analyzer:
         简书积分兑换平台 - 贝市: https://www.jianshubei.com/bei
 lottery-analyzer:
     status: 0
-    unavaliable_reason: ""
-    downgraded_reason: ""
+    reason: ""
     enable_data_update_time: true
     enable_data_count: true
     db: lottery
@@ -30,8 +27,7 @@ lottery-analyzer:
         简书 - 天天抽奖: https://www.jianshu.com/mobile/lottery
 lottery-reward-record-viewer:
     status: 0
-    unavaliable_reason: ""
-    downgraded_reason: ""
+    reason: ""
     enable_data_update_time: true
     enable_data_count: true
     db: lottery
@@ -42,16 +38,14 @@ lottery-reward-record-viewer:
         简书 - 天天抽奖: https://www.jianshu.com/mobile/lottery
 LP-recommend-checker:
     status: 0
-    unavaliable_reason: ""
-    downgraded_reason: ""
+    reason: ""
     enable_data_update_time: false
     enable_data_count: false
     data_source:
         简书 - 专题 - 理事会点赞汇总: https://www.jianshu.com/c/f61832508891
 on-rank-article-viewer:
     status: 0
-    unavaliable_reason: ""
-    downgraded_reason: ""
+    reason: ""
     enable_data_update_time: true
     enable_data_count: true
     db: article_FP_rank
@@ -62,20 +56,17 @@ on-rank-article-viewer:
         简书 - 简书钻每日发放总榜: https://www.jianshu.com/fp/notice/now
 URL-scheme-convertor:
     status: 0
-    unavaliable_reason: ""
-    downgraded_reason: ""
+    reason: ""
     enable_data_update_time: false
     enable_data_count: false
 VIP-info-viewer:
     status: 0
-    unavaliable_reason: ""
-    downgraded_reason: ""
+    reason: ""
     enable_data_update_time: false
     enable_data_count: false
 VIP-profit-compute:
     status: 0
-    unavaliable_reason: ""
-    downgraded_reason: ""
+    reason: ""
     enable_data_update_time: false
     enable_data_count: false
     data_source:

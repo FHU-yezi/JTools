@@ -1,13 +1,14 @@
+import "@unocss/reset/tailwind.css";
+import { render, StrictMode } from "preact/compat";
 import { ErrorBoundary } from "react-error-boundary";
 import { Toaster } from "react-hot-toast";
 import { install } from "resize-observer";
+import "uno.css";
 import { registerSW } from "virtual:pwa-register";
-
-import { useLocalStorage } from "@mantine/hooks";
-import React, { render, useEffect } from "preact/compat";
 import App from "./App";
 import ErrorFallback from "./components/ErrorFallback";
 import Footer from "./components/Footer";
+import { useColorScheme } from "./utils/colorSchemeHelper";
 
 // 处理 Safari 浏览器上的 ResizeObserver 兼容性问题
 if (!window.ResizeObserver) {
@@ -18,22 +19,12 @@ if (!window.ResizeObserver) {
 registerSW({ immediate: true });
 
 function Main() {
-  const [colorScheme] = useLocalStorage<"light" | "dark">({
-    key: "jtools-color-scheme",
-    defaultValue: "light",
-  });
-
-  useEffect(() => {
-    // Tailwind CSS 深色模式
-    if (colorScheme === "dark") {
-      document.documentElement.className = "dark";
-    }
-  }, [colorScheme]);
+  const { colorScheme } = useColorScheme();
 
   return (
-    <React.StrictMode>
+    <StrictMode>
       <ErrorBoundary FallbackComponent={ErrorFallback}>
-        <div className="mx-auto my-7 min-h-screen w-[90vw] max-w-4xl">
+        <div className="mx-auto my-7 max-w-4xl min-h-screen w-[90vw]">
           <App />
         </div>
         <Footer />
@@ -51,7 +42,7 @@ function Main() {
           },
         }}
       />
-    </React.StrictMode>
+    </StrictMode>
   );
 }
 

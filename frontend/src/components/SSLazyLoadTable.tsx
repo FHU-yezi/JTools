@@ -1,6 +1,6 @@
-import { Signal } from "@preact/signals";
+import type { Signal } from "@preact/signals";
 import clsx from "clsx";
-import { ComponentChildren } from "preact";
+import type { ComponentChildren } from "preact";
 import { useEffect, useMemo, useRef } from "preact/hooks";
 import SSCenter from "./SSCenter";
 import SSLoader from "./SSLoader";
@@ -34,7 +34,7 @@ export default function SSLazyLoadTable({
           onLoadMore();
         }
       }),
-    []
+    [],
   );
 
   useEffect(() => {

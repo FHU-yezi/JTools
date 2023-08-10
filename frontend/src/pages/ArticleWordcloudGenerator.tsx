@@ -1,17 +1,17 @@
 import { batch, signal } from "@preact/signals";
-import toast from "react-hot-toast";
 import SSButton from "../components/SSButton";
-import SSLink from "../components/SSLink";
+import SSExternalLink from "../components/SSExternalLink";
 import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
 import SSWordcloud from "../components/charts/SSWordcloud";
-import {
+import type {
   WordFreqDataItem,
   WordFreqDataRequest,
   WordFreqDataResponse,
 } from "../models/ArticleWordcloudGenerator/WordFreqData";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
+import { toastWarning } from "../utils/toastHelper";
 
 const articleURL = signal("");
 const isLoading = signal(false);
@@ -20,9 +20,7 @@ const wordFreqData = signal<WordFreqDataItem | undefined>(undefined);
 
 function handleGenerate() {
   if (articleURL.value.length === 0) {
-    toast("请输入文章链接", {
-      icon: " ⚠️",
-    });
+    toastWarning("请输入文章链接");
     return;
   }
 
@@ -38,7 +36,7 @@ function handleGenerate() {
         wordFreqData.value = data.word_freq;
       }),
     commonAPIErrorHandler,
-    isLoading
+    isLoading,
   );
 }
 
@@ -68,14 +66,14 @@ export default function ArticleWordcloudGenerator() {
       {articleTitle.value !== undefined && articleURL.value !== undefined && (
         <SSText center>
           文章：
-          <SSLink
+          <SSExternalLink
             url={articleURL.value}
             label={
               articleTitle.value.length <= 17
                 ? articleTitle.value
                 : `${articleTitle.value.substring(0, 17)}...`
             }
-            isExternal
+            openInNewTab
           />
         </SSText>
       )}

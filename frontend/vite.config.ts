@@ -1,4 +1,5 @@
-import preact from "@preact/preset-vite";
+import Preact from "@preact/preset-vite";
+import UnoCSS from "unocss/vite";
 import { defineConfig } from "vite";
 import compression from "vite-plugin-compression";
 import { VitePWA } from "vite-plugin-pwa";
@@ -8,7 +9,8 @@ export default defineConfig({
     target: "es6",
   },
   plugins: [
-    preact(),
+    UnoCSS(),
+    Preact(),
     VitePWA({
       injectRegister: "inline",
       registerType: "autoUpdate",

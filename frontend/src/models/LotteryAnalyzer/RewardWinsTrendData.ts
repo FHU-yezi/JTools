@@ -1,4 +1,4 @@
-import { TimeRangeWithoutAll } from "./base";
+import type { TimeRangeWithoutAll } from "./base";
 
 export interface RewardWinsTrendDataRequest {
   time_range: TimeRangeWithoutAll;

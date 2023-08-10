@@ -1,4 +1,4 @@
-import { Signal } from "@preact/signals";
+import type { Signal } from "@preact/signals";
 import clsx from "clsx";
 import { BiCheck } from "react-icons/bi";
 import SSCenter from "./SSCenter";
@@ -22,14 +22,14 @@ export default function SSCheckbox({ label, value }: Props) {
     >
       <SSText className="flex select-none items-center gap-2">
         <SSCenter
-          className={clsx("h-5 w-5 rounded transition-colors duration-100", {
-            "gray-border color-layer-1 hover:bg-gray-100 dark:hover:bg-gray-700":
+          className={clsx("h-5 w-5 rounded transition-colors", {
+            "gray-border color-layer-1 hover:bg-zinc-100 dark:hover:bg-zinc-700":
               !value.value,
-            "bg-gray-800 hover:bg-gray-700": value.value,
+            "bg-zinc-800 hover:bg-zinc-700": value.value,
           })}
         >
           {value.value && (
-            <BiCheck className="stroke-gray-100 stroke-2 dark:stroke-gray-300" />
+            <BiCheck className="stroke-2 stroke-zinc-100 dark:stroke-zinc-300" />
           )}
         </SSCenter>
         {label}

@@ -1,7 +1,7 @@
-import { Signal } from "@preact/signals";
-import toast from "react-hot-toast";
-import { Response } from "../models/base";
+import type { Signal } from "@preact/signals";
+import type { Response } from "../models/base";
 import { getBaseURL } from "./URLHelper";
+import { toastError } from "./toastHelper";
 
 const baseURL = getBaseURL();
 const defaultTimeout = 5000;
@@ -14,7 +14,7 @@ export async function fetchData<TRequest, TResponse>(
   onOK: (data: TResponse) => void,
   onError: (code: number, message: string) => void,
   isLoading?: Signal<boolean>,
-  timeout?: number
+  timeout?: number,
 ) {
   if (isLoading) {
     // 如果数据正在加载，不再发起新的请求
@@ -31,7 +31,7 @@ export async function fetchData<TRequest, TResponse>(
   if (method === "GET") {
     const params: string[] = [];
     Object.entries(data as object).forEach(([key, value]) =>
-      params.push(`${key}=${value}`)
+      params.push(`${key}=${value}`),
     );
     url = `${url}?${params.join("&")}`;
   }
@@ -41,7 +41,7 @@ export async function fetchData<TRequest, TResponse>(
   try {
     const timeoutID = setTimeout(
       () => controller.abort(),
-      timeout ?? defaultTimeout
+      timeout ?? defaultTimeout,
     );
 
     response = await fetch(url, {
@@ -61,15 +61,15 @@ export async function fetchData<TRequest, TResponse>(
     }
 
     if ((error as any).name === "AbortError") {
-      toast.error(
+      toastError(
         `请求超时（${
           timeout ?? defaultTimeout
-        }ms）\n请尝试刷新页面，如该问题反复出现，请向开发者反馈`
+        }ms）\n请尝试刷新页面，如该问题反复出现，请向开发者反馈`,
       );
       return;
     }
 
-    toast.error("网络异常\n请尝试刷新页面，如该问题反复出现，请向开发者反馈");
+    toastError("网络异常\n请尝试刷新页面，如该问题反复出现，请向开发者反馈");
     return;
   }
 
@@ -79,20 +79,20 @@ export async function fetchData<TRequest, TResponse>(
       isLoading.value = false;
     }
 
-    toast.error(
-      `API 请求失败\nHTTP ${response.status}（${response.statusText}）`
+    toastError(
+      `API 请求失败\nHTTP ${response.status}（${response.statusText}）`,
     );
     return;
   }
 
   const responseJSON = (await response.json()) as Response<TResponse>;
-  if (!responseJSON.ok) {
+  if (responseJSON.ok) {
+    // API 状态码正常
+    onOK(responseJSON.data);
+  } else {
     // API 状态码异常
     onError(responseJSON.code, responseJSON.message);
   }
-
-  // API 状态码正常
-  onOK(responseJSON.data);
 
   if (isLoading) {
     isLoading.value = false;

@@ -4,17 +4,18 @@ import clsx from "clsx";
 import type { Dayjs } from "dayjs";
 import type { JSX } from "preact";
 import { Suspense, useEffect } from "preact/compat";
-import toast from "react-hot-toast";
 import { useLocation } from "wouter-preact";
-import { InfoRequest, InfoResponse, InfoStatus } from "../models/info";
+import type { InfoRequest, InfoResponse } from "../models/info";
+import { InfoStatus } from "../models/info";
 import { getToolSlug } from "../utils/URLHelper";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import { getDateTimeWithoutSecond, parseTime } from "../utils/timeHelper";
+import { toastWarning } from "../utils/toastHelper";
 import Header from "./Header";
 import LoadingPage from "./LoadingPage";
 import SSButton from "./SSButton";
-import SSLink from "./SSLink";
+import SSExternalLink from "./SSExternalLink";
 import SSModal from "./SSModal";
 import SSStat from "./SSStat";
 import SSText from "./SSText";
@@ -29,8 +30,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
 
   const isLoading = useSignal(false);
   const toolStatus = useSignal<InfoStatus | undefined>(undefined);
-  const unavaliableReason = useSignal<string | undefined>(undefined);
-  const downgradedReason = useSignal<string | undefined>(undefined);
+  const reason = useSignal<string | undefined>(undefined);
   const dataUpdateTime = useSignal<Dayjs | undefined>(undefined);
   const dataUpdateFreqDesc = useSignal<string | undefined>(undefined);
   const dataCount = useSignal<number | undefined>(undefined);
@@ -53,8 +53,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
       (data) => {
         batch(() => {
           toolStatus.value = data.status;
-          unavaliableReason.value = data.unavaliable_reason;
-          downgradedReason.value = data.downgraded_reason;
+          reason.value = data.reason;
           dataSource.value = data.data_source;
           if (data.data_update_time) {
             dataUpdateTime.value = parseTime(data.data_update_time);
@@ -66,15 +65,12 @@ export default function ToolWrapper({ Component, toolName }: Props) {
         });
 
         if (toolStatus.value === InfoStatus.DOWNGRADED) {
-          toast(
+          toastWarning(
             `服务降级\n${
-              downgradedReason.value ??
+              reason.value ??
               "该小工具处于降级状态，其数据准确性、展示效果及性能可能受到影响，请您留意。"
             }`,
-            {
-              duration: 4000,
-              icon: " 🔻",
-            }
+            4000,
           );
         }
 
@@ -83,13 +79,13 @@ export default function ToolWrapper({ Component, toolName }: Props) {
         }
       },
       commonAPIErrorHandler,
-      isLoading
+      isLoading,
     );
   }, []);
 
   return (
     <>
-      <Header toolName={toolName} showBackArrow />
+      <Header toolName={toolName} />
       {!isLoading.value ? (
         <>
           <div
@@ -119,7 +115,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
             <div className="my-4 flex flex-col gap-1">
               <SSText bold>数据来源</SSText>
               {Object.entries(dataSource.value).map(([name, url]) => (
-                <SSLink label={name} url={url} isExternal />
+                <SSExternalLink label={name} url={url} openInNewTab />
               ))}
             </div>
           )}
@@ -140,12 +136,14 @@ export default function ToolWrapper({ Component, toolName }: Props) {
         preventCloseByClickMask
         preventCloseByEsc
       >
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 p-2">
           <SSText>
-            {unavaliableReason.value ??
+            {reason.value ??
               "该小工具暂时不可用，请稍后再尝试访问，并留意相关公告。"}
           </SSText>
-          <SSButton onClick={() => setLocation("/")}>返回首页</SSButton>
+          <SSButton light onClick={() => setLocation("/")}>
+            返回首页
+          </SSButton>
         </div>
       </SSModal>
     </>

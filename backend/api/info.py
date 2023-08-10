@@ -58,8 +58,7 @@ class InfoStatus(IntEnum):
 
 class InfoItem(BaseModel):
     status: InfoStatus = Field(InfoStatus, strict=False)
-    unavaliable_reason: str
-    downgraded_reason: str
+    reason: str
     enable_data_update_time: bool
     enable_data_count: bool
     db: Optional[str] = None
@@ -75,8 +74,7 @@ class InfoRequest(BaseModel):
 
 class InfoResponse(BaseModel):
     status: InfoStatus = Field(InfoStatus, strict=False)
-    unavaliable_reason: str
-    downgraded_reason: str
+    reason: Optional[str] = None
     data_update_time: Optional[int] = None
     data_update_freq_desc: Optional[str] = None
     data_count: Optional[int] = None
@@ -94,8 +92,7 @@ def info_handler(request: Request, data: InfoRequest) -> HTTPResponse:
     info = InfoItem(**TOOLS_INFO[data.tool_slug])
 
     status = info.status
-    unavaliable_reason = info.unavaliable_reason
-    downgraded_reason = info.downgraded_reason
+    reason = info.reason if len(info.reason) != 0 else None
     data_update_time = (
         get_data_update_time(
             info.db,  # type: ignore
@@ -114,8 +111,7 @@ def info_handler(request: Request, data: InfoRequest) -> HTTPResponse:
         data=filter_null_value(
             InfoResponse(
                 status=status,
-                unavaliable_reason=unavaliable_reason,
-                downgraded_reason=downgraded_reason,
+                reason=reason,
                 data_update_time=int(data_update_time.timestamp())
                 if data_update_time is not None
                 else None,

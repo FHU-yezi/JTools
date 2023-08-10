@@ -1,13 +1,12 @@
 import { batch, signal } from "@preact/signals";
 import type { Dayjs } from "dayjs";
-import toast from "react-hot-toast";
 import SSAvatar from "../components/SSAvatar";
 import SSBadge from "../components/SSBadge";
 import SSButton from "../components/SSButton";
-import SSLink from "../components/SSLink";
+import SSExternalLink from "../components/SSExternalLink";
 import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
-import {
+import type {
   VIPInfoRequest,
   VIPInfoResponse,
 } from "../models/VIPInfoViewer/VIPInfo";
@@ -18,6 +17,7 @@ import {
   getHumanReadableTimeDelta,
   parseTime,
 } from "../utils/timeHelper";
+import { toastWarning } from "../utils/toastHelper";
 import VIPBadgeBronzeURL from "/vip_badges/vip_badge_bronze.png";
 import VIPBadgeGoldURL from "/vip_badges/vip_badge_gold.png";
 import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";
@@ -42,9 +42,7 @@ function handleQuery() {
   }
 
   if (userURL.value.length === 0) {
-    toast("请输入用户个人主页链接", {
-      icon: " ⚠️",
-    });
+    toastWarning("请输入用户个人主页链接");
     return;
   }
 
@@ -63,7 +61,7 @@ function handleQuery() {
         }
       }),
     commonAPIErrorHandler,
-    isLoading
+    isLoading,
   );
 }
 
@@ -82,20 +80,24 @@ export default function VIPInfoViewer() {
       {userName.value !== undefined && (
         <SSText>
           昵称：
-          <SSLink url={userURL.value} label={userName.value} isExternal />
+          <SSExternalLink
+            url={userURL.value}
+            label={userName.value}
+            openInNewTab
+          />
         </SSText>
       )}
 
       {VIPType.value !== undefined && (
         <>
-          <div className="flex max-w-fit items-center gap-1">
+          <div className="max-w-fit flex items-center gap-1">
             <SSText>会员级别：</SSText>
             <SSAvatar
               className="mr-1.5 h-6 w-6"
               src={VIPTypeToBadgeImageURL[VIPType.value]}
               alt={`${VIPType.value} 徽章图标`}
             />
-            <SSBadge className="bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+            <SSBadge className="bg-zinc-100 text-zinc-500 dark:(bg-zinc-800 text-zinc-400)">
               {VIPType.value}
             </SSBadge>
           </div>

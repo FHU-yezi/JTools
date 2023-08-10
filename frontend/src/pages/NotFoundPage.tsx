@@ -8,8 +8,8 @@ export default function NotFoundPage() {
   const [, setLocation] = useLocation();
 
   return (
-    <SSCenter className="h-[100vh]">
-      <div className="flex w-[90vw] max-w-4xl flex-col gap-4">
+    <SSCenter className="h-screen">
+      <div className="max-w-4xl w-[90vw] flex flex-col gap-4">
         <IoPaperPlaneSharp size={48} />
         <SSText xlarge xbold>
           啊呀，没有找到这个页面

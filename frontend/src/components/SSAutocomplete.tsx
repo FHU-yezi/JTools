@@ -1,5 +1,6 @@
 import { useDebouncedValue } from "@mantine/hooks";
-import { Signal, useSignal } from "@preact/signals";
+import type { Signal } from "@preact/signals";
+import { useSignal } from "@preact/signals";
 import clsx from "clsx";
 import { useEffect, useRef } from "preact/hooks";
 import SSText from "./SSText";
@@ -68,13 +69,13 @@ export default function SSAutocomplete({
               {
                 "opacity-0": !showDropdown.value,
                 "opacity-100": showDropdown.value,
-              }
+              },
             )}
           >
             {completeItems.value.map((item) => (
               <button
                 type="button"
-                className="w-full rounded p-2 text-left transition-colors hover:bg-gray-100 hover:font-semibold dark:hover:bg-gray-700"
+                className="w-full rounded p-2 text-left transition-colors hover:bg-zinc-100 hover:font-semibold dark:hover:bg-zinc-700"
                 onClick={() => {
                   textInputRef.current!.value = item;
                   value.value = item;

@@ -1,5 +1,5 @@
 import { lazy } from "preact/compat";
-import { JSX } from "preact/jsx-runtime";
+import type { JSX } from "preact/jsx-runtime";
 
 export interface RouteItem {
   component(): JSX.Element;

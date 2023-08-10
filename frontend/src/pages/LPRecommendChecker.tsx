@@ -1,14 +1,13 @@
 import { batch, signal } from "@preact/signals";
 import type { Dayjs } from "dayjs";
-import toast from "react-hot-toast";
 import SSBadge from "../components/SSBadge";
 import SSButton from "../components/SSButton";
 import SSCenter from "../components/SSCenter";
-import SSLink from "../components/SSLink";
+import SSExternalLink from "../components/SSExternalLink";
 import SSTable from "../components/SSTable";
 import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
-import {
+import type {
   CheckItem,
   CheckRequest,
   CheckResponse,
@@ -20,6 +19,7 @@ import {
   getHumanReadableTimeDelta,
   parseTime,
 } from "../utils/timeHelper";
+import { toastWarning } from "../utils/toastHelper";
 
 const articleURL = signal("");
 const isLoading = signal(false);
@@ -30,9 +30,7 @@ const checkItems = signal<CheckItem[] | undefined>(undefined);
 
 function handleCheck() {
   if (articleURL.value.length === 0) {
-    toast("请输入文章链接", {
-      icon: " ⚠️",
-    });
+    toastWarning("请输入文章链接");
     return;
   }
 
@@ -50,7 +48,7 @@ function handleCheck() {
         checkItems.value = data.check_items;
       }),
     commonAPIErrorHandler,
-    isLoading
+    isLoading,
   );
 }
 
@@ -65,16 +63,16 @@ export default function LPRecommendChecker() {
       {articleTitle.value !== undefined && articleURL.value !== undefined && (
         <SSText center>
           文章标题：
-          <SSLink
+          <SSExternalLink
             url={articleURL.value}
             label={articleTitle.value}
-            isExternal
+            openInNewTab
           />
         </SSText>
       )}
       {releaseTime.value !== undefined && (
         <SSText center>{`发布于 ${getDatetime(
-          releaseTime.value!
+          releaseTime.value!,
         )}（${getHumanReadableTimeDelta(releaseTime.value!)}）`}</SSText>
       )}
       {checkPassed.value !== undefined && (

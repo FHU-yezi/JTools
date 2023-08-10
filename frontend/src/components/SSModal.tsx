@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import { Signal, useSignal } from "@preact/signals";
+import type { Signal } from "@preact/signals";
+import { useSignal } from "@preact/signals";
 import clsx from "clsx";
 import type { ComponentChildren } from "preact";
 import { useEffect } from "preact/hooks";
@@ -38,7 +39,7 @@ export default function SSModal({
   // 该组件假设 preventCloseByEsc 参数不会在运行时修改
   // 因此对于设置 preventCloseByEsc = true 的场景，不存储该函数以节省资源
   const usingEscEventHandlerFunc = useSignal(
-    !preventCloseByClickMask ? closeModalWhenEscPressed(onClose) : undefined
+    !preventCloseByClickMask ? closeModalWhenEscPressed(onClose) : undefined,
   );
 
   //  Modal 展示时禁止下层元素滚动
@@ -58,7 +59,7 @@ export default function SSModal({
       } else {
         document.removeEventListener(
           "keydown",
-          usingEscEventHandlerFunc.value!
+          usingEscEventHandlerFunc.value!,
         );
       }
     }
@@ -68,19 +69,19 @@ export default function SSModal({
     <>
       <div
         className={clsx(
-          "fixed left-0 top-0 z-20 h-screen w-screen bg-black opacity-10 transition-opacity duration-200 dark:opacity-50",
+          "fixed left-0 top-0 z-20 h-screen w-screen bg-black opacity-10 transition-opacity dark:opacity-50",
           {
             "pointer-events-none !opacity-0": !isOpen.value,
-          }
+          },
         )}
         onClick={!preventCloseByClickMask ? onClose : undefined}
       />
       <div
         className={clsx(
-          "sm:gray-border fixed left-0 top-0 z-30 h-screen w-screen bg-white p-4 transition-all duration-200 dark:bg-gray-900 sm:left-[50vw] sm:top-[10vh] sm:h-fit sm:w-[60vw] sm:min-w-[36rem] sm:max-w-3xl sm:-translate-x-1/2 sm:rounded-lg sm:shadow",
+          "sm:(gray-border left-[50vw] top-[10vh] h-fit w-[60vw] min-w-[36rem] max-w-3xl -translate-x-1/2 rounded-lg shadow) fixed left-0 top-0 z-30 h-screen w-screen bg-white p-4 transition-all duration-200 dark:bg-zinc-900",
           {
             "pointer-events-none !opacity-0 sm:-translate-y-1/2": !isOpen.value,
-          }
+          },
         )}
       >
         <div className="flex items-center justify-between p-2">

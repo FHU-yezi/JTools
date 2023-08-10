@@ -1,7 +1,7 @@
 import clsx from "clsx";
 
 interface Props {
-  className: string;
+  className?: string;
   src: string;
   alt?: string;
 }

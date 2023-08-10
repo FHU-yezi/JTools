@@ -1,4 +1,4 @@
-import { TimeRange } from "./base";
+import type { TimeRange } from "./base";
 
 export interface PerPrizeDataRequest {
   time_range: TimeRange;

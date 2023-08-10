@@ -1,6 +1,6 @@
 import { useClipboard } from "@mantine/hooks";
-import { Signal, signal } from "@preact/signals";
-import toast from "react-hot-toast";
+import type { Signal } from "@preact/signals";
+import { signal } from "@preact/signals";
 import { AiOutlineCheck } from "react-icons/ai";
 import { BiCopy, BiRightArrowAlt } from "react-icons/bi";
 import QRCode from "react-qr-code";
@@ -10,6 +10,7 @@ import SSCenter from "../components/SSCenter";
 import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
 import SSTooltip from "../components/SSTooltip";
+import { toastWarning } from "../utils/toastHelper";
 
 interface JianshuURLType {
   URLSchemePrefix: string;
@@ -86,16 +87,14 @@ function handleConvert() {
   const urlType = getURLType(jianshuURL);
 
   if (urlType === "unknown") {
-    toast("输入的不是有效的简书链接，请检查", {
-      icon: " ⚠️",
-    });
+    toastWarning("输入的不是有效的简书链接，请检查");
     return;
   }
 
   hasResult.value = true;
   result.value = jianshuURL.value.replace(
     `https://www.jianshu.com/${urlType.URLPrefix}/`,
-    `jianshu://${urlType.URLSchemePrefix}/`
+    `jianshu://${urlType.URLSchemePrefix}/`,
   );
 }
 

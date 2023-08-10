@@ -21,7 +21,7 @@ function ToolItem({ name, description, onClick }: ToolItemProps) {
     <div
       role="button"
       tabIndex={0}
-      className="hover:color-layer-2 flex w-full flex-col gap-1 rounded-lg p-2"
+      className="w-full flex flex-col gap-1 rounded-lg p-2 hover:(bg-zinc-100 dark:bg-zinc-800)"
       onClick={onClick}
       onKeyPress={onClick}
     >
@@ -43,22 +43,22 @@ export default function SearchModal() {
       ? routes
       : routes.filter((item) =>
           removeSpace(item.toolName).includes(
-            removeSpace(textInputContent.value)
-          )
-        )
+            removeSpace(textInputContent.value),
+          ),
+        ),
   );
   const textInputRef = useRef<HTMLInputElement>(null);
 
   // Modal 展开时聚焦到搜索框
   useEffect(
     () => (searchModalOpen.value ? textInputRef.current?.focus() : undefined),
-    [searchModalOpen.value]
+    [searchModalOpen.value],
   );
 
   return (
     <>
       <SSActionIcon
-        className="dark:hover:!bg-gray-700"
+        className="dark:hover:!bg-zinc-700"
         label="搜索"
         onClick={() => {
           searchModalOpen.value = true;
@@ -66,7 +66,7 @@ export default function SearchModal() {
         }}
       >
         <AiOutlineSearch
-          className="text-gray-500 dark:text-gray-300"
+          className="text-zinc-500 dark:text-zinc-300"
           size={22}
         />
       </SSActionIcon>

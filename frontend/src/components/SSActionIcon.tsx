@@ -20,7 +20,7 @@ export default function SSActionIcon({
       type="button"
       className={clsx(
         className,
-        "rounded-md p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+        "rounded-md p-2 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-700",
       )}
       onClick={onClick}
       aria-label={label}

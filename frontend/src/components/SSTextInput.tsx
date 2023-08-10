@@ -1,4 +1,4 @@
-import { Signal } from "@preact/signals";
+import type { Signal } from "@preact/signals";
 import type { Ref } from "preact";
 import SSText from "./SSText";
 
@@ -28,7 +28,7 @@ export default function SSTextInput({
       </SSText>
       <input
         type="text"
-        className="w-full rounded-lg border border-gray-200 bg-white p-1.5 px-3 text-gray-900 focus:!border-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
+        className="w-full border border-zinc-200 rounded-lg bg-white p-1.5 px-3 text-zinc-900 dark:(border-zinc-600 bg-zinc-800 text-zinc-300) focus:outline-none focus:!border-blue-500"
         value={value.value}
         placeholder={placeholder}
         onChange={(event: any) => (value.value = event.currentTarget.value)}

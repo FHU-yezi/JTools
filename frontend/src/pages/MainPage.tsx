@@ -10,7 +10,7 @@ import {
 import Header from "../components/Header";
 import SSTooltip from "../components/SSTooltip";
 import ToolCard from "../components/ToolCard";
-import { StatusResponse } from "../models/status";
+import type { StatusResponse } from "../models/status";
 import { routes } from "../routes";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
@@ -21,7 +21,7 @@ const unavaliableTools = signal<string[]>([]);
 
 function handleV2Redirect(
   appName: string,
-  setLocation: (location: string) => void
+  setLocation: (location: string) => void,
 ) {
   if (appName in V2RedirectRoutes) {
     umamiTrack("v2-redirect", { from: appName, to: V2RedirectRoutes[appName] });
@@ -65,13 +65,13 @@ export default function MainPage() {
           downgradedTools.value = data.downgraded_tools;
           unavaliableTools.value = data.unavaliable_tools;
         }),
-      commonAPIErrorHandler
+      commonAPIErrorHandler,
     );
   }, []);
 
   return (
     <>
-      <Header toolName="简书小工具集" showBackArrow={false} />
+      <Header toolName="简书小工具集" hideBackArrow showIcon />
       <div className="mt-4 flex flex-col gap-4">
         {routes.map((item) => (
           <ToolCard

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { ComponentChildren } from "preact";
+import type { ComponentChildren } from "preact";
 import SSText from "./SSText";
 
 interface Props {
@@ -28,12 +28,12 @@ export default function SSCard({
   return (
     <div
       className={clsx(
-        "flex flex-col border bg-white shadow dark:border-gray-700 dark:bg-gray-900",
+        "flex flex-col border bg-white shadow dark:(border-zinc-700 bg-zinc-900)",
         className,
         round,
         padding,
         margin,
-        innerGap
+        innerGap,
       )}
     >
       <div className="flex flex-col gap-0.5">

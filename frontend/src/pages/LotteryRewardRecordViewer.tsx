@@ -1,6 +1,6 @@
-import { Signal, batch, effect, signal, useSignal } from "@preact/signals";
+import type { Signal } from "@preact/signals";
+import { batch, effect, signal, useSignal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
-import toast from "react-hot-toast";
 import SSButton from "../components/SSButton";
 import SSCheckbox from "../components/SSCheckbox";
 import SSLazyLoadTable from "../components/SSLazyLoadTable";
@@ -8,16 +8,18 @@ import SSSkeleton from "../components/SSSkeleton";
 import SSText from "../components/SSText";
 import SSTextInput from "../components/SSTextInput";
 import SSTooltip from "../components/SSTooltip";
-import {
+import type {
   LotteryRecordItem,
   LotteryRecordsRequest,
   LotteryRecordsResponse,
 } from "../models/LotteryRewardRecordViewer/LotteryRecords";
-import { RewardResponse } from "../models/LotteryRewardRecordViewer/Rewards";
+import type { RewardResponse } from "../models/LotteryRewardRecordViewer/Rewards";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import { removeSpace } from "../utils/textHelper";
 import { getDatetime, parseTime } from "../utils/timeHelper";
+import { toastWarning } from "../utils/toastHelper";
+import SSDataNotFoundNotice from "../components/SSDataNotFoundNotice";
 
 const rewards = signal<string[] | undefined>(undefined);
 const userURL = signal("");
@@ -28,9 +30,7 @@ const result = signal<LotteryRecordItem[] | undefined>(undefined);
 
 function handleQuery() {
   if (userURL.value.length === 0) {
-    toast("请输入用户个人主页链接", {
-      icon: " ⚠️",
-    });
+    toastWarning("请输入用户个人主页链接");
     return;
   }
 
@@ -49,7 +49,7 @@ function handleQuery() {
       }
     },
     commonAPIErrorHandler,
-    isLoading
+    isLoading,
   );
 }
 
@@ -69,7 +69,7 @@ function handleLoadMore() {
       }
     },
     commonAPIErrorHandler,
-    isLoading
+    isLoading,
   );
 }
 
@@ -86,14 +86,14 @@ function RewardsFliter() {
         batch(() => {
           rewards.value = data.rewards;
           selectedRewards.value = rewards.value.map((item) =>
-            removeSpace(item)
+            removeSpace(item),
           );
           rewards.value.forEach(
-            (name) => (rewardSelectedSignals.value[name] = signal(true))
+            (name) => (rewardSelectedSignals.value[name] = signal(true)),
           );
           dataReady.value = true;
         }),
-      commonAPIErrorHandler
+      commonAPIErrorHandler,
     );
   }, []);
 
@@ -101,7 +101,7 @@ function RewardsFliter() {
     () =>
       (selectedRewards.value = Object.keys(rewardSelectedSignals.value)
         .filter((name) => rewardSelectedSignals.value[name].value === true)
-        .map((item) => removeSpace(item)))
+        .map((item) => removeSpace(item))),
   );
 
   return (
@@ -156,9 +156,7 @@ export default function LotteryRewardRecordViewer() {
         (result.value.length !== 0 ? (
           <ResultTable />
         ) : (
-          <SSText className="m-6" bold large center>
-            没有查询到数据
-          </SSText>
+          <SSDataNotFoundNotice message="无中奖记录" />
         ))}
     </div>
   );

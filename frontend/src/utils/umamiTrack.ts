@@ -2,7 +2,7 @@ declare const umami: any;
 
 export default function umamiTrack(
   eventName?: string,
-  eventData?: { [key: string]: string | number }
+  eventData?: { [key: string]: string | number },
 ) {
   try {
     // eslint-disable-next-line no-undef

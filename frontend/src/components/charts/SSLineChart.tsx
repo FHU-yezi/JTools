@@ -1,4 +1,3 @@
-import { useLocalStorage } from "@mantine/hooks";
 import { useSignal } from "@preact/signals";
 import clsx from "clsx";
 import type { LineSeriesOption } from "echarts/charts";
@@ -17,6 +16,7 @@ import type { ComposeOption } from "echarts/core";
 import * as echarts from "echarts/core";
 import { SVGRenderer } from "echarts/renderers";
 import { useEffect, useRef } from "preact/hooks";
+import { useColorScheme } from "../../utils/colorSchemeHelper";
 
 echarts.use([
   LineChart,
@@ -44,10 +44,8 @@ export default function SSLineChart({
   options,
   dataReady = true,
 }: Props) {
-  const [colorScheme] = useLocalStorage<"light" | "dark">({
-    key: "jtools-color-scheme",
-    defaultValue: "light",
-  });
+  const { colorScheme } = useColorScheme();
+
   const echartObject = useSignal<echarts.ECharts | undefined>(undefined);
 
   const chartDivRef = useRef<HTMLDivElement>(null);
@@ -86,7 +84,7 @@ export default function SSLineChart({
       echartObject.value.dispose();
       echartObject.value = echarts.init(
         chartDivRef.current,
-        colorScheme === "dark" ? "dark" : undefined
+        colorScheme === "dark" ? "dark" : undefined,
       );
       echartObject.value.setOption(optionsToApply);
     }

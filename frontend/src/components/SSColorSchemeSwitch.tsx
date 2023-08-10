@@ -1,25 +1,10 @@
-import { useLocalStorage } from "@mantine/hooks";
-import clsx from "clsx";
 import { BsMoon, BsSun } from "react-icons/bs";
+import { useColorScheme } from "../utils/colorSchemeHelper";
 import umamiTrack from "../utils/umamiTrack";
 import SSText from "./SSText";
 
 export default function SSColorSchemeSwitch() {
-  const [colorScheme, setColorScheme] = useLocalStorage<"light" | "dark">({
-    key: "jtools-color-scheme",
-    defaultValue: "light",
-  });
-
-  const toggleColorScheme = () => {
-    setColorScheme(colorScheme === "dark" ? "light" : "dark");
-
-    // Tailwind CSS 深色模式
-    if (colorScheme === "dark") {
-      document.documentElement.classList.remove("dark");
-    } else {
-      document.documentElement.classList.add("dark");
-    }
-  };
+  const { colorScheme, toggleColorScheme } = useColorScheme();
 
   return (
     <div
@@ -31,21 +16,16 @@ export default function SSColorSchemeSwitch() {
         toggleColorScheme();
         umamiTrack("toggle-color-scheme");
       }}
-      onKeyPress={() => toggleColorScheme()}
+      onKeyPress={() => {
+        toggleColorScheme();
+        umamiTrack("toggle-color-scheme");
+      }}
       aria-label="切换颜色主题"
     >
-      <SSText
-        className={clsx("p-2 transition-colors duration-300", {
-          "bg-gray-200": colorScheme === "light",
-        })}
-      >
+      <SSText className="p-2 transition-colors light:bg-zinc-200">
         <BsSun size={14} />
       </SSText>
-      <SSText
-        className={clsx("p-2 transition-colors duration-300", {
-          "bg-gray-600": colorScheme === "dark",
-        })}
-      >
+      <SSText className="p-2 transition-colors dark:bg-zinc-600">
         <BsMoon size={14} />
       </SSText>
     </div>

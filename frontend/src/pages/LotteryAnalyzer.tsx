@@ -9,22 +9,25 @@ import SSText from "../components/SSText";
 import SSTooltip from "../components/SSTooltip";
 import SSLineChart from "../components/charts/SSLineChart";
 import SSPieChart from "../components/charts/SSPieChart";
-import {
+import type {
   PerPrizeDataItem,
   PerPrizeDataRequest,
   PerPrizeDataResponse,
 } from "../models/LotteryAnalyzer/PerPrizeData";
-import {
+import type {
   RewardsWinsCountDataItem,
   RewardsWinsCountDataRequest,
   RewardsWinsCountDataResponse,
 } from "../models/LotteryAnalyzer/RewardWinsCountData";
-import {
+import type {
   RewardWinsTrendDataItem,
   RewardWinsTrendDataRequest,
   RewardsWinsTrendDataResponse,
 } from "../models/LotteryAnalyzer/RewardWinsTrendData";
-import { TimeRange, TimeRangeWithoutAll } from "../models/LotteryAnalyzer/base";
+import type {
+  TimeRange,
+  TimeRangeWithoutAll,
+} from "../models/LotteryAnalyzer/base";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import { RoundFloat } from "../utils/numberHelper";
@@ -45,11 +48,11 @@ const perPrizeAnalyzeTimeRange = signal<TimeRange>("1d");
 const perPrizeAnalyzeData = signal<PerPrizeDataItem[] | undefined>(undefined);
 const rewardWinsCountPieTimeRange = signal<TimeRange>("1d");
 const rewardWinsCountData = signal<RewardsWinsCountDataItem | undefined>(
-  undefined
+  undefined,
 );
 const rewardWinsTrendLineTimeRange = signal<TimeRangeWithoutAll>("1d");
 const rewardWinsTrendData = signal<RewardWinsTrendDataItem | undefined>(
-  undefined
+  undefined,
 );
 
 function handlePerPrizeAnalayzeDataFetch() {
@@ -60,7 +63,7 @@ function handlePerPrizeAnalayzeDataFetch() {
       time_range: perPrizeAnalyzeTimeRange.value,
     },
     (data) => (perPrizeAnalyzeData.value = data.rewards),
-    commonAPIErrorHandler
+    commonAPIErrorHandler,
   );
 }
 
@@ -72,7 +75,7 @@ function handleRewardWinsCountDataFetch() {
       time_range: rewardWinsCountPieTimeRange.value,
     },
     (data) => (rewardWinsCountData.value = data.wins_count_data),
-    commonAPIErrorHandler
+    commonAPIErrorHandler,
   );
 }
 
@@ -84,18 +87,18 @@ function handleRewardWinsTrendDataFetch() {
       time_range: rewardWinsTrendLineTimeRange.value,
     },
     (data) => (rewardWinsTrendData.value = data.trend_data),
-    commonAPIErrorHandler
+    commonAPIErrorHandler,
   );
 }
 
 function PerPrizeAnalyzeTable() {
   const totalWins = perPrizeAnalyzeData.value!.reduce(
     (a, b) => a + b.wins_count,
-    0
+    0,
   );
   const totalWinners = perPrizeAnalyzeData.value!.reduce(
     (a, b) => a + b.winners_count,
-    0
+    0,
   );
   const totalAvagaeWinsCountPerWinner = totalWins / totalWinners;
 
@@ -155,7 +158,7 @@ function PerPrizeAnalyzeTable() {
                   稀有度: undefined,
                 },
               ]
-            : []
+            : [],
         )}
       tableItemKey="reward_name"
     />
@@ -165,7 +168,7 @@ function PerPrizeAnalyzeTable() {
 function RewardWinsCountPie() {
   return (
     <SSPieChart
-      className="h-96 w-full max-w-lg"
+      className="h-96 max-w-lg w-full"
       dataReady={rewardWinsCountData.value !== undefined}
       options={{
         series: [
@@ -181,7 +184,7 @@ function RewardWinsCountPie() {
               rewardWinsCountData.value === undefined
                 ? undefined
                 : Object.entries(rewardWinsCountData.value).map(
-                    ([name, value]) => ({ name, value })
+                    ([name, value]) => ({ name, value }),
                   ),
           },
         ],
@@ -196,7 +199,7 @@ function RewardWinsCountPie() {
 function RewardWinsTrendLine() {
   return (
     <SSLineChart
-      className="h-72 w-full max-w-lg"
+      className="h-72 max-w-lg w-full"
       dataReady={rewardWinsTrendData.value !== undefined}
       options={{
         xAxis: {
@@ -237,7 +240,7 @@ export default function LotteryAnalyzer() {
 
   useEffect(
     () => handlePerPrizeAnalayzeDataFetch(),
-    [perPrizeAnalyzeTimeRange.value]
+    [perPrizeAnalyzeTimeRange.value],
   );
 
   useEffect(() => {

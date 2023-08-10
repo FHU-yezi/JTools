@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "jtools"
-version = "3.4.0"
+version = "3.5.0"
 description = "探索未知"
 authors = ["yezi <yehaowei20060411@qq.com>"]
 license = "MIT"
@@ -17,7 +17,7 @@ sanic = "^23.3.0"
 pydantic = "^2.0.2"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.0.277"
+ruff = "^0.0.283"
 pyright = "^1.1.309"
 black = "^23.3.0"
 
