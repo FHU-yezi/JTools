@@ -20,8 +20,7 @@ class InfoStatus(IntEnum):
 
 class InfoItem(BaseModel):
     status: InfoStatus = Field(InfoStatus, strict=False)
-    unavaliable_reason: str
-    downgraded_reason: str
+    reason: str
     enable_data_update_time: bool
     enable_data_count: bool
     db: Optional[str] = None
