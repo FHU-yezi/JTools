@@ -1,6 +1,7 @@
 import { batch, computed, signal } from "@preact/signals";
 import SSAutocomplete from "../components/SSAutocomplete";
 import SSButton from "../components/SSButton";
+import SSCard from "../components/SSCard";
 import SSDataNotFoundNotice from "../components/SSDataNotFoundNotice";
 import SSExternalLink from "../components/SSExternalLink";
 import SSLazyLoadTable from "../components/SSLazyLoadTable";
@@ -182,11 +183,7 @@ function handleLoadMore() {
 
 function SameURLRecordsFoundNotice() {
   return (
-    <div className="flex flex-col gap-4 rounded-md bg-green-100 p-4 dark:bg-green-950">
-      <SSText bold large>
-        数据不完整
-      </SSText>
-
+    <SSCard className="!bg-orange-100 !dark:bg-orange-950" title="数据不完整">
       <SSText>您可能更改过简书昵称，我们找到了其它与您有关的上榜记录：</SSText>
       <div className="flex flex-col gap-2">
         {Object.entries(sameURLRecordsSummary.value!).map(
@@ -213,7 +210,7 @@ function SameURLRecordsFoundNotice() {
       >
         查看完整数据
       </SSButton>
-    </div>
+    </SSCard>
   );
 }
 
