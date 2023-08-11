@@ -2,6 +2,7 @@ import { useSignal } from "@preact/signals";
 import clsx from "clsx";
 import type { ComponentChildren } from "preact";
 import { BsChevronUp } from "react-icons/bs";
+import { whenEnterOrSpace } from "../utils/keyHelper";
 import SSText from "./SSText";
 
 interface Props {
@@ -19,7 +20,9 @@ export default function SSAccordion({ children, title }: Props) {
         tabIndex={0}
         className="hover:color-layer-2 flex items-center justify-between px-4 py-3 transition-colors"
         onClick={() => (isOpened.value = !isOpened.value)}
-        onKeyPress={() => (isOpened.value = !isOpened.value)}
+        onKeyUp={(event) =>
+          whenEnterOrSpace(event, () => (isOpened.value = !isOpened.value))
+        }
       >
         <SSText large bold>
           {title}

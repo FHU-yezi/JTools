@@ -1,5 +1,6 @@
 import type { Signal } from "@preact/signals";
 import clsx from "clsx";
+import { whenEnterOrSpace } from "../utils/keyHelper";
 import SSText from "./SSText";
 
 interface Props<T> {
@@ -32,7 +33,9 @@ export default function SSSegmentedControl<T>({
               },
             )}
             onClick={() => (value.value = itemValue)}
-            onKeyPress={() => (value.value = itemValue)}
+            onKeyUp={(event) =>
+              whenEnterOrSpace(event, () => (value.value = itemValue))
+            }
           >
             <SSText
               className="whitespace-nowrap"

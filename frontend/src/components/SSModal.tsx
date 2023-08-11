@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import type { Signal } from "@preact/signals";
 import { useSignal } from "@preact/signals";
 import clsx from "clsx";
@@ -73,7 +74,6 @@ export default function SSModal({
           },
         )}
         onClick={!preventCloseByClickMask ? onClose : undefined}
-        onKeyPress={!preventCloseByClickMask ? onClose : undefined}
       />
       <div
         className={clsx(
