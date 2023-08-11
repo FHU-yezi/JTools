@@ -21,14 +21,14 @@ export default function ThanksPage() {
         「捉虫计划」反馈
       </SSText>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {debugProjectRecords.map((item) => (
+        {debugProjectRecords.reverse().map((item) => (
           <SSCard title={`${item.time} | ${item.type}`} subTitle={item.module}>
             <SSText>{item.desc}</SSText>
             <SSText>
               反馈者：
               <SSExternalLink url={item.user_url} label={item.user_name} />
             </SSText>
-            <SSText>{`奖励：${item.award} 简书贝`}</SSText>
+            <SSText>{`奖励：${item.reward} 简书贝`}</SSText>
           </SSCard>
         ))}
       </div>

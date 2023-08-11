@@ -7,7 +7,7 @@
       "desc": "显示与实际上榜日期相差一天",
       "user_name": "心有玲兮",
       "user_url": "https://www.jianshu.com/u/15bae9b0b85f",
-      "award": 50
+      "reward": 50
     },
     {
       "time": "2022-09-23",
@@ -16,7 +16,7 @@
       "desc": "去除非必要文字说明，提高清晰度",
       "user_name": "小慢可",
       "user_url": "https://www.jianshu.com/u/b39317ace723",
-      "award": 30
+      "reward": 30
     },
     {
       "time": "2022-10-24",
@@ -25,7 +25,7 @@
       "desc": "文章因采集时被作者私密而无法查询到",
       "user_name": "非村",
       "user_url": "https://www.jianshu.com/u/df68a42402fc",
-      "award": 20
+      "reward": 20
     },
     {
       "time": "2022-10-26",
@@ -34,7 +34,7 @@
       "desc": "文章因采集时被作者私密而无法查询到",
       "user_name": "睿希颖瑶",
       "user_url": "https://www.jianshu.com/u/4b86da352f87",
-      "award": 20
+      "reward": 20
     },
     {
       "time": "2022-12-03",
@@ -43,7 +43,7 @@
       "desc": "未能正确检测到作者历史上榜记录",
       "user_name": "晨曦载曜",
       "user_url": "https://www.jianshu.com/u/da53b65bacb8",
-      "award": 200
+      "reward": 200
     },
     {
       "time": "2022-12-05",
@@ -52,7 +52,7 @@
       "desc": "根据功能使用频率调整首页排列顺序",
       "user_name": "晨曦载曜",
       "user_url": "https://www.jianshu.com/u/da53b65bacb8",
-      "award": 40
+      "reward": 40
     },
     {
       "time": "2022-12-05",
@@ -61,7 +61,7 @@
       "desc": "输入作者名后不显示下拉菜单",
       "user_name": "晨曦载曜",
       "user_url": "https://www.jianshu.com/u/da53b65bacb8",
-      "award": 30
+      "reward": 30
     },
     {
       "time": "2022-12-12",
@@ -70,7 +70,7 @@
       "desc": "查询结果重复",
       "user_name": "晨曦载曜",
       "user_url": "https://www.jianshu.com/u/da53b65bacb8",
-      "award": 30
+      "reward": 30
     },
     {
       "time": "2023-01-29",
@@ -79,7 +79,7 @@
       "desc": "2023.01.29 数据缺失",
       "user_name": "蓝川予鹤",
       "user_url": "https://www.jianshu.com/u/394834beb291",
-      "award": 30
+      "reward": 30
     },
     {
       "time": "2023-04-13",
@@ -88,7 +88,7 @@
       "desc": "2023.04.08、2023.04.10 数据缺失",
       "user_name": "非村",
       "user_url": "https://www.jianshu.com/u/df68a42402fc",
-      "award": 40
+      "reward": 40
     },
     {
       "time": "2023-07-05",
@@ -97,7 +97,7 @@
       "desc": "用户设置系统字体时保持页面元素排版正确",
       "user_name": "睿希颖瑶",
       "user_url": "https://www.jianshu.com/u/4b86da352f87",
-      "award": 40
+      "reward": 40
     },
     {
       "time": "2023-08-08",
@@ -106,7 +106,7 @@
       "desc": "通过昵称追溯更改昵称前数据",
       "user_name": "凯夫",
       "user_url": "https://www.jianshu.com/u/569c004fde8f",
-      "award": 40
+      "reward": 40
     },
     {
       "time": "2023-08-10",
@@ -115,7 +115,7 @@
       "desc": "2023.08.09 数据缺失",
       "user_name": "花花点点",
       "user_url": "https://www.jianshu.com/u/20b53892b0b2",
-      "award": 50
+      "reward": 50
     }
   ],
   "opensourcePackages": {
