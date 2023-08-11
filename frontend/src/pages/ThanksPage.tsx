@@ -15,7 +15,7 @@ export default function ThanksPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Header toolName="鸣谢" hideBackArrow />
+      <Header toolName="鸣谢" />
 
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-0.5">
