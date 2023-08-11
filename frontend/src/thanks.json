@@ -1,14 +1,123 @@
 {
-  "v3BetaPaticipants": {
-    "6g 选手": "https://www.jianshu.com/u/43c3a5c5aca3",
-    "海泩": "https://www.jianshu.com/u/22784ff6c0aa",
-    "睿希颖瑶": "https://www.jianshu.com/u/4b86da352f87",
-    "晨曦载曜": "https://www.jianshu.com/u/da53b65bacb8",
-    "晴源": "https://www.jianshu.com/u/362ee17accd1",
-    "白首卧松云": "https://www.jianshu.com/u/2350b4ff48ed",
-    "侏罗纪的天空": "https://www.jianshu.com/u/7a6bf1236c8c",
-    "幽夜蛙": "https://www.jianshu.com/u/e3d9895f67a7"
-  },
+  "debugProjectRecords": [
+    {
+      "time": "2022-09-01",
+      "type": "数据异常",
+      "module": "上榜文章查询工具",
+      "desc": "显示与实际上榜日期相差一天",
+      "user_name": "心有玲兮",
+      "user_url": "https://www.jianshu.com/u/15bae9b0b85f",
+      "award": 50
+    },
+    {
+      "time": "2022-09-23",
+      "type": "功能优化",
+      "module": "文章词云图生成工具 ",
+      "desc": "去除非必要文字说明，提高清晰度",
+      "user_name": "小慢可",
+      "user_url": "https://www.jianshu.com/u/b39317ace723",
+      "award": 30
+    },
+    {
+      "time": "2022-10-24",
+      "type": "数据异常",
+      "module": "上榜文章查询工具",
+      "desc": "文章因采集时被作者私密而无法查询到",
+      "user_name": "非村",
+      "user_url": "https://www.jianshu.com/u/df68a42402fc",
+      "award": 20
+    },
+    {
+      "time": "2022-10-26",
+      "type": "数据异常",
+      "module": "上榜文章查询工具",
+      "desc": "文章因采集时被作者私密而无法查询到",
+      "user_name": "睿希颖瑶",
+      "user_url": "https://www.jianshu.com/u/4b86da352f87",
+      "award": 20
+    },
+    {
+      "time": "2022-12-03",
+      "type": "数据异常",
+      "module": "LP 理事会推文检测工具",
+      "desc": "未能正确检测到作者历史上榜记录",
+      "user_name": "晨曦载曜",
+      "user_url": "https://www.jianshu.com/u/da53b65bacb8",
+      "award": 200
+    },
+    {
+      "time": "2022-12-05",
+      "type": "功能优化",
+      "module": "全部模块",
+      "desc": "根据功能使用频率调整首页排列顺序",
+      "user_name": "晨曦载曜",
+      "user_url": "https://www.jianshu.com/u/da53b65bacb8",
+      "award": 40
+    },
+    {
+      "time": "2022-12-05",
+      "type": "非主流程功能异常",
+      "module": "上榜文章查询工具",
+      "desc": "输入作者名后不显示下拉菜单",
+      "user_name": "晨曦载曜",
+      "user_url": "https://www.jianshu.com/u/da53b65bacb8",
+      "award": 30
+    },
+    {
+      "time": "2022-12-12",
+      "type": "数据异常",
+      "module": "上榜文章查询工具",
+      "desc": "查询结果重复",
+      "user_name": "晨曦载曜",
+      "user_url": "https://www.jianshu.com/u/da53b65bacb8",
+      "award": 30
+    },
+    {
+      "time": "2023-01-29",
+      "type": "数据异常",
+      "module": "上榜文章查询工具",
+      "desc": "2023.01.29 数据缺失",
+      "user_name": "蓝川予鹤",
+      "user_url": "https://www.jianshu.com/u/394834beb291",
+      "award": 30
+    },
+    {
+      "time": "2023-04-13",
+      "type": "数据异常",
+      "module": "上榜文章查询工具",
+      "desc": "2023.04.08、2023.04.10 数据缺失",
+      "user_name": "非村",
+      "user_url": "https://www.jianshu.com/u/df68a42402fc",
+      "award": 40
+    },
+    {
+      "time": "2023-07-05",
+      "type": "视觉优化",
+      "module": "全部模块",
+      "desc": "用户设置系统字体时保持页面元素排版正确",
+      "user_name": "睿希颖瑶",
+      "user_url": "https://www.jianshu.com/u/4b86da352f87",
+      "award": 40
+    },
+    {
+      "time": "2023-08-08",
+      "type": "功能优化",
+      "module": "上榜文章查询工具",
+      "desc": "通过昵称追溯更改昵称前数据",
+      "user_name": "凯夫",
+      "user_url": "https://www.jianshu.com/u/569c004fde8f",
+      "award": 40
+    },
+    {
+      "time": "2023-08-10",
+      "type": "数据异常",
+      "module": "上榜文章查询工具",
+      "desc": "2023.08.09 数据缺失",
+      "user_name": "花花点点",
+      "user_url": "https://www.jianshu.com/u/20b53892b0b2",
+      "award": 50
+    }
+  ],
   "opensourcePackages": {
     "前端": [
       {
@@ -169,123 +278,14 @@
       }
     ]
   },
-  "debugProjectRecords": [
-    {
-      "time": "2022-09-01",
-      "type": "数据异常",
-      "module": "上榜文章查询工具",
-      "desc": "显示与实际上榜日期相差一天",
-      "user_name": "心有玲兮",
-      "user_url": "https://www.jianshu.com/u/15bae9b0b85f",
-      "award": "50"
-    },
-    {
-      "time": "2022-09-23",
-      "type": "功能优化",
-      "module": "文章词云图生成工具 ",
-      "desc": "去除非必要文字说明，提高清晰度",
-      "user_name": "小慢可",
-      "user_url": "https://www.jianshu.com/u/b39317ace723",
-      "award": "30"
-    },
-    {
-      "time": "2022-10-24",
-      "type": "数据异常",
-      "module": "上榜文章查询工具",
-      "desc": "文章因采集时被作者私密而无法查询到",
-      "user_name": "非村",
-      "user_url": "https://www.jianshu.com/u/df68a42402fc",
-      "award": "20"
-    },
-    {
-      "time": "2022-10-26",
-      "type": "数据异常",
-      "module": "上榜文章查询工具",
-      "desc": "文章因采集时被作者私密而无法查询到",
-      "user_name": "睿希颖瑶",
-      "user_url": "https://www.jianshu.com/u/4b86da352f87",
-      "award": "20"
-    },
-    {
-      "time": "2022-12-03",
-      "type": "数据异常",
-      "module": "LP 理事会推文检测工具",
-      "desc": "未能正确检测到作者历史上榜记录",
-      "user_name": "晨曦载曜",
-      "user_url": "https://www.jianshu.com/u/da53b65bacb8",
-      "award": "200"
-    },
-    {
-      "time": "2022-12-05",
-      "type": "功能优化",
-      "module": "全部模块",
-      "desc": "根据功能使用频率调整首页排列顺序",
-      "user_name": "晨曦载曜",
-      "user_url": "https://www.jianshu.com/u/da53b65bacb8",
-      "award": "40"
-    },
-    {
-      "time": "2022-12-05",
-      "type": "非主流程功能异常",
-      "module": "上榜文章查询工具",
-      "desc": "输入作者名后不显示下拉菜单",
-      "user_name": "晨曦载曜",
-      "user_url": "https://www.jianshu.com/u/da53b65bacb8",
-      "award": "30"
-    },
-    {
-      "time": "2022-12-12",
-      "type": "数据异常",
-      "module": "上榜文章查询工具",
-      "desc": "查询结果重复",
-      "user_name": "晨曦载曜",
-      "user_url": "https://www.jianshu.com/u/da53b65bacb8",
-      "award": "30"
-    },
-    {
-      "time": "2023-01-29",
-      "type": "数据异常",
-      "module": "上榜文章查询工具",
-      "desc": "2023.01.29 数据缺失",
-      "user_name": "蓝川予鹤",
-      "user_url": "https://www.jianshu.com/u/394834beb291",
-      "award": "30"
-    },
-    {
-      "time": "2023-04-13",
-      "type": "数据异常",
-      "module": "上榜文章查询工具",
-      "desc": "2023.04.08、2023.04.10 数据缺失",
-      "user_name": "非村",
-      "user_url": "https://www.jianshu.com/u/df68a42402fc",
-      "award": "40"
-    },
-    {
-      "time": "2023-07-105",
-      "type": "视觉优化",
-      "module": "全部模块",
-      "desc": "用户设置系统字体时保持页面元素排版正确",
-      "user_name": "睿希颖瑶",
-      "user_url": "https://www.jianshu.com/u/4b86da352f87",
-      "award": "40"
-    },
-    {
-      "time": "2023-08-08",
-      "type": "功能优化",
-      "module": "上榜文章查询工具",
-      "desc": "通过昵称追溯更改昵称前数据",
-      "user_name": "凯夫",
-      "user_url": "https://www.jianshu.com/u/569c004fde8f",
-      "award": "40"
-    },
-    {
-      "time": "2023-08-10",
-      "type": "数据异常",
-      "module": "上榜文章查询工具",
-      "desc": "2023.08.09 数据缺失",
-      "user_name": "花花点点",
-      "user_url": "https://www.jianshu.com/u/20b53892b0b2",
-      "award": "50"
-    }
-  ]
+  "v3BetaPaticipants": {
+    "6g 选手": "https://www.jianshu.com/u/43c3a5c5aca3",
+    "海泩": "https://www.jianshu.com/u/22784ff6c0aa",
+    "睿希颖瑶": "https://www.jianshu.com/u/4b86da352f87",
+    "晨曦载曜": "https://www.jianshu.com/u/da53b65bacb8",
+    "晴源": "https://www.jianshu.com/u/362ee17accd1",
+    "白首卧松云": "https://www.jianshu.com/u/2350b4ff48ed",
+    "侏罗纪的天空": "https://www.jianshu.com/u/7a6bf1236c8c",
+    "幽夜蛙": "https://www.jianshu.com/u/e3d9895f67a7"
+  }
 }
