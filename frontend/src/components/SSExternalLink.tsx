@@ -13,7 +13,7 @@ export default function SSExternalLink({
   className,
   url,
   label,
-  openInCurrentTab = true,
+  openInCurrentTab = false,
   hideIcon = false,
 }: Props) {
   return (
