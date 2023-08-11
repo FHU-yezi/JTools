@@ -1,6 +1,5 @@
 import { batch, computed, signal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
-import SSCenter from "../components/SSCenter";
 import SSSegmentedControl from "../components/SSSegmentedControl";
 import SSStat from "../components/SSStat";
 import SSText from "../components/SSText";
@@ -391,37 +390,28 @@ export default function JPEPFTNMarketAnalyzer() {
       <SSText xlarge xbold>
         实时挂单量分布
       </SSText>
-      <SSCenter>
-        <SSSegmentedControl
-          label=""
-          value={perPriceAmountDataTradeType}
-          data={{ 买单: "buy", 卖单: "sell" }}
-        />
-      </SSCenter>
+      <SSSegmentedControl
+        value={perPriceAmountDataTradeType}
+        data={{ 买单: "buy", 卖单: "sell" }}
+      />
       <PerPriceAmountDataBar />
 
       <SSText xlarge xbold>
         贝价趋势
       </SSText>
-      <SSCenter>
-        <SSSegmentedControl
-          label=""
-          value={priceTrendLineTimeRange}
-          data={TimeRangeSCData}
-        />
-      </SSCenter>
+      <SSSegmentedControl
+        value={priceTrendLineTimeRange}
+        data={TimeRangeSCData}
+      />
       <PriceTrendLine />
 
       <SSText xlarge xbold>
         挂单量趋势
       </SSText>
-      <SSCenter>
-        <SSSegmentedControl
-          label=""
-          value={poolAmountTrendLineTimeRange}
-          data={TimeRangeSCData}
-        />
-      </SSCenter>
+      <SSSegmentedControl
+        value={poolAmountTrendLineTimeRange}
+        data={TimeRangeSCData}
+      />
       <PoolAmountTrendLine />
     </div>
   );
