@@ -52,13 +52,13 @@
         "url": "https://github.com/molefrog/wouter"
       },
       {
-        "name": "Tailwind CSS",
+        "name": "UnoCSS",
         "desc": "原子化 CSS",
-        "url": "https://github.com/tailwindlabs/tailwindcss"
+        "url": "https://github.com/unocss/unocss"
       },
       {
         "name": "clsx",
-        "desc": "ClassName 增强",
+        "desc": "动态 CSS 样式",
         "url": "https://github.com/lukeed/clsx"
       },
       {
