@@ -3,6 +3,7 @@ import { useEffect, useRef } from "preact/hooks";
 import { AiOutlineSearch } from "react-icons/ai";
 import { useLocation } from "wouter-preact";
 import { routes } from "../routes";
+import { whenEnterOrSpace } from "../utils/keyHelper";
 import { removeSpace } from "../utils/textHelper";
 import umamiTrack from "../utils/umamiTrack";
 import SSActionIcon from "./SSActionIcon";
@@ -23,7 +24,7 @@ function ToolItem({ name, description, onClick }: ToolItemProps) {
       tabIndex={0}
       className="w-full flex flex-col gap-1 rounded-lg p-2 hover:(bg-zinc-100 dark:bg-zinc-800)"
       onClick={onClick}
-      onKeyPress={onClick}
+      onKeyUp={(event) => whenEnterOrSpace(event, onClick)}
     >
       <SSText large bold>
         {name}

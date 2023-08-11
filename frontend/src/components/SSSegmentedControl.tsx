@@ -1,22 +1,21 @@
 import type { Signal } from "@preact/signals";
 import clsx from "clsx";
+import { whenEnterOrSpace } from "../utils/keyHelper";
 import SSText from "./SSText";
 
 interface Props<T> {
-  label: string;
+  label?: string;
   data: Record<string, T>;
   value: Signal<T>;
-  compact?: boolean;
 }
 
 export default function SSSegmentedControl<T>({
-  label,
+  label = "",
   data,
   value,
-  compact = false,
 }: Props<T>) {
   return (
-    <div className="">
+    <div>
       <SSText className="mb-1.5" bold>
         {label}
       </SSText>
@@ -27,21 +26,19 @@ export default function SSSegmentedControl<T>({
             tabIndex={0}
             aria-checked={value.value === itemValue}
             className={clsx(
-              "gray-border grid min-w-fit select-none place-content-center py-2 transition-colors first:rounded-l-md last:rounded-r-md",
+              "gray-border grid select-none flex-grow place-content-center p-2 transition-colors first:rounded-l-md last:rounded-r-md",
               {
                 "bg-zinc-100 dark:bg-zinc-900": value.value !== itemValue,
                 "bg-white dark:bg-zinc-700": value.value === itemValue,
-                "px-2": compact,
-                "px-4": !compact,
               },
             )}
             onClick={() => (value.value = itemValue)}
-            onKeyPress={() => (value.value = itemValue)}
+            onKeyUp={(event) =>
+              whenEnterOrSpace(event, () => (value.value = itemValue))
+            }
           >
             <SSText
-              className={clsx("whitespace-nowrap", {
-                "dark:text-black": value.value === itemValue,
-              })}
+              className="whitespace-nowrap"
               gray={value.value !== itemValue}
             >
               {name}

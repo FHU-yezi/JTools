@@ -26,13 +26,11 @@ export default function Footer() {
         <SSExternalLink
           label="服务状态"
           url="https://status.sscreator.com/status/jtools"
-          openInNewTab
         />
         <SSInternalLink label="鸣谢" url="/thanks" />
         <SSExternalLink
           label="意见反馈"
           url="https://wenjuan.feishu.cn/m?t=sjQp3W8yUrNi-g37f"
-          openInNewTab
         />
 
         <SSText gray>版本：{version.value ?? "获取中..."}</SSText>
@@ -42,7 +40,6 @@ export default function Footer() {
           <SSExternalLink
             label="初心不变_叶子"
             url="https://www.jianshu.com/u/ea36c8d8aa30"
-            openInNewTab
           />
         </SSText>
       </div>

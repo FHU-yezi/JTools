@@ -15,7 +15,39 @@ export default function ThanksPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Header toolName="鸣谢" hideBackArrow />
+      <Header toolName="鸣谢" />
+
+      <SSText xlarge xbold>
+        「捉虫计划」反馈
+      </SSText>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {debugProjectRecords.reverse().map((item) => (
+          <SSCard title={`${item.time} | ${item.type}`} subTitle={item.module}>
+            <SSText>{item.desc}</SSText>
+            <SSText>
+              反馈者：
+              <SSExternalLink url={item.user_url} label={item.user_name} />
+            </SSText>
+            <SSText>{`奖励：${item.reward} 简书贝`}</SSText>
+          </SSCard>
+        ))}
+      </div>
+
+      <SSText xlarge xbold>
+        开源库
+      </SSText>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {Object.entries(opensourcePackages).map(([partName, part]) => (
+          <SSCard title={partName}>
+            {part.map(({ name, desc, url }) => (
+              <SSText>
+                {desc}：
+                <SSExternalLink label={name} url={url} />
+              </SSText>
+            ))}
+          </SSCard>
+        ))}
+      </div>
 
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-0.5">
@@ -30,48 +62,9 @@ export default function ThanksPage() {
           <SSText>
             {name}
             ：
-            <SSExternalLink url={url} openInNewTab />
+            <SSExternalLink url={url} />
           </SSText>
         ))}
-
-        <SSText xlarge xbold>
-          开源库
-        </SSText>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {Object.entries(opensourcePackages).map(([partName, part]) => (
-            <SSCard title={partName}>
-              {part.map(({ name, desc, url }) => (
-                <SSText>
-                  {desc}：
-                  <SSExternalLink label={name} url={url} openInNewTab />
-                </SSText>
-              ))}
-            </SSCard>
-          ))}
-        </div>
-
-        <SSText xlarge xbold>
-          「捉虫计划」反馈
-        </SSText>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {debugProjectRecords.map((item) => (
-            <SSCard
-              title={`${item.time} | ${item.type}`}
-              subTitle={item.module}
-            >
-              <SSText>{item.desc}</SSText>
-              <SSText>
-                反馈者：
-                <SSExternalLink
-                  url={item.user_url}
-                  label={item.user_name}
-                  openInNewTab
-                />
-              </SSText>
-              <SSText>{`奖励：${item.award} 简书贝`}</SSText>
-            </SSCard>
-          ))}
-        </div>
 
         <div className="h-12" />
         <SSText large center>

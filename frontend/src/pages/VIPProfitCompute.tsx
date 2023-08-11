@@ -114,7 +114,6 @@ const baseEarningRate = computed(
 );
 const FPCount = signal(0);
 const FPCountEarningRateFactor = computed(() => {
-  // eslint-disable-next-line no-restricted-syntax
   for (const targetFPCount in FPCountToFPCountEarningRateFactor) {
     if (FPCount.value <= parseFloat(targetFPCount)) {
       return FPCountToFPCountEarningRateFactor[targetFPCount];
@@ -124,7 +123,6 @@ const FPCountEarningRateFactor = computed(() => {
 });
 const membersCount = signal(0);
 const promoterLevel = computed(() => {
-  // eslint-disable-next-line no-restricted-syntax
   for (const targetMembersCount in membersCountToPromoterLevel) {
     if (membersCount.value <= parseInt(targetMembersCount, 10)) {
       return membersCountToPromoterLevel[targetMembersCount];

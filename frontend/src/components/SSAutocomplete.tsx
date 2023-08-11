@@ -75,7 +75,7 @@ export default function SSAutocomplete({
             {completeItems.value.map((item) => (
               <button
                 type="button"
-                className="w-full rounded p-2 text-left transition-colors hover:bg-zinc-100 hover:font-semibold dark:hover:bg-zinc-700"
+                className="w-full rounded p-2 text-left transition-colors hover:bg-zinc-100 hover:font-semibold focus:outline-none dark:hover:bg-zinc-700"
                 onClick={() => {
                   textInputRef.current!.value = item;
                   value.value = item;

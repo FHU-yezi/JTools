@@ -5,7 +5,7 @@ interface Props {
   className?: string;
   url: string;
   label?: string;
-  openInNewTab?: boolean;
+  openInCurrentTab?: boolean;
   hideIcon?: boolean;
 }
 
@@ -13,7 +13,7 @@ export default function SSExternalLink({
   className,
   url,
   label,
-  openInNewTab = false,
+  openInCurrentTab = false,
   hideIcon = false,
 }: Props) {
   return (
@@ -23,7 +23,7 @@ export default function SSExternalLink({
         "w-fit break-all text-blue-600 transition-colors hover:text-blue-700 dark:(text-blue-400 hover:text-blue-500)",
       )}
       href={url}
-      target={openInNewTab ? "_blank" : "_self"}
+      target={openInCurrentTab ? "_self" : "_blank"}
       rel="noreferrer"
     >
       {label ?? url}

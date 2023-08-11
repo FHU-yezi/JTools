@@ -73,7 +73,6 @@ export default function ArticleWordcloudGenerator() {
                 ? articleTitle.value
                 : `${articleTitle.value.substring(0, 17)}...`
             }
-            openInNewTab
           />
         </SSText>
       )}

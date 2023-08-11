@@ -33,7 +33,6 @@ export default function ErrorFallback({ error }: Props) {
         <SSExternalLink
           url="https://wenjuan.feishu.cn/m?t=sGzpuZGzUrNi-cbbb"
           label="前往反馈表单 >"
-          openInNewTab
         />
         <SSText gray>{error.toString()}</SSText>
 

@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { BiLinkExternal } from "react-icons/bi";
 import { useLocation } from "wouter-preact";
+import { whenEnterOrSpace } from "../utils/keyHelper";
 
 interface Props {
   className?: string;
@@ -26,7 +27,7 @@ export default function SSInternalLink({
         "w-fit break-all text-blue-600 transition-colors hover:text-blue-700 cursor-pointer dark:(text-blue-400 hover:text-blue-500)",
       )}
       onClick={() => setLocation(url)}
-      onKeyPress={() => setLocation(url)}
+      onKeyUp={(event) => whenEnterOrSpace(event, () => setLocation(url))}
     >
       {label ?? url}
       {!hideIcon && (

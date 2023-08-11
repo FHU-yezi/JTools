@@ -1,6 +1,7 @@
 import type { Signal } from "@preact/signals";
 import clsx from "clsx";
 import { BiCheck } from "react-icons/bi";
+import { whenEnterOrSpace } from "../utils/keyHelper";
 import SSCenter from "./SSCenter";
 import SSText from "./SSText";
 
@@ -18,7 +19,9 @@ export default function SSCheckbox({ label, value }: Props) {
       className="w-fit"
       aria-checked={value.value}
       onClick={() => (value.value = !value.value)}
-      onKeyPress={() => (value.value = !value.value)}
+      onKeyUp={(event) =>
+        whenEnterOrSpace(event, () => (value.value = !value.value))
+      }
     >
       <SSText className="flex select-none items-center gap-2">
         <SSCenter

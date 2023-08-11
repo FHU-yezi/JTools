@@ -34,7 +34,7 @@ export default function SSNumberInput({
         min={min}
         max={max}
         step={step}
-        className="w-full border border-zinc-200 rounded-lg bg-white p-1.5 px-3 text-zinc-900 dark:(border-zinc-600 bg-zinc-800 text-zinc-300) focus:!border-blue-500 invalid:!border-red-500"
+        className="w-full border border-zinc-200 rounded-lg bg-white p-1.5 px-3 text-zinc-900 dark:(border-zinc-600 bg-zinc-800 text-zinc-300) focus:outline-none focus:!border-blue-500 invalid:!border-red-500"
         value={value.value}
         onChange={(event: any) => {
           const parseResult = parseFloat(event.currentTarget.value);
@@ -44,14 +44,14 @@ export default function SSNumberInput({
         }}
         onKeyUp={
           onEnter
-            ? (event: any) => event.key === "Enter" && onEnter()
+            ? (event: KeyboardEvent) => event.key === "Enter" && onEnter()
             : undefined
         }
         onFocus={
           !noSelectOnFocus
-            ? (event: any) =>
-                event.currentTarget.value.length !== 0 &&
-                event.currentTarget.select()
+            ? (event: FocusEvent) =>
+                (event.currentTarget as HTMLInputElement).value.length !== 0 &&
+                (event.currentTarget as HTMLInputElement).select()
             : undefined
         }
         aria-label={label}

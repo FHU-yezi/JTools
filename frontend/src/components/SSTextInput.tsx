@@ -39,9 +39,9 @@ export default function SSTextInput({
         }
         onFocus={
           !noSelectOnFocus
-            ? (event: any) =>
-                event.currentTarget.value.length !== 0 &&
-                event.currentTarget.select()
+            ? (event: FocusEvent) =>
+                (event.currentTarget as HTMLInputElement).value.length !== 0 &&
+                (event.currentTarget as HTMLInputElement).select()
             : undefined
         }
         aria-label={label}
