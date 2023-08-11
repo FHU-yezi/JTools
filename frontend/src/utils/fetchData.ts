@@ -10,7 +10,6 @@ export async function fetchData<TRequest, TResponse>(
   method: "GET" | "POST",
   url: string,
   data: TRequest,
-  // eslint-disable-next-line no-shadow
   onOK: (data: TResponse) => void,
   onError: (code: number, message: string) => void,
   isLoading?: Signal<boolean>,
