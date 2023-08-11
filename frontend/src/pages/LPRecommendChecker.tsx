@@ -63,11 +63,7 @@ export default function LPRecommendChecker() {
       {articleTitle.value !== undefined && articleURL.value !== undefined && (
         <SSText center>
           文章标题：
-          <SSExternalLink
-            url={articleURL.value}
-            label={articleTitle.value}
-            openInNewTab
-          />
+          <SSExternalLink url={articleURL.value} label={articleTitle.value} />
         </SSText>
       )}
       {releaseTime.value !== undefined && (

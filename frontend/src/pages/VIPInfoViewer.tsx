@@ -80,11 +80,7 @@ export default function VIPInfoViewer() {
       {userName.value !== undefined && (
         <SSText>
           昵称：
-          <SSExternalLink
-            url={userURL.value}
-            label={userName.value}
-            openInNewTab
-          />
+          <SSExternalLink url={userURL.value} label={userName.value} />
         </SSText>
       )}
 

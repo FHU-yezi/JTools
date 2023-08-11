@@ -30,7 +30,7 @@ export default function ThanksPage() {
           <SSText>
             {name}
             ：
-            <SSExternalLink url={url} openInNewTab />
+            <SSExternalLink url={url} />
           </SSText>
         ))}
 
@@ -43,7 +43,7 @@ export default function ThanksPage() {
               {part.map(({ name, desc, url }) => (
                 <SSText>
                   {desc}：
-                  <SSExternalLink label={name} url={url} openInNewTab />
+                  <SSExternalLink label={name} url={url} />
                 </SSText>
               ))}
             </SSCard>
@@ -62,11 +62,7 @@ export default function ThanksPage() {
               <SSText>{item.desc}</SSText>
               <SSText>
                 反馈者：
-                <SSExternalLink
-                  url={item.user_url}
-                  label={item.user_name}
-                  openInNewTab
-                />
+                <SSExternalLink url={item.user_url} label={item.user_name} />
               </SSText>
               <SSText>{`奖励：${item.award} 简书贝`}</SSText>
             </SSCard>

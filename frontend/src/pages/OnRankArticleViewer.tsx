@@ -228,7 +228,6 @@ function ResultTable() {
             className="block max-w-[60vw] overflow-hidden text-ellipsis whitespace-nowrap"
             url={item.url}
             label={item.title}
-            openInNewTab
             hideIcon
           />
         ),
