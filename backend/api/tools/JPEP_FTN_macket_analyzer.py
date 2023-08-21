@@ -301,7 +301,7 @@ def JPEP_rules_handler(request: Request) -> HTTPResponse:  # noqa: N802
     del request
 
     response = HTTP_CLIENT.post(
-        "https://20221023.tp.lanrenmb.net/api/getList/furnish.setting/1/",
+        "https://20221023.jianshubei.com/api/getList/furnish.setting/1/",
         json={
             "fields": "fee,minimum_price,buy_minimum_price",
         },
