@@ -28,7 +28,7 @@ export default function SSCard({
   return (
     <div
       className={clsx(
-        "flex flex-col border bg-white shadow dark:(border-zinc-700 bg-zinc-900)",
+        "flex flex-col gray-border bg-white shadow dark:(border-zinc-700 bg-zinc-900)",
         className,
         round,
         padding,
@@ -36,14 +36,20 @@ export default function SSCard({
         innerGap,
       )}
     >
-      <div className="flex flex-col gap-0.5">
-        <SSText bold large={!titleXLarge} xlarge={titleXLarge}>
-          {title}
-        </SSText>
-        <SSText small gray>
-          {subTitle}
-        </SSText>
-      </div>
+      {(title || subTitle) && (
+        <div className="flex flex-col gap-0.5">
+          {title && (
+            <SSText bold large={!titleXLarge} xlarge={titleXLarge}>
+              {title}
+            </SSText>
+          )}
+          {subTitle && (
+            <SSText small gray>
+              {subTitle}
+            </SSText>
+          )}
+        </div>
+      )}
       {children}
     </div>
   );
