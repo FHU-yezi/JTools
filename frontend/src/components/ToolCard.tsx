@@ -19,11 +19,14 @@ export default function ToolCard({
 }: Props) {
   const [, setLocation] = useLocation();
   return (
-    <CardButton onClick={!unavaliable ? () => setLocation(path) : undefined}>
+    <CardButton
+      onClick={!unavaliable ? () => setLocation(path) : undefined}
+      rounded="rounded-lg"
+    >
       <Row className="justify-between" verticalCenter>
-        <Column className="items-start" gap="gap-1">
+        <Column className="items-start" gap="gap-2">
           <Row gap="gap-2">
-            <Text large bold>
+            <Text className="text-left" large bold>
               {toolName}
             </Text>
             {downgraded && (
@@ -43,7 +46,7 @@ export default function ToolCard({
               </Badge>
             )}
           </Row>
-          <Text small gray>
+          <Text className="text-left" gray>
             {description}
           </Text>
         </Column>
