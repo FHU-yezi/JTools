@@ -1,12 +1,19 @@
 import { batch, signal } from "@preact/signals";
+import {
+  Badge,
+  Center,
+  Column,
+  ExternalLink,
+  PrimaryButton,
+  Table,
+  TableBody,
+  TableHeader,
+  TableRow,
+  Text,
+  TextInput,
+} from "@sscreator/ui";
+import clsx from "clsx";
 import type { Dayjs } from "dayjs";
-import SSBadge from "../components/SSBadge";
-import SSButton from "../components/SSButton";
-import SSCenter from "../components/SSCenter";
-import SSExternalLink from "../components/SSExternalLink";
-import SSTable from "../components/SSTable";
-import SSText from "../components/SSText";
-import SSTextInput from "../components/SSTextInput";
 import type {
   CheckItem,
   CheckRequest,
@@ -54,61 +61,103 @@ function handleCheck() {
 
 export default function LPRecommendChecker() {
   return (
-    <div className="flex flex-col gap-4">
-      <SSTextInput label="文章链接" value={articleURL} onEnter={handleCheck} />
-      <SSButton onClick={handleCheck} loading={isLoading.value}>
+    <Column>
+      <TextInput label="文章链接" value={articleURL} onEnter={handleCheck} />
+      <PrimaryButton onClick={handleCheck} loading={isLoading.value} fullWidth>
         查询
-      </SSButton>
+      </PrimaryButton>
 
       {articleTitle.value !== undefined && articleURL.value !== undefined && (
-        <SSText center>
+        <Text center>
           文章标题：
-          <SSExternalLink url={articleURL.value} label={articleTitle.value} />
-        </SSText>
+          <ExternalLink href={articleURL.value}>
+            {articleTitle.value}
+          </ExternalLink>
+        </Text>
       )}
       {releaseTime.value !== undefined && (
-        <SSText center>{`发布于 ${getDatetime(
+        <Text center>{`发布于 ${getDatetime(
           releaseTime.value!,
-        )}（${getHumanReadableTimeDelta(releaseTime.value!)}）`}</SSText>
+        )}（${getHumanReadableTimeDelta(releaseTime.value!)}）`}</Text>
       )}
       {checkPassed.value !== undefined && (
-        <SSText
+        <Text
           color={checkPassed.value ? "text-green-600" : "text-red-500"}
           bold
-          xlarge
+          large
           center
         >
           {checkPassed.value ? "符合推荐标准" : "不符合推荐标准"}
-        </SSText>
+        </Text>
       )}
       {checkItems.value !== undefined && (
-        <SSTable
-          className="min-w-[540px]"
-          data={checkItems.value.map((item) => ({
-            项目: <SSText center>{item.name}</SSText>,
-            检测结果: (
-              <SSCenter>
-                <SSBadge
-                  className={
-                    item.item_passed
-                      ? "bg-green-200 text-green-600 dark:bg-green-950"
-                      : "bg-red-200 text-red-500 dark:bg-red-950"
-                  }
-                >
-                  {item.item_passed ? "符合" : "不符合"}
-                </SSBadge>
-              </SSCenter>
-            ),
-            限制值: (
-              <SSText center>
-                {item.operator} {item.limit_value}
-              </SSText>
-            ),
-            实际值: <SSText center>{item.actual_value}</SSText>,
-          }))}
-          tableItemKey="name"
-        />
+        <Table className="w-full">
+          <TableHeader>
+            <Text bold>项目</Text>
+            <Text bold>检测结果</Text>
+            <Text bold>实际值</Text>
+            <Text bold>限制值</Text>
+          </TableHeader>
+          <TableBody>
+            {checkItems.value.map((item) => (
+              <TableRow>
+                <Text center nowrap>
+                  {item.name}
+                </Text>
+                <Center>
+                  <Badge
+                    backgroundColor={clsx({
+                      "bg-green-200 dark:bg-green-950": item.item_passed,
+                      "bg-red-200 dark:bg-red-950": !item.item_passed,
+                    })}
+                    textColor={clsx({
+                      "text-green-600": item.item_passed,
+                      "text-red-500": !item.item_passed,
+                    })}
+                  >
+                    {item.item_passed ? "符合" : "不符合"}
+                  </Badge>
+                </Center>
+                <Text center nowrap>
+                  {item.actual_value}
+                </Text>
+                <Text center nowrap>
+                  {item.operator} {item.limit_value}
+                </Text>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        // <SSTable
+        //   className="min-w-[540px]"
+        //   data={checkItems.value.map((item) => ({
+        //     项目: <SSText center>{item.name}</SSText>,
+        //     检测结果: (
+        //       <SSCenter>
+        //         <Badge
+        //           backgroundColor={clsx({
+        //             "bg-green-200 dark:bg-green-950": item.item_passed,
+        //             "bg-red-200 dark:bg-red-950": !item.item_passed,
+        //           })}
+        //           textColor={clsx({
+        //             "text-green-600": item.item_passed,
+        //             "text-red-500": !item.item_passed,
+        //           })}
+        //         >
+        //           {item.item_passed ? "符合" : "不符合"}
+        //         </Badge>
+        //       </SSCenter>
+        //     ),
+        //     限制值: (
+        //       <Text center>
+        //         {item.operator} {item.limit_value}
+        //       </Text>
+        //     ),
+        //     实际值: <Text center>{item.actual_value}</Text>,
+        //   }))}
+        //   tableItemKey="name"
+        // />
       )}
-    </div>
+    </Column>
   );
 }

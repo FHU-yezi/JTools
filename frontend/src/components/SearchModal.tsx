@@ -1,15 +1,19 @@
 import { useComputed, useSignal } from "@preact/signals";
+import {
+  CardButton,
+  Column,
+  GhostButton,
+  Modal,
+  NoResultNotice,
+  Text,
+  TextInput,
+} from "@sscreator/ui";
 import { useEffect, useRef } from "preact/hooks";
-import { AiOutlineSearch } from "react-icons/ai";
+import { MdSearch } from "react-icons/md";
 import { useLocation } from "wouter-preact";
 import { routes } from "../routes";
-import { whenEnterOrSpace } from "../utils/keyHelper";
 import { removeSpace } from "../utils/textHelper";
 import umamiTrack from "../utils/umamiTrack";
-import SSActionIcon from "./SSActionIcon";
-import SSModal from "./SSModal";
-import SSText from "./SSText";
-import SSTextInput from "./SSTextInput";
 
 interface ToolItemProps {
   name: string;
@@ -19,18 +23,16 @@ interface ToolItemProps {
 
 function ToolItem({ name, description, onClick }: ToolItemProps) {
   return (
-    <div
-      role="button"
-      tabIndex={0}
-      className="w-full flex flex-col gap-1 rounded-lg p-2 hover:(bg-zinc-100 dark:bg-zinc-800)"
-      onClick={onClick}
-      onKeyUp={(event) => whenEnterOrSpace(event, onClick)}
-    >
-      <SSText large bold>
-        {name}
-      </SSText>
-      <SSText gray>{description}</SSText>
-    </div>
+    <CardButton rounded="rounded-lg" onClick={onClick}>
+      <Column gap="gap-2">
+        <Text className="text-left" large bold>
+          {name}
+        </Text>
+        <Text className="text-left" gray>
+          {description}
+        </Text>
+      </Column>
+    </CardButton>
   );
 }
 
@@ -58,34 +60,27 @@ export default function SearchModal() {
 
   return (
     <>
-      <SSActionIcon
-        className="dark:hover:!bg-zinc-700"
-        label="搜索"
+      <GhostButton
+        icon={
+          <MdSearch className="text-zinc-500 dark:text-zinc-300" size={22} />
+        }
+        hoverBackgroundColor="hover:bg-zinc-200 dark:hover:bg-zinc-700"
         onClick={() => {
           searchModalOpen.value = true;
           umamiTrack("click-search-button");
         }}
-      >
-        <AiOutlineSearch
-          className="text-zinc-500 dark:text-zinc-300"
-          size={22}
-        />
-      </SSActionIcon>
+        ariaLabel="搜索"
+      />
 
-      <SSModal
-        isOpen={searchModalOpen}
-        onClose={() => (searchModalOpen.value = false)}
-        title="搜索"
-      >
-        <div className="h-2" />
-        <SSTextInput
-          label=""
-          value={textInputContent}
-          placeholder="输入工具名称..."
-          inputRef={textInputRef}
-        />
+      <Modal open={searchModalOpen} title="搜索">
+        <Column>
+          <TextInput
+            label=""
+            value={textInputContent}
+            placeholder="输入工具名称..."
+            inputRef={textInputRef}
+          />
 
-        <div className="mt-3 flex flex-col">
           {matchRouteItems.value.length !== 0 ? (
             matchRouteItems.value.map((item) => (
               <ToolItem
@@ -95,12 +90,10 @@ export default function SearchModal() {
               />
             ))
           ) : (
-            <SSText className="m-6" bold large center>
-              没有查询到数据
-            </SSText>
+            <NoResultNotice />
           )}
-        </div>
-      </SSModal>
+        </Column>
+      </Modal>
     </>
   );
 }

@@ -7,6 +7,7 @@ export const V2RedirectRoutes: { [orginal: string]: string } = {
   LP_recommend_checker: "/LP-recommend-checker",
   on_rank_article_viewer: "/on-rank-article-viewer",
   user_VIP_status_viewer: "/VIP-info-viewer",
+  thanks: "/thanks",
 };
 
 export const V2UnavaliableRoutes: string[] = [
@@ -14,4 +15,4 @@ export const V2UnavaliableRoutes: string[] = [
   "article_publish_time_viewer",
 ];
 
-export const V2UnimplementedRoutes: string[] = ["article_downloader", "thanks"];
+export const V2UnimplementedRoutes: string[] = ["article_downloader"];

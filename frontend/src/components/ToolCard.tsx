@@ -1,8 +1,6 @@
-import clsx from "clsx";
+import { Badge, CardButton, Column, Icon, Row, Text } from "@sscreator/ui";
 import { AiOutlineRight } from "react-icons/ai";
 import { useLocation } from "wouter-preact";
-import SSBadge from "./SSBadge";
-import SSText from "./SSText";
 
 interface Props {
   toolName: string;
@@ -21,41 +19,40 @@ export default function ToolCard({
 }: Props) {
   const [, setLocation] = useLocation();
   return (
-    <button
-      type="button"
-      className={clsx(
-        "gray-border flex w-full items-center justify-between gap-4 rounded-xl bg-white p-5 shadow dark:bg-zinc-900",
-        {
-          "transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800":
-            !unavaliable,
-          "cursor-not-allowed": unavaliable,
-        },
-      )}
-      onClick={!unavaliable ? () => setLocation(path) : undefined}
-    >
-      <div className="flex flex-col gap-3">
-        <div className="flex gap-2">
-          <SSText className="font-bold" large>
-            {toolName}
-          </SSText>
-          {downgraded && (
-            <SSBadge className="bg-orange-200 text-orange-500 dark:bg-orange-950">
-              降级
-            </SSBadge>
-          )}
-          {unavaliable && (
-            <SSBadge className="bg-red-200 text-red-500 dark:bg-red-950">
-              不可用
-            </SSBadge>
-          )}
-        </div>
-        <SSText className="text-left">{description}</SSText>
-      </div>
-      {!unavaliable && (
-        <SSText>
-          <AiOutlineRight size={24} />
-        </SSText>
-      )}
-    </button>
+    <CardButton onClick={!unavaliable ? () => setLocation(path) : undefined}>
+      <Row className="justify-between" verticalCenter>
+        <Column className="items-start" gap="gap-1">
+          <Row gap="gap-2">
+            <Text large bold>
+              {toolName}
+            </Text>
+            {downgraded && (
+              <Badge
+                backgroundColor="bg-orange-200 dark:bg-orange-950"
+                textColor="text-orange-500"
+              >
+                降级
+              </Badge>
+            )}
+            {unavaliable && (
+              <Badge
+                backgroundColor="bg-red-200 dark:bg-red-950"
+                textColor="text-red-500"
+              >
+                不可用
+              </Badge>
+            )}
+          </Row>
+          <Text small gray>
+            {description}
+          </Text>
+        </Column>
+        {!unavaliable && (
+          <Icon>
+            <AiOutlineRight size={24} />
+          </Icon>
+        )}
+      </Row>
+    </CardButton>
   );
 }

@@ -1,8 +1,11 @@
 import { batch, signal } from "@preact/signals";
-import SSButton from "../components/SSButton";
-import SSExternalLink from "../components/SSExternalLink";
-import SSText from "../components/SSText";
-import SSTextInput from "../components/SSTextInput";
+import {
+  Column,
+  ExternalLink,
+  PrimaryButton,
+  Text,
+  TextInput,
+} from "@sscreator/ui";
 import SSWordcloud from "../components/charts/SSWordcloud";
 import type {
   WordFreqDataItem,
@@ -53,31 +56,28 @@ function Wordcloud() {
 
 export default function ArticleWordcloudGenerator() {
   return (
-    <div className="flex flex-col gap-4">
-      <SSTextInput
-        label="文章链接"
-        value={articleURL}
-        onEnter={handleGenerate}
-      />
-      <SSButton onClick={handleGenerate} loading={isLoading.value}>
+    <Column>
+      <TextInput label="文章链接" value={articleURL} onEnter={handleGenerate} />
+      <PrimaryButton
+        onClick={handleGenerate}
+        loading={isLoading.value}
+        fullWidth
+      >
         查询
-      </SSButton>
+      </PrimaryButton>
 
       {articleTitle.value !== undefined && articleURL.value !== undefined && (
-        <SSText center>
+        <Text center>
           文章：
-          <SSExternalLink
-            url={articleURL.value}
-            label={
-              articleTitle.value.length <= 17
-                ? articleTitle.value
-                : `${articleTitle.value.substring(0, 17)}...`
-            }
-          />
-        </SSText>
+          <ExternalLink href={articleURL.value}>
+            {articleTitle.value.length <= 17
+              ? articleTitle.value
+              : `${articleTitle.value.substring(0, 17)}...`}
+          </ExternalLink>
+        </Text>
       )}
 
       {wordFreqData.value !== undefined && <Wordcloud />}
-    </div>
+    </Column>
   );
 }

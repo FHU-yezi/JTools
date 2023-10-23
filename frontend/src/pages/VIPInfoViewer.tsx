@@ -1,11 +1,14 @@
 import { batch, signal } from "@preact/signals";
+import {
+  Badge,
+  Column,
+  ExternalLink,
+  PrimaryButton,
+  Row,
+  Text,
+  TextInput,
+} from "@sscreator/ui";
 import type { Dayjs } from "dayjs";
-import SSAvatar from "../components/SSAvatar";
-import SSBadge from "../components/SSBadge";
-import SSButton from "../components/SSButton";
-import SSExternalLink from "../components/SSExternalLink";
-import SSText from "../components/SSText";
-import SSTextInput from "../components/SSTextInput";
 import type {
   VIPInfoRequest,
   VIPInfoResponse,
@@ -32,7 +35,7 @@ const VIPExpireTime = signal<Dayjs | undefined>(undefined);
 const VIPTypeToBadgeImageURL: Record<string, string> = {
   铜牌: VIPBadgeBronzeURL,
   银牌: VIPBadgeSilverURL,
-  金牌: VIPBadgeGoldURL,
+  黄金: VIPBadgeGoldURL,
   白金: VIPBadgePlatinaURL,
 };
 
@@ -67,45 +70,50 @@ function handleQuery() {
 
 export default function VIPInfoViewer() {
   return (
-    <div className="flex flex-col gap-4">
-      <SSTextInput
+    <Column>
+      <TextInput
         label="用户个人主页链接"
         value={userURL}
         onEnter={handleQuery}
       />
-      <SSButton onClick={handleQuery} loading={isLoading.value}>
+      <PrimaryButton onClick={handleQuery} loading={isLoading.value} fullWidth>
         查询
-      </SSButton>
+      </PrimaryButton>
 
       {userName.value !== undefined && (
-        <SSText>
+        <Text>
           昵称：
-          <SSExternalLink url={userURL.value} label={userName.value} />
-        </SSText>
+          <ExternalLink href={userURL.value}>{userName.value}</ExternalLink>
+        </Text>
       )}
 
       {VIPType.value !== undefined && (
         <>
-          <div className="max-w-fit flex items-center gap-1">
-            <SSText>会员级别：</SSText>
-            <SSAvatar
-              className="mr-1.5 h-6 w-6"
-              src={VIPTypeToBadgeImageURL[VIPType.value]}
-              alt={`${VIPType.value} 徽章图标`}
-            />
-            <SSBadge className="bg-zinc-100 text-zinc-500 dark:(bg-zinc-800 text-zinc-400)">
-              {VIPType.value}
-            </SSBadge>
-          </div>
+          <Text>
+            会员级别：
+            <Badge
+              textColor="text-zinc-500 dark:text-zinc-400"
+              backgroundColor="bg-zinc-100 dark:bg-zinc-800"
+            >
+              <Row className="!flex-inline" gap="gap-1" verticalCenter>
+                <img
+                  className="inline h-4 w-4 rounded-full"
+                  src={VIPTypeToBadgeImageURL[VIPType.value]}
+                  alt={`${VIPType.value} 徽章图标`}
+                />
+                <Text inline>{VIPType.value}</Text>
+              </Row>
+            </Badge>
+          </Text>
           {VIPType.value !== "无会员" && (
-            <SSText>
+            <Text>
               到期时间：
               {getDate(VIPExpireTime.value!)}（
               {getHumanReadableTimeDelta(VIPExpireTime.value!)}）
-            </SSText>
+            </Text>
           )}
         </>
       )}
-    </div>
+    </Column>
   );
 }

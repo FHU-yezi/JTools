@@ -1,13 +1,18 @@
 import type { Signal } from "@preact/signals";
 import { batch, effect, signal, useSignal } from "@preact/signals";
+import {
+  Checkbox,
+  Column,
+  Grid,
+  LoadingArea,
+  NoResultNotice,
+  PrimaryButton,
+  Text,
+  TextInput,
+  Tooltip,
+} from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
-import SSButton from "../components/SSButton";
-import SSCheckbox from "../components/SSCheckbox";
 import SSLazyLoadTable from "../components/SSLazyLoadTable";
-import SSSkeleton from "../components/SSSkeleton";
-import SSText from "../components/SSText";
-import SSTextInput from "../components/SSTextInput";
-import SSTooltip from "../components/SSTooltip";
 import type {
   LotteryRecordItem,
   LotteryRecordsRequest,
@@ -19,7 +24,6 @@ import { fetchData } from "../utils/fetchData";
 import { removeSpace } from "../utils/textHelper";
 import { getDatetime, parseTime } from "../utils/timeHelper";
 import { toastWarning } from "../utils/toastHelper";
-import SSDataNotFoundNotice from "../components/SSDataNotFoundNotice";
 
 const rewards = signal<string[] | undefined>(undefined);
 const userURL = signal("");
@@ -106,18 +110,20 @@ function RewardsFliter() {
 
   return (
     <div>
-      <SSText className="mb-1.5" bold>
+      <Text className="mb-1.5" bold>
         奖项筛选
-      </SSText>
-      {dataReady.value ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {Object.entries(rewardSelectedSignals.value).map(([name, value]) => (
-            <SSCheckbox label={name} value={value} />
-          ))}
-        </div>
-      ) : (
-        <SSSkeleton className="h-36 w-full sm:h-16" />
-      )}
+      </Text>
+      <LoadingArea className="h-36 w-full sm:h-16" loading={!dataReady.value}>
+        {dataReady.value && (
+          <Grid cols="grid-cols-1 sm:grid-cols-2">
+            {Object.entries(rewardSelectedSignals.value).map(
+              ([name, value]) => (
+                <Checkbox label={name} value={value} />
+              ),
+            )}
+          </Grid>
+        )}
+      </LoadingArea>
     </div>
   );
 }
@@ -126,8 +132,8 @@ function ResultTable() {
   return (
     <SSLazyLoadTable
       data={result.value!.map((item) => ({
-        时间: <SSText center>{getDatetime(parseTime(item.time))}</SSText>,
-        奖项: <SSText center>{item.reward_name}</SSText>,
+        时间: <Text center>{getDatetime(parseTime(item.time))}</Text>,
+        奖项: <Text center>{item.reward_name}</Text>,
       }))}
       onLoadMore={handleLoadMore}
       hasMore={hasMore}
@@ -138,26 +144,26 @@ function ResultTable() {
 
 export default function LotteryRewardRecordViewer() {
   return (
-    <div className="flex flex-col gap-4">
-      <SSTextInput
+    <Column>
+      <TextInput
         label="用户个人主页链接"
         value={userURL}
         onEnter={handleQuery}
       />
       <RewardsFliter />
-      <SSTooltip tooltip="受简书接口限制，我们无法获取这两种奖品的中奖情况，故无法进行查询">
+      <Tooltip tooltip="受简书接口限制，我们无法获取这两种奖品的中奖情况，故无法进行查询">
         关于免费开 1 次连载 / 锦鲤头像框
-      </SSTooltip>
-      <SSButton onClick={handleQuery} loading={isLoading.value}>
+      </Tooltip>
+      <PrimaryButton onClick={handleQuery} loading={isLoading.value} fullWidth>
         查询
-      </SSButton>
+      </PrimaryButton>
 
       {result.value !== undefined &&
         (result.value.length !== 0 ? (
           <ResultTable />
         ) : (
-          <SSDataNotFoundNotice message="无中奖记录" />
+          <NoResultNotice message="无中奖记录" />
         ))}
-    </div>
+    </Column>
   );
 }

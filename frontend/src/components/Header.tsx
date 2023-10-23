@@ -1,11 +1,14 @@
-import { IoIosArrowBack } from "react-icons/io";
+import {
+  ColorSchemeSwitch,
+  GhostButton,
+  Header as HeaderBlock,
+  Row,
+  Text,
+} from "@sscreator/ui";
+import { MdOutlineArrowBack } from "react-icons/md";
 import { useLocation } from "wouter-preact";
-import SSActionIcon from "./SSActionIcon";
-import SSAvatar from "./SSAvatar";
-import SSColorSchemeSwitch from "./SSColorSchemeSwitch";
-import SSText from "./SSText";
 import SearchModal from "./SearchModal";
-import Icon from "/favicon-64.png";
+import icon from "/favicon-64.png";
 
 interface Props {
   toolName: string;
@@ -21,37 +24,33 @@ export default function Header({
   const [, setLocation] = useLocation();
 
   return (
-    <>
-      <div className="color-layer-2 fixed left-0 top-0 z-10 h-16 w-full flex flex-nowrap items-center justify-between px-[5vw] shadow-sm">
-        <div className="flex flex-nowrap items-center gap-x-2">
+    <HeaderBlock>
+      <Row className="h-full w-full justify-between" verticalCenter nowrap>
+        <Row gap="gap-2" verticalCenter nowrap>
           {showIcon && (
-            <SSAvatar className="h-10 w-10 dark:bg-zinc-300" src={Icon} />
+            <img
+              className="h-10 w-10 rounded-full dark:bg-zinc-300"
+              src={icon}
+              alt="简书小工具集"
+            />
           )}
           {!hideBackArrow && (
-            <SSActionIcon
-              className="!p-1"
+            <GhostButton
+              icon={<MdOutlineArrowBack size={22} />}
+              hoverBackgroundColor="hover:bg-zinc-200 dark:hover:bg-zinc-700"
+              textColor="text-zinc-500 dark:text-zinc-300"
               onClick={() => setLocation("/")}
-              label="返回"
-            >
-              <IoIosArrowBack
-                className="text-zinc-500 dark:text-zinc-300"
-                size={22}
-              />
-            </SSActionIcon>
+            />
           )}
-          <SSText
-            className="max-w-[50vw] overflow-x-hidden text-ellipsis whitespace-nowrap font-bold"
-            large
-          >
+          <Text className="max-w-[50vw] overflow-x-hidden" large bold nowrap>
             {toolName}
-          </SSText>
-        </div>
-        <div className="flex flex-nowrap items-center gap-x-3">
+          </Text>
+        </Row>
+        <Row gap="gap-2" verticalCenter nowrap>
           <SearchModal />
-          <SSColorSchemeSwitch />
-        </div>
-      </div>
-      <div className="h-12" />
-    </>
+          <ColorSchemeSwitch />
+        </Row>
+      </Row>
+    </HeaderBlock>
   );
 }

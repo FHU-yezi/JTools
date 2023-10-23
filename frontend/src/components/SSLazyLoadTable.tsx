@@ -1,11 +1,8 @@
 import type { Signal } from "@preact/signals";
+import { Center, HorizontalScoll, LoadingIcon, Text } from "@sscreator/ui";
 import clsx from "clsx";
 import type { ComponentChildren } from "preact";
 import { useEffect, useMemo, useRef } from "preact/hooks";
-import SSCenter from "./SSCenter";
-import SSLoader from "./SSLoader";
-import SSScolllable from "./SSScollable";
-import SSText from "./SSText";
 
 interface Props {
   className?: string;
@@ -53,15 +50,15 @@ export default function SSLazyLoadTable({
 
   return (
     <div className="relative">
-      <SSScolllable>
+      <HorizontalScoll>
         <table className={clsx(className, "gray-border w-full rounded")}>
           <thead className="color-layer-2">
             <tr>
               {Object.keys(data[0]).map((item) => (
                 <th className="gray-border px-2 py-1.5">
-                  <SSText className="whitespace-nowrap" bold center>
+                  <Text className="whitespace-nowrap" bold center>
                     {item}
-                  </SSText>
+                  </Text>
                 </th>
               ))}
             </tr>
@@ -78,16 +75,16 @@ export default function SSLazyLoadTable({
             ))}
           </tbody>
         </table>
-      </SSScolllable>
+      </HorizontalScoll>
       <div
         ref={detector}
         className="pointer-events-none absolute bottom-0 h-1 w-full"
         style={{ marginBottom: threshold }}
       />
       {isLoading.value && (
-        <SSCenter className="mt-2 h-12 w-full">
-          <SSLoader />
-        </SSCenter>
+        <Center className="mt-2 h-12 w-full">
+          <LoadingIcon />
+        </Center>
       )}
     </div>
   );

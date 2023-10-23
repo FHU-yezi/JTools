@@ -1,11 +1,8 @@
 import { signal } from "@preact/signals";
+import { Column, LoadingArea, Switch, Text, Tooltip } from "@sscreator/ui";
 import type { ComponentChildren } from "preact";
 import { useEffect } from "preact/hooks";
-import SSSegmentedControl from "../components/SSSegmentedControl";
-import SSSkeleton from "../components/SSSkeleton";
 import SSTable from "../components/SSTable";
-import SSText from "../components/SSText";
-import SSTooltip from "../components/SSTooltip";
 import SSLineChart from "../components/charts/SSLineChart";
 import SSPieChart from "../components/charts/SSPieChart";
 import type {
@@ -31,17 +28,17 @@ import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import { RoundFloat } from "../utils/numberHelper";
 
-const timeRangeSCData = {
-  "1 天": "1d",
-  "7 天": "7d",
-  "30 天": "30d",
-  全部: "all",
-};
-const timeRangeWithoutAllSCData = {
-  "1 天": "1d",
-  "7 天": "7d",
-  "30 天": "30d",
-};
+const timeRangeSwitchData = [
+  { label: "1 天", value: "1d" },
+  { label: "7 天", value: "7d" },
+  { label: "30 天", value: "30d" },
+  { label: "全部", value: "all" },
+];
+const timeRangeWithoutAllSwitchData = [
+  { label: "1 天", value: "1d" },
+  { label: "7 天", value: "7d" },
+  { label: "30 天", value: "30d" },
+];
 
 const perPrizeAnalyzeTimeRange = signal<TimeRange>("1d");
 const perPrizeAnalyzeData = signal<PerPrizeDataItem[] | undefined>(undefined);
@@ -106,27 +103,25 @@ function PerPrizeAnalyzeTable() {
       className="min-w-[670px]"
       data={perPrizeAnalyzeData
         .value!.map<Record<string, ComponentChildren>>((item) => ({
-          奖品名称: <SSText center>{item.reward_name}</SSText>,
-          中奖次数: <SSText center>{item.wins_count}</SSText>,
-          中奖人数: <SSText center>{item.winners_count}</SSText>,
+          奖品名称: <Text center>{item.reward_name}</Text>,
+          中奖次数: <Text center>{item.wins_count}</Text>,
+          中奖人数: <Text center>{item.winners_count}</Text>,
           平均每人中奖次数: (
-            <SSText center>
+            <Text center>
               {item.wins_count !== 0
                 ? item.average_wins_count_per_winner
                 : "---"}
-            </SSText>
+            </Text>
           ),
           中奖率: (
-            <SSText center>
+            <Text center>
               {item.wins_count !== 0
                 ? `${RoundFloat(item.winning_rate * 100, 2)}%`
                 : "---"}
-            </SSText>
+            </Text>
           ),
           稀有度: (
-            <SSText center>
-              {item.wins_count !== 0 ? item.rarity : "---"}
-            </SSText>
+            <Text center>{item.wins_count !== 0 ? item.rarity : "---"}</Text>
           ),
         }))
         .concat(
@@ -134,24 +129,24 @@ function PerPrizeAnalyzeTable() {
             ? [
                 {
                   奖品名称: (
-                    <SSText bold center>
+                    <Text bold center>
                       总计
-                    </SSText>
+                    </Text>
                   ),
                   中奖次数: (
-                    <SSText bold center>
+                    <Text bold center>
                       {totalWins}
-                    </SSText>
+                    </Text>
                   ),
                   中奖人数: (
-                    <SSText bold center>
+                    <Text bold center>
                       {totalWinners}
-                    </SSText>
+                    </Text>
                   ),
                   平均每人中奖次数: (
-                    <SSText bold center>
+                    <Text bold center>
                       {RoundFloat(totalAvagaeWinsCountPerWinner, 3)}
-                    </SSText>
+                    </Text>
                   ),
                   中奖率: undefined,
                   稀有度: undefined,
@@ -253,40 +248,35 @@ export default function LotteryAnalyzer() {
   }, [rewardWinsTrendLineTimeRange.value]);
 
   return (
-    <div className="flex flex-col gap-4">
-      <SSText xlarge xbold>
+    <Column>
+      <Text large bold>
         综合统计
-      </SSText>
-      <SSSegmentedControl
-        value={perPrizeAnalyzeTimeRange}
-        data={timeRangeSCData}
-      />
-      {perPrizeAnalyzeData.value !== undefined ? (
-        <PerPrizeAnalyzeTable />
-      ) : (
-        <SSSkeleton className="h-[291px]" />
-      )}
-      <SSTooltip tooltip="受简书接口限制，我们无法获取这两种奖品的中奖情况，故表中未予统计">
+      </Text>
+      <Switch value={perPrizeAnalyzeTimeRange} data={timeRangeSwitchData} />
+      <LoadingArea
+        className="h-[291px]"
+        loading={perPrizeAnalyzeData.value === undefined}
+      >
+        {perPrizeAnalyzeData.value !== undefined && <PerPrizeAnalyzeTable />}
+      </LoadingArea>
+      <Tooltip tooltip="受简书接口限制，我们无法获取这两种奖品的中奖情况，故表中未予统计">
         关于免费开 1 次连载 / 锦鲤头像框
-      </SSTooltip>
+      </Tooltip>
 
-      <SSText xlarge xbold>
+      <Text large bold>
         中奖次数分布
-      </SSText>
-      <SSSegmentedControl
-        value={rewardWinsCountPieTimeRange}
-        data={timeRangeSCData}
-      />
+      </Text>
+      <Switch value={rewardWinsCountPieTimeRange} data={timeRangeSwitchData} />
       <RewardWinsCountPie />
 
-      <SSText xlarge xbold>
+      <Text large bold>
         中奖次数趋势
-      </SSText>
-      <SSSegmentedControl
+      </Text>
+      <Switch
         value={rewardWinsTrendLineTimeRange}
-        data={timeRangeWithoutAllSCData}
+        data={timeRangeWithoutAllSwitchData}
       />
       <RewardWinsTrendLine />
-    </div>
+    </Column>
   );
 }

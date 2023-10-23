@@ -1,8 +1,6 @@
 import { batch, computed, signal } from "@preact/signals";
+import { Column, FieldBlock, Row, Switch, Text } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
-import SSSegmentedControl from "../components/SSSegmentedControl";
-import SSStat from "../components/SSStat";
-import SSText from "../components/SSText";
 import SSBarChart from "../components/charts/SSBarChart";
 import SSLineChart from "../components/charts/SSLineChart";
 import type { JPEPRulesResponse } from "../models/JPEPFTNMacketAnalyzer/JPEPRules";
@@ -26,13 +24,13 @@ import type { TimeRange } from "../models/JPEPFTNMacketAnalyzer/base";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 
-const TimeRangeSCData = {
-  "6 小时": "6h",
-  "24 小时": "24h",
-  "7 天": "7d",
-  "15 天": "15d",
-  "30 天": "30d",
-};
+const TimeRangeSwitchData = [
+  { label: "6 小时", value: "6h" },
+  { label: "24 小时", value: "24h" },
+  { label: "7 天", value: "7d" },
+  { label: "15 天", value: "15d" },
+  { label: "30 天", value: "30d" },
+];
 
 const tradeFeePercent = signal<number | undefined>(undefined);
 const buyPrice = signal<number | null | undefined>(undefined);
@@ -327,92 +325,92 @@ export default function JPEPFTNMarketAnalyzer() {
   }, [poolAmountTrendLineTimeRange.value]);
 
   return (
-    <div className="flex flex-col gap-4">
-      <SSStat
-        title="交易手续费"
-        value={
-          tradeFeePercent.value !== undefined
+    <Column>
+      <FieldBlock fieldName="交易手续费">
+        <Text large bold>
+          {tradeFeePercent.value !== undefined
             ? `${tradeFeePercent.value * 100}%`
-            : "获取中..."
-        }
-      />
-      <SSText xlarge xbold>
+            : "获取中..."}
+        </Text>
+      </FieldBlock>
+      <Text large bold>
         实时贝价
-      </SSText>
-      <div className="flex gap-2">
-        <SSStat
-          className="flex-grow"
-          title="买单"
-          value={buyPrice.value ?? "获取中..."}
-          desc={`限价：${buyOrderMinimumPrice.value ?? "获取中..."}`}
-        />
-        <SSStat
-          className="flex-grow"
-          title="卖单"
-          value={sellPrice.value ?? "获取中..."}
-          desc={`限价：${sellOrderMinimumPrice.value ?? "获取中..."}`}
-        />
-      </div>
-      <SSText xlarge xbold>
+      </Text>
+      <Row gap="gap-2">
+        <FieldBlock rowClassName="flex-grow" fieldName="买单">
+          <Text large bold>
+            {buyPrice.value ?? "获取中..."}
+          </Text>
+          <Text small gray>
+            {buyOrderMinimumPrice.value ?? "获取中..."}
+          </Text>
+        </FieldBlock>
+        <FieldBlock rowClassName="flex-grow" fieldName="卖单">
+          <Text large bold>
+            {sellPrice.value ?? "获取中..."}
+          </Text>
+          <Text small gray>
+            {sellOrderMinimumPrice.value ?? "获取中..."}
+          </Text>
+        </FieldBlock>
+      </Row>
+      <Text large bold>
         实时挂单量
-      </SSText>
-      <div className="flex gap-2">
-        <SSStat
-          className="flex-grow"
-          title="买单"
-          value={buyPoolAmount.value ?? "获取中..."}
-          desc={
-            buyPoolAmount.value !== undefined &&
+      </Text>
+      <Row gap="gap-2">
+        <FieldBlock rowClassName="flex-grow" fieldName="买单">
+          <Text large bold>
+            {buyPoolAmount.value ?? "获取中..."}
+          </Text>
+          <Text small gray>
+            {buyPoolAmount.value !== undefined &&
             totalPoolAmount.value !== undefined
               ? `占比 ${(
                   (buyPoolAmount.value / totalPoolAmount.value) *
                   100
                 ).toFixed(2)}%`
-              : "获取中..."
-          }
-        />
-        <SSStat
-          className="flex-grow"
-          title="卖单"
-          value={sellPoolAmount.value ?? "获取中..."}
-          desc={
-            sellPoolAmount.value !== undefined &&
+              : "获取中..."}
+          </Text>
+        </FieldBlock>
+        <FieldBlock rowClassName="flex-grow" fieldName="卖单">
+          <Text large bold>
+            {sellPoolAmount.value ?? "获取中..."}
+          </Text>
+          <Text small gray>
+            {sellPoolAmount.value !== undefined &&
             totalPoolAmount.value !== undefined
               ? `占比 ${(
                   (sellPoolAmount.value / totalPoolAmount.value) *
                   100
                 ).toFixed(2)}%`
-              : "获取中..."
-          }
-        />
-      </div>
+              : "获取中..."}
+          </Text>
+        </FieldBlock>
+      </Row>
 
-      <SSText xlarge xbold>
+      <Text large bold>
         实时挂单量分布
-      </SSText>
-      <SSSegmentedControl
+      </Text>
+      <Switch
         value={perPriceAmountDataTradeType}
-        data={{ 买单: "buy", 卖单: "sell" }}
+        data={[
+          { label: "买单", value: "buy" },
+          { label: "卖单", value: "sell" },
+        ]}
       />
       <PerPriceAmountDataBar />
 
-      <SSText xlarge xbold>
+      <Text large bold>
         贝价趋势
-      </SSText>
-      <SSSegmentedControl
-        value={priceTrendLineTimeRange}
-        data={TimeRangeSCData}
-      />
+      </Text>
+      <Switch value={priceTrendLineTimeRange} data={TimeRangeSwitchData} />
       <PriceTrendLine />
 
-      <SSText xlarge xbold>
+      <Text large bold>
         挂单量趋势
-      </SSText>
-      <SSSegmentedControl
-        value={poolAmountTrendLineTimeRange}
-        data={TimeRangeSCData}
-      />
+      </Text>
+      <Switch value={poolAmountTrendLineTimeRange} data={TimeRangeSwitchData} />
       <PoolAmountTrendLine />
-    </div>
+    </Column>
   );
 }

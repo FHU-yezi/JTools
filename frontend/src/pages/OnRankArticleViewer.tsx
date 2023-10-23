@@ -1,13 +1,18 @@
 import { batch, computed, signal } from "@preact/signals";
+import {
+  Column,
+  ExternalLink,
+  FieldBlock,
+  GhostButton,
+  Grid,
+  InfoAlert,
+  NoResultNotice,
+  PrimaryButton,
+  Switch,
+  Text,
+} from "@sscreator/ui";
 import SSAutocomplete from "../components/SSAutocomplete";
-import SSButton from "../components/SSButton";
-import SSCard from "../components/SSCard";
-import SSDataNotFoundNotice from "../components/SSDataNotFoundNotice";
-import SSExternalLink from "../components/SSExternalLink";
 import SSLazyLoadTable from "../components/SSLazyLoadTable";
-import SSSegmentedControl from "../components/SSSegmentedControl";
-import SSStat from "../components/SSStat";
-import SSText from "../components/SSText";
 import type {
   OnRankRecordItem,
   OnRankRecordsRequest,
@@ -183,20 +188,24 @@ function handleLoadMore() {
 
 function SameURLRecordsFoundNotice() {
   return (
-    <SSCard className="!bg-orange-100 !dark:bg-orange-950" title="数据不完整">
-      <SSText>您可能更改过简书昵称，我们找到了其它与您有关的上榜记录：</SSText>
-      <div className="flex flex-col gap-2">
-        {Object.entries(sameURLRecordsSummary.value!).map(
-          ([name, dataCount]) => (
-            <SSText>
-              {name}：{dataCount} 条上榜记录
-            </SSText>
-          ),
-        )}
-      </div>
+    <InfoAlert>
+      <Column>
+        <Text large bold>
+          数据不完整
+        </Text>
+        <Text>您可能更改过简书昵称，我们找到了其它与您有关的上榜记录：</Text>
+        <Column gap="gap-2">
+          {Object.entries(sameURLRecordsSummary.value!).map(
+            ([name, dataCount]) => (
+              <Text>
+                {name}：{dataCount} 条上榜记录
+              </Text>
+            ),
+          )}
+        </Column>
+      </Column>
 
-      <SSButton
-        light
+      <GhostButton
         onClick={() => {
           batch(() => {
             // 替换当前输入的昵称为个人主页链接，同时清空同链接记录数据，以隐藏该组件
@@ -207,10 +216,11 @@ function SameURLRecordsFoundNotice() {
           // 触发检索
           handleQuery();
         }}
+        fullWidth
       >
         查看完整数据
-      </SSButton>
-    </SSCard>
+      </GhostButton>
+    </InfoAlert>
   );
 }
 
@@ -218,17 +228,18 @@ function ResultTable() {
   return (
     <SSLazyLoadTable
       data={result.value!.map((item) => ({
-        日期: <SSText center>{getDate(parseTime(item.date))}</SSText>,
-        排名: <SSText center>{item.ranking}</SSText>,
+        日期: <Text center>{getDate(parseTime(item.date))}</Text>,
+        排名: <Text center>{item.ranking}</Text>,
         文章: (
-          <SSExternalLink
+          <ExternalLink
             className="block max-w-[60vw] overflow-hidden text-ellipsis whitespace-nowrap"
-            url={item.url}
-            label={item.title}
+            href={item.url}
             hideIcon
-          />
+          >
+            {item.title}
+          </ExternalLink>
         ),
-        获钻量: <SSText center>{item.FP_reward_count}</SSText>,
+        获钻量: <Text center>{item.FP_reward_count}</Text>,
       }))}
       onLoadMore={handleLoadMore}
       hasMore={hasMore}
@@ -239,7 +250,7 @@ function ResultTable() {
 
 export default function OnRankArticleViewer() {
   return (
-    <div className="flex flex-col gap-4">
+    <Column>
       <SSAutocomplete
         label="用户昵称 / 个人主页链接"
         value={userURLOrUserName}
@@ -247,19 +258,31 @@ export default function OnRankArticleViewer() {
         onValueChange={handleCompleteItemUpdate}
         completeItems={completeItems}
       />
-      <SSSegmentedControl
+      <Switch
         label="排序依据"
         value={sortSelect}
-        data={{
-          "上榜日期（倒序）": "onrank_date desc",
-          "上榜日期（正序）": "onrank_date asc",
-          "排名（倒序）": "ranking desc",
-          "排名（正序）": "ranking asc",
-        }}
+        data={[
+          {
+            label: "上榜日期（倒序）",
+            value: "onrank_date desc",
+          },
+          {
+            label: "上榜日期（正序）",
+            value: "onrank_date asc",
+          },
+          {
+            label: "排名（倒序）",
+            value: "ranking desc",
+          },
+          {
+            label: "排名（倒序）",
+            value: "ranking asc",
+          },
+        ]}
       />
-      <SSButton onClick={handleQuery} loading={isLoading.value}>
+      <PrimaryButton onClick={handleQuery} loading={isLoading.value} fullWidth>
         查询
-      </SSButton>
+      </PrimaryButton>
 
       {sameURLRecordsSummary.value !== undefined &&
         Object.keys(sameURLRecordsSummary.value).length !== 0 &&
@@ -270,20 +293,36 @@ export default function OnRankArticleViewer() {
         top50Count.value !== undefined &&
         totalCount.value !== undefined &&
         totalCount.value !== 0 && (
-          <div className="grid grid-cols-2 place-items-center gap-6">
-            <SSStat title="前 10 名次数" value={top10Count.value} />
-            <SSStat title="前 30 名次数" value={top30Count.value} />
-            <SSStat title="前 50 名次数" value={top50Count.value} />
-            <SSStat title="总上榜次数" value={totalCount.value} />
-          </div>
+          <Grid className="place-items-center" cols="grid-cols-2" gap="gap-6">
+            <FieldBlock fieldName="前 10 名次数">
+              <Text large bold>
+                {top10Count.value}
+              </Text>
+            </FieldBlock>
+            <FieldBlock fieldName="前 30 名次数">
+              <Text large bold>
+                {top30Count.value}
+              </Text>
+            </FieldBlock>
+            <FieldBlock fieldName="前 50 名次数">
+              <Text large bold>
+                {top50Count.value}
+              </Text>
+            </FieldBlock>
+            <FieldBlock fieldName="总上榜次数">
+              <Text large bold>
+                {totalCount.value}
+              </Text>
+            </FieldBlock>
+          </Grid>
         )}
 
       {result.value !== undefined &&
         (result.value.length !== 0 ? (
           <ResultTable />
         ) : (
-          <SSDataNotFoundNotice message="没有上榜记录" />
+          <NoResultNotice message="没有上榜记录" />
         ))}
-    </div>
+    </Column>
   );
 }

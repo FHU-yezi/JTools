@@ -1,6 +1,16 @@
 import { useDocumentTitle } from "@mantine/hooks";
 import { batch, useSignal } from "@preact/signals";
-import clsx from "clsx";
+import {
+  Column,
+  ExternalLink,
+  FieldBlock,
+  LoadingPage,
+  Modal,
+  PrimaryButton,
+  Row,
+  Text,
+  WarningAlert,
+} from "@sscreator/ui";
 import type { Dayjs } from "dayjs";
 import type { JSX } from "preact";
 import { Suspense, useEffect } from "preact/compat";
@@ -11,14 +21,7 @@ import { getToolSlug } from "../utils/URLHelper";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
 import { getDateTimeWithoutSecond, parseTime } from "../utils/timeHelper";
-import { toastWarning } from "../utils/toastHelper";
 import Header from "./Header";
-import LoadingPage from "./LoadingPage";
-import SSButton from "./SSButton";
-import SSExternalLink from "./SSExternalLink";
-import SSModal from "./SSModal";
-import SSStat from "./SSStat";
-import SSText from "./SSText";
 
 interface Props {
   Component(): JSX.Element;
@@ -35,6 +38,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
   const dataUpdateFreqDesc = useSignal<string | undefined>(undefined);
   const dataCount = useSignal<number | undefined>(undefined);
   const dataSource = useSignal<Record<string, string> | undefined>({});
+  const showDowngradeNotice = useSignal(false);
   const showUnavaliableModal = useSignal(false);
 
   // 设置页面标题
@@ -65,13 +69,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
         });
 
         if (toolStatus.value === InfoStatus.DOWNGRADED) {
-          toastWarning(
-            `服务降级\n${
-              reason.value ??
-              "该小工具处于降级状态，其数据准确性、展示效果及性能可能受到影响，请您留意。"
-            }`,
-            4000,
-          );
+          showDowngradeNotice.value = true;
         }
 
         if (toolStatus.value === InfoStatus.UNAVALIABLE) {
@@ -87,65 +85,68 @@ export default function ToolWrapper({ Component, toolName }: Props) {
     <>
       <Header toolName={toolName} />
       {!isLoading.value ? (
-        <>
-          <div
-            className={clsx("flex gap-6", {
-              "my-4":
-                dataUpdateTime.value !== undefined &&
-                dataCount.value !== undefined,
-            })}
-          >
+        <Column>
+          <Row gap="gap-6">
             {dataUpdateTime.value !== undefined && (
-              <SSStat
-                className="flex-grow"
-                title="数据更新时间"
-                value={getDateTimeWithoutSecond(dataUpdateTime.value!)}
-                desc={dataUpdateFreqDesc.value}
-              />
+              <FieldBlock rowClassName="flex-1" fieldName="数据更新时间">
+                <Text>{getDateTimeWithoutSecond(dataUpdateTime.value!)}</Text>
+                <Text gray small>
+                  {dataUpdateFreqDesc.value}
+                </Text>
+              </FieldBlock>
             )}
             {dataCount.value !== undefined && (
-              <SSStat
-                className="flex-grow"
-                title="总数据量"
-                value={dataCount.value}
-              />
+              <FieldBlock rowClassName="flex-1" fieldName="总数据量">
+                <Text>{dataCount.value}</Text>
+              </FieldBlock>
             )}
-          </div>
+          </Row>
           {dataSource.value !== undefined && (
-            <div className="my-4 flex flex-col gap-1">
-              <SSText bold>数据来源</SSText>
+            <Column gap="gap-1">
+              <Text bold>数据来源</Text>
               {Object.entries(dataSource.value).map(([name, url]) => (
-                <SSExternalLink label={name} url={url} />
+                <ExternalLink href={url}>{name}</ExternalLink>
               ))}
-            </div>
+            </Column>
+          )}
+          {showDowngradeNotice.value && (
+            <WarningAlert>
+              <Column gap="gap-2">
+                <Text large bold>
+                  服务降级
+                </Text>
+                <Text>
+                  {reason.value ??
+                    "该小工具处于降级状态，其功能、数据准确性和性能可能受到影响，请您留意。"}
+                </Text>
+              </Column>
+            </WarningAlert>
           )}
 
           <Suspense fallback={<LoadingPage />}>
             {!isLoading.value && <Component />}
           </Suspense>
-        </>
+        </Column>
       ) : (
         <LoadingPage />
       )}
 
-      <SSModal
-        isOpen={showUnavaliableModal}
-        onClose={() => null}
+      <Modal
+        open={showUnavaliableModal}
         title="服务不可用"
         hideCloseButton
         preventCloseByClickMask
-        preventCloseByEsc
       >
-        <div className="flex flex-col gap-4 p-2">
-          <SSText>
+        <Column>
+          <Text>
             {reason.value ??
               "该小工具暂时不可用，请稍后再尝试访问，并留意相关公告。"}
-          </SSText>
-          <SSButton light onClick={() => setLocation("/")}>
+          </Text>
+          <PrimaryButton onClick={() => setLocation("/")} fullWidth>
             返回首页
-          </SSButton>
-        </div>
-      </SSModal>
+          </PrimaryButton>
+        </Column>
+      </Modal>
     </>
   );
 }
