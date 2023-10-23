@@ -1,5 +1,5 @@
 import { Center, Column, Icon, PrimaryButton, Text } from "@sscreator/ui";
-import { LuConstruction } from "react-icons/lu";
+import { MdSettingsApplications } from "react-icons/md";
 import { useLocation } from "wouter-preact";
 
 export default function V2UnavaliablePage() {
@@ -10,7 +10,7 @@ export default function V2UnavaliablePage() {
       <Column className="mx-8 max-w-4xl">
         <Column gap="gap-2">
           <Icon>
-            <LuConstruction size={48} />
+            <MdSettingsApplications size={48} />
           </Icon>
           <Text large bold>
             已下线

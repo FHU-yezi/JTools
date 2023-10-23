@@ -10,8 +10,7 @@ import {
   Text,
   TextInput,
 } from "@sscreator/ui";
-import { AiOutlineCheck } from "react-icons/ai";
-import { BiCopy, BiRightArrowAlt } from "react-icons/bi";
+import { MdContentCopy, MdDone, MdOutlineArrowForward } from "react-icons/md";
 import QRCode from "react-qr-code";
 import { toastWarning } from "../utils/toastHelper";
 
@@ -117,14 +116,14 @@ export default function URLSchemeConvertor() {
             <Row gap="gap-2" verticalCenter>
               <Text>{result.value}</Text>
               <GhostButton
-                icon={<BiRightArrowAlt />}
+                icon={<MdOutlineArrowForward />}
                 onClick={() => window.open(result.value)}
               >
                 访问
               </GhostButton>
               <GhostButton
                 className={!clipboard.copied ? undefined : "bg-green-100"}
-                icon={!clipboard.copied ? <BiCopy /> : <AiOutlineCheck />}
+                icon={!clipboard.copied ? <MdContentCopy /> : <MdDone />}
                 onClick={() => clipboard.copy(result.value)}
               >
                 {!clipboard.copied ? "复制" : "复制成功"}

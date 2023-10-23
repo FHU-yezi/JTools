@@ -1,5 +1,5 @@
 import { Center, Column, Icon, PrimaryButton, Text } from "@sscreator/ui";
-import { IoPaperPlaneSharp } from "react-icons/io5";
+import { MdCancelScheduleSend } from "react-icons/md";
 import { useLocation } from "wouter-preact";
 
 export default function NotFoundPage() {
@@ -10,7 +10,7 @@ export default function NotFoundPage() {
       <Column className="mx-8 max-w-4xl">
         <Column gap="gap-2">
           <Icon>
-            <IoPaperPlaneSharp size={48} />
+            <MdCancelScheduleSend size={48} />
           </Icon>
           <Text large bold>
             啊呀，没有找到这个页面

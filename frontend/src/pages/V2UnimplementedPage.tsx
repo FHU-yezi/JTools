@@ -1,5 +1,5 @@
 import { Center, Column, Icon, PrimaryButton, Text } from "@sscreator/ui";
-import { LuServerOff } from "react-icons/lu";
+import { MdAppsOutage } from "react-icons/md";
 import { useLocation } from "wouter-preact";
 
 export default function V2UnimplementedPage() {
@@ -10,7 +10,7 @@ export default function V2UnimplementedPage() {
       <Column className="mx-8 max-w-4xl">
         <Column gap="gap-2">
           <Icon>
-            <LuServerOff size={48} />
+            <MdAppsOutage size={48} />
           </Icon>
           <Text large bold>
             正在开发中

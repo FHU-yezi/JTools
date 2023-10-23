@@ -11,7 +11,7 @@ import {
   SecondaryButton,
   Text,
 } from "@sscreator/ui";
-import { BiError } from "react-icons/bi";
+import { MdOutlineWarningAmber } from "react-icons/md";
 import { useLocation } from "wouter-preact";
 
 const isMoreTechInfoAccordionOpened = signal(false);
@@ -31,7 +31,7 @@ export default function ErrorFallback({ error }: Props) {
       <Column className="mx-8 max-w-4xl">
         <Column gap="gap-2">
           <Icon>
-            <BiError size={48} />
+            <MdOutlineWarningAmber size={48} />
           </Icon>
           <Text large bold>
             发生意外错误
