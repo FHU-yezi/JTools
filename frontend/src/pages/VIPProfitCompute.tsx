@@ -9,7 +9,7 @@ import {
   Text,
 } from "@sscreator/ui";
 import type { JSX } from "preact/jsx-runtime";
-import { RoundFloat } from "../utils/numberHelper";
+import { roundFloat } from "../utils/numberHelper";
 import VIPBadgeBronzeURL from "/vip_badges/vip_badge_bronze.png";
 import VIPBadgeGoldURL from "/vip_badges/vip_badge_gold.png";
 import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";
@@ -172,7 +172,7 @@ const promoterLevelEarningRateFactor = computed(
   () => promoterLevelToPromoterEarningRateFactor[promoterLevel.value],
 );
 const earningRate = computed(() =>
-  RoundFloat(
+  roundFloat(
     baseEarningRate.value *
       FPCountEarningRateFactor.value *
       promoterLevelEarningRateFactor.value,
@@ -205,12 +205,12 @@ const annualEarning = computed(() => {
   }
   nowFPCount += earningFromLevel1Members.value;
   nowFPCount += earningFromLevel2Members.value;
-  return RoundFloat(nowFPCount - FPCount.value, 2);
+  return roundFloat(nowFPCount - FPCount.value, 2);
 });
 const pureAnnualEarning = computed(() => annualEarning.value - VIPPrice.value);
 const pureMonthlyEarning = computed(() => pureAnnualEarning.value / 12);
 const returnRate = computed(() =>
-  RoundFloat(pureAnnualEarning.value / (FPCount.value + VIPPrice.value), 4),
+  roundFloat(pureAnnualEarning.value / (FPCount.value + VIPPrice.value), 4),
 );
 const canGetMoneyBack = computed(() => pureAnnualEarning.value >= 0);
 

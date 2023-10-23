@@ -26,7 +26,7 @@ import type {
 } from "../models/LotteryAnalyzer/base";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
 import { fetchData } from "../utils/fetchData";
-import { RoundFloat } from "../utils/numberHelper";
+import { roundFloat } from "../utils/numberHelper";
 
 const timeRangeSwitchData = [
   { label: "1 天", value: "1d" },
@@ -116,7 +116,7 @@ function PerPrizeAnalyzeTable() {
           中奖率: (
             <Text center>
               {item.wins_count !== 0
-                ? `${RoundFloat(item.winning_rate * 100, 2)}%`
+                ? `${roundFloat(item.winning_rate * 100, 2)}%`
                 : "---"}
             </Text>
           ),
@@ -145,7 +145,7 @@ function PerPrizeAnalyzeTable() {
                   ),
                   平均每人中奖次数: (
                     <Text bold center>
-                      {RoundFloat(totalAvagaeWinsCountPerWinner, 3)}
+                      {roundFloat(totalAvagaeWinsCountPerWinner, 3)}
                     </Text>
                   ),
                   中奖率: undefined,
