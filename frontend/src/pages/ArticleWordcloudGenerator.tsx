@@ -23,7 +23,7 @@ const wordFreqData = signal<WordFreqDataItem | undefined>(undefined);
 
 function handleGenerate() {
   if (articleURL.value.length === 0) {
-    toastWarning("请输入文章链接");
+    toastWarning({ message: "请输入文章链接" });
     return;
   }
 

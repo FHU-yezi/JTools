@@ -60,15 +60,17 @@ export async function fetchData<TRequest, TResponse>(
     }
 
     if ((error as any).name === "AbortError") {
-      toastError(
-        `请求超时（${
+      toastError({
+        message: `请求超时（${
           timeout ?? defaultTimeout
         }ms）\n请尝试刷新页面，如该问题反复出现，请向开发者反馈`,
-      );
+      });
       return;
     }
 
-    toastError("网络异常\n请尝试刷新页面，如该问题反复出现，请向开发者反馈");
+    toastError({
+      message: "网络异常\n请尝试刷新页面，如该问题反复出现，请向开发者反馈",
+    });
     return;
   }
 
@@ -78,9 +80,9 @@ export async function fetchData<TRequest, TResponse>(
       isLoading.value = false;
     }
 
-    toastError(
-      `API 请求失败\nHTTP ${response.status}（${response.statusText}）`,
-    );
+    toastError({
+      message: `API 请求失败\nHTTP ${response.status}（${response.statusText}）`,
+    });
     return;
   }
 

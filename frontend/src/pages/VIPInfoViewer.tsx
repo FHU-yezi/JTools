@@ -45,7 +45,7 @@ function handleQuery() {
   }
 
   if (userURL.value.length === 0) {
-    toastWarning("请输入用户个人主页链接");
+    toastWarning({ message: "请输入用户个人主页链接" });
     return;
   }
 

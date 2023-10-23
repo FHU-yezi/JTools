@@ -90,7 +90,7 @@ function handleConvert() {
   const urlType = getURLType(jianshuURL);
 
   if (urlType === "unknown") {
-    toastWarning("输入的不是有效的简书链接，请检查");
+    toastWarning({ message: "输入的不是有效的简书链接，请检查" });
     return;
   }
 
