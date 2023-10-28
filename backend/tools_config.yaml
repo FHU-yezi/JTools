@@ -1,0 +1,89 @@
+article-wordcloud-generator:
+    status: NORMAL
+    reason: null
+    data_update_time: null
+    data_update_freq: null
+    data_count: null
+    data_source: null
+JPEP-FTN-market-analyzer:
+    status: NORMAL
+    reason: null
+    data_update_time:
+        collection: JPEP_FTN_market
+        sort_key: fetch_time
+        sort_direction: desc
+    data_update_freq: 十分钟更新一次
+    data_count:
+      collection: JPEP_FTN_market
+      mode: estimated
+    data_source:
+        简书积分兑换平台 - 贝市: https://www.jianshubei.com/bei
+lottery-analyzer:
+    status: NORMAL
+    reason: null
+    data_update_time:
+      collection: lottery
+      sort_key: time
+      sort_direction: desc
+    data_update_freq: 每天 2:00、9:00、14:00、21:00 更新
+    data_count:
+      collection: lottery
+      mode: estimated
+    data_source:
+        简书 - 天天抽奖: https://www.jianshu.com/mobile/lottery
+lottery-reward-record-viewer:
+    status: NORMAL
+    reason: null
+    data_update_time:
+      collection: lottery
+      sort_key: time
+      sort_direction: desc
+    data_update_freq: 每天 2:00、9:00、14:00、21:00 更新
+    data_count:
+      collection: lottery
+      mode: estimated
+    data_source:
+        简书 - 天天抽奖: https://www.jianshu.com/mobile/lottery
+LP-recommend-checker:
+    status: NORMAL
+    reason: null
+    data_update_time: null
+    data_update_freq: null
+    data_count: null
+    data_source:
+        简书 - 专题 - 理事会点赞汇总: https://www.jianshu.com/c/f61832508891
+on-rank-article-viewer:
+    status: NORMAL
+    reason: null
+    data_update_time:
+      collection: article_FP_rank
+      sort_key: date
+      sort_direction: desc
+    data_update_freq: 每天凌晨 1:00 更新
+    data_count:
+      collection: article_FP_rank
+      mode: estimated
+    data_source:
+        简书 - 简书钻每日发放总榜: https://www.jianshu.com/fp/notice/now
+URL-scheme-convertor:
+    status: NORMAL
+    reason: null
+    data_update_time: null
+    data_update_freq: null
+    data_count: null
+    data_source: null
+VIP-info-viewer:
+    status: NORMAL
+    reason: null
+    data_update_time: null
+    data_update_freq: null
+    data_count: null
+    data_source: null
+VIP-profit-compute:
+    status: NORMAL
+    reason: null
+    data_update_time: null
+    data_update_freq: null
+    data_count: null
+    data_source:
+        简书 - 简书会员大使: https://www.jianshu.com/mobile/club/ambassador
