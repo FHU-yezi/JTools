@@ -1,10 +1,10 @@
 from litestar import Router
 
-from api.v1 import v1_router
+from api.v1 import V1_ROUTER
 
-api_router = Router(
+API_ROUTER = Router(
     path="/api",
     route_handlers=[
-        v1_router,
+        V1_ROUTER,
     ],
 )

@@ -8,7 +8,6 @@ from api.tools.lottery_reward_record_viewer import (
 )
 from api.tools.LP_recommend_checker import LP_recommend_checker_blueprint
 from api.tools.on_rank_article_viewer import on_rank_article_viewer_blueprint
-from api.tools.VIP_info_viewer import VIP_info_viewer_blueprint
 
 tools_blueprint = Blueprint.group(
     article_wordcloud_generator_blueprint,
@@ -17,6 +16,5 @@ tools_blueprint = Blueprint.group(
     lottery_reward_record_viewer_blueprint,
     LP_recommend_checker_blueprint,
     on_rank_article_viewer_blueprint,
-    VIP_info_viewer_blueprint,
     url_prefix="/tools",
 )

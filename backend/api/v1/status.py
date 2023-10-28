@@ -87,7 +87,7 @@ async def get_handler() -> Response[ResponseStruct[GetResponse]]:
     )
 
 
-class GetToolResponse(Struct, **RESPONSE_STRUCT_CONFIG):
+class GetToolStatusResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     status: ToolStatus
     reason: Optional[str]
     data_update_time: Optional[datetime]
@@ -97,7 +97,9 @@ class GetToolResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 
 @get("/{tool_name: str}")
-async def get_tool_handler(tool_name: str) -> Response[ResponseStruct[GetToolResponse]]:
+async def get_tool_status_handler(
+    tool_name: str
+) -> Response[ResponseStruct[GetToolStatusResponse]]:
     tool_config = TOOLS_CONFIG.get(tool_name)
     if not tool_config:
         return Response(
@@ -131,7 +133,7 @@ async def get_tool_handler(tool_name: str) -> Response[ResponseStruct[GetToolRes
     return Response(
         get_response_struct(
             code=Code.SUCCESS,
-            data=GetToolResponse(
+            data=GetToolStatusResponse(
                 status=status,
                 reason=reason,
                 data_update_time=data_update_time,
@@ -147,6 +149,6 @@ STATUS_ROUTER = Router(
     path="/status",
     route_handlers=[
         get_handler,
-        get_tool_handler,
+        get_tool_status_handler,
     ],
 )

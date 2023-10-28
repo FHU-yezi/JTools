@@ -1,9 +1,9 @@
 from litestar import Litestar
 from sspeedup.api.litestar import EXCEPTION_HANDLERS
 
-from api import api_router
+from api import API_ROUTER
 
 app = Litestar(
-    route_handlers=[api_router],
+    route_handlers=[API_ROUTER],
     exception_handlers=EXCEPTION_HANDLERS,
 )
