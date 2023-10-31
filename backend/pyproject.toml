@@ -12,6 +12,7 @@ motor = "^3.3.1"
 jianshuresearchtools = "^2.11.0"
 sspeedup = {version = "^0.22.0", extras = ["logging", "config", "api-litestar"]}
 uvicorn = "^0.23.2"
+httptools = "^0.6.0"
 uvloop = "^0.17.0"
 
 [tool.poetry.group.dev.dependencies]

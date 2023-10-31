@@ -27,6 +27,7 @@ class _DataCountItem(Struct, **_TOOLS_CONFIG_STRUCT_CONFIG):
     collection: str
     mode: Literal["accurate", "estimated"]
 
+
 class _ToolConfig(Struct, **_TOOLS_CONFIG_STRUCT_CONFIG):
     status: ToolStatus
     reason: Optional[str]
