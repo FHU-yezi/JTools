@@ -1,5 +1,5 @@
-from datetime import datetime
-from typing import List, Optional
+from datetime import datetime, timedelta
+from typing import Dict, List, Literal, Optional
 
 from litestar import Response, Router, get
 from msgspec import Struct
@@ -9,15 +9,149 @@ from sspeedup.api.litestar import (
     ResponseStruct,
     get_response_struct,
 )
+from sspeedup.time_helper import get_start_time
 
 from utils.db import LOTTERY_COLLECTION
 
-REWARDS: List[str] = [
+REWARD_NAMES: List[str] = [
     "收益加成卡100",
     "收益加成卡1万",
     "四叶草徽章",
     "锦鲤头像框1年",
 ]
+
+RANGE_TO_TIMEDELTA: Dict[str, Optional[timedelta]] = {
+    "1d": timedelta(days=1),
+    "7d": timedelta(days=7),
+    "30d": timedelta(days=30),
+    "all": None,
+}
+
+RESOLUTION_TO_TIME_UNIT: Dict[str, str] = {
+    "1h": "hour",
+    "1d": "day",
+}
+
+
+async def get_summary_wins_count(td: Optional[timedelta]) -> Dict[str, int]:
+    db_result = LOTTERY_COLLECTION.aggregate(
+        [
+            {
+                "$match": {
+                    "time": {
+                        "$gte": get_start_time(td),
+                    },
+                },
+            },
+            {
+                "$group": {
+                    "_id": "$reward_name",
+                    "count": {
+                        "$sum": 1,
+                    },
+                },
+            },
+        ]
+    )
+
+    result = {key: 0 for key in REWARD_NAMES}
+    result.update({item["_id"]: item["count"] async for item in db_result})
+    return result
+
+
+async def get_summary_winners_count(td: Optional[timedelta]) -> Dict[str, int]:
+    result: Dict[str, int] = {}
+
+    for reward_name in REWARD_NAMES:
+        result[reward_name] = len(
+            await LOTTERY_COLLECTION.distinct(
+                "user.id",
+                {
+                    "reward_name": reward_name,
+                    "time": {
+                        "$gte": get_start_time(td),
+                    },
+                },
+            )
+        )
+
+    return result
+
+
+def get_summary_average_wins_count_per_winner(
+    wins_count: Dict[str, int], winners_count: Dict[str, int]
+) -> Dict[str, float]:
+    result: Dict[str, float] = {}
+
+    for reward_name in wins_count:
+        # 该奖项无人中奖
+        if wins_count[reward_name] == 0:
+            result[reward_name] = 0
+            continue
+
+        result[reward_name] = round(
+            wins_count[reward_name] / winners_count[reward_name], 3
+        )
+
+    return result
+
+
+def get_summary_winning_rate(wins_count: Dict[str, int]) -> Dict[str, float]:
+    total_wins_count = sum(wins_count.values())
+    if not total_wins_count:  # 所有奖项均无人中奖
+        return {key: 0 for key in wins_count}
+
+    return {
+        key: round(value / total_wins_count, 5) for key, value in wins_count.items()
+    }
+
+
+def get_summary_rarity(wins_count: Dict[str, int]) -> Dict[str, float]:
+    result = {
+        key: (1 / value if value != 0 else 0.0)
+        for key, value in get_summary_winning_rate(wins_count).items()
+    }
+
+    # 如果可能，使用收益加成卡 100 的中奖率修正其它结果
+    scale: float = 1 / result.get("收益加成卡 100", 1.0)
+
+    return {key: round(value * scale, 3) for key, value in result.items()}
+
+
+async def get_rewards_wins_history(
+    td: timedelta, time_unit: str
+) -> Dict[datetime, int]:
+    result = LOTTERY_COLLECTION.aggregate(
+        [
+            {
+                "$match": {
+                    "time": {
+                        "$gt": get_start_time(td),
+                    },
+                }
+            },
+            {
+                "$group": {
+                    "_id": {
+                        "$dateTrunc": {
+                            "date": "$time",
+                            "unit": time_unit,
+                        },
+                    },
+                    "count": {
+                        "$sum": 1,
+                    },
+                }
+            },
+            {
+                "$sort": {
+                    "_id": 1,
+                },
+            },
+        ]
+    )
+
+    return {item["_id"]: item["count"] async for item in result}
 
 
 class GetRewardsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
@@ -30,7 +164,7 @@ async def get_rewards_handler() -> Response[ResponseStruct[GetRewardsResponse]]:
         get_response_struct(
             code=Code.SUCCESS,
             data=GetRewardsResponse(
-                rewards=REWARDS,
+                rewards=REWARD_NAMES,
             ),
         )
     )
@@ -55,7 +189,7 @@ async def get_records_handler(
         LOTTERY_COLLECTION.find(
             {
                 "reward_name": {
-                    "$in": target_rewards if target_rewards else REWARDS,
+                    "$in": target_rewards if target_rewards else REWARD_NAMES,
                 }
             }
         )
@@ -83,10 +217,89 @@ async def get_records_handler(
     )
 
 
+class GetSummaryRewardItem(Struct, **RESPONSE_STRUCT_CONFIG):
+    reward_name: str
+    wins_count: int
+    winners_count: int
+    average_wins_count_per_winner: float
+    winning_rate: float
+    rarity: float
+
+
+class GetSummaryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
+    rewards: List[GetSummaryRewardItem]
+
+
+@get("/summary")
+async def get_summary_handler(
+    range: Literal["1d", "7d", "30d", "all"],  # noqa: A002
+) -> Response[ResponseStruct[GetSummaryResponse]]:
+    td = RANGE_TO_TIMEDELTA[range]
+
+    wins_count = await get_summary_wins_count(td)
+    winners_count = await get_summary_winners_count(td)
+
+    average_wins_count_per_winner = get_summary_average_wins_count_per_winner(
+        wins_count, winners_count
+    )
+    winning_rate = get_summary_winning_rate(wins_count)
+    rarity = get_summary_rarity(wins_count)
+
+    rewards: List[GetSummaryRewardItem] = []
+    for reward_name in REWARD_NAMES:
+        rewards.append(
+            GetSummaryRewardItem(
+                reward_name=reward_name,
+                wins_count=wins_count[reward_name],
+                winners_count=winners_count[reward_name],
+                average_wins_count_per_winner=average_wins_count_per_winner[
+                    reward_name
+                ],
+                winning_rate=winning_rate[reward_name],
+                rarity=rarity[reward_name],
+            )
+        )
+
+    return Response(
+        get_response_struct(
+            code=Code.SUCCESS,
+            data=GetSummaryResponse(
+                rewards=rewards,
+            ),
+        )
+    )
+
+
+class GetRewardWinsHistoryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
+    history: Dict[datetime, int]
+
+
+@get("/reward-wins-history")
+async def get_reward_wins_history_handler(
+    range: Literal["1d", "7d", "30d"],  # noqa: A002
+    resolution: Literal["1h", "1d"],
+) -> Response[ResponseStruct[GetRewardWinsHistoryResponse]]:
+    history = await get_rewards_wins_history(
+        td=RANGE_TO_TIMEDELTA[range],  # type: ignore
+        time_unit=RESOLUTION_TO_TIME_UNIT[resolution],
+    )
+
+    return Response(
+        get_response_struct(
+            code=Code.SUCCESS,
+            data=GetRewardWinsHistoryResponse(
+                history=history,
+            ),
+        )
+    )
+
+
 LOTTERY_ROUTER = Router(
     path="/lottery",
     route_handlers=[
         get_rewards_handler,
         get_records_handler,
+        get_summary_handler,
+        get_reward_wins_history_handler,
     ],
 )

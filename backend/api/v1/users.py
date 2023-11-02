@@ -14,7 +14,7 @@ from sspeedup.api.litestar import (
 )
 from sspeedup.sync_to_async import sync_to_async
 
-from api.v1.lottery import REWARDS
+from api.v1.lottery import REWARD_NAMES
 from utils.db import ARTICLE_FP_RANK_COLLECTION, LOTTERY_COLLECTION
 
 
@@ -88,7 +88,7 @@ async def get_lottery_win_records(
             {
                 "user.url": user_url,
                 "reward_name": {
-                    "$in": target_rewards if target_rewards else REWARDS,
+                    "$in": target_rewards if target_rewards else REWARD_NAMES,
                 },
             }
         )
