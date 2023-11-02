@@ -68,6 +68,8 @@ async def get_word_freq_handler(article_slug: str) -> Response[ResponseStruct]:
     )
 
 
+# TODO: 实现 LP 理事会推文检测接口
+
 ARTICLES_ROUTER = Router(
     path="/articles",
     route_handlers=[
