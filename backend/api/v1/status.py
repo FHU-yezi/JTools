@@ -158,4 +158,5 @@ STATUS_ROUTER = Router(
         get_handler,
         get_tool_status_handler,
     ],
+    tags=["服务状态"],
 )

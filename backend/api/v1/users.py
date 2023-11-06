@@ -373,4 +373,5 @@ USERS_ROUTER = Router(
         get_name_autocomplete_handler,
         get_history_names_on_article_rank_summary_handler,
     ],
+    tags=["用户"],
 )

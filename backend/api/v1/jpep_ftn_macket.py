@@ -413,4 +413,5 @@ JPEP_FTN_MACKET_ROUTER = Router(
         get_amount_history_handler,
         get_current_amount_distribution_handler,
     ],
+    tags=["简书积分兑换平台 - 贝市"],
 )

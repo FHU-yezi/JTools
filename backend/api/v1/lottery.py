@@ -309,4 +309,5 @@ LOTTERY_ROUTER = Router(
         get_summary_handler,
         get_reward_wins_history_handler,
     ],
+    tags=["抽奖"],
 )

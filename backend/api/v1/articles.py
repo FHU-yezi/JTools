@@ -94,4 +94,5 @@ ARTICLES_ROUTER = Router(
     route_handlers=[
         get_word_freq_handler,
     ],
+    tags=["文章"],
 )
