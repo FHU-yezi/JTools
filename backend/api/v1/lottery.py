@@ -5,6 +5,7 @@ from litestar import Response, Router, get
 from msgspec import Struct
 from sspeedup.api.litestar import (
     RESPONSE_STRUCT_CONFIG,
+    generate_response_spec,
     success,
 )
 from sspeedup.time_helper import get_start_time
@@ -156,7 +157,12 @@ class GetRewardsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     rewards: List[str]
 
 
-@get("/rewards")
+@get(
+    "/rewards",
+    responses={
+        200: generate_response_spec(GetRewardsResponse),
+    },
+)
 async def get_rewards_handler() -> Response:
     return success(
         data=GetRewardsResponse(
@@ -174,7 +180,12 @@ class GetRecordsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     records: List[GetRecordItem]
 
 
-@get("/records")
+@get(
+    "/records",
+    responses={
+        200: generate_response_spec(GetRecordsResponse),
+    },
+)
 async def get_records_handler(
     offset: int = 0,
     limit: int = 20,
@@ -222,7 +233,12 @@ class GetSummaryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     rewards: List[GetSummaryRewardItem]
 
 
-@get("/summary")
+@get(
+    "/summary",
+    responses={
+        200: generate_response_spec(GetSummaryResponse),
+    },
+)
 async def get_summary_handler(
     range: Literal["1d", "7d", "30d", "all"],  # noqa: A002
 ) -> Response:
@@ -263,7 +279,12 @@ class GetRewardWinsHistoryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     history: Dict[datetime, int]
 
 
-@get("/reward-wins-history")
+@get(
+    "/reward-wins-history",
+    responses={
+        200: generate_response_spec(GetRewardWinsHistoryResponse),
+    },
+)
 async def get_reward_wins_history_handler(
     range: Literal["1d", "7d", "30d"],  # noqa: A002
     resolution: Literal["1h", "1d"],

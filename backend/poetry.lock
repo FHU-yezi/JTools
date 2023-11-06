@@ -1010,13 +1010,13 @@ files = [
 
 [[package]]
 name = "sspeedup"
-version = "0.23.0"
+version = "0.24.0"
 description = "开发工具箱"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "sspeedup-0.23.0-py3-none-any.whl", hash = "sha256:d33a1e7585564bdbe981e6f1bd0c372f7611dbf991b0893a098bd90df8566483"},
-    {file = "sspeedup-0.23.0.tar.gz", hash = "sha256:e5d3b7834d36d3e0c3b8dd36111fa6ee28d793e3480836191ad7da2f4f9e054e"},
+    {file = "sspeedup-0.24.0-py3-none-any.whl", hash = "sha256:8dc530c86a31e80f7391418a453abd3cb0ccd4df87f749e7a86a128f75ee98c0"},
+    {file = "sspeedup-0.24.0.tar.gz", hash = "sha256:6bdd4ca9d57dc44fe8fe3693d9ac88219fca73f5b8328a6ecb02054f60f047be"},
 ]
 
 [package.dependencies]
@@ -1162,4 +1162,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "930a164ce994234494930812d2dd9660df8831e4ddb9b128edcdb38791b64b0e"
+content-hash = "25a0e58daabd1cb77e8218d75b2c896b37a96e94732352accc4f2fa7d5cfe8b2"

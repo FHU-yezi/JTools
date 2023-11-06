@@ -5,11 +5,13 @@ from JianshuResearchTools.convert import UserSlugToUserUrl
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.user import GetUserVIPInfo
 from litestar import Response, Router, get
+from litestar.status_codes import HTTP_400_BAD_REQUEST
 from msgspec import Struct, field
 from sspeedup.api.code import Code
 from sspeedup.api.litestar import (
     RESPONSE_STRUCT_CONFIG,
     fail,
+    generate_response_spec,
     success,
 )
 from sspeedup.sync_to_async import sync_to_async
@@ -24,18 +26,26 @@ class GetVipInfoResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     expire_date: Optional[datetime]
 
 
-@get("/{user_slug: str}/vip-info")
+@get(
+    "/{user_slug: str}/vip-info",
+    responses={
+        200: generate_response_spec(GetVipInfoResponse),
+        400: generate_response_spec(),
+    },
+)
 async def get_vip_info_handler(user_slug: str) -> Response:
     try:
         vip_info = await sync_to_async(GetUserVIPInfo, UserSlugToUserUrl(user_slug))
     except InputError:
         return fail(
-            code=Code.BAD_ARGUMENTS,
+            http_code=HTTP_400_BAD_REQUEST,
+            api_code=Code.BAD_ARGUMENTS,
             msg="输入的简书个人主页链接无效",
         )
     except ResourceError:
         return fail(
-            code=Code.BAD_ARGUMENTS,
+            http_code=HTTP_400_BAD_REQUEST,
+            api_code=Code.BAD_ARGUMENTS,
             msg="用户已注销或被封禁",
         )
 
@@ -61,7 +71,13 @@ class GetLotteryWinRecordsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     records: List[GetLotteryWinRecordItem]
 
 
-@get("/{user_slug: str}/lottery-win-records")
+@get(
+    "/{user_slug: str}/lottery-win-records",
+    responses={
+        200: generate_response_spec(GetLotteryWinRecordsResponse),
+        400: generate_response_spec(),
+    },
+)
 async def get_lottery_win_records(
     user_slug: str,
     offset: int = 0,
@@ -72,7 +88,8 @@ async def get_lottery_win_records(
         user_url = UserSlugToUserUrl(user_slug)
     except InputError:
         return fail(
-            code=Code.BAD_ARGUMENTS,
+            http_code=HTTP_400_BAD_REQUEST,
+            api_code=Code.BAD_ARGUMENTS,
             msg="输入的简书个人主页链接无效",
         )
 
@@ -117,7 +134,13 @@ class GetOnArticleRankRecordsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     records: List[GetOnrankRecordItem]
 
 
-@get("/on-article-rank-records")
+@get(
+    "/on-article-rank-records",
+    responses={
+        200: generate_response_spec(GetOnArticleRankRecordsResponse),
+        400: generate_response_spec(),
+    },
+)
 async def get_on_article_rank_records_handler(
     user_slug: Optional[str] = None,
     user_name: Optional[str] = None,
@@ -128,13 +151,15 @@ async def get_on_article_rank_records_handler(
 ) -> Response:
     if not user_slug and not user_name:
         return fail(
-            code=Code.BAD_ARGUMENTS,
+            http_code=HTTP_400_BAD_REQUEST,
+            api_code=Code.BAD_ARGUMENTS,
             msg="必须提供用户 slug 或用户昵称",
         )
 
     if user_slug and user_name:
         return fail(
-            code=Code.BAD_ARGUMENTS,
+            http_code=HTTP_400_BAD_REQUEST,
+            api_code=Code.BAD_ARGUMENTS,
             msg="用户 slug 或用户昵称不能同时提供",
         )
 
@@ -143,7 +168,8 @@ async def get_on_article_rank_records_handler(
             user_url = UserSlugToUserUrl(user_slug)
         except InputError:
             return fail(
-                code=Code.BAD_ARGUMENTS,
+                http_code=HTTP_400_BAD_REQUEST,
+                api_code=Code.BAD_ARGUMENTS,
                 msg="输入的简书个人主页链接无效",
             )
     else:
@@ -184,20 +210,28 @@ class GetOnArticleRankSummaryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     total: int
 
 
-@get("/on-article-rank-summary")
+@get(
+    "/on-article-rank-summary",
+    responses={
+        200: generate_response_spec(GetOnArticleRankSummaryResponse),
+        400: generate_response_spec(),
+    },
+)
 async def get_on_article_rank_summary_handler(
     user_slug: Optional[str] = None,
     user_name: Optional[str] = None,
 ) -> Response:
     if not user_slug and not user_name:
         return fail(
-            code=Code.BAD_ARGUMENTS,
+            http_code=HTTP_400_BAD_REQUEST,
+            api_code=Code.BAD_ARGUMENTS,
             msg="必须提供用户 slug 或用户昵称",
         )
 
     if user_slug and user_name:
         return fail(
-            code=Code.BAD_ARGUMENTS,
+            http_code=HTTP_400_BAD_REQUEST,
+            api_code=Code.BAD_ARGUMENTS,
             msg="用户 slug 或用户昵称不能同时提供",
         )
 
@@ -206,7 +240,8 @@ async def get_on_article_rank_summary_handler(
             user_url = UserSlugToUserUrl(user_slug)
         except InputError:
             return fail(
-                code=Code.BAD_ARGUMENTS,
+                http_code=HTTP_400_BAD_REQUEST,
+                api_code=Code.BAD_ARGUMENTS,
                 msg="输入的简书个人主页链接无效",
             )
     else:
@@ -246,7 +281,12 @@ class GetNameAutocompleteResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     names: List[str]
 
 
-@get("/name-autocomplete")
+@get(
+    "/name-autocomplete",
+    responses={
+        200: generate_response_spec(GetNameAutocompleteResponse),
+    },
+)
 async def get_name_autocomplete_handler(name_part: str, limit: int = 5) -> Response:
     result = await ARTICLE_FP_RANK_COLLECTION.distinct(
         "author.name",
@@ -270,7 +310,12 @@ class GetHistoryNamesOnArticleRankSummaryResponse(Struct, **RESPONSE_STRUCT_CONF
     user_url: Optional[str] = None
 
 
-@get("/history-names-on-article-rank-summary")
+@get(
+    "/history-names-on-article-rank-summary",
+    responses={
+        200: generate_response_spec(GetHistoryNamesOnArticleRankSummaryResponse),
+    },
+)
 async def get_history_names_on_article_rank_summary_handler(user_name: str) -> Response:
     url_query = await ARTICLE_FP_RANK_COLLECTION.find_one({"author.name": user_name})
     if not url_query:

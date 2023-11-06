@@ -6,10 +6,16 @@ from JianshuResearchTools.exceptions import InputError, ResourceError
 from litestar import Response, Router, get
 from litestar.openapi.spec.example import Example
 from litestar.params import Parameter
+from litestar.status_codes import HTTP_400_BAD_REQUEST
 from msgspec import Struct
 from sspeedup.ability.word_split.jieba import AbilityJiebaPossegSplitterV1
 from sspeedup.api.code import Code
-from sspeedup.api.litestar import RESPONSE_STRUCT_CONFIG, fail, success
+from sspeedup.api.litestar import (
+    RESPONSE_STRUCT_CONFIG,
+    fail,
+    generate_response_spec,
+    success,
+)
 from sspeedup.sync_to_async import sync_to_async
 
 from utils.config import config
@@ -34,6 +40,10 @@ class GetWordFreqResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 @get(
     "/{article_slug: str}/word-freq",
+    responses={
+        200: generate_response_spec(GetWordFreqResponse),
+        400: generate_response_spec(),
+    },
 )
 async def get_word_freq_handler(
     article_slug: Annotated[
@@ -56,12 +66,14 @@ async def get_word_freq_handler(
         article_text = await sync_to_async(GetArticleText, article_url)
     except InputError:
         return fail(
-            code=Code.BAD_ARGUMENTS,
+            http_code=HTTP_400_BAD_REQUEST,
+            api_code=Code.BAD_ARGUMENTS,
             msg="输入的简书个人主页链接无效",
         )
     except ResourceError:
         return fail(
-            code=Code.BAD_ARGUMENTS,
+            http_code=HTTP_400_BAD_REQUEST,
+            api_code=Code.BAD_ARGUMENTS,
             msg="用户已注销或被封禁",
         )
 

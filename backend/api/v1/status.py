@@ -2,12 +2,14 @@ from datetime import datetime
 from typing import Dict, List, Literal, Optional
 
 from litestar import Response, Router, get
+from litestar.status_codes import HTTP_400_BAD_REQUEST
 from motor.core import AgnosticCollection
 from msgspec import Struct
 from sspeedup.api.code import Code
 from sspeedup.api.litestar import (
     RESPONSE_STRUCT_CONFIG,
     fail,
+    generate_response_spec,
     success,
 )
 
@@ -60,7 +62,12 @@ class GetResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     unavaliable_tools: List[str]
 
 
-@get("/")
+@get(
+    "/",
+    responses={
+        200: generate_response_spec(GetResponse),
+    },
+)
 async def get_handler() -> Response:
     version = config.deploy.version
 
@@ -93,12 +100,19 @@ class GetToolStatusResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     data_source: Optional[Dict[str, str]]
 
 
-@get("/{tool_name: str}")
+@get(
+    "/{tool_name: str}",
+    responses={
+        200: generate_response_spec(GetToolStatusResponse),
+        400: generate_response_spec(),
+    },
+)
 async def get_tool_status_handler(tool_name: str) -> Response:
     tool_config = TOOLS_CONFIG.get(tool_name)
     if not tool_config:
         return fail(
-            code=Code.BAD_ARGUMENTS,
+            http_code=HTTP_400_BAD_REQUEST,
+            api_code=Code.BAD_ARGUMENTS,
             msg="小工具不存在",
         )
 

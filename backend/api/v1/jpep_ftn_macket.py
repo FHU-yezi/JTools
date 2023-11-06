@@ -5,7 +5,11 @@ from httpx import AsyncClient
 from litestar import Response, Router, get
 from litestar.params import Parameter
 from msgspec import Struct, field
-from sspeedup.api.litestar import RESPONSE_STRUCT_CONFIG, success
+from sspeedup.api.litestar import (
+    RESPONSE_STRUCT_CONFIG,
+    generate_response_spec,
+    success,
+)
 from sspeedup.time_helper import get_start_time
 
 from utils.db import JPEP_FTN_MACKET_COLLECTION
@@ -241,7 +245,12 @@ class GetRulesResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     goods_order_fee: float
 
 
-@get("/rules")
+@get(
+    "/rules",
+    responses={
+        200: generate_response_spec(GetRulesResponse),
+    },
+)
 async def get_rules_handler() -> Response:
     rules = await get_rules()
 
@@ -269,7 +278,12 @@ class GetCurrentPriceResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     sell_price: Optional[float]
 
 
-@get("/current-price")
+@get(
+    "/current-price",
+    responses={
+        200: generate_response_spec(GetCurrentPriceResponse),
+    },
+)
 async def get_current_price_handler() -> Response:
     buy_order = await get_latest_order("buy")
     sell_order = await get_latest_order("sell")
@@ -290,7 +304,12 @@ class GetCurrentAmountResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     sell_amount: Optional[int]
 
 
-@get("/current-amount")
+@get(
+    "/current-amount",
+    responses={
+        200: generate_response_spec(GetCurrentAmountResponse),
+    },
+)
 async def get_current_amount_handler() -> Response:
     buy_amount = await get_current_amount("buy")
     sell_amount = await get_current_amount("sell")
@@ -307,7 +326,12 @@ class GetPriceHistoryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     history: Dict[datetime, float]
 
 
-@get("/price-history")
+@get(
+    "/price-history",
+    responses={
+        200: generate_response_spec(GetPriceHistoryResponse),
+    },
+)
 async def get_price_history_handler(
     type_: Annotated[Literal["buy", "sell"], Parameter(query="type")],
     range: Literal["24h", "7d", "15d", "30d"],  # noqa: A002
@@ -330,7 +354,12 @@ class GetAmountHistoryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     history: Dict[datetime, float]
 
 
-@get("/amount-history")
+@get(
+    "/amount-history",
+    responses={
+        200: generate_response_spec(GetAmountHistoryResponse),
+    },
+)
 async def get_amount_history_handler(
     type_: Annotated[Literal["buy", "sell"], Parameter(query="type")],
     range: Literal["24h", "7d", "15d", "30d"],  # noqa: A002
@@ -353,7 +382,12 @@ class GetCurrentAmountDistributionResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     amount_distribution: Dict[float, int]
 
 
-@get("/current-amount-distribution")
+@get(
+    "/current-amount-distribution",
+    responses={
+        200: generate_response_spec(GetCurrentAmountDistributionResponse),
+    },
+)
 async def get_current_amount_distribution_handler(
     type_: Annotated[Literal["buy", "sell"], Parameter(query="type")],
     limit: int = 10,
