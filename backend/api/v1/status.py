@@ -7,8 +7,8 @@ from msgspec import Struct
 from sspeedup.api.code import Code
 from sspeedup.api.litestar import (
     RESPONSE_STRUCT_CONFIG,
-    ResponseStruct,
-    get_response_struct,
+    fail,
+    success,
 )
 
 from utils.config import config
@@ -61,7 +61,7 @@ class GetResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 
 @get("/")
-async def get_handler() -> Response[ResponseStruct[GetResponse]]:
+async def get_handler() -> Response:
     version = config.deploy.version
 
     downgraded_tools = [
@@ -75,14 +75,11 @@ async def get_handler() -> Response[ResponseStruct[GetResponse]]:
         if config.status == ToolStatus.UNAVALIABLE
     ]
 
-    return Response(
-        get_response_struct(
-            code=Code.SUCCESS,
-            data=GetResponse(
-                version=version,
-                downgraded_tools=downgraded_tools,
-                unavaliable_tools=unavaliable_tools,
-            ),
+    return success(
+        data=GetResponse(
+            version=version,
+            downgraded_tools=downgraded_tools,
+            unavaliable_tools=unavaliable_tools,
         )
     )
 
@@ -97,13 +94,12 @@ class GetToolStatusResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 
 @get("/{tool_name: str}")
-async def get_tool_status_handler(
-    tool_name: str
-) -> Response[ResponseStruct[GetToolStatusResponse]]:
+async def get_tool_status_handler(tool_name: str) -> Response:
     tool_config = TOOLS_CONFIG.get(tool_name)
     if not tool_config:
-        return Response(
-            get_response_struct(code=Code.BAD_ARGUMENTS, msg="小工具不存在")
+        return fail(
+            code=Code.BAD_ARGUMENTS,
+            msg="小工具不存在",
         )
 
     status = tool_config.status
@@ -130,17 +126,14 @@ async def get_tool_status_handler(
     )
     data_source = tool_config.data_source
 
-    return Response(
-        get_response_struct(
-            code=Code.SUCCESS,
-            data=GetToolStatusResponse(
-                status=status,
-                reason=reason,
-                data_update_time=data_update_time,
-                data_update_freq=data_update_freq,
-                data_count=data_count,
-                data_source=data_source,
-            ),
+    return success(
+        data=GetToolStatusResponse(
+            status=status,
+            reason=reason,
+            data_update_time=data_update_time,
+            data_update_freq=data_update_freq,
+            data_count=data_count,
+            data_source=data_source,
         )
     )
 

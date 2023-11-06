@@ -1,7 +1,7 @@
 from litestar import Router
 
 from api.v1.articles import ARTICLES_ROUTER
-from api.v1.JPEP_FTN_macket import JPEP_FTN_MACKET_ROUTER
+from api.v1.jpep_ftn_macket import JPEP_FTN_MACKET_ROUTER
 from api.v1.lottery import LOTTERY_ROUTER
 from api.v1.status import STATUS_ROUTER
 from api.v1.users import USERS_ROUTER

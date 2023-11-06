@@ -3,11 +3,9 @@ from typing import Dict, List, Literal, Optional
 
 from litestar import Response, Router, get
 from msgspec import Struct
-from sspeedup.api.code import Code
 from sspeedup.api.litestar import (
     RESPONSE_STRUCT_CONFIG,
-    ResponseStruct,
-    get_response_struct,
+    success,
 )
 from sspeedup.time_helper import get_start_time
 
@@ -159,13 +157,10 @@ class GetRewardsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 
 @get("/rewards")
-async def get_rewards_handler() -> Response[ResponseStruct[GetRewardsResponse]]:
-    return Response(
-        get_response_struct(
-            code=Code.SUCCESS,
-            data=GetRewardsResponse(
-                rewards=REWARD_NAMES,
-            ),
+async def get_rewards_handler() -> Response:
+    return success(
+        data=GetRewardsResponse(
+            rewards=REWARD_NAMES,
         )
     )
 
@@ -184,7 +179,7 @@ async def get_records_handler(
     offset: int = 0,
     limit: int = 20,
     target_rewards: Optional[List[str]] = None,
-) -> Response[ResponseStruct]:
+) -> Response:
     result = (
         LOTTERY_COLLECTION.find(
             {
@@ -207,12 +202,9 @@ async def get_records_handler(
             )
         )
 
-    return Response(
-        get_response_struct(
-            code=Code.SUCCESS,
-            data=GetRecordsResponse(
-                records=records,
-            ),
+    return success(
+        data=GetRecordsResponse(
+            records=records,
         )
     )
 
@@ -233,7 +225,7 @@ class GetSummaryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 @get("/summary")
 async def get_summary_handler(
     range: Literal["1d", "7d", "30d", "all"],  # noqa: A002
-) -> Response[ResponseStruct[GetSummaryResponse]]:
+) -> Response:
     td = RANGE_TO_TIMEDELTA[range]
 
     wins_count = await get_summary_wins_count(td)
@@ -260,12 +252,9 @@ async def get_summary_handler(
             )
         )
 
-    return Response(
-        get_response_struct(
-            code=Code.SUCCESS,
-            data=GetSummaryResponse(
-                rewards=rewards,
-            ),
+    return success(
+        data=GetSummaryResponse(
+            rewards=rewards,
         )
     )
 
@@ -278,18 +267,15 @@ class GetRewardWinsHistoryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 async def get_reward_wins_history_handler(
     range: Literal["1d", "7d", "30d"],  # noqa: A002
     resolution: Literal["1h", "1d"],
-) -> Response[ResponseStruct[GetRewardWinsHistoryResponse]]:
+) -> Response:
     history = await get_rewards_wins_history(
         td=RANGE_TO_TIMEDELTA[range],  # type: ignore
         time_unit=RESOLUTION_TO_TIME_UNIT[resolution],
     )
 
-    return Response(
-        get_response_struct(
-            code=Code.SUCCESS,
-            data=GetRewardWinsHistoryResponse(
-                history=history,
-            ),
+    return success(
+        data=GetRewardWinsHistoryResponse(
+            history=history,
         )
     )
 

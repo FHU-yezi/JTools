@@ -1,17 +1,15 @@
-from typing import Dict
+from typing import Annotated, Dict
 
 from JianshuResearchTools.article import GetArticleText, GetArticleTitle
 from JianshuResearchTools.convert import ArticleSlugToArticleUrl
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from litestar import Response, Router, get
+from litestar.openapi.spec.example import Example
+from litestar.params import Parameter
 from msgspec import Struct
 from sspeedup.ability.word_split.jieba import AbilityJiebaPossegSplitterV1
 from sspeedup.api.code import Code
-from sspeedup.api.litestar import (
-    RESPONSE_STRUCT_CONFIG,
-    ResponseStruct,
-    get_response_struct,
-)
+from sspeedup.api.litestar import RESPONSE_STRUCT_CONFIG, fail, success
 from sspeedup.sync_to_async import sync_to_async
 
 from utils.config import config
@@ -34,36 +32,45 @@ class GetWordFreqResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     word_freq: Dict[str, int]
 
 
-@get("/{article_slug: str}/word-freq")
-async def get_word_freq_handler(article_slug: str) -> Response[ResponseStruct]:
+@get(
+    "/{article_slug: str}/word-freq",
+)
+async def get_word_freq_handler(
+    article_slug: Annotated[
+        str,
+        Parameter(
+            min_length=12,
+            max_length=12,
+            examples=[
+                Example(
+                    summary="简书导航 一文助你玩转简书 - LP 理事会",
+                    value="088f7eed2ca3",
+                )
+            ],
+        ),
+    ],
+) -> Response:
     try:
         article_url = ArticleSlugToArticleUrl(article_slug)
         title = await sync_to_async(GetArticleTitle, article_url)
         article_text = await sync_to_async(GetArticleText, article_url)
     except InputError:
-        return Response(
-            get_response_struct(
-                code=Code.BAD_ARGUMENTS,
-                msg="输入的简书个人主页链接无效",
-            )
+        return fail(
+            code=Code.BAD_ARGUMENTS,
+            msg="输入的简书个人主页链接无效",
         )
     except ResourceError:
-        return Response(
-            get_response_struct(
-                code=Code.BAD_ARGUMENTS,
-                msg="用户已注销或被封禁",
-            )
+        return fail(
+            code=Code.BAD_ARGUMENTS,
+            msg="用户已注销或被封禁",
         )
 
-    word_freq = dict(splitter.get_word_freq(article_text).most_common(100))
+    word_freq = dict((await splitter.get_word_freq(article_text)).most_common(100))
 
-    return Response(
-        get_response_struct(
-            code=Code.SUCCESS,
-            data=GetWordFreqResponse(
-                title=title,
-                word_freq=word_freq,
-            ),
+    return success(
+        data=GetWordFreqResponse(
+            title=title,
+            word_freq=word_freq,
         )
     )
 

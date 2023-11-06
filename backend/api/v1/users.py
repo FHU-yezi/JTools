@@ -9,8 +9,8 @@ from msgspec import Struct, field
 from sspeedup.api.code import Code
 from sspeedup.api.litestar import (
     RESPONSE_STRUCT_CONFIG,
-    ResponseStruct,
-    get_response_struct,
+    fail,
+    success,
 )
 from sspeedup.sync_to_async import sync_to_async
 
@@ -25,34 +25,29 @@ class GetVipInfoResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 
 @get("/{user_slug: str}/vip-info")
-async def get_vip_info_handler(
-    user_slug: str
-) -> Response[ResponseStruct[GetVipInfoResponse]]:
+async def get_vip_info_handler(user_slug: str) -> Response:
     try:
         vip_info = await sync_to_async(GetUserVIPInfo, UserSlugToUserUrl(user_slug))
     except InputError:
-        return Response(
-            get_response_struct(
-                code=Code.BAD_ARGUMENTS,
-                msg="输入的简书个人主页链接无效",
-            )
+        return fail(
+            code=Code.BAD_ARGUMENTS,
+            msg="输入的简书个人主页链接无效",
         )
     except ResourceError:
-        return Response(
-            get_response_struct(
-                code=Code.BAD_ARGUMENTS,
-                msg="用户已注销或被封禁",
-            )
+        return fail(
+            code=Code.BAD_ARGUMENTS,
+            msg="用户已注销或被封禁",
         )
 
     is_vip = vip_info["vip_type"] is not None
     type_ = vip_info["vip_type"]
     expire_date = vip_info["expire_date"]
 
-    return Response(
-        get_response_struct(
-            code=Code.SUCCESS,
-            data=GetVipInfoResponse(is_vip=is_vip, type=type_, expire_date=expire_date),
+    return success(
+        data=GetVipInfoResponse(
+            is_vip=is_vip,
+            type=type_,
+            expire_date=expire_date,
         )
     )
 
@@ -72,15 +67,13 @@ async def get_lottery_win_records(
     offset: int = 0,
     limit: int = 20,
     target_rewards: Optional[List[str]] = None,
-) -> Response[ResponseStruct[GetLotteryWinRecordsResponse]]:
+) -> Response:
     try:
         user_url = UserSlugToUserUrl(user_slug)
     except InputError:
-        return Response(
-            get_response_struct(
-                code=Code.BAD_ARGUMENTS,
-                msg="输入的简书个人主页链接无效",
-            )
+        return fail(
+            code=Code.BAD_ARGUMENTS,
+            msg="输入的简书个人主页链接无效",
         )
 
     result = (
@@ -105,12 +98,9 @@ async def get_lottery_win_records(
             )
         )
 
-    return Response(
-        get_response_struct(
-            code=Code.SUCCESS,
-            data=GetLotteryWinRecordsResponse(
-                records=records,
-            ),
+    return success(
+        data=GetLotteryWinRecordsResponse(
+            records=records,
         )
     )
 
@@ -135,30 +125,26 @@ async def get_on_article_rank_records_handler(
     order_direction: Literal["asc", "desc"] = "desc",
     offset: int = 0,
     limit: int = 20,
-) -> Response[ResponseStruct]:
+) -> Response:
     if not user_slug and not user_name:
-        return Response(
-            get_response_struct(
-                code=Code.BAD_ARGUMENTS, msg="必须提供用户 slug 或用户昵称"
-            )
+        return fail(
+            code=Code.BAD_ARGUMENTS,
+            msg="必须提供用户 slug 或用户昵称",
         )
 
     if user_slug and user_name:
-        return Response(
-            get_response_struct(
-                code=Code.BAD_ARGUMENTS, msg="用户 slug 或用户昵称不能同时提供"
-            )
+        return fail(
+            code=Code.BAD_ARGUMENTS,
+            msg="用户 slug 或用户昵称不能同时提供",
         )
 
     if user_slug:
         try:
             user_url = UserSlugToUserUrl(user_slug)
         except InputError:
-            return Response(
-                get_response_struct(
-                    code=Code.BAD_ARGUMENTS,
-                    msg="输入的简书个人主页链接无效",
-                )
+            return fail(
+                code=Code.BAD_ARGUMENTS,
+                msg="输入的简书个人主页链接无效",
             )
     else:
         user_url = None
@@ -184,12 +170,9 @@ async def get_on_article_rank_records_handler(
             )
         )
 
-    return Response(
-        get_response_struct(
-            code=Code.SUCCESS,
-            data=GetOnArticleRankRecordsResponse(
-                records=records,
-            ),
+    return success(
+        data=GetOnArticleRankRecordsResponse(
+            records=records,
         )
     )
 
@@ -205,30 +188,26 @@ class GetOnArticleRankSummaryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 async def get_on_article_rank_summary_handler(
     user_slug: Optional[str] = None,
     user_name: Optional[str] = None,
-) -> Response[ResponseStruct[GetOnArticleRankSummaryResponse]]:
+) -> Response:
     if not user_slug and not user_name:
-        return Response(
-            get_response_struct(
-                code=Code.BAD_ARGUMENTS, msg="必须提供用户 slug 或用户昵称"
-            )
+        return fail(
+            code=Code.BAD_ARGUMENTS,
+            msg="必须提供用户 slug 或用户昵称",
         )
 
     if user_slug and user_name:
-        return Response(
-            get_response_struct(
-                code=Code.BAD_ARGUMENTS, msg="用户 slug 或用户昵称不能同时提供"
-            )
+        return fail(
+            code=Code.BAD_ARGUMENTS,
+            msg="用户 slug 或用户昵称不能同时提供",
         )
 
     if user_slug:
         try:
             user_url = UserSlugToUserUrl(user_slug)
         except InputError:
-            return Response(
-                get_response_struct(
-                    code=Code.BAD_ARGUMENTS,
-                    msg="输入的简书个人主页链接无效",
-                )
+            return fail(
+                code=Code.BAD_ARGUMENTS,
+                msg="输入的简书个人主页链接无效",
             )
     else:
         user_url = None
@@ -253,15 +232,12 @@ async def get_on_article_rank_summary_handler(
 
         total += 1
 
-    return Response(
-        get_response_struct(
-            code=Code.SUCCESS,
-            data=GetOnArticleRankSummaryResponse(
-                top10=top10,
-                top30=top30,
-                top50=top50,
-                total=total,
-            ),
+    return success(
+        data=GetOnArticleRankSummaryResponse(
+            top10=top10,
+            top30=top30,
+            top50=top50,
+            total=total,
         )
     )
 
@@ -271,9 +247,7 @@ class GetNameAutocompleteResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 
 @get("/name-autocomplete")
-async def get_name_autocomplete_handler(
-    name_part: str, limit: int = 5
-) -> Response[ResponseStruct[GetNameAutocompleteResponse]]:
+async def get_name_autocomplete_handler(name_part: str, limit: int = 5) -> Response:
     result = await ARTICLE_FP_RANK_COLLECTION.distinct(
         "author.name",
         {
@@ -284,12 +258,9 @@ async def get_name_autocomplete_handler(
     )
     result = result[:limit]
 
-    return Response(
-        get_response_struct(
-            code=Code.SUCCESS,
-            data=GetNameAutocompleteResponse(
-                names=result,
-            ),
+    return success(
+        data=GetNameAutocompleteResponse(
+            names=result,
         )
     )
 
@@ -300,17 +271,12 @@ class GetHistoryNamesOnArticleRankSummaryResponse(Struct, **RESPONSE_STRUCT_CONF
 
 
 @get("/history-names-on-article-rank-summary")
-async def get_history_names_on_article_rank_summary_handler(
-    user_name: str
-) -> Response[ResponseStruct[GetHistoryNamesOnArticleRankSummaryResponse]]:
+async def get_history_names_on_article_rank_summary_handler(user_name: str) -> Response:
     url_query = await ARTICLE_FP_RANK_COLLECTION.find_one({"author.name": user_name})
     if not url_query:
-        return Response(
-            get_response_struct(
-                code=Code.SUCCESS,
-                data=GetHistoryNamesOnArticleRankSummaryResponse(
-                    history_names_onrank_summary={},
-                ),
+        return success(
+            data=GetHistoryNamesOnArticleRankSummaryResponse(
+                history_names_onrank_summary={},
             )
         )
 
@@ -344,13 +310,10 @@ async def get_history_names_on_article_rank_summary_handler(
     async for item in result:
         history_names_onrank_summary[item["_id"]] = item["count"]
 
-    return Response(
-        get_response_struct(
-            code=Code.SUCCESS,
-            data=GetHistoryNamesOnArticleRankSummaryResponse(
-                user_url=user_url,
-                history_names_onrank_summary=history_names_onrank_summary,
-            ),
+    return success(
+        data=GetHistoryNamesOnArticleRankSummaryResponse(
+            user_url=user_url,
+            history_names_onrank_summary=history_names_onrank_summary,
         )
     )
 

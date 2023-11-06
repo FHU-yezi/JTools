@@ -1,16 +1,11 @@
-from datetime import datetime, timedelta  # noqa: N999
+from datetime import datetime, timedelta
 from typing import Annotated, Any, Dict, Literal, Optional
 
 from httpx import AsyncClient
 from litestar import Response, Router, get
 from litestar.params import Parameter
 from msgspec import Struct, field
-from sspeedup.api.code import Code
-from sspeedup.api.litestar import (
-    RESPONSE_STRUCT_CONFIG,
-    ResponseStruct,
-    get_response_struct,
-)
+from sspeedup.api.litestar import RESPONSE_STRUCT_CONFIG, success
 from sspeedup.time_helper import get_start_time
 
 from utils.db import JPEP_FTN_MACKET_COLLECTION
@@ -247,7 +242,7 @@ class GetRulesResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 
 @get("/rules")
-async def get_rules_handler() -> Response[ResponseStruct[GetRulesResponse]]:
+async def get_rules_handler() -> Response:
     rules = await get_rules()
 
     is_open = not bool(rules["isClose"])
@@ -258,16 +253,13 @@ async def get_rules_handler() -> Response[ResponseStruct[GetRulesResponse]]:
     FTN_order_fee = rules["fee"]  # noqa: N806
     goods_order_fee = rules["shop_fee"]
 
-    return Response(
-        get_response_struct(
-            code=Code.SUCCESS,
-            data=GetRulesResponse(
-                is_open=is_open,
-                buy_order_minimum_price=buy_order_minimum_price,
-                sell_order_minimum_price=sell_order_minimum_price,
-                FTN_order_fee=FTN_order_fee,
-                goods_order_fee=goods_order_fee,
-            ),
+    return success(
+        data=GetRulesResponse(
+            is_open=is_open,
+            buy_order_minimum_price=buy_order_minimum_price,
+            sell_order_minimum_price=sell_order_minimum_price,
+            FTN_order_fee=FTN_order_fee,
+            goods_order_fee=goods_order_fee,
         )
     )
 
@@ -278,22 +270,17 @@ class GetCurrentPriceResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 
 @get("/current-price")
-async def get_current_price_handler() -> (
-    Response[ResponseStruct[GetCurrentPriceResponse]]
-):
+async def get_current_price_handler() -> Response:
     buy_order = await get_latest_order("buy")
     sell_order = await get_latest_order("sell")
 
     buy_price = buy_order["price"] if buy_order else None
     sell_price = sell_order["price"] if sell_order else None
 
-    return Response(
-        get_response_struct(
-            code=Code.SUCCESS,
-            data=GetCurrentPriceResponse(
-                buy_price=buy_price,
-                sell_price=sell_price,
-            ),
+    return success(
+        data=GetCurrentPriceResponse(
+            buy_price=buy_price,
+            sell_price=sell_price,
         )
     )
 
@@ -304,19 +291,14 @@ class GetCurrentAmountResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 
 @get("/current-amount")
-async def get_current_amount_handler() -> (
-    Response[ResponseStruct[GetCurrentAmountResponse]]
-):
+async def get_current_amount_handler() -> Response:
     buy_amount = await get_current_amount("buy")
     sell_amount = await get_current_amount("sell")
 
-    return Response(
-        get_response_struct(
-            code=Code.SUCCESS,
-            data=GetCurrentAmountResponse(
-                buy_amount=buy_amount,
-                sell_amount=sell_amount,
-            ),
+    return success(
+        data=GetCurrentAmountResponse(
+            buy_amount=buy_amount,
+            sell_amount=sell_amount,
         )
     )
 
@@ -330,19 +312,16 @@ async def get_price_history_handler(
     type_: Annotated[Literal["buy", "sell"], Parameter(query="type")],
     range: Literal["24h", "7d", "15d", "30d"],  # noqa: A002
     resolution: Literal["5m", "1h", "1d"],
-) -> Response[ResponseStruct[GetPriceHistoryResponse]]:
+) -> Response:
     history = await get_price_history(
         type_=type_,
         td=RANGE_TO_TIMEDELTA[range],
         time_unit=RESOLUTION_TO_TIME_UNIT[resolution],
     )
 
-    return Response(
-        get_response_struct(
-            code=Code.SUCCESS,
-            data=GetPriceHistoryResponse(
-                history=history,
-            ),
+    return success(
+        data=GetPriceHistoryResponse(
+            history=history,
         )
     )
 
@@ -356,19 +335,16 @@ async def get_amount_history_handler(
     type_: Annotated[Literal["buy", "sell"], Parameter(query="type")],
     range: Literal["24h", "7d", "15d", "30d"],  # noqa: A002
     resolution: Literal["5m", "1h", "1d"],
-) -> Response[ResponseStruct[GetAmountHistoryResponse]]:
+) -> Response:
     history = await get_amount_history(
         type_=type_,
         td=RANGE_TO_TIMEDELTA[range],
         time_unit=RESOLUTION_TO_TIME_UNIT[resolution],
     )
 
-    return Response(
-        get_response_struct(
-            code=Code.SUCCESS,
-            data=GetAmountHistoryResponse(
-                history=history,
-            ),
+    return success(
+        data=GetAmountHistoryResponse(
+            history=history,
         )
     )
 
@@ -381,17 +357,14 @@ class GetCurrentAmountDistributionResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 async def get_current_amount_distribution_handler(
     type_: Annotated[Literal["buy", "sell"], Parameter(query="type")],
     limit: int = 10,
-) -> Response[ResponseStruct[GetCurrentAmountDistributionResponse]]:
+) -> Response:
     amount_distribution = await get_current_amount_distribution(
         type_=type_, limit=limit
     )
 
-    return Response(
-        get_response_struct(
-            code=Code.SUCCESS,
-            data=GetCurrentAmountDistributionResponse(
-                amount_distribution=amount_distribution,
-            ),
+    return success(
+        data=GetCurrentAmountDistributionResponse(
+            amount_distribution=amount_distribution,
         )
     )
 
