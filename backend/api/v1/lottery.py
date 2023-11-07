@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
-from typing import Dict, List, Literal, Optional
+from typing import Annotated, Dict, List, Literal, Optional
 
 from litestar import Response, Router, get
+from litestar.params import Parameter
 from msgspec import Struct
 from sspeedup.api.litestar import (
     RESPONSE_STRUCT_CONFIG,
@@ -189,9 +190,11 @@ class GetRecordsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     },
 )
 async def get_records_handler(
-    offset: int = 0,
-    limit: int = 20,
-    target_rewards: Optional[List[str]] = None,
+    offset: Annotated[int, Parameter(description="分页偏移", ge=0)] = 0,
+    limit: Annotated[int, Parameter(description="结果数量", gt=0, lt=100)] = 20,
+    target_rewards: Annotated[
+        Optional[List[str]], Parameter(description="奖项筛选列表", max_items=10)
+    ] = None,
 ) -> Response:
     result = (
         LOTTERY_COLLECTION.find(
@@ -243,7 +246,9 @@ class GetSummaryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     },
 )
 async def get_summary_handler(
-    range: Literal["1d", "7d", "30d", "all"],  # noqa: A002
+    range: Annotated[  # noqa: A002
+        Literal["1d", "7d", "30d", "all"], Parameter(description="时间范围")
+    ],
 ) -> Response:
     td = RANGE_TO_TIMEDELTA[range]
 
@@ -290,8 +295,8 @@ class GetRewardWinsHistoryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     },
 )
 async def get_reward_wins_history_handler(
-    range: Literal["1d", "7d", "30d"],  # noqa: A002
-    resolution: Literal["1h", "1d"],
+    range: Annotated[Literal["1d", "7d", "30d"], Parameter(description="时间范围")],  # noqa: A002
+    resolution: Annotated[Literal["1h", "1d"], Parameter(description="统计粒度")],
 ) -> Response:
     history = await get_rewards_wins_history(
         td=RANGE_TO_TIMEDELTA[range],  # type: ignore

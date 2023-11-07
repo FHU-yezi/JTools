@@ -337,9 +337,13 @@ class GetPriceHistoryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     },
 )
 async def get_price_history_handler(
-    type_: Annotated[Literal["buy", "sell"], Parameter(query="type")],
-    range: Literal["24h", "7d", "15d", "30d"],  # noqa: A002
-    resolution: Literal["5m", "1h", "1d"],
+    type_: Annotated[
+        Literal["buy", "sell"], Parameter(description="交易单类型", query="type")
+    ],
+    range: Annotated[  # noqa: A002
+        Literal["24h", "7d", "15d", "30d"], Parameter(description="时间范围")
+    ],
+    resolution: Annotated[Literal["5m", "1h", "1d"], Parameter(description="统计粒度")],
 ) -> Response:
     history = await get_price_history(
         type_=type_,
@@ -366,9 +370,13 @@ class GetAmountHistoryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     },
 )
 async def get_amount_history_handler(
-    type_: Annotated[Literal["buy", "sell"], Parameter(query="type")],
-    range: Literal["24h", "7d", "15d", "30d"],  # noqa: A002
-    resolution: Literal["5m", "1h", "1d"],
+    type_: Annotated[
+        Literal["buy", "sell"], Parameter(description="交易单类型", query="type")
+    ],
+    range: Annotated[  # noqa: A002
+        Literal["24h", "7d", "15d", "30d"], Parameter(description="时间范围")
+    ],
+    resolution: Annotated[Literal["5m", "1h", "1d"], Parameter(description="统计粒度")],
 ) -> Response:
     history = await get_amount_history(
         type_=type_,
@@ -395,8 +403,10 @@ class GetCurrentAmountDistributionResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     },
 )
 async def get_current_amount_distribution_handler(
-    type_: Annotated[Literal["buy", "sell"], Parameter(query="type")],
-    limit: int = 10,
+    type_: Annotated[
+        Literal["buy", "sell"], Parameter(description="交易单类型", query="type")
+    ],
+    limit: Annotated[int, Parameter(description="结果数量", gt=0, le=100)] = 10,
 ) -> Response:
     amount_distribution = await get_current_amount_distribution(
         type_=type_, limit=limit

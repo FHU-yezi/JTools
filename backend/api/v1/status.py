@@ -1,7 +1,8 @@
 from datetime import datetime
-from typing import Dict, List, Literal, Optional
+from typing import Annotated, Dict, List, Literal, Optional
 
 from litestar import Response, Router, get
+from litestar.params import Parameter
 from litestar.status_codes import HTTP_400_BAD_REQUEST
 from motor.core import AgnosticCollection
 from msgspec import Struct
@@ -109,7 +110,9 @@ class GetToolStatusResponse(Struct, **RESPONSE_STRUCT_CONFIG):
         400: generate_response_spec(),
     },
 )
-async def get_tool_status_handler(tool_name: str) -> Response:
+async def get_tool_status_handler(
+    tool_name: Annotated[str, Parameter(description="小工具名称", max_length=100)]
+) -> Response:
     tool_config = TOOLS_CONFIG.get(tool_name)
     if not tool_config:
         return fail(

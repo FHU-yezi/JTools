@@ -1,10 +1,11 @@
 from datetime import datetime
-from typing import Dict, List, Literal, Optional
+from typing import Annotated, Dict, List, Literal, Optional
 
 from JianshuResearchTools.convert import UserSlugToUserUrl
 from JianshuResearchTools.exceptions import InputError, ResourceError
 from JianshuResearchTools.user import GetUserVIPInfo
 from litestar import Response, Router, get
+from litestar.params import Parameter
 from litestar.status_codes import HTTP_400_BAD_REQUEST
 from msgspec import Struct, field
 from sspeedup.api.code import Code
@@ -34,7 +35,11 @@ class GetVipInfoResponse(Struct, **RESPONSE_STRUCT_CONFIG):
         400: generate_response_spec(),
     },
 )
-async def get_vip_info_handler(user_slug: str) -> Response:
+async def get_vip_info_handler(
+    user_slug: Annotated[
+        str, Parameter(description="用户 slug", min_length=6, max_length=12)
+    ],
+) -> Response:
     try:
         vip_info = await sync_to_async(GetUserVIPInfo, UserSlugToUserUrl(user_slug))
     except InputError:
@@ -81,10 +86,14 @@ class GetLotteryWinRecordsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     },
 )
 async def get_lottery_win_records(
-    user_slug: str,
-    offset: int = 0,
-    limit: int = 20,
-    target_rewards: Optional[List[str]] = None,
+    user_slug: Annotated[
+        str, Parameter(description="用户 slug", min_length=6, max_length=12)
+    ],
+    offset: Annotated[int, Parameter(description="分页偏移", ge=0)] = 0,
+    limit: Annotated[int, Parameter(description="结果数量", gt=0, lt=100)] = 20,
+    target_rewards: Annotated[
+        Optional[List[str]], Parameter(description="奖项筛选列表", max_items=10)
+    ] = None,
 ) -> Response:
     try:
         user_url = UserSlugToUserUrl(user_slug)
@@ -145,12 +154,20 @@ class GetOnArticleRankRecordsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     },
 )
 async def get_on_article_rank_records_handler(
-    user_slug: Optional[str] = None,
-    user_name: Optional[str] = None,
-    order_by: Literal["date", "ranking"] = "date",
-    order_direction: Literal["asc", "desc"] = "desc",
-    offset: int = 0,
-    limit: int = 20,
+    user_slug: Annotated[
+        Optional[str], Parameter(description="用户 slug", min_length=6, max_length=12)
+    ] = None,
+    user_name: Annotated[
+        Optional[str], Parameter(description="用户昵称", max_length=50)
+    ] = None,
+    order_by: Annotated[
+        Literal["date", "ranking"], Parameter(description="排序依据")
+    ] = "date",
+    order_direction: Annotated[
+        Literal["asc", "desc"], Parameter(description="排序方向")
+    ] = "desc",
+    offset: Annotated[int, Parameter(description="分页偏移", ge=0)] = 0,
+    limit: Annotated[int, Parameter(description="结果数量", gt=0, lt=100)] = 20,
 ) -> Response:
     if not user_slug and not user_name:
         return fail(
@@ -222,8 +239,12 @@ class GetOnArticleRankSummaryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     },
 )
 async def get_on_article_rank_summary_handler(
-    user_slug: Optional[str] = None,
-    user_name: Optional[str] = None,
+    user_slug: Annotated[
+        Optional[str], Parameter(description="用户 slug", min_length=6, max_length=12)
+    ] = None,
+    user_name: Annotated[
+        Optional[str], Parameter(description="用户昵称", max_length=50)
+    ] = None,
 ) -> Response:
     if not user_slug and not user_name:
         return fail(
@@ -292,7 +313,10 @@ class GetNameAutocompleteResponse(Struct, **RESPONSE_STRUCT_CONFIG):
         200: generate_response_spec(GetNameAutocompleteResponse),
     },
 )
-async def get_name_autocomplete_handler(name_part: str, limit: int = 5) -> Response:
+async def get_name_autocomplete_handler(
+    name_part: Annotated[str, Parameter(description="用户昵称片段", max_length=50)],
+    limit: Annotated[int, Parameter(description="结果数量", gt=0, le=100)] = 5,
+) -> Response:
     result = await ARTICLE_FP_RANK_COLLECTION.distinct(
         "author.name",
         {
@@ -322,7 +346,11 @@ class GetHistoryNamesOnArticleRankSummaryResponse(Struct, **RESPONSE_STRUCT_CONF
         200: generate_response_spec(GetHistoryNamesOnArticleRankSummaryResponse),
     },
 )
-async def get_history_names_on_article_rank_summary_handler(user_name: str) -> Response:
+async def get_history_names_on_article_rank_summary_handler(
+    user_name: Annotated[
+        Optional[str], Parameter(description="用户昵称", max_length=50)
+    ] = None,
+) -> Response:
     url_query = await ARTICLE_FP_RANK_COLLECTION.find_one({"author.name": user_name})
     if not url_query:
         return success(
