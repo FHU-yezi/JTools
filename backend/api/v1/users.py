@@ -28,6 +28,7 @@ class GetVipInfoResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 @get(
     "/{user_slug: str}/vip-info",
+    summary="获取会员信息",
     responses={
         200: generate_response_spec(GetVipInfoResponse),
         400: generate_response_spec(),
@@ -73,6 +74,7 @@ class GetLotteryWinRecordsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 @get(
     "/{user_slug: str}/lottery-win-records",
+    summary="获取用户中奖记录",
     responses={
         200: generate_response_spec(GetLotteryWinRecordsResponse),
         400: generate_response_spec(),
@@ -136,6 +138,7 @@ class GetOnArticleRankRecordsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 @get(
     "/on-article-rank-records",
+    summary="获取用户上榜记录",
     responses={
         200: generate_response_spec(GetOnArticleRankRecordsResponse),
         400: generate_response_spec(),
@@ -212,6 +215,7 @@ class GetOnArticleRankSummaryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 @get(
     "/on-article-rank-summary",
+    summary="获取用户上榜摘要",
     responses={
         200: generate_response_spec(GetOnArticleRankSummaryResponse),
         400: generate_response_spec(),
@@ -283,6 +287,7 @@ class GetNameAutocompleteResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 @get(
     "/name-autocomplete",
+    summary="获取用户昵称自动补全",
     responses={
         200: generate_response_spec(GetNameAutocompleteResponse),
     },
@@ -312,6 +317,7 @@ class GetHistoryNamesOnArticleRankSummaryResponse(Struct, **RESPONSE_STRUCT_CONF
 
 @get(
     "/history-names-on-article-rank-summary",
+    summary="获取用户曾用昵称上榜摘要",
     responses={
         200: generate_response_spec(GetHistoryNamesOnArticleRankSummaryResponse),
     },

@@ -64,6 +64,7 @@ class GetResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 @get(
     "/",
+    summary="获取服务状态",
     responses={
         200: generate_response_spec(GetResponse),
     },
@@ -102,6 +103,7 @@ class GetToolStatusResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 @get(
     "/{tool_name: str}",
+    summary="获取小工具服务状态",
     responses={
         200: generate_response_spec(GetToolStatusResponse),
         400: generate_response_spec(),

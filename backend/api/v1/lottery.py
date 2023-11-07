@@ -159,6 +159,7 @@ class GetRewardsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 @get(
     "/rewards",
+    summary="获取奖项列表",
     responses={
         200: generate_response_spec(GetRewardsResponse),
     },
@@ -182,6 +183,7 @@ class GetRecordsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 @get(
     "/records",
+    summary="获取中奖记录",
     responses={
         200: generate_response_spec(GetRecordsResponse),
     },
@@ -235,6 +237,7 @@ class GetSummaryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 @get(
     "/summary",
+    summary="获取抽奖摘要",
     responses={
         200: generate_response_spec(GetSummaryResponse),
     },
@@ -281,6 +284,7 @@ class GetRewardWinsHistoryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 @get(
     "/reward-wins-history",
+    summary="获取历史中奖数",
     responses={
         200: generate_response_spec(GetRewardWinsHistoryResponse),
     },

@@ -40,6 +40,7 @@ class GetWordFreqResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 @get(
     "/{article_slug: str}/word-freq",
+    summary="获取文章词频",
     responses={
         200: generate_response_spec(GetWordFreqResponse),
         400: generate_response_spec(),
@@ -49,6 +50,7 @@ async def get_word_freq_handler(
     article_slug: Annotated[
         str,
         Parameter(
+            description="文章 slug",
             min_length=12,
             max_length=12,
             examples=[

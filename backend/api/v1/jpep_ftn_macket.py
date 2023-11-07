@@ -247,6 +247,7 @@ class GetRulesResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 @get(
     "/rules",
+    summary="获取贝市交易配置",
     responses={
         200: generate_response_spec(GetRulesResponse),
     },
@@ -280,6 +281,7 @@ class GetCurrentPriceResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 @get(
     "/current-price",
+    summary="获取当前贝价",
     responses={
         200: generate_response_spec(GetCurrentPriceResponse),
     },
@@ -306,6 +308,7 @@ class GetCurrentAmountResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 @get(
     "/current-amount",
+    summary="获取当前挂单量",
     responses={
         200: generate_response_spec(GetCurrentAmountResponse),
     },
@@ -328,6 +331,7 @@ class GetPriceHistoryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 @get(
     "/price-history",
+    summary="获取历史价格",
     responses={
         200: generate_response_spec(GetPriceHistoryResponse),
     },
@@ -356,6 +360,7 @@ class GetAmountHistoryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 @get(
     "/amount-history",
+    summary="获取历史挂单量",
     responses={
         200: generate_response_spec(GetAmountHistoryResponse),
     },
@@ -384,6 +389,7 @@ class GetCurrentAmountDistributionResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 @get(
     "/current-amount-distribution",
+    summary="获取当前挂单分布",
     responses={
         200: generate_response_spec(GetCurrentAmountDistributionResponse),
     },
