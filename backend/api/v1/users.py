@@ -22,7 +22,7 @@ from utils.db import ARTICLE_FP_RANK_COLLECTION, LOTTERY_COLLECTION
 
 
 class GetVipInfoResponse(Struct, **RESPONSE_STRUCT_CONFIG):
-    is_vip: bool
+    is_vip: bool = field(name="isVIP")
     type: Optional[Literal["bronze", "sliver", "gold", "platina"]]  # noqa: A003
     expire_date: Optional[datetime]
 
@@ -133,7 +133,7 @@ async def get_lottery_win_records(
     )
 
 
-class GetOnrankRecordItem(Struct, **RESPONSE_STRUCT_CONFIG):
+class GetOnArticleRankRecordItem(Struct, **RESPONSE_STRUCT_CONFIG):
     date: datetime
     ranking: int
     article_title: str
@@ -142,7 +142,7 @@ class GetOnrankRecordItem(Struct, **RESPONSE_STRUCT_CONFIG):
 
 
 class GetOnArticleRankRecordsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
-    records: List[GetOnrankRecordItem]
+    records: List[GetOnArticleRankRecordItem]
 
 
 @get(
@@ -204,10 +204,10 @@ async def get_on_article_rank_records_handler(
         .limit(limit)
     )
 
-    records: List[GetOnrankRecordItem] = []
+    records: List[GetOnArticleRankRecordItem] = []
     async for item in result:
         records.append(
-            GetOnrankRecordItem(
+            GetOnArticleRankRecordItem(
                 date=item["date"],
                 ranking=item["ranking"],
                 article_title=item["article"]["title"],
