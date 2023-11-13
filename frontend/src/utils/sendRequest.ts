@@ -1,6 +1,7 @@
 import type { Signal } from "@preact/signals";
 import type { ResponseStruct } from "../models/responseStruct";
 import { getBaseURL } from "./URLHelper";
+import { commonAPIErrorHandler } from "./errorHandler";
 
 const BASE_URL = `${getBaseURL()}/api`;
 const DEFAULT_TIMEOUT = 5000;
@@ -42,7 +43,7 @@ export async function sendRequest<
   body,
   queryArgs,
   onSuccess,
-  onError,
+  onError = commonAPIErrorHandler,
   isLoading,
   timeout = DEFAULT_TIMEOUT,
 }: SendRequestArgs<TRequest, TResponse>) {
@@ -59,15 +60,20 @@ export async function sendRequest<
   let url = `${BASE_URL}${endpoint}`;
   // 如果是 GET 请求，构建并拼接 Query Args
   if (method === "GET" && queryArgs) {
-    const params: string[] = [];
+    const params = new URLSearchParams();
     Object.entries(queryArgs).forEach(([key, value]) => {
       // 剔除值为 undefined 的 Query Args
       if (value === undefined) {
         return;
       }
-      params.push(`${key}=${value}`);
+      // 对于数组类型，多次添加相同 key 的参数
+      if (Array.isArray(value)) {
+        value.forEach((x) => params.append(key, x));
+      } else {
+        params.append(key, value);
+      }
     });
-    url = params.length >= 0 ? `${url}?${params.join("&")}` : url;
+    url = params.toString().length === 0 ? url : `${url}?${params.toString()}`;
   } else if (body) {
     // 剔除值为 undefined 的 Body 键值对
     body = Object.fromEntries(
