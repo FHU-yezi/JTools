@@ -1,4 +1,4 @@
-import { batch, signal } from "@preact/signals";
+import { batch, computed, signal } from "@preact/signals";
 import {
   Column,
   ExternalLink,
@@ -7,40 +7,40 @@ import {
   TextInput,
 } from "@sscreator/ui";
 import SSWordcloud from "../components/charts/SSWordcloud";
-import type {
-  WordFreqDataItem,
-  WordFreqDataRequest,
-  WordFreqDataResponse,
-} from "../models/ArticleWordcloudGenerator/WordFreqData";
-import { commonAPIErrorHandler } from "../utils/errorHandler";
-import { fetchData } from "../utils/fetchData";
+import type { GetWordFreqResponse } from "../models/articles";
+import { sendRequest } from "../utils/sendRequest";
 import { toastWarning } from "../utils/toastHelper";
 
-const articleURL = signal("");
+const articleUrl = signal("");
+const articleSlug = computed(() => {
+  const matchResult = articleUrl.value!.match(
+    "https://www.jianshu.com/p/(\\w{12})",
+  );
+  if (matchResult !== null && matchResult[1] !== undefined) {
+    return matchResult[1];
+  }
+  return undefined;
+});
 const isLoading = signal(false);
 const articleTitle = signal<string | undefined>(undefined);
-const wordFreqData = signal<WordFreqDataItem | undefined>(undefined);
+const wordFreqData = signal<Record<string, number> | undefined>(undefined);
 
 function handleGenerate() {
-  if (articleURL.value.length === 0) {
+  if (articleUrl.value.length === 0) {
     toastWarning({ message: "请输入文章链接" });
     return;
   }
 
-  fetchData<WordFreqDataRequest, WordFreqDataResponse>(
-    "POST",
-    "/tools/article_wordcloud_generator/word_freq_data",
-    {
-      article_url: articleURL.value,
-    },
-    (data) =>
+  sendRequest<Record<string, never>, GetWordFreqResponse>({
+    method: "GET",
+    endpoint: `/v1/articles/${articleSlug.value}/word-freq`,
+    onSuccess: ({ data }) =>
       batch(() => {
         articleTitle.value = data.title;
-        wordFreqData.value = data.word_freq;
+        wordFreqData.value = data.wordFreq;
       }),
-    commonAPIErrorHandler,
     isLoading,
-  );
+  });
 }
 
 function Wordcloud() {
@@ -57,7 +57,7 @@ function Wordcloud() {
 export default function ArticleWordcloudGenerator() {
   return (
     <Column>
-      <TextInput label="文章链接" value={articleURL} onEnter={handleGenerate} />
+      <TextInput label="文章链接" value={articleUrl} onEnter={handleGenerate} />
       <PrimaryButton
         onClick={handleGenerate}
         loading={isLoading.value}
@@ -66,10 +66,10 @@ export default function ArticleWordcloudGenerator() {
         查询
       </PrimaryButton>
 
-      {articleTitle.value !== undefined && articleURL.value !== undefined && (
+      {articleTitle.value !== undefined && articleUrl.value !== undefined && (
         <Text center>
           文章：
-          <ExternalLink href={articleURL.value}>
+          <ExternalLink href={articleUrl.value}>
             {articleTitle.value.length <= 17
               ? articleTitle.value
               : `${articleTitle.value.substring(0, 17)}...`}

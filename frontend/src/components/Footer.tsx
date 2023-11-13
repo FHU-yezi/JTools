@@ -8,9 +8,8 @@ import {
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
 import { useLocation } from "wouter-preact";
-import type { StatusResponse } from "../models/status";
-import { commonAPIErrorHandler } from "../utils/errorHandler";
-import { fetchData } from "../utils/fetchData";
+import type { GetResponse } from "../models/status";
+import { sendRequest } from "../utils/sendRequest";
 
 const version = signal<string | undefined>(undefined);
 
@@ -18,13 +17,11 @@ export default function Footer() {
   const [, setLocation] = useLocation();
 
   useEffect(() => {
-    fetchData<Record<string, never>, StatusResponse>(
-      "GET",
-      "/status",
-      {},
-      (data) => (version.value = data.version),
-      commonAPIErrorHandler,
-    );
+    sendRequest<Record<string, never>, GetResponse>({
+      method: "GET",
+      endpoint: "/v1/status",
+      onSuccess: ({ data }) => (version.value = data.version),
+    });
   }, []);
 
   return (

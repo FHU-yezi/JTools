@@ -4,17 +4,17 @@ export interface GetResponse {
   unavaliableTools: string[];
 }
 
-export enum ToolStatus {
+export enum ToolStatusEnum {
   NORMAL = "NORMAL",
   UNAVALIABLE = "UNAVALIABLE",
   DOWNGRADED = "DOWNGRADED",
 }
 
 export interface GetToolStatusResponse {
-  status: ToolStatus;
+  status: ToolStatusEnum;
   reason?: string;
   dataUpdateTime?: number;
   dataUpdateFreq?: string;
-  dataCount: number;
+  dataCount?: number;
   dataSource?: Record<string, string>;
 }

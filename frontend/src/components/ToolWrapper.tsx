@@ -15,11 +15,10 @@ import type { Dayjs } from "dayjs";
 import type { JSX } from "preact";
 import { Suspense, useEffect } from "preact/compat";
 import { useLocation } from "wouter-preact";
-import type { InfoRequest, InfoResponse } from "../models/info";
-import { InfoStatus } from "../models/info";
+import type { GetToolStatusResponse } from "../models/status";
+import { ToolStatusEnum } from "../models/status";
 import { getToolSlug } from "../utils/URLHelper";
-import { commonAPIErrorHandler } from "../utils/errorHandler";
-import { fetchData } from "../utils/fetchData";
+import { sendRequest } from "../utils/sendRequest";
 import { getDateTimeWithoutSecond, parseTime } from "../utils/timeHelper";
 import Header from "./Header";
 
@@ -32,9 +31,9 @@ export default function ToolWrapper({ Component, toolName }: Props) {
   const [, setLocation] = useLocation();
 
   const isLoading = useSignal(false);
-  const toolStatus = useSignal<InfoStatus | undefined>(undefined);
+  const toolStatus = useSignal<ToolStatusEnum | undefined>(undefined);
   const reason = useSignal<string | undefined>(undefined);
-  const dataUpdateTime = useSignal<Dayjs | undefined>(undefined);
+  const dataUpdateTime = useSignal<Dayjs | null | undefined>(undefined);
   const dataUpdateFreqDesc = useSignal<string | undefined>(undefined);
   const dataCount = useSignal<number | undefined>(undefined);
   const dataSource = useSignal<Record<string, string> | undefined>({});
@@ -48,37 +47,30 @@ export default function ToolWrapper({ Component, toolName }: Props) {
   useEffect(() => window.scrollTo(0, 0), []);
 
   useEffect(() => {
-    fetchData<InfoRequest, InfoResponse>(
-      "GET",
-      "/info",
-      {
-        tool_slug: getToolSlug(),
-      },
-      (data) => {
+    sendRequest<Record<string, never>, GetToolStatusResponse>({
+      method: "GET",
+      endpoint: `/v1/status/${getToolSlug()}`,
+      onSuccess: ({ data }) =>
         batch(() => {
           toolStatus.value = data.status;
           reason.value = data.reason;
-          dataSource.value = data.data_source;
-          if (data.data_update_time) {
-            dataUpdateTime.value = parseTime(data.data_update_time);
-            dataUpdateFreqDesc.value = data.data_update_freq_desc!;
-          }
-          if (data.data_count) {
-            dataCount.value = data.data_count;
-          }
-        });
+          dataSource.value = data.dataSource;
+          dataUpdateTime.value = data.dataUpdateTime
+            ? parseTime(data.dataUpdateTime)
+            : null;
+          dataUpdateFreqDesc.value = data.dataUpdateFreq;
+          dataCount.value = data.dataCount;
 
-        if (toolStatus.value === InfoStatus.DOWNGRADED) {
-          showDowngradeNotice.value = true;
-        }
+          if (toolStatus.value === ToolStatusEnum.DOWNGRADED) {
+            showDowngradeNotice.value = true;
+          }
 
-        if (toolStatus.value === InfoStatus.UNAVALIABLE) {
-          showUnavaliableModal.value = true;
-        }
-      },
-      commonAPIErrorHandler,
+          if (toolStatus.value === ToolStatusEnum.UNAVALIABLE) {
+            showUnavaliableModal.value = true;
+          }
+        }),
       isLoading,
-    );
+    });
   }, []);
 
   return (
@@ -87,7 +79,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
       {!isLoading.value ? (
         <Column>
           <Row gap="gap-6">
-            {dataUpdateTime.value !== undefined && (
+            {dataUpdateTime.value && (
               <FieldBlock rowClassName="flex-1" fieldName="数据更新时间">
                 <Text>{getDateTimeWithoutSecond(dataUpdateTime.value!)}</Text>
                 <Text gray small>
@@ -95,13 +87,13 @@ export default function ToolWrapper({ Component, toolName }: Props) {
                 </Text>
               </FieldBlock>
             )}
-            {dataCount.value !== undefined && (
+            {dataCount.value && (
               <FieldBlock rowClassName="flex-1" fieldName="总数据量">
                 <Text>{dataCount.value}</Text>
               </FieldBlock>
             )}
           </Row>
-          {dataSource.value !== undefined && (
+          {dataSource.value && (
             <Column gap="gap-1">
               <Text bold>数据来源</Text>
               {Object.entries(dataSource.value).map(([name, url]) => (

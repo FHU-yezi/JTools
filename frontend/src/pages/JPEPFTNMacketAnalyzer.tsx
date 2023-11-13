@@ -3,34 +3,25 @@ import { Column, FieldBlock, Row, Switch, Text } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
 import SSBarChart from "../components/charts/SSBarChart";
 import SSLineChart from "../components/charts/SSLineChart";
-import type { JPEPRulesResponse } from "../models/JPEPFTNMacketAnalyzer/JPEPRules";
 import type {
-  PerPriceAmountDataRequest,
-  PerPriceAmountDataResponse,
-} from "../models/JPEPFTNMacketAnalyzer/PerPriceAmountData";
-import type { PoolAmountResponse } from "../models/JPEPFTNMacketAnalyzer/PoolAmount";
-import type {
-  PoolAmountTrendDataItem,
-  PoolAmountTrendDataRequest,
-  PoolAmountTrendDataResponse,
-} from "../models/JPEPFTNMacketAnalyzer/PoolAmountTrendData";
-import type { PriceResponse } from "../models/JPEPFTNMacketAnalyzer/Price";
-import type {
-  PriceTrendDataItem,
-  PriceTrendDataRequest,
-  PriceTrendDataResponse,
-} from "../models/JPEPFTNMacketAnalyzer/PriceTrendData";
-import type { TimeRange } from "../models/JPEPFTNMacketAnalyzer/base";
-import { commonAPIErrorHandler } from "../utils/errorHandler";
-import { fetchData } from "../utils/fetchData";
+  GetCurrentAmountDistributionRequest,
+  GetCurrentAmountDistributionResponse,
+  GetCurrentAmountResponse,
+  GetCurrentPriceResponse,
+  GetPriceHistoryRequest,
+  GetPriceHistoryResponse,
+  GetRulesResponse,
+} from "../models/JPEPFTNMacket";
+import { sendRequest } from "../utils/sendRequest";
 
 const TimeRangeSwitchData = [
-  { label: "6 小时", value: "6h" },
   { label: "24 小时", value: "24h" },
   { label: "7 天", value: "7d" },
   { label: "15 天", value: "15d" },
   { label: "30 天", value: "30d" },
 ];
+
+type TimeRange = "24h" | "7d" | "15d" | "30d";
 
 const tradeFeePercent = signal<number | undefined>(undefined);
 const buyPrice = signal<number | null | undefined>(undefined);
@@ -48,102 +39,117 @@ const perPriceAmountDataTradeType = signal<"buy" | "sell">("buy");
 const perPriceAmountData = signal<Record<number, number> | undefined>(
   undefined,
 );
-const priceTrendLineTimeRange = signal<TimeRange>("6h");
-const buyPriceTrendData = signal<PriceTrendDataItem | undefined>(undefined);
-const sellPriceTrendData = signal<PriceTrendDataItem | undefined>(undefined);
-const poolAmountTrendLineTimeRange = signal<TimeRange>("6h");
-const buyPoolAmountTrendData = signal<PoolAmountTrendDataItem | undefined>(
+const priceTrendLineTimeRange = signal<TimeRange>("24h");
+const buyPriceTrendData = signal<Record<number, number> | undefined>(undefined);
+const sellPriceTrendData = signal<Record<number, number> | undefined>(
   undefined,
 );
-const sellPoolAmountTrendData = signal<PoolAmountTrendDataItem | undefined>(
+const poolAmountTrendLineTimeRange = signal<TimeRange>("24h");
+const buyPoolAmountTrendData = signal<Record<number, number> | undefined>(
+  undefined,
+);
+const sellPoolAmountTrendData = signal<Record<number, number> | undefined>(
   undefined,
 );
 
 function handleJPEPRulesFetch() {
-  fetchData<Record<string, never>, JPEPRulesResponse>(
-    "GET",
-    "/tools/JPEP_FTN_market_analyzer/JPEP_rules",
-    {},
-    (data) =>
+  sendRequest<Record<string, never>, GetRulesResponse>({
+    method: "GET",
+    endpoint: "/v1/jpep-ftn-macket/rules",
+    onSuccess: ({ data }) =>
       batch(() => {
-        tradeFeePercent.value = data.trade_fee_percent;
-        buyOrderMinimumPrice.value = data.buy_order_minimum_price;
-        sellOrderMinimumPrice.value = data.sell_order_minimum_price;
+        tradeFeePercent.value = data.FTNOrderFee;
+        buyOrderMinimumPrice.value = data.buyOrderMinimumPrice;
+        sellOrderMinimumPrice.value = data.sellOrderMinimumPrice;
       }),
-    commonAPIErrorHandler,
-  );
+  });
 }
 
 function handlePriceFetch() {
-  fetchData<Record<string, never>, PriceResponse>(
-    "GET",
-    "/tools/JPEP_FTN_market_analyzer/price",
-    {},
-    (data) =>
+  sendRequest<Record<string, never>, GetCurrentPriceResponse>({
+    method: "GET",
+    endpoint: "/v1/jpep-ftn-macket/current-price",
+    onSuccess: ({ data }) =>
       batch(() => {
-        buyPrice.value = data.buy_price;
-        sellPrice.value = data.sell_price;
+        buyPrice.value = data.buyPrice;
+        sellPrice.value = data.sellPrice;
       }),
-    commonAPIErrorHandler,
-  );
+  });
 }
 
 function handlePoolAmountFetch() {
-  fetchData<Record<string, never>, PoolAmountResponse>(
-    "GET",
-    "/tools/JPEP_FTN_market_analyzer/pool_amount",
-    {},
-    (data) =>
+  sendRequest<Record<string, never>, GetCurrentAmountResponse>({
+    method: "GET",
+    endpoint: "/v1/jpep-ftn-macket/current-amount",
+    onSuccess: ({ data }) =>
       batch(() => {
-        buyPoolAmount.value = data.buy_amount;
-        sellPoolAmount.value = data.sell_amount;
+        buyPoolAmount.value = data.buyAmount;
+        sellPoolAmount.value = data.sellAmount;
       }),
-    commonAPIErrorHandler,
-  );
+  });
 }
 
 function handlePerPriceAmountDataFetch() {
-  fetchData<PerPriceAmountDataRequest, PerPriceAmountDataResponse>(
-    "GET",
-    "/tools/JPEP_FTN_market_analyzer/per_price_amount_data",
-    {
-      trade_type: perPriceAmountDataTradeType.value,
+  sendRequest<
+    GetCurrentAmountDistributionRequest,
+    GetCurrentAmountDistributionResponse
+  >({
+    method: "GET",
+    endpoint: "/v1/jpep-ftn-macket/current-amount-distribution",
+    queryArgs: {
+      type: perPriceAmountDataTradeType.value,
     },
-    (data) => (perPriceAmountData.value = data.per_price_amount_data),
-    commonAPIErrorHandler,
-  );
+    onSuccess: ({ data }) =>
+      (perPriceAmountData.value = data.amountDistribution),
+  });
 }
 
 function handlePriceTrendDataFetch() {
-  fetchData<PriceTrendDataRequest, PriceTrendDataResponse>(
-    "GET",
-    "/tools/JPEP_FTN_market_analyzer/price_trend_data",
-    {
-      time_range: priceTrendLineTimeRange.value,
+  sendRequest<GetPriceHistoryRequest, GetPriceHistoryResponse>({
+    method: "GET",
+    endpoint: "/v1/jpep-ftn-macket/price-history",
+    queryArgs: {
+      type: "buy",
+      range: priceTrendLineTimeRange.value,
+      resolution: priceTrendLineTimeRange.value === "24h" ? "5m" : "1d",
     },
-    (data) =>
-      batch(() => {
-        buyPriceTrendData.value = data.buy_trend;
-        sellPriceTrendData.value = data.sell_trend;
-      }),
-    commonAPIErrorHandler,
-  );
+    onSuccess: ({ data }) => (buyPriceTrendData.value = data.history),
+  });
+
+  sendRequest<GetPriceHistoryRequest, GetPriceHistoryResponse>({
+    method: "GET",
+    endpoint: "/v1/jpep-ftn-macket/price-history",
+    queryArgs: {
+      type: "sell",
+      range: priceTrendLineTimeRange.value,
+      resolution: priceTrendLineTimeRange.value === "24h" ? "5m" : "1d",
+    },
+    onSuccess: ({ data }) => (sellPriceTrendData.value = data.history),
+  });
 }
 
 function handlePoolAmountTrendDataFetch() {
-  fetchData<PoolAmountTrendDataRequest, PoolAmountTrendDataResponse>(
-    "GET",
-    "/tools/JPEP_FTN_market_analyzer/pool_amount_trend_data",
-    {
-      time_range: poolAmountTrendLineTimeRange.value,
+  sendRequest<GetPriceHistoryRequest, GetPriceHistoryResponse>({
+    method: "GET",
+    endpoint: "/v1/jpep-ftn-macket/amount-history",
+    queryArgs: {
+      type: "buy",
+      range: poolAmountTrendLineTimeRange.value,
+      resolution: poolAmountTrendLineTimeRange.value === "24h" ? "5m" : "1d",
     },
-    (data) =>
-      batch(() => {
-        buyPoolAmountTrendData.value = data.buy_trend;
-        sellPoolAmountTrendData.value = data.sell_trend;
-      }),
-    commonAPIErrorHandler,
-  );
+    onSuccess: ({ data }) => (buyPoolAmountTrendData.value = data.history),
+  });
+
+  sendRequest<GetPriceHistoryRequest, GetPriceHistoryResponse>({
+    method: "GET",
+    endpoint: "/v1/jpep-ftn-macket/amount-history",
+    queryArgs: {
+      type: "sell",
+      range: poolAmountTrendLineTimeRange.value,
+      resolution: poolAmountTrendLineTimeRange.value === "24h" ? "5m" : "1d",
+    },
+    onSuccess: ({ data }) => (sellPoolAmountTrendData.value = data.history),
+  });
 }
 
 function PerPriceAmountDataBar() {
@@ -342,7 +348,7 @@ export default function JPEPFTNMarketAnalyzer() {
             {buyPrice.value ?? "获取中..."}
           </Text>
           <Text small gray>
-            {buyOrderMinimumPrice.value ?? "获取中..."}
+            限价：{buyOrderMinimumPrice.value ?? "获取中..."}
           </Text>
         </FieldBlock>
         <FieldBlock rowClassName="flex-grow" fieldName="卖单">
@@ -350,7 +356,7 @@ export default function JPEPFTNMarketAnalyzer() {
             {sellPrice.value ?? "获取中..."}
           </Text>
           <Text small gray>
-            {sellOrderMinimumPrice.value ?? "获取中..."}
+            限价：{sellOrderMinimumPrice.value ?? "获取中..."}
           </Text>
         </FieldBlock>
       </Row>

@@ -3,7 +3,7 @@ from typing import Annotated, Dict, List, Literal, Optional
 
 from JianshuResearchTools.convert import UserSlugToUserUrl
 from JianshuResearchTools.exceptions import InputError, ResourceError
-from JianshuResearchTools.user import GetUserVIPInfo
+from JianshuResearchTools.user import GetUserName, GetUserVIPInfo
 from litestar import Response, Router, get
 from litestar.params import Parameter
 from litestar.status_codes import HTTP_400_BAD_REQUEST
@@ -22,6 +22,7 @@ from utils.db import ARTICLE_FP_RANK_COLLECTION, LOTTERY_COLLECTION
 
 
 class GetVipInfoResponse(Struct, **RESPONSE_STRUCT_CONFIG):
+    user_name: str
     is_vip: bool = field(name="isVIP")
     type: Optional[Literal["bronze", "sliver", "gold", "platina"]]  # noqa: A003
     expire_date: Optional[datetime]
@@ -41,7 +42,9 @@ async def get_vip_info_handler(
     ],
 ) -> Response:
     try:
-        vip_info = await sync_to_async(GetUserVIPInfo, UserSlugToUserUrl(user_slug))
+        user_url = UserSlugToUserUrl(user_slug)
+        user_name = await sync_to_async(GetUserName, user_url)
+        vip_info = await sync_to_async(GetUserVIPInfo, user_url)
     except InputError:
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
@@ -61,6 +64,7 @@ async def get_vip_info_handler(
 
     return success(
         data=GetVipInfoResponse(
+            user_name=user_name,
             is_vip=is_vip,
             type=type_,
             expire_date=expire_date,

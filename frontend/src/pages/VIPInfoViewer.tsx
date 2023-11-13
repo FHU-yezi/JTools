@@ -1,4 +1,4 @@
-import { batch, signal } from "@preact/signals";
+import { batch, computed, signal } from "@preact/signals";
 import {
   Badge,
   Column,
@@ -9,12 +9,8 @@ import {
   TextInput,
 } from "@sscreator/ui";
 import type { Dayjs } from "dayjs";
-import type {
-  VIPInfoRequest,
-  VIPInfoResponse,
-} from "../models/VIPInfoViewer/VIPInfo";
-import { commonAPIErrorHandler } from "../utils/errorHandler";
-import { fetchData } from "../utils/fetchData";
+import type { GetVIPInfoResponse, VIPTypeEnum } from "../models/users";
+import { sendRequest } from "../utils/sendRequest";
 import {
   getDate,
   getHumanReadableTimeDelta,
@@ -27,9 +23,18 @@ import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";
 import VIPBadgeSilverURL from "/vip_badges/vip_badge_silver.png";
 
 const userURL = signal("");
+const userSlug = computed(() => {
+  const matchResult = userURL.value.match(
+    "https://www.jianshu.com/u/(\\w{6,12})",
+  );
+  if (matchResult !== null && matchResult[1] !== undefined) {
+    return matchResult[1];
+  }
+  return undefined;
+});
 const userName = signal<string | undefined>(undefined);
 const isLoading = signal(false);
-const VIPType = signal<string | undefined>(undefined);
+const VIPType = signal<VIPTypeEnum | undefined>(undefined);
 const VIPExpireTime = signal<Dayjs | undefined>(undefined);
 
 const VIPTypeToBadgeImageURL: Record<string, string> = {
@@ -49,23 +54,19 @@ function handleQuery() {
     return;
   }
 
-  fetchData<VIPInfoRequest, VIPInfoResponse>(
-    "POST",
-    "/tools/VIP_info_viewer/VIP_info",
-    {
-      user_url: userURL.value,
-    },
-    (data) =>
+  sendRequest<Record<string, never>, GetVIPInfoResponse>({
+    method: "GET",
+    endpoint: `/v1/users/${userSlug.value}/vip-info`,
+    onSuccess: ({ data }) =>
       batch(() => {
-        userName.value = data.name;
-        VIPType.value = data.VIP_type;
-        if (data.VIP_expire_time !== undefined) {
-          VIPExpireTime.value = parseTime(data.VIP_expire_time);
+        userName.value = data.userName;
+        VIPType.value = data.type;
+        if (data.expireDate !== undefined) {
+          VIPExpireTime.value = parseTime(data.expireDate);
         }
       }),
-    commonAPIErrorHandler,
     isLoading,
-  );
+  });
 }
 
 export default function VIPInfoViewer() {
@@ -105,7 +106,7 @@ export default function VIPInfoViewer() {
               </Row>
             </Badge>
           </Text>
-          {VIPType.value !== "无会员" && (
+          {VIPType.value !== undefined && (
             <Text>
               到期时间：
               {getDate(VIPExpireTime.value!)}（

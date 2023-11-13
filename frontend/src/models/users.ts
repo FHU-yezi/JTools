@@ -1,4 +1,4 @@
-export enum VIPType {
+export enum VIPTypeEnum {
   BRONZE = "bronze",
   SLIVER = "sliver",
   GOLD = "goid",
@@ -6,13 +6,13 @@ export enum VIPType {
 }
 
 export interface GetVIPInfoResponse {
+  userName: string;
   isVIP: boolean;
-  type: VIPType;
+  type: VIPTypeEnum;
   expireDate: number;
 }
 
 export interface GetLotteryWinRecordsRequest {
-  user_slug: string;
   offset?: number;
   limit?: number;
   target_rewards?: string[];
@@ -53,7 +53,7 @@ export interface GetOnArticleRankSummaryRequest {
   user_name?: string;
 }
 
-export interface GetOnArticleRankSummary {
+export interface GetOnArticleRankSummaryResponse {
   top10: number;
   top30: number;
   top50: number;
@@ -67,6 +67,10 @@ export interface GetNameAutocompleteRequest {
 
 export interface GetNameAutocompleteResponse {
   names: string[];
+}
+
+export interface GetHistoryNamesOnArticleRankSummaryRequest {
+  user_name: string;
 }
 
 export interface GetHistoryNamesOnArticleRankSummaryResponse {

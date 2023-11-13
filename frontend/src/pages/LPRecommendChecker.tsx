@@ -14,13 +14,8 @@ import {
 } from "@sscreator/ui";
 import clsx from "clsx";
 import type { Dayjs } from "dayjs";
-import type {
-  CheckItem,
-  CheckRequest,
-  CheckResponse,
-} from "../models/LPRecommendChecker/CheckResult";
 import { commonAPIErrorHandler } from "../utils/errorHandler";
-import { fetchData } from "../utils/fetchData";
+import { sendRequest } from "../utils/sendRequest";
 import {
   getDatetime,
   getHumanReadableTimeDelta,
@@ -41,7 +36,7 @@ function handleCheck() {
     return;
   }
 
-  fetchData<CheckRequest, CheckResponse>(
+  sendRequest<CheckRequest, CheckResponse>(
     "POST",
     "/tools/LP_recommend_checker/check",
     {

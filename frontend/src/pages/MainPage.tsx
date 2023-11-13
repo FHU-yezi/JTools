@@ -10,10 +10,9 @@ import {
 } from "../V2RedirectRoutes";
 import Header from "../components/Header";
 import ToolCard from "../components/ToolCard";
-import type { StatusResponse } from "../models/status";
+import type { GetResponse } from "../models/status";
 import { routes } from "../routes";
-import { commonAPIErrorHandler } from "../utils/errorHandler";
-import { fetchData } from "../utils/fetchData";
+import { sendRequest } from "../utils/sendRequest";
 import umamiTrack from "../utils/umamiTrack";
 
 const downgradedTools = signal<string[]>([]);
@@ -56,17 +55,15 @@ export default function MainPage() {
   }, []);
 
   useEffect(() => {
-    fetchData<Record<string, never>, StatusResponse>(
-      "GET",
-      "/status",
-      {},
-      (data) =>
+    sendRequest<Record<string, never>, GetResponse>({
+      method: "GET",
+      endpoint: "/v1/status",
+      onSuccess: ({ data }) =>
         batch(() => {
-          downgradedTools.value = data.downgraded_tools;
-          unavaliableTools.value = data.unavaliable_tools;
+          downgradedTools.value = data.downgradedTools;
+          unavaliableTools.value = data.unavaliableTools;
         }),
-      commonAPIErrorHandler,
-    );
+    });
   }, []);
 
   return (

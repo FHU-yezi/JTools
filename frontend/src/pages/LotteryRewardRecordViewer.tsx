@@ -1,5 +1,5 @@
 import type { Signal } from "@preact/signals";
-import { batch, effect, signal, useSignal } from "@preact/signals";
+import { batch, computed, effect, signal, useSignal } from "@preact/signals";
 import {
   Checkbox,
   Column,
@@ -13,68 +13,72 @@ import {
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
 import SSLazyLoadTable from "../components/SSLazyLoadTable";
+import type { GetRewardsResponse } from "../models/lottery";
 import type {
-  LotteryRecordItem,
-  LotteryRecordsRequest,
-  LotteryRecordsResponse,
-} from "../models/LotteryRewardRecordViewer/LotteryRecords";
-import type { RewardResponse } from "../models/LotteryRewardRecordViewer/Rewards";
-import { commonAPIErrorHandler } from "../utils/errorHandler";
-import { fetchData } from "../utils/fetchData";
+  GetLotteryWinRecordItem,
+  GetLotteryWinRecordsRequest,
+  GetLotteryWinRecordsResponse,
+} from "../models/users";
+import { sendRequest } from "../utils/sendRequest";
 import { removeSpace } from "../utils/textHelper";
 import { getDatetime, parseTime } from "../utils/timeHelper";
 import { toastWarning } from "../utils/toastHelper";
 
 const rewards = signal<string[] | undefined>(undefined);
 const userURL = signal("");
+const userSlug = computed(() => {
+  const matchResult = userURL.value.match(
+    "https://www.jianshu.com/u/(\\w{6,12})",
+  );
+  if (matchResult !== null && matchResult[1] !== undefined) {
+    return matchResult[1];
+  }
+  return undefined;
+});
 const selectedRewards = signal<string[]>([]);
 const isLoading = signal(false);
 const hasMore = signal(true);
-const result = signal<LotteryRecordItem[] | undefined>(undefined);
+const result = signal<GetLotteryWinRecordItem[] | undefined>(undefined);
 
 function handleQuery() {
   if (userURL.value.length === 0) {
     toastWarning({ message: "请输入用户个人主页链接" });
     return;
   }
-
-  fetchData<LotteryRecordsRequest, LotteryRecordsResponse>(
-    "POST",
-    "/tools/lottery_reward_record_viewer/lottery_records",
-    {
-      user_url: userURL.value,
+  sendRequest<GetLotteryWinRecordsRequest, GetLotteryWinRecordsResponse>({
+    method: "GET",
+    endpoint: `/v1/users/${userSlug.value}/lottery-win-records`,
+    queryArgs: {
       target_rewards: selectedRewards.value,
-      offset: 0,
     },
-    (data) => {
-      result.value = data.records;
-      if (data.records.length === 0) {
-        hasMore.value = false;
-      }
-    },
-    commonAPIErrorHandler,
+    onSuccess: ({ data }) =>
+      batch(() => {
+        result.value = data.records;
+        if (data.records.length === 0) {
+          hasMore.value = false;
+        }
+      }),
     isLoading,
-  );
+  });
 }
 
 function handleLoadMore() {
-  fetchData<LotteryRecordsRequest, LotteryRecordsResponse>(
-    "POST",
-    "/tools/lottery_reward_record_viewer/lottery_records",
-    {
-      user_url: userURL.value,
+  sendRequest<GetLotteryWinRecordsRequest, GetLotteryWinRecordsResponse>({
+    method: "GET",
+    endpoint: `/v1/users/${userSlug.value}/lottery-win-records`,
+    queryArgs: {
       target_rewards: selectedRewards.value,
-      offset: result.value!.length + 1,
+      offset: result.value!.length,
     },
-    (data) => {
-      result.value = result.value!.concat(data.records);
-      if (data.records.length === 0) {
-        hasMore.value = false;
-      }
-    },
-    commonAPIErrorHandler,
+    onSuccess: ({ data }) =>
+      batch(() => {
+        result.value = result.value!.concat(data.records);
+        if (data.records.length === 0) {
+          hasMore.value = false;
+        }
+      }),
     isLoading,
-  );
+  });
 }
 
 function RewardsFliter() {
@@ -82,23 +86,19 @@ function RewardsFliter() {
   const dataReady = useSignal(false);
 
   useEffect(() => {
-    fetchData<Record<string, never>, RewardResponse>(
-      "GET",
-      "/tools/lottery_reward_record_viewer/rewards",
-      {},
-      (data) =>
+    sendRequest<Record<string, never>, GetRewardsResponse>({
+      method: "GET",
+      endpoint: "/v1/lottery/rewards",
+      onSuccess: ({ data }) =>
         batch(() => {
           rewards.value = data.rewards;
-          selectedRewards.value = rewards.value.map((item) =>
-            removeSpace(item),
-          );
+          selectedRewards.value = data.rewards;
           rewards.value.forEach(
             (name) => (rewardSelectedSignals.value[name] = signal(true)),
           );
           dataReady.value = true;
         }),
-      commonAPIErrorHandler,
-    );
+    });
   }, []);
 
   effect(
@@ -133,7 +133,7 @@ function ResultTable() {
     <SSLazyLoadTable
       data={result.value!.map((item) => ({
         时间: <Text center>{getDatetime(parseTime(item.time))}</Text>,
-        奖项: <Text center>{item.reward_name}</Text>,
+        奖项: <Text center>{item.rewardName}</Text>,
       }))}
       onLoadMore={handleLoadMore}
       hasMore={hasMore}

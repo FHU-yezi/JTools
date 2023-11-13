@@ -14,30 +14,39 @@ import {
 import SSAutocomplete from "../components/SSAutocomplete";
 import SSLazyLoadTable from "../components/SSLazyLoadTable";
 import type {
-  OnRankRecordItem,
-  OnRankRecordsRequest,
-  OnRankRecordsResponse,
-  RankingSummaryRequest,
-  RankingSummaryResponse,
-} from "../models/OnRankArticleViewer/OnRankRecords";
-import type {
-  SameURLRecordsSummaryRequest,
-  SameURLRecordsSummaryResponse,
-} from "../models/OnRankArticleViewer/SameURLRecordsSummary";
-import type {
-  UserNameAutocompleteRequest,
-  UserNameAutocompleteResponse,
-} from "../models/OnRankArticleViewer/UserNameAutocomplete";
-import { commonAPIErrorHandler } from "../utils/errorHandler";
-import { fetchData } from "../utils/fetchData";
+  GetHistoryNamesOnArticleRankSummaryRequest,
+  GetHistoryNamesOnArticleRankSummaryResponse,
+  GetNameAutocompleteRequest,
+  GetNameAutocompleteResponse,
+  GetOnArticleRankRecordItem,
+  GetOnArticleRankRecordsRequest,
+  GetOnArticleRankRecordsResponse,
+  GetOnArticleRankSummaryRequest,
+  GetOnArticleRankSummaryResponse,
+} from "../models/users";
+import { sendRequest } from "../utils/sendRequest";
 import { getDate, parseTime } from "../utils/timeHelper";
 import { toastWarning } from "../utils/toastHelper";
 
 const userURLOrUserName = signal("");
+const userSlug = computed(() => {
+  const matchResult = userURLOrUserName.value.match(
+    "https://www.jianshu.com/u/(\\w{6,12})",
+  );
+  if (matchResult !== null && matchResult[1] !== undefined) {
+    return matchResult[1];
+  }
+  return undefined;
+});
+const userName = computed(() =>
+  userSlug.value === undefined && userURLOrUserName.value.length !== 0
+    ? userURLOrUserName.value.trim()
+    : undefined,
+);
 const sortSelect = signal<
-  "onrank_date desc" | "onrank_date asc" | "ranking desc" | "ranking asc"
->("onrank_date desc");
-const sortBy = computed<"onrank_date" | "ranking">(
+  "date desc" | "date asc" | "ranking desc" | "ranking asc"
+>("date desc");
+const sortBy = computed<"date" | "ranking">(
   () => sortSelect.value.split(" ")[0] as any,
 );
 const sortOrder = computed<"asc" | "desc">(
@@ -46,7 +55,7 @@ const sortOrder = computed<"asc" | "desc">(
 const completeItems = signal<string[]>([]);
 const isLoading = signal(false);
 const hasMore = signal(true);
-const result = signal<OnRankRecordItem[] | undefined>(undefined);
+const result = signal<GetOnArticleRankRecordItem[] | undefined>(undefined);
 const top10Count = signal<number | undefined>(undefined);
 const top30Count = signal<number | undefined>(undefined);
 const top50Count = signal<number | undefined>(undefined);
@@ -68,15 +77,14 @@ function handleCompleteItemUpdate(value: string) {
     return;
   }
 
-  fetchData<UserNameAutocompleteRequest, UserNameAutocompleteResponse>(
-    "GET",
-    "/tools/on_rank_article_viewer/user_name_autocomplete",
-    {
+  sendRequest<GetNameAutocompleteRequest, GetNameAutocompleteResponse>({
+    method: "GET",
+    endpoint: "/v1/users/name-autocomplete",
+    queryArgs: {
       name_part: value.trim(),
     },
-    (data) => (completeItems.value = data.possible_names),
-    commonAPIErrorHandler,
-  );
+    onSuccess: ({ data }) => (completeItems.value = data.names),
+  });
 }
 
 function handleQuery() {
@@ -87,103 +95,99 @@ function handleQuery() {
 
   hasMore.value = true;
 
-  const isName = !isURL(userURLOrUserName.value);
-
-  const requestBodyForRecords: OnRankRecordsRequest = isName
-    ? {
-        user_name: userURLOrUserName.value.trim(),
-        sort_by: sortBy.value,
-        sort_order: sortOrder.value,
-        offset: 0,
-      }
-    : {
-        user_url: userURLOrUserName.value,
-        sort_by: sortBy.value,
-        sort_order: sortOrder.value,
-        offset: 0,
-      };
-  fetchData<OnRankRecordsRequest, OnRankRecordsResponse>(
-    "POST",
-    "/tools/on_rank_article_viewer/on_rank_records",
-    requestBodyForRecords,
-    (data) => {
+  const queryArgsForRecords: GetOnArticleRankRecordsRequest =
+    userSlug.value !== undefined
+      ? {
+          user_slug: userSlug.value,
+          order_by: sortBy.value,
+          order_direction: sortOrder.value,
+        }
+      : {
+          user_name: userName.value,
+          order_by: sortBy.value,
+          order_direction: sortOrder.value,
+        };
+  sendRequest<GetOnArticleRankRecordsRequest, GetOnArticleRankRecordsResponse>({
+    method: "GET",
+    endpoint: "/v1/users/on-article-rank-records",
+    queryArgs: queryArgsForRecords,
+    onSuccess: ({ data }) =>
       batch(() => {
         result.value = data.records;
         if (data.records.length === 0) {
           hasMore.value = false;
         }
-      });
-    },
-    commonAPIErrorHandler,
+      }),
     isLoading,
-  );
+  });
 
-  const requestBodyForRankingSummary: RankingSummaryRequest = isName
-    ? {
-        user_name: userURLOrUserName.value.trim(),
-      }
-    : {
-        user_url: userURLOrUserName.value,
-      };
-  fetchData<RankingSummaryRequest, RankingSummaryResponse>(
-    "POST",
-    "/tools/on_rank_article_viewer/ranking_summary",
-    requestBodyForRankingSummary,
-    (data) => {
+  const queryArgsForRankingSummary: GetOnArticleRankSummaryRequest =
+    userSlug.value !== undefined
+      ? {
+          user_slug: userSlug.value,
+        }
+      : {
+          user_name: userName.value,
+        };
+  sendRequest<GetOnArticleRankSummaryRequest, GetOnArticleRankSummaryResponse>({
+    method: "GET",
+    endpoint: "/v1/users/on-article-rank-summary",
+    queryArgs: queryArgsForRankingSummary,
+    onSuccess: ({ data }) =>
       batch(() => {
-        top10Count.value = data.top10_count;
-        top30Count.value = data.top30_count;
-        top50Count.value = data.top50_count;
+        top10Count.value = data.top10;
+        top30Count.value = data.top30;
+        top50Count.value = data.top50;
         totalCount.value = data.total;
-      });
-    },
-    commonAPIErrorHandler,
-  );
+      }),
+  });
 
-  if (isName) {
-    fetchData<SameURLRecordsSummaryRequest, SameURLRecordsSummaryResponse>(
-      "GET",
-      "/tools/on_rank_article_viewer/same_url_records_summary",
-      { user_name: userURLOrUserName.value.trim() },
-      (data) => {
-        batch(() => {
-          sameURLRecordsSummary.value = data.records;
-          sameURLUserURL.value = data.user_url;
-        });
+  if (userName.value !== undefined) {
+    sendRequest<
+      GetHistoryNamesOnArticleRankSummaryRequest,
+      GetHistoryNamesOnArticleRankSummaryResponse
+    >({
+      method: "GET",
+      endpoint: "/v1/users/history-names-on-article-rank-summary",
+      queryArgs: {
+        user_name: userName.value,
       },
-      commonAPIErrorHandler,
-    );
+      onSuccess: ({ data }) =>
+        batch(() => {
+          sameURLRecordsSummary.value = data.historyNamesOnrankSummary;
+          sameURLUserURL.value = data.userUrl;
+        }),
+    });
   }
 }
 
 function handleLoadMore() {
-  const requestBody: OnRankRecordsRequest = isURL(userURLOrUserName.value)
-    ? {
-        user_url: userURLOrUserName.value,
-        sort_by: sortBy.value,
-        sort_order: sortOrder.value,
-        offset: result.value!.length + 1,
-      }
-    : {
-        user_name: userURLOrUserName.value.trim(),
-        sort_by: sortBy.value,
-        sort_order: sortOrder.value,
-        offset: result.value!.length + 1,
-      };
+  const queryArgs: GetOnArticleRankRecordsRequest =
+    userSlug.value !== undefined
+      ? {
+          user_slug: userSlug.value,
+          order_by: sortBy.value,
+          order_direction: sortOrder.value,
+        }
+      : {
+          user_name: userName.value,
+          order_by: sortBy.value,
+          order_direction: sortOrder.value,
+        };
 
-  fetchData<OnRankRecordsRequest, OnRankRecordsResponse>(
-    "POST",
-    "/tools/on_rank_article_viewer/on_rank_records",
-    requestBody,
-    (data) => {
-      result.value = result.value!.concat(data.records);
-      if (data.records.length === 0) {
-        hasMore.value = false;
-      }
-    },
-    commonAPIErrorHandler,
+  sendRequest<GetOnArticleRankRecordsRequest, GetOnArticleRankRecordsResponse>({
+    method: "GET",
+    endpoint: "/v1/users/on-article-rank-records",
+    queryArgs,
+    onSuccess: ({ data }) =>
+      batch(() => {
+        result.value = data.records!.concat(data.records);
+        if (data.records.length === 0) {
+          hasMore.value = false;
+        }
+      }),
     isLoading,
-  );
+  });
 }
 
 function SameURLRecordsFoundNotice() {
@@ -233,13 +237,13 @@ function ResultTable() {
         文章: (
           <ExternalLink
             className="block max-w-[60vw] overflow-hidden text-ellipsis whitespace-nowrap"
-            href={item.url}
+            href={item.articleUrl}
             hideIcon
           >
-            {item.title}
+            {item.articleTitle}
           </ExternalLink>
         ),
-        获钻量: <Text center>{item.FP_reward_count}</Text>,
+        获钻量: <Text center>{item.FPReward}</Text>,
       }))}
       onLoadMore={handleLoadMore}
       hasMore={hasMore}
@@ -264,11 +268,11 @@ export default function OnRankArticleViewer() {
         data={[
           {
             label: "上榜日期（倒序）",
-            value: "onrank_date desc",
+            value: "date desc",
           },
           {
             label: "上榜日期（正序）",
-            value: "onrank_date asc",
+            value: "date asc",
           },
           {
             label: "排名（倒序）",

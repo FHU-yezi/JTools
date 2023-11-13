@@ -20,8 +20,17 @@ export interface GetSummaryRewardItem {
   rarity: number;
 }
 
+export interface GetSummaryRequest {
+  range: "1d" | "7d" | "30d" | "all";
+}
+
 export interface GetSummaryResponse {
-  records: GetSummaryRewardItem[];
+  rewards: GetSummaryRewardItem[];
+}
+
+export interface GetRewardWinsHistoryRequest {
+  range: "1d" | "7d" | "30d";
+  resolution: "1h" | "1d";
 }
 
 export interface GetRewardWinsHistoryResponse {

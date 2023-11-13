@@ -31,7 +31,7 @@ dayjs.updateLocale("zh-cn", {
 
 export function parseTime(timeInt: number): Dayjs {
   // 时间加八小时，处理时区问题
-  return dayjs.unix(timeInt);
+  return dayjs(timeInt);
 }
 
 export function getDatetime(dateObj: Dayjs) {
