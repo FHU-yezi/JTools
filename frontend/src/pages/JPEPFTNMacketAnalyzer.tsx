@@ -55,7 +55,7 @@ const sellPoolAmountTrendData = signal<Record<number, number> | undefined>(
 function handleJPEPRulesFetch() {
   sendRequest<Record<string, never>, GetRulesResponse>({
     method: "GET",
-    endpoint: "/v1/jpep-ftn-macket/rules",
+    endpoint: "/v1/jpep/ftn-macket/rules",
     onSuccess: ({ data }) =>
       batch(() => {
         tradeFeePercent.value = data.FTNOrderFee;
@@ -68,7 +68,7 @@ function handleJPEPRulesFetch() {
 function handlePriceFetch() {
   sendRequest<Record<string, never>, GetCurrentPriceResponse>({
     method: "GET",
-    endpoint: "/v1/jpep-ftn-macket/current-price",
+    endpoint: "/v1/jpep/ftn-macket/current-price",
     onSuccess: ({ data }) =>
       batch(() => {
         buyPrice.value = data.buyPrice;
@@ -80,7 +80,7 @@ function handlePriceFetch() {
 function handlePoolAmountFetch() {
   sendRequest<Record<string, never>, GetCurrentAmountResponse>({
     method: "GET",
-    endpoint: "/v1/jpep-ftn-macket/current-amount",
+    endpoint: "/v1/jpep/ftn-macket/current-amount",
     onSuccess: ({ data }) =>
       batch(() => {
         buyPoolAmount.value = data.buyAmount;
@@ -95,7 +95,7 @@ function handlePerPriceAmountDataFetch() {
     GetCurrentAmountDistributionResponse
   >({
     method: "GET",
-    endpoint: "/v1/jpep-ftn-macket/current-amount-distribution",
+    endpoint: "/v1/jpep/ftn-macket/current-amount-distribution",
     queryArgs: {
       type: perPriceAmountDataTradeType.value,
     },
@@ -107,7 +107,7 @@ function handlePerPriceAmountDataFetch() {
 function handlePriceTrendDataFetch() {
   sendRequest<GetPriceHistoryRequest, GetPriceHistoryResponse>({
     method: "GET",
-    endpoint: "/v1/jpep-ftn-macket/price-history",
+    endpoint: "/v1/jpep/ftn-macket/price-history",
     queryArgs: {
       type: "buy",
       range: priceTrendLineTimeRange.value,
@@ -118,7 +118,7 @@ function handlePriceTrendDataFetch() {
 
   sendRequest<GetPriceHistoryRequest, GetPriceHistoryResponse>({
     method: "GET",
-    endpoint: "/v1/jpep-ftn-macket/price-history",
+    endpoint: "/v1/jpep/ftn-macket/price-history",
     queryArgs: {
       type: "sell",
       range: priceTrendLineTimeRange.value,
@@ -131,7 +131,7 @@ function handlePriceTrendDataFetch() {
 function handlePoolAmountTrendDataFetch() {
   sendRequest<GetPriceHistoryRequest, GetPriceHistoryResponse>({
     method: "GET",
-    endpoint: "/v1/jpep-ftn-macket/amount-history",
+    endpoint: "/v1/jpep/ftn-macket/amount-history",
     queryArgs: {
       type: "buy",
       range: poolAmountTrendLineTimeRange.value,
@@ -142,7 +142,7 @@ function handlePoolAmountTrendDataFetch() {
 
   sendRequest<GetPriceHistoryRequest, GetPriceHistoryResponse>({
     method: "GET",
-    endpoint: "/v1/jpep-ftn-macket/amount-history",
+    endpoint: "/v1/jpep/ftn-macket/amount-history",
     queryArgs: {
       type: "sell",
       range: poolAmountTrendLineTimeRange.value,

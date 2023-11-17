@@ -7,7 +7,7 @@ from api import API_ROUTER
 
 
 class CustomOpenAPIController(OpenAPIController):
-    path = "/api/swagger"
+    path = "/api/docs"
     swagger_ui_version = "5.9.1"
     swagger_css_url = (
         "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.1/swagger-ui.css"

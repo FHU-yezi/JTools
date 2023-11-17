@@ -419,8 +419,8 @@ async def get_current_amount_distribution_handler(
     )
 
 
-JPEP_FTN_MACKET_ROUTER = Router(
-    path="/jpep-ftn-macket",
+FTN_MACKET_ROUTER = Router(
+    path="/ftn-macket",
     route_handlers=[
         get_rules_handler,
         get_current_price_handler,
