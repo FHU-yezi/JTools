@@ -153,7 +153,7 @@ class GetOnArticleRankRecordsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 
 @get(
-    "/on-article-rank-records",
+    "/{user_slug: str}/on-article-rank-records",
     summary="获取用户上榜记录",
     responses={
         200: generate_response_spec(GetOnArticleRankRecordsResponse),
@@ -162,11 +162,8 @@ class GetOnArticleRankRecordsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 )
 async def get_on_article_rank_records_handler(
     user_slug: Annotated[
-        Optional[str], Parameter(description="用户 slug", min_length=6, max_length=12)
-    ] = None,
-    user_name: Annotated[
-        Optional[str], Parameter(description="用户昵称", max_length=50)
-    ] = None,
+        str, Parameter(description="用户 slug", min_length=6, max_length=12)
+    ],
     order_by: Annotated[
         Literal["date", "ranking"], Parameter(description="排序依据")
     ] = "date",
@@ -176,36 +173,62 @@ async def get_on_article_rank_records_handler(
     offset: Annotated[int, Parameter(description="分页偏移", ge=0)] = 0,
     limit: Annotated[int, Parameter(description="结果数量", gt=0, lt=100)] = 20,
 ) -> Response:
-    if not user_slug and not user_name:
+    try:
+        user_url = UserSlugToUserUrl(user_slug)
+    except InputError:
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
             api_code=Code.BAD_ARGUMENTS,
-            msg="必须提供用户 slug 或用户昵称",
+            msg="输入的简书个人主页链接无效",
         )
-
-    if user_slug and user_name:
-        return fail(
-            http_code=HTTP_400_BAD_REQUEST,
-            api_code=Code.BAD_ARGUMENTS,
-            msg="用户 slug 或用户昵称不能同时提供",
-        )
-
-    if user_slug:
-        try:
-            user_url = UserSlugToUserUrl(user_slug)
-        except InputError:
-            return fail(
-                http_code=HTTP_400_BAD_REQUEST,
-                api_code=Code.BAD_ARGUMENTS,
-                msg="输入的简书个人主页链接无效",
-            )
-    else:
-        user_url = None
 
     result = (
-        ARTICLE_FP_RANK_COLLECTION.find(
-            {"author.url": user_url} if user_url else {"author.name": user_name}
+        ARTICLE_FP_RANK_COLLECTION.find({"author.url": user_url})
+        .sort(order_by, 1 if order_direction == "asc" else -1)
+        .skip(offset)
+        .limit(limit)
+    )
+
+    records: List[GetOnArticleRankRecordItem] = []
+    async for item in result:
+        records.append(
+            GetOnArticleRankRecordItem(
+                date=item["date"],
+                ranking=item["ranking"],
+                article_title=item["article"]["title"],
+                article_url=item["article"]["url"],
+                FP_reward=item["reward"]["to_author"],
+            )
         )
+
+    return success(
+        data=GetOnArticleRankRecordsResponse(
+            records=records,
+        )
+    )
+
+
+@get(
+    "/name/{user_name: str}/on-article-rank-records",
+    summary="通过昵称获取用户上榜记录",
+    responses={
+        200: generate_response_spec(GetOnArticleRankRecordsResponse),
+        400: generate_response_spec(),
+    },
+)
+async def get_on_article_rank_records_by_user_name_handler(
+    user_name: Annotated[str, Parameter(description="用户昵称", max_length=50)],
+    order_by: Annotated[
+        Literal["date", "ranking"], Parameter(description="排序依据")
+    ] = "date",
+    order_direction: Annotated[
+        Literal["asc", "desc"], Parameter(description="排序方向")
+    ] = "desc",
+    offset: Annotated[int, Parameter(description="分页偏移", ge=0)] = 0,
+    limit: Annotated[int, Parameter(description="结果数量", gt=0, lt=100)] = 20,
+) -> Response:
+    result = (
+        ARTICLE_FP_RANK_COLLECTION.find({"author.name": user_name})
         .sort(order_by, 1 if order_direction == "asc" else -1)
         .skip(offset)
         .limit(limit)
@@ -238,7 +261,7 @@ class GetOnArticleRankSummaryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 
 
 @get(
-    "/on-article-rank-summary",
+    "/{user_slug: str}/on-article-rank-summary",
     summary="获取用户上榜摘要",
     responses={
         200: generate_response_spec(GetOnArticleRankSummaryResponse),
@@ -247,40 +270,61 @@ class GetOnArticleRankSummaryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 )
 async def get_on_article_rank_summary_handler(
     user_slug: Annotated[
-        Optional[str], Parameter(description="用户 slug", min_length=6, max_length=12)
-    ] = None,
-    user_name: Annotated[
-        Optional[str], Parameter(description="用户昵称", max_length=50)
-    ] = None,
+        str, Parameter(description="用户 slug", min_length=6, max_length=12)
+    ],
 ) -> Response:
-    if not user_slug and not user_name:
+    try:
+        user_url = UserSlugToUserUrl(user_slug)
+    except InputError:
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
             api_code=Code.BAD_ARGUMENTS,
-            msg="必须提供用户 slug 或用户昵称",
+            msg="输入的简书个人主页链接无效",
         )
-
-    if user_slug and user_name:
-        return fail(
-            http_code=HTTP_400_BAD_REQUEST,
-            api_code=Code.BAD_ARGUMENTS,
-            msg="用户 slug 或用户昵称不能同时提供",
-        )
-
-    if user_slug:
-        try:
-            user_url = UserSlugToUserUrl(user_slug)
-        except InputError:
-            return fail(
-                http_code=HTTP_400_BAD_REQUEST,
-                api_code=Code.BAD_ARGUMENTS,
-                msg="输入的简书个人主页链接无效",
-            )
-    else:
-        user_url = None
 
     records = ARTICLE_FP_RANK_COLLECTION.find(
-        {"author.url": user_url} if user_url else {"author.name": user_name},
+        {"author.url": user_url},
+        {"_id": False, "ranking": True},
+    )
+
+    top10 = 0
+    top30 = 0
+    top50 = 0
+    total = 0
+    async for item in records:
+        ranking = item["ranking"]
+        if ranking <= 10:
+            top10 += 1
+        if ranking <= 30:
+            top30 += 1
+        if ranking <= 50:
+            top50 += 1
+
+        total += 1
+
+    return success(
+        data=GetOnArticleRankSummaryResponse(
+            top10=top10,
+            top30=top30,
+            top50=top50,
+            total=total,
+        )
+    )
+
+
+@get(
+    "/name/{user_name: str}/on-article-rank-summary",
+    summary="根据昵称获取用户上榜摘要",
+    responses={
+        200: generate_response_spec(GetOnArticleRankSummaryResponse),
+        400: generate_response_spec(),
+    },
+)
+async def get_on_article_rank_summary_by_user_name_handler(
+    user_name: Annotated[str, Parameter(description="用户昵称", max_length=50)],
+) -> Response:
+    records = ARTICLE_FP_RANK_COLLECTION.find(
+        {"author.name": user_name},
         {"_id": False, "ranking": True},
     )
 
@@ -347,7 +391,7 @@ class GetHistoryNamesOnArticleRankSummaryResponse(Struct, **RESPONSE_STRUCT_CONF
 
 
 @get(
-    "/history-names-on-article-rank-summary",
+    "/name/{user_name: str}/history-names-on-article-rank-summary",
     summary="获取用户曾用昵称上榜摘要",
     responses={
         200: generate_response_spec(GetHistoryNamesOnArticleRankSummaryResponse),
@@ -355,8 +399,8 @@ class GetHistoryNamesOnArticleRankSummaryResponse(Struct, **RESPONSE_STRUCT_CONF
 )
 async def get_history_names_on_article_rank_summary_handler(
     user_name: Annotated[
-        Optional[str], Parameter(description="用户昵称", max_length=50)
-    ] = None,
+        str, Parameter(description="用户昵称", max_length=50)
+    ],
 ) -> Response:
     url_query = await ARTICLE_FP_RANK_COLLECTION.find_one({"author.name": user_name})
     if not url_query:
@@ -410,7 +454,9 @@ USERS_ROUTER = Router(
         get_vip_info_handler,
         get_lottery_win_records,
         get_on_article_rank_records_handler,
+        get_on_article_rank_records_by_user_name_handler,
         get_on_article_rank_summary_handler,
+        get_on_article_rank_summary_by_user_name_handler,
         get_name_autocomplete_handler,
         get_history_names_on_article_rank_summary_handler,
     ],

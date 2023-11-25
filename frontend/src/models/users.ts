@@ -28,8 +28,6 @@ export interface GetLotteryWinRecordsResponse {
 }
 
 export interface GetOnArticleRankRecordsRequest {
-  user_slug?: string;
-  user_name?: string;
   order_by?: "date" | "ranking";
   order_direction?: "asc" | "desc";
   offset?: number;
@@ -48,11 +46,6 @@ export interface GetOnArticleRankRecordsResponse {
   records: GetOnArticleRankRecordItem[];
 }
 
-export interface GetOnArticleRankSummaryRequest {
-  user_slug?: string;
-  user_name?: string;
-}
-
 export interface GetOnArticleRankSummaryResponse {
   top10: number;
   top30: number;
@@ -67,10 +60,6 @@ export interface GetNameAutocompleteRequest {
 
 export interface GetNameAutocompleteResponse {
   names: string[];
-}
-
-export interface GetHistoryNamesOnArticleRankSummaryRequest {
-  user_name: string;
 }
 
 export interface GetHistoryNamesOnArticleRankSummaryResponse {

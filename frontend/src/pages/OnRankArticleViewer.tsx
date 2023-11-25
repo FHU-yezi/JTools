@@ -14,14 +14,12 @@ import {
 import SSAutocomplete from "../components/SSAutocomplete";
 import SSLazyLoadTable from "../components/SSLazyLoadTable";
 import type {
-  GetHistoryNamesOnArticleRankSummaryRequest,
   GetHistoryNamesOnArticleRankSummaryResponse,
   GetNameAutocompleteRequest,
   GetNameAutocompleteResponse,
   GetOnArticleRankRecordItem,
   GetOnArticleRankRecordsRequest,
   GetOnArticleRankRecordsResponse,
-  GetOnArticleRankSummaryRequest,
   GetOnArticleRankSummaryResponse,
 } from "../models/users";
 import { sendRequest } from "../utils/sendRequest";
@@ -95,22 +93,17 @@ function handleQuery() {
 
   hasMore.value = true;
 
-  const queryArgsForRecords: GetOnArticleRankRecordsRequest =
+  const endpointForRankRecords =
     userSlug.value !== undefined
-      ? {
-          user_slug: userSlug.value,
-          order_by: sortBy.value,
-          order_direction: sortOrder.value,
-        }
-      : {
-          user_name: userName.value,
-          order_by: sortBy.value,
-          order_direction: sortOrder.value,
-        };
+      ? `/v1/users/${userSlug.value}/on-article-rank-records`
+      : `/v1/users/name/${userName.value}/on-article-rank-records`;
   sendRequest<GetOnArticleRankRecordsRequest, GetOnArticleRankRecordsResponse>({
     method: "GET",
-    endpoint: "/v1/users/on-article-rank-records",
-    queryArgs: queryArgsForRecords,
+    endpoint: endpointForRankRecords,
+    queryArgs: {
+      order_by: sortBy.value,
+      order_direction: sortOrder.value,
+    },
     onSuccess: ({ data }) =>
       batch(() => {
         result.value = data.records;
@@ -121,18 +114,13 @@ function handleQuery() {
     isLoading,
   });
 
-  const queryArgsForRankingSummary: GetOnArticleRankSummaryRequest =
+  const endpointForRankSummary =
     userSlug.value !== undefined
-      ? {
-          user_slug: userSlug.value,
-        }
-      : {
-          user_name: userName.value,
-        };
-  sendRequest<GetOnArticleRankSummaryRequest, GetOnArticleRankSummaryResponse>({
+      ? `/v1/users/${userSlug.value}/on-article-rank-summary`
+      : `/v1/users/name/${userName.value}/on-article-rank-summary`;
+  sendRequest<Record<string, never>, GetOnArticleRankSummaryResponse>({
     method: "GET",
-    endpoint: "/v1/users/on-article-rank-summary",
-    queryArgs: queryArgsForRankingSummary,
+    endpoint: endpointForRankSummary,
     onSuccess: ({ data }) =>
       batch(() => {
         top10Count.value = data.top10;
@@ -144,14 +132,11 @@ function handleQuery() {
 
   if (userName.value !== undefined) {
     sendRequest<
-      GetHistoryNamesOnArticleRankSummaryRequest,
+      Record<string, never>,
       GetHistoryNamesOnArticleRankSummaryResponse
     >({
       method: "GET",
-      endpoint: "/v1/users/history-names-on-article-rank-summary",
-      queryArgs: {
-        user_name: userName.value,
-      },
+      endpoint: `/v1/users/name/${userName.value}/history-names-on-article-rank-summary`,
       onSuccess: ({ data }) =>
         batch(() => {
           sameURLRecordsSummary.value = data.historyNamesOnrankSummary;
@@ -162,23 +147,17 @@ function handleQuery() {
 }
 
 function handleLoadMore() {
-  const queryArgs: GetOnArticleRankRecordsRequest =
+  const endpoint =
     userSlug.value !== undefined
-      ? {
-          user_slug: userSlug.value,
-          order_by: sortBy.value,
-          order_direction: sortOrder.value,
-        }
-      : {
-          user_name: userName.value,
-          order_by: sortBy.value,
-          order_direction: sortOrder.value,
-        };
-
+      ? `/v1/users/${userSlug.value}/on-article-rank-summary`
+      : `/v1/users/name/${userName.value}/on-article-rank-summary`;
   sendRequest<GetOnArticleRankRecordsRequest, GetOnArticleRankRecordsResponse>({
     method: "GET",
-    endpoint: "/v1/users/on-article-rank-records",
-    queryArgs,
+    endpoint,
+    queryArgs: {
+      order_by: sortBy.value,
+      order_direction: sortOrder.value,
+    },
     onSuccess: ({ data }) =>
       batch(() => {
         result.value = data.records!.concat(data.records);
