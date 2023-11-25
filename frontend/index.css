@@ -5,9 +5,6 @@ body ::selection {
   --at-apply: bg-zinc-300 dark:bg-zinc-700
 }
 
-.text-primary {
-  --at-apply: text-zinc-900 dark:text-zinc-300;
-}
 .gray-border {
   --at-apply: border border-zinc-200 dark:border-zinc-600;
 }
