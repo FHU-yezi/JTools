@@ -1,7 +1,13 @@
+import logging
+import logging.config
+
 from uvicorn import run as uvicorn_run
 
 from utils.config import config
 from utils.log import logger
+
+logging.getLogger("httpx").setLevel(logging.CRITICAL)
+logging.getLogger("httpcore").setLevel(logging.CRITICAL)
 
 if __name__ == "__main__":
     logger.info("启动 API 服务")

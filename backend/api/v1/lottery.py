@@ -1,3 +1,4 @@
+from asyncio import gather
 from datetime import datetime, timedelta
 from typing import Annotated, Dict, List, Literal, Optional
 
@@ -252,8 +253,10 @@ async def get_summary_handler(
 ) -> Response:
     td = RANGE_TO_TIMEDELTA[range]
 
-    wins_count = await get_summary_wins_count(td)
-    winners_count = await get_summary_winners_count(td)
+    wins_count, winners_count = await gather(
+        get_summary_wins_count(td),
+        get_summary_winners_count(td),
+    )
 
     average_wins_count_per_winner = get_summary_average_wins_count_per_winner(
         wins_count, winners_count

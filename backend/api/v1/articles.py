@@ -1,3 +1,4 @@
+from asyncio import gather
 from datetime import datetime, timedelta
 from typing import Annotated, Any, Dict, Optional, cast
 
@@ -173,8 +174,10 @@ async def get_word_freq_handler(
 ) -> Response:
     try:
         article_url = ArticleSlugToArticleUrl(article_slug)
-        title = await sync_to_async(GetArticleTitle, article_url)
-        article_text = await sync_to_async(GetArticleText, article_url)
+        title, article_text = await gather(
+            sync_to_async(GetArticleTitle, article_url),
+            sync_to_async(GetArticleText, article_url),
+        )
     except InputError:
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
@@ -247,10 +250,11 @@ async def get_LP_recommend_check_handler(  # noqa: N802
 
     author_url = await get_author_url(article_slug)
 
-    next_can_recommend_date = await caculate_next_can_recommend_date(author_url)
-
-    article_title = await sync_to_async(GetArticleTitle, article_url)
-    FP_reward = await sync_to_async(GetArticleTotalFPCount, article_url)  # noqa: N806
+    next_can_recommend_date, article_title, FP_reward = await gather(  # noqa: N806
+        caculate_next_can_recommend_date(author_url),
+        sync_to_async(GetArticleTitle, article_url),
+        sync_to_async(GetArticleTotalFPCount, article_url),
+    )
 
     return success(
         data=GetLPRecommendCheckResponse(

@@ -1,3 +1,4 @@
+from asyncio import gather
 from datetime import datetime, timedelta
 from typing import Annotated, Any, Dict, Literal, Optional
 
@@ -287,8 +288,9 @@ class GetCurrentPriceResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     },
 )
 async def get_current_price_handler() -> Response:
-    buy_order = await get_latest_order("buy")
-    sell_order = await get_latest_order("sell")
+    buy_order, sell_order = await gather(
+        get_latest_order("buy"), get_latest_order("sell")
+    )
 
     buy_price = buy_order["price"] if buy_order else None
     sell_price = sell_order["price"] if sell_order else None
@@ -314,8 +316,10 @@ class GetCurrentAmountResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     },
 )
 async def get_current_amount_handler() -> Response:
-    buy_amount = await get_current_amount("buy")
-    sell_amount = await get_current_amount("sell")
+    buy_amount, sell_amount = await gather(
+        get_current_amount("buy"),
+        get_current_amount("sell"),
+    )
 
     return success(
         data=GetCurrentAmountResponse(

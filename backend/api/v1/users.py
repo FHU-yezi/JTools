@@ -1,3 +1,4 @@
+from asyncio import gather
 from datetime import datetime
 from typing import Annotated, Dict, List, Literal, Optional
 
@@ -43,8 +44,10 @@ async def get_vip_info_handler(
 ) -> Response:
     try:
         user_url = UserSlugToUserUrl(user_slug)
-        user_name = await sync_to_async(GetUserName, user_url)
-        vip_info = await sync_to_async(GetUserVIPInfo, user_url)
+        user_name, vip_info = await gather(
+            sync_to_async(GetUserName, user_url),
+            sync_to_async(GetUserVIPInfo, user_url),
+        )
     except InputError:
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
