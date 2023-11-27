@@ -5,6 +5,7 @@ export interface GetWordFreqResponse {
 
 export interface GetLPRecommendCheckResponse {
   articleTitle: string;
+  canRecommendNow: boolean;
   FPReward: number;
   nextCanRecommendDate: number;
 }

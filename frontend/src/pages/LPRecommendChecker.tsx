@@ -22,18 +22,18 @@ const articleSlug = computed(() => {
   return undefined;
 });
 const isLoading = signal(false);
-const checkResult = signal<GetLPRecommendCheckResponse | undefined>(undefined);
+const result = signal<GetLPRecommendCheckResponse | undefined>(undefined);
 
 function handleCheck() {
-  if (articleUrl.value.length === 0) {
-    toastWarning({ message: "请输入文章链接" });
+  if (articleSlug.value === undefined) {
+    toastWarning({ message: "请输入有效的文章链接" });
     return;
   }
 
   sendRequest<Record<string, never>, GetLPRecommendCheckResponse>({
     method: "GET",
     endpoint: `/v1/articles/${articleSlug.value}/lp-recommend-check`,
-    onSuccess: ({ data }) => (checkResult.value = data),
+    onSuccess: ({ data }) => (result.value = data),
     isLoading,
   });
 }
@@ -43,23 +43,43 @@ export default function LPRecommendChecker() {
     <Column>
       <TextInput label="文章链接" value={articleUrl} onEnter={handleCheck} />
       <PrimaryButton onClick={handleCheck} loading={isLoading.value} fullWidth>
-        查询
+        检测
       </PrimaryButton>
 
-      {checkResult.value && (
+      {result.value !== undefined && (
         <>
-          <Text>
-            文章标题：
+          <Text
+            color={
+              result.value.canRecommendNow ? "text-green-500" : "text-red-500"
+            }
+            large
+            bold
+          >
+            {result.value.canRecommendNow ? "可推荐" : "不可推荐"}
+          </Text>
+          <Text truncate>
+            文章：
             <ExternalLink href={articleUrl.value}>
-              {checkResult.value.articleTitle}
+              {result.value.articleTitle}
             </ExternalLink>
           </Text>
-          <Text>获钻量：{checkResult.value.FPReward}</Text>
           <Text>
-            下次可推时间：
-            {checkResult.value.nextCanRecommendDate
-              ? getDatetime(parseTime(checkResult.value.nextCanRecommendDate))
-              : "---"}
+            获钻量：
+            <Text
+              color={result.value.FPReward >= 35 ? "text-red-500" : undefined}
+              bold
+              inline
+            >
+              {result.value.FPReward}
+            </Text>
+          </Text>
+          <Text>
+            作者下次可推时间：
+            <Text bold inline>
+              {result.value.nextCanRecommendDate
+                ? getDatetime(parseTime(result.value.nextCanRecommendDate))
+                : "作者未上过榜"}
+            </Text>
           </Text>
         </>
       )}

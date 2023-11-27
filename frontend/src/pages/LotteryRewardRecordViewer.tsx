@@ -24,10 +24,9 @@ import { removeSpace } from "../utils/textHelper";
 import { getDatetime, parseTime } from "../utils/timeHelper";
 import { toastWarning } from "../utils/toastHelper";
 
-const rewards = signal<string[] | undefined>(undefined);
-const userURL = signal("");
+const userUrl = signal("");
 const userSlug = computed(() => {
-  const matchResult = userURL.value.match(
+  const matchResult = userUrl.value.match(
     "https://www.jianshu.com/u/(\\w{6,12})",
   );
   if (matchResult !== null && matchResult[1] !== undefined) {
@@ -35,16 +34,18 @@ const userSlug = computed(() => {
   }
   return undefined;
 });
+const rewards = signal<string[] | undefined>(undefined);
 const selectedRewards = signal<string[]>([]);
 const isLoading = signal(false);
 const hasMore = signal(true);
 const result = signal<GetLotteryWinRecordItem[] | undefined>(undefined);
 
 function handleQuery() {
-  if (userURL.value.length === 0) {
-    toastWarning({ message: "请输入用户个人主页链接" });
+  if (userSlug.value === undefined) {
+    toastWarning({ message: "请输入有效的用户个人主页链接" });
     return;
   }
+
   sendRequest<GetLotteryWinRecordsRequest, GetLotteryWinRecordsResponse>({
     method: "GET",
     endpoint: `/v1/users/${userSlug.value}/lottery-win-records`,
@@ -63,6 +64,11 @@ function handleQuery() {
 }
 
 function handleLoadMore() {
+  if (userSlug.value === undefined) {
+    toastWarning({ message: "请输入有效的用户个人主页链接" });
+    return;
+  }
+
   sendRequest<GetLotteryWinRecordsRequest, GetLotteryWinRecordsResponse>({
     method: "GET",
     endpoint: `/v1/users/${userSlug.value}/lottery-win-records`,
@@ -147,7 +153,7 @@ export default function LotteryRewardRecordViewer() {
     <Column>
       <TextInput
         label="用户个人主页链接"
-        value={userURL}
+        value={userUrl}
         onEnter={handleQuery}
       />
       <RewardsFliter />

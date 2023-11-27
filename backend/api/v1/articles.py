@@ -203,6 +203,7 @@ async def get_word_freq_handler(
 
 class GetLPRecommendCheckResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     article_title: str
+    can_recommend_now: bool
     FP_reward: float = field(name="FPReward")
     next_can_recommend_date: Optional[datetime]
 
@@ -250,15 +251,20 @@ async def get_LP_recommend_check_handler(  # noqa: N802
 
     author_url = await get_author_url(article_slug)
 
-    next_can_recommend_date, article_title, FP_reward = await gather(  # noqa: N806
-        caculate_next_can_recommend_date(author_url),
+    article_title, FP_reward, next_can_recommend_date = await gather(  # noqa: N806
         sync_to_async(GetArticleTitle, article_url),
         sync_to_async(GetArticleTotalFPCount, article_url),
+        caculate_next_can_recommend_date(author_url),
+    )
+
+    can_recommend_now = FP_reward < 35 and (
+        not next_can_recommend_date or next_can_recommend_date <= datetime.now()
     )
 
     return success(
         data=GetLPRecommendCheckResponse(
             article_title=article_title,
+            can_recommend_now=can_recommend_now,
             FP_reward=FP_reward,
             next_can_recommend_date=next_can_recommend_date,
         )

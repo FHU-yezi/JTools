@@ -26,9 +26,9 @@ import { sendRequest } from "../utils/sendRequest";
 import { getDate, parseTime } from "../utils/timeHelper";
 import { toastWarning } from "../utils/toastHelper";
 
-const userURLOrUserName = signal("");
+const userUrlOrName = signal("");
 const userSlug = computed(() => {
-  const matchResult = userURLOrUserName.value.match(
+  const matchResult = userUrlOrName.value.match(
     "https://www.jianshu.com/u/(\\w{6,12})",
   );
   if (matchResult !== null && matchResult[1] !== undefined) {
@@ -37,31 +37,25 @@ const userSlug = computed(() => {
   return undefined;
 });
 const userName = computed(() =>
-  userSlug.value === undefined && userURLOrUserName.value.length !== 0
-    ? userURLOrUserName.value.trim()
+  userSlug.value === undefined && userUrlOrName.value.length !== 0
+    ? userUrlOrName.value.trim()
     : undefined,
 );
-const sortSelect = signal<
-  "date desc" | "date asc" | "ranking desc" | "ranking asc"
->("date desc");
-const sortBy = computed<"date" | "ranking">(
-  () => sortSelect.value.split(" ")[0] as any,
-);
-const sortOrder = computed<"asc" | "desc">(
-  () => sortSelect.value.split(" ")[1] as any,
-);
-const completeItems = signal<string[]>([]);
+const orderSelect = signal<{
+  orderBy: "date" | "ranking";
+  orderDirection: "asc" | "desc";
+}>({ orderBy: "date", orderDirection: "asc" });
+const autocompleteItems = signal<string[]>([]);
 const isLoading = signal(false);
 const hasMore = signal(true);
-const result = signal<GetOnArticleRankRecordItem[] | undefined>(undefined);
-const top10Count = signal<number | undefined>(undefined);
-const top30Count = signal<number | undefined>(undefined);
-const top50Count = signal<number | undefined>(undefined);
-const totalCount = signal<number | undefined>(undefined);
-const sameURLRecordsSummary = signal<Record<string, number> | undefined>(
+const rankRecords = signal<GetOnArticleRankRecordItem[] | undefined>(undefined);
+const rankSummary = signal<GetOnArticleRankSummaryResponse | undefined>(
   undefined,
 );
-const sameURLUserURL = signal<string | undefined>(undefined);
+const historyNamesOnRankSummary = signal<
+  GetHistoryNamesOnArticleRankSummaryResponse | undefined
+>(undefined);
+const showHistoryNamesOnRankRecordFoundNotice = signal(false);
 
 function isURL(string: string): boolean {
   return string.startsWith("https://");
@@ -81,12 +75,12 @@ function handleCompleteItemUpdate(value: string) {
     queryArgs: {
       name_part: value.trim(),
     },
-    onSuccess: ({ data }) => (completeItems.value = data.names),
+    onSuccess: ({ data }) => (autocompleteItems.value = data.names),
   });
 }
 
 function handleQuery() {
-  if (userURLOrUserName.value.length === 0) {
+  if (userUrlOrName.value.length === 0) {
     toastWarning({ message: "请输入用户昵称或个人主页链接" });
     return;
   }
@@ -101,12 +95,12 @@ function handleQuery() {
     method: "GET",
     endpoint: endpointForRankRecords,
     queryArgs: {
-      order_by: sortBy.value,
-      order_direction: sortOrder.value,
+      order_by: orderSelect.value.orderBy,
+      order_direction: orderSelect.value.orderDirection,
     },
     onSuccess: ({ data }) =>
       batch(() => {
-        result.value = data.records;
+        rankRecords.value = data.records;
         if (data.records.length === 0) {
           hasMore.value = false;
         }
@@ -121,13 +115,7 @@ function handleQuery() {
   sendRequest<Record<string, never>, GetOnArticleRankSummaryResponse>({
     method: "GET",
     endpoint: endpointForRankSummary,
-    onSuccess: ({ data }) =>
-      batch(() => {
-        top10Count.value = data.top10;
-        top30Count.value = data.top30;
-        top50Count.value = data.top50;
-        totalCount.value = data.total;
-      }),
+    onSuccess: ({ data }) => (rankSummary.value = data),
   });
 
   if (userName.value !== undefined) {
@@ -139,8 +127,10 @@ function handleQuery() {
       endpoint: `/v1/users/name/${userName.value}/history-names-on-article-rank-summary`,
       onSuccess: ({ data }) =>
         batch(() => {
-          sameURLRecordsSummary.value = data.historyNamesOnrankSummary;
-          sameURLUserURL.value = data.userUrl;
+          historyNamesOnRankSummary.value = data;
+          if (Object.keys(data.historyNamesOnrankSummary).length !== 0) {
+            showHistoryNamesOnRankRecordFoundNotice.value = true;
+          }
         }),
     });
   }
@@ -155,12 +145,12 @@ function handleLoadMore() {
     method: "GET",
     endpoint,
     queryArgs: {
-      order_by: sortBy.value,
-      order_direction: sortOrder.value,
+      order_by: orderSelect.value.orderBy,
+      order_direction: orderSelect.value.orderDirection,
     },
     onSuccess: ({ data }) =>
       batch(() => {
-        result.value = data.records!.concat(data.records);
+        rankRecords.value = data.records!.concat(data.records);
         if (data.records.length === 0) {
           hasMore.value = false;
         }
@@ -169,7 +159,7 @@ function handleLoadMore() {
   });
 }
 
-function SameURLRecordsFoundNotice() {
+function HistoryNamesOnRankRecordFoundNotice() {
   return (
     <InfoAlert>
       <Column>
@@ -178,7 +168,7 @@ function SameURLRecordsFoundNotice() {
         </Text>
         <Text>您可能更改过简书昵称，我们找到了其它与您有关的上榜记录：</Text>
         <Column gap="gap-2">
-          {Object.entries(sameURLRecordsSummary.value!).map(
+          {Object.entries(historyNamesOnRankSummary.value!).map(
             ([name, dataCount]) => (
               <Text>
                 {name}：{dataCount} 条上榜记录
@@ -191,10 +181,9 @@ function SameURLRecordsFoundNotice() {
       <GhostButton
         onClick={() => {
           batch(() => {
-            // 替换当前输入的昵称为个人主页链接，同时清空同链接记录数据，以隐藏该组件
-            userURLOrUserName.value = sameURLUserURL.value!;
-            sameURLRecordsSummary.value = undefined;
-            sameURLUserURL.value = undefined;
+            // 替换当前输入的昵称为个人主页链接，同时隐藏该组件
+            userUrlOrName.value = historyNamesOnRankSummary.value!.userUrl;
+            showHistoryNamesOnRankRecordFoundNotice.value = false;
           });
           // 触发检索
           handleQuery();
@@ -210,7 +199,7 @@ function SameURLRecordsFoundNotice() {
 function ResultTable() {
   return (
     <SSLazyLoadTable
-      data={result.value!.map((item) => ({
+      data={rankRecords.value!.map((item) => ({
         日期: <Text center>{getDate(parseTime(item.date))}</Text>,
         排名: <Text center>{item.ranking}</Text>,
         文章: (
@@ -236,30 +225,30 @@ export default function OnRankArticleViewer() {
     <Column>
       <SSAutocomplete
         label="用户昵称 / 个人主页链接"
-        value={userURLOrUserName}
+        value={userUrlOrName}
         onEnter={handleQuery}
         onValueChange={handleCompleteItemUpdate}
-        completeItems={completeItems}
+        completeItems={autocompleteItems}
       />
       <Switch
         label="排序依据"
-        value={sortSelect}
+        value={orderSelect}
         data={[
           {
             label: "上榜日期（倒序）",
-            value: "date desc",
+            value: { orderBy: "date", orderDirection: "desc" },
           },
           {
             label: "上榜日期（正序）",
-            value: "date asc",
+            value: { orderBy: "date", orderDirection: "asc" },
           },
           {
             label: "排名（倒序）",
-            value: "ranking desc",
+            value: { orderBy: "ranking", orderDirection: "asc" },
           },
           {
-            label: "排名（倒序）",
-            value: "ranking asc",
+            label: "排名（正序）",
+            value: { orderBy: "ranking", orderDirection: "asc" },
           },
         ]}
       />
@@ -267,41 +256,38 @@ export default function OnRankArticleViewer() {
         查询
       </PrimaryButton>
 
-      {sameURLRecordsSummary.value !== undefined &&
-        Object.keys(sameURLRecordsSummary.value).length !== 0 &&
-        sameURLUserURL.value !== undefined && <SameURLRecordsFoundNotice />}
-
-      {top10Count.value !== undefined &&
-        top30Count.value !== undefined &&
-        top50Count.value !== undefined &&
-        totalCount.value !== undefined &&
-        totalCount.value !== 0 && (
-          <Grid className="place-items-center" cols="grid-cols-2" gap="gap-6">
-            <FieldBlock fieldName="前 10 名次数">
-              <Text large bold>
-                {top10Count.value}
-              </Text>
-            </FieldBlock>
-            <FieldBlock fieldName="前 30 名次数">
-              <Text large bold>
-                {top30Count.value}
-              </Text>
-            </FieldBlock>
-            <FieldBlock fieldName="前 50 名次数">
-              <Text large bold>
-                {top50Count.value}
-              </Text>
-            </FieldBlock>
-            <FieldBlock fieldName="总上榜次数">
-              <Text large bold>
-                {totalCount.value}
-              </Text>
-            </FieldBlock>
-          </Grid>
+      {historyNamesOnRankSummary.value !== undefined &&
+        showHistoryNamesOnRankRecordFoundNotice.value && (
+          <HistoryNamesOnRankRecordFoundNotice />
         )}
 
-      {result.value !== undefined &&
-        (result.value.length !== 0 ? (
+      {rankSummary.value !== undefined && rankSummary.value.total !== 0 && (
+        <Grid className="place-items-center" cols="grid-cols-2" gap="gap-6">
+          <FieldBlock fieldName="前 10 名次数">
+            <Text large bold>
+              {rankSummary.value.top10}
+            </Text>
+          </FieldBlock>
+          <FieldBlock fieldName="前 30 名次数">
+            <Text large bold>
+              {rankSummary.value.top30}
+            </Text>
+          </FieldBlock>
+          <FieldBlock fieldName="前 50 名次数">
+            <Text large bold>
+              {rankSummary.value.top50}
+            </Text>
+          </FieldBlock>
+          <FieldBlock fieldName="总上榜次数">
+            <Text large bold>
+              {rankSummary.value.total}
+            </Text>
+          </FieldBlock>
+        </Grid>
+      )}
+
+      {rankRecords.value !== undefined &&
+        (rankRecords.value.length !== 0 ? (
           <ResultTable />
         ) : (
           <NoResultNotice message="没有上榜记录" />

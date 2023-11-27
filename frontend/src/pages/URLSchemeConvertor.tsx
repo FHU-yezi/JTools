@@ -89,7 +89,7 @@ function handleConvert() {
   const urlType = getURLType(jianshuURL);
 
   if (urlType === "unknown") {
-    toastWarning({ message: "输入的不是有效的简书链接，请检查" });
+    toastWarning({ message: "请输入有效的简书链接" });
     return;
   }
 
@@ -113,22 +113,24 @@ export default function URLSchemeConvertor() {
       {result.value !== undefined && (
         <Center>
           <Column className="mt-12" gap="gap-4">
-            <Row gap="gap-2" verticalCenter>
+            <Column gap="gap-2" horizontalCenter>
               <Text>{result.value}</Text>
-              <GhostButton
-                icon={<MdOutlineArrowForward />}
-                onClick={() => window.open(result.value)}
-              >
-                访问
-              </GhostButton>
-              <GhostButton
-                className={!clipboard.copied ? undefined : "bg-green-100"}
-                icon={!clipboard.copied ? <MdContentCopy /> : <MdDone />}
-                onClick={() => clipboard.copy(result.value)}
-              >
-                {!clipboard.copied ? "复制" : "复制成功"}
-              </GhostButton>
-            </Row>
+              <Row verticalCenter>
+                <GhostButton
+                  icon={<MdOutlineArrowForward />}
+                  onClick={() => window.open(result.value)}
+                >
+                  访问
+                </GhostButton>
+                <GhostButton
+                  className={!clipboard.copied ? undefined : "bg-green-100"}
+                  icon={!clipboard.copied ? <MdContentCopy /> : <MdDone />}
+                  onClick={() => clipboard.copy(result.value)}
+                >
+                  {!clipboard.copied ? "复制" : "复制成功"}
+                </GhostButton>
+              </Row>
+            </Column>
             <QRCode className="w-full" value={result.value} />
           </Column>
         </Center>

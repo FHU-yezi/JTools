@@ -12,6 +12,7 @@ import type {
   GetPriceHistoryResponse,
   GetRulesResponse,
 } from "../models/JPEPFTNMacket";
+import { roundFloat } from "../utils/numberHelper";
 import { sendRequest } from "../utils/sendRequest";
 
 const TimeRangeSwitchData = [
@@ -23,20 +24,16 @@ const TimeRangeSwitchData = [
 
 type TimeRange = "24h" | "7d" | "15d" | "30d";
 
-const tradeFeePercent = signal<number | undefined>(undefined);
-const buyPrice = signal<number | null | undefined>(undefined);
-const sellPrice = signal<number | null | undefined>(undefined);
-const buyOrderMinimumPrice = signal<number | undefined>(undefined);
-const sellOrderMinimumPrice = signal<number | undefined>(undefined);
-const buyPoolAmount = signal<number | undefined>(undefined);
-const sellPoolAmount = signal<number | undefined>(undefined);
+const currentPrice = signal<GetCurrentPriceResponse | undefined>(undefined);
+const currentAmount = signal<GetCurrentAmountResponse | undefined>(undefined);
 const totalPoolAmount = computed(() =>
-  buyPoolAmount.value !== undefined && sellPoolAmount.value !== undefined
-    ? buyPoolAmount.value + sellPoolAmount.value
+  currentAmount.value !== undefined
+    ? currentAmount.value.buyAmount + currentAmount.value.sellAmount
     : undefined,
 );
+const JPEPRules = signal<GetRulesResponse | undefined>(undefined);
 const perPriceAmountDataTradeType = signal<"buy" | "sell">("buy");
-const perPriceAmountData = signal<Record<number, number> | undefined>(
+const amountDistribution = signal<Record<number, number> | undefined>(
   undefined,
 );
 const priceTrendLineTimeRange = signal<TimeRange>("24h");
@@ -56,12 +53,7 @@ function handleJPEPRulesFetch() {
   sendRequest<Record<string, never>, GetRulesResponse>({
     method: "GET",
     endpoint: "/v1/jpep/ftn-macket/rules",
-    onSuccess: ({ data }) =>
-      batch(() => {
-        tradeFeePercent.value = data.FTNOrderFee;
-        buyOrderMinimumPrice.value = data.buyOrderMinimumPrice;
-        sellOrderMinimumPrice.value = data.sellOrderMinimumPrice;
-      }),
+    onSuccess: ({ data }) => (JPEPRules.value = data),
   });
 }
 
@@ -69,11 +61,7 @@ function handlePriceFetch() {
   sendRequest<Record<string, never>, GetCurrentPriceResponse>({
     method: "GET",
     endpoint: "/v1/jpep/ftn-macket/current-price",
-    onSuccess: ({ data }) =>
-      batch(() => {
-        buyPrice.value = data.buyPrice;
-        sellPrice.value = data.sellPrice;
-      }),
+    onSuccess: ({ data }) => (currentPrice.value = data),
   });
 }
 
@@ -81,11 +69,7 @@ function handlePoolAmountFetch() {
   sendRequest<Record<string, never>, GetCurrentAmountResponse>({
     method: "GET",
     endpoint: "/v1/jpep/ftn-macket/current-amount",
-    onSuccess: ({ data }) =>
-      batch(() => {
-        buyPoolAmount.value = data.buyAmount;
-        sellPoolAmount.value = data.sellAmount;
-      }),
+    onSuccess: ({ data }) => (currentAmount.value = data),
   });
 }
 
@@ -100,7 +84,7 @@ function handlePerPriceAmountDataFetch() {
       type: perPriceAmountDataTradeType.value,
     },
     onSuccess: ({ data }) =>
-      (perPriceAmountData.value = data.amountDistribution),
+      (amountDistribution.value = data.amountDistribution),
   });
 }
 
@@ -156,14 +140,10 @@ function PerPriceAmountDataBar() {
   return (
     <SSBarChart
       className="h-72 max-w-xl w-full"
-      dataReady={perPriceAmountData.value !== undefined}
+      dataReady={amountDistribution.value !== undefined}
       options={{
         xAxis: {
           type: "category",
-          data:
-            perPriceAmountData.value === undefined
-              ? undefined
-              : Object.keys(perPriceAmountData.value),
         },
         yAxis: {
           type: "value",
@@ -172,9 +152,9 @@ function PerPriceAmountDataBar() {
           {
             type: "bar",
             data:
-              perPriceAmountData.value === undefined
+              amountDistribution.value === undefined
                 ? undefined
-                : Object.values(perPriceAmountData.value),
+                : Object.entries(amountDistribution.value),
           },
         ],
         tooltip: {
@@ -196,14 +176,12 @@ function PriceTrendLine() {
       }
       options={{
         xAxis: {
-          type: "category",
-          data:
-            buyPriceTrendData.value === undefined
-              ? undefined
-              : Object.keys(buyPriceTrendData.value),
+          type: "time",
         },
         yAxis: {
           type: "value",
+          min: (value) => roundFloat(value.min - 0.01, 2),
+          max: (value) => roundFloat(value.max + 0.01, 2),
         },
         series: [
           {
@@ -213,7 +191,7 @@ function PriceTrendLine() {
             data:
               buyPriceTrendData.value === undefined
                 ? undefined
-                : Object.values(buyPriceTrendData.value),
+                : Object.entries(buyPriceTrendData.value),
           },
           {
             type: "line",
@@ -222,21 +200,7 @@ function PriceTrendLine() {
             data:
               sellPriceTrendData.value === undefined
                 ? undefined
-                : Object.values(sellPriceTrendData.value),
-          },
-          {
-            type: "line",
-            name: "推荐参考价",
-            data:
-              buyPriceTrendData.value === undefined
-                ? undefined
-                : new Array(Object.keys(buyPriceTrendData.value).length).fill(
-                    0.1,
-                  ),
-            showSymbol: false,
-            lineStyle: {
-              type: "dashed",
-            },
+                : Object.entries(sellPriceTrendData.value),
           },
         ],
         legend: {
@@ -261,11 +225,7 @@ function PoolAmountTrendLine() {
       }
       options={{
         xAxis: {
-          type: "category",
-          data:
-            buyPoolAmountTrendData.value === undefined
-              ? undefined
-              : Object.keys(buyPoolAmountTrendData.value),
+          type: "time",
         },
         yAxis: {
           type: "value",
@@ -278,7 +238,7 @@ function PoolAmountTrendLine() {
             data:
               buyPoolAmountTrendData.value === undefined
                 ? undefined
-                : Object.values(buyPoolAmountTrendData.value),
+                : Object.entries(buyPoolAmountTrendData.value),
           },
           {
             type: "line",
@@ -287,7 +247,7 @@ function PoolAmountTrendLine() {
             data:
               sellPoolAmountTrendData.value === undefined
                 ? undefined
-                : Object.values(sellPoolAmountTrendData.value),
+                : Object.entries(sellPoolAmountTrendData.value),
           },
         ],
         tooltip: {
@@ -310,7 +270,7 @@ export default function JPEPFTNMarketAnalyzer() {
   }, []);
 
   useEffect(() => {
-    perPriceAmountData.value = undefined;
+    amountDistribution.value = undefined;
     handlePerPriceAmountDataFetch();
   }, [perPriceAmountDataTradeType.value]);
 
@@ -332,31 +292,46 @@ export default function JPEPFTNMarketAnalyzer() {
 
   return (
     <Column>
-      <FieldBlock fieldName="交易手续费">
-        <Text large bold>
-          {tradeFeePercent.value !== undefined
-            ? `${tradeFeePercent.value * 100}%`
-            : "获取中..."}
-        </Text>
-      </FieldBlock>
+      <Row>
+        <FieldBlock rowClassName="flex-grow" fieldName="贝交易手续费">
+          <Text large bold>
+            {JPEPRules.value !== undefined
+              ? `${JPEPRules.value.FTNOrderFee * 100}%`
+              : "获取中..."}
+          </Text>
+        </FieldBlock>
+        <FieldBlock rowClassName="flex-grow" fieldName="商品交易手续费">
+          <Text large bold>
+            {JPEPRules.value !== undefined
+              ? `${JPEPRules.value.goodsOrderFee * 100}%`
+              : "获取中..."}
+          </Text>
+        </FieldBlock>
+      </Row>
       <Text large bold>
         实时贝价
       </Text>
       <Row gap="gap-2">
         <FieldBlock rowClassName="flex-grow" fieldName="买单">
           <Text large bold>
-            {buyPrice.value ?? "获取中..."}
+            {currentPrice.value?.buyPrice ?? "获取中..."}
           </Text>
           <Text small gray>
-            限价：{buyOrderMinimumPrice.value ?? "获取中..."}
+            限价：
+            {JPEPRules.value !== undefined
+              ? JPEPRules.value.buyOrderMinimumPrice
+              : "获取中..."}
           </Text>
         </FieldBlock>
         <FieldBlock rowClassName="flex-grow" fieldName="卖单">
           <Text large bold>
-            {sellPrice.value ?? "获取中..."}
+            {currentPrice.value?.sellPrice ?? "获取中..."}
           </Text>
           <Text small gray>
-            限价：{sellOrderMinimumPrice.value ?? "获取中..."}
+            限价：
+            {JPEPRules.value !== undefined
+              ? JPEPRules.value.sellOrderMinimumPrice
+              : "获取中..."}
           </Text>
         </FieldBlock>
       </Row>
@@ -366,13 +341,12 @@ export default function JPEPFTNMarketAnalyzer() {
       <Row gap="gap-2">
         <FieldBlock rowClassName="flex-grow" fieldName="买单">
           <Text large bold>
-            {buyPoolAmount.value ?? "获取中..."}
+            {currentAmount.value?.buyAmount ?? "获取中..."}
           </Text>
           <Text small gray>
-            {buyPoolAmount.value !== undefined &&
-            totalPoolAmount.value !== undefined
+            {currentAmount.value !== undefined
               ? `占比 ${(
-                  (buyPoolAmount.value / totalPoolAmount.value) *
+                  (currentAmount.value.buyAmount / totalPoolAmount.value!) *
                   100
                 ).toFixed(2)}%`
               : "获取中..."}
@@ -380,13 +354,12 @@ export default function JPEPFTNMarketAnalyzer() {
         </FieldBlock>
         <FieldBlock rowClassName="flex-grow" fieldName="卖单">
           <Text large bold>
-            {sellPoolAmount.value ?? "获取中..."}
+            {currentAmount.value?.sellAmount ?? "获取中..."}
           </Text>
           <Text small gray>
-            {sellPoolAmount.value !== undefined &&
-            totalPoolAmount.value !== undefined
+            {currentAmount.value !== undefined
               ? `占比 ${(
-                  (sellPoolAmount.value / totalPoolAmount.value) *
+                  (currentAmount.value.sellAmount / totalPoolAmount.value!) *
                   100
                 ).toFixed(2)}%`
               : "获取中..."}

@@ -138,11 +138,7 @@ function RewardWinsTrendLine() {
       dataReady={rewardWinsTrendData.value !== undefined}
       options={{
         xAxis: {
-          type: "category",
-          data:
-            rewardWinsTrendData.value === undefined
-              ? undefined
-              : Object.keys(rewardWinsTrendData.value),
+          type: "time",
         },
         yAxis: {
           type: "value",
@@ -154,7 +150,7 @@ function RewardWinsTrendLine() {
             data:
               rewardWinsTrendData.value === undefined
                 ? undefined
-                : Object.values(rewardWinsTrendData.value),
+                : Object.entries(rewardWinsTrendData.value),
           },
         ],
         tooltip: {
