@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import { batch, computed, signal } from "@preact/signals";
 import { Column, FieldBlock, Row, Switch, Text } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
@@ -292,6 +293,24 @@ export default function JPEPFTNMarketAnalyzer() {
 
   return (
     <Column>
+      <FieldBlock fieldName="平台状态">
+        <Text
+          color={
+            JPEPRules.value !== undefined
+              ? JPEPRules.value.isOpen
+                ? "text-green-500"
+                : "text-red-500"
+              : undefined
+          }
+          bold
+        >
+          {JPEPRules.value !== undefined
+            ? JPEPRules.value.isOpen
+              ? "开放中"
+              : "休市中"
+            : "获取中..."}
+        </Text>
+      </FieldBlock>
       <Row>
         <FieldBlock rowClassName="flex-grow" fieldName="贝交易手续费">
           <Text large bold>
