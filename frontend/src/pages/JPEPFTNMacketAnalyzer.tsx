@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import { batch, computed, signal } from "@preact/signals";
 import { Column, FieldBlock, Row, Switch, Text } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
@@ -50,7 +49,7 @@ const sellPoolAmountTrendData = signal<Record<number, number> | undefined>(
   undefined,
 );
 
-function handleJPEPRulesFetch() {
+function handleRulesFetch() {
   sendRequest<Record<string, never>, GetRulesResponse>({
     method: "GET",
     endpoint: "/v1/jpep/ftn-macket/rules",
@@ -58,7 +57,7 @@ function handleJPEPRulesFetch() {
   });
 }
 
-function handlePriceFetch() {
+function handleCurrentPriceFetch() {
   sendRequest<Record<string, never>, GetCurrentPriceResponse>({
     method: "GET",
     endpoint: "/v1/jpep/ftn-macket/current-price",
@@ -66,7 +65,7 @@ function handlePriceFetch() {
   });
 }
 
-function handlePoolAmountFetch() {
+function handleCurrentAmountFetch() {
   sendRequest<Record<string, never>, GetCurrentAmountResponse>({
     method: "GET",
     endpoint: "/v1/jpep/ftn-macket/current-amount",
@@ -74,7 +73,7 @@ function handlePoolAmountFetch() {
   });
 }
 
-function handlePerPriceAmountDataFetch() {
+function handleCurrentAmountDistributionFetch() {
   sendRequest<
     GetCurrentAmountDistributionRequest,
     GetCurrentAmountDistributionResponse
@@ -89,7 +88,7 @@ function handlePerPriceAmountDataFetch() {
   });
 }
 
-function handlePriceTrendDataFetch() {
+function handlePriceHistoryFetch() {
   sendRequest<GetPriceHistoryRequest, GetPriceHistoryResponse>({
     method: "GET",
     endpoint: "/v1/jpep/ftn-macket/price-history",
@@ -113,7 +112,7 @@ function handlePriceTrendDataFetch() {
   });
 }
 
-function handlePoolAmountTrendDataFetch() {
+function handleAmountHistoryDataFetch() {
   sendRequest<GetPriceHistoryRequest, GetPriceHistoryResponse>({
     method: "GET",
     endpoint: "/v1/jpep/ftn-macket/amount-history",
@@ -137,183 +136,22 @@ function handlePoolAmountTrendDataFetch() {
   });
 }
 
-function PerPriceAmountDataBar() {
+function RulesBlock() {
   return (
-    <SSBarChart
-      className="h-72 max-w-xl w-full"
-      dataReady={amountDistribution.value !== undefined}
-      options={{
-        xAxis: {
-          type: "category",
-        },
-        yAxis: {
-          type: "value",
-        },
-        series: [
-          {
-            type: "bar",
-            data:
-              amountDistribution.value === undefined
-                ? undefined
-                : Object.entries(amountDistribution.value),
-          },
-        ],
-        tooltip: {
-          show: true,
-          trigger: "axis",
-        },
-      }}
-    />
-  );
-}
-
-function PriceTrendLine() {
-  return (
-    <SSLineChart
-      className="h-72 max-w-lg w-full"
-      dataReady={
-        buyPriceTrendData.value !== undefined &&
-        sellPriceTrendData.value !== undefined
-      }
-      options={{
-        xAxis: {
-          type: "time",
-        },
-        yAxis: {
-          type: "value",
-          min: (value) => roundFloat(value.min - 0.01, 2),
-          max: (value) => roundFloat(value.max + 0.01, 2),
-        },
-        series: [
-          {
-            type: "line",
-            name: "买贝（左侧）",
-            smooth: true,
-            data:
-              buyPriceTrendData.value === undefined
-                ? undefined
-                : Object.entries(buyPriceTrendData.value),
-            color: "#3b82f6",
-          },
-          {
-            type: "line",
-            name: "卖贝（右侧）",
-            smooth: true,
-            data:
-              sellPriceTrendData.value === undefined
-                ? undefined
-                : Object.entries(sellPriceTrendData.value),
-            color: "#a855f7",
-          },
-        ],
-        legend: {
-          show: true,
-        },
-        tooltip: {
-          show: true,
-          trigger: "axis",
-        },
-      }}
-    />
-  );
-}
-
-function PoolAmountTrendLine() {
-  return (
-    <SSLineChart
-      className="h-72 max-w-lg w-full"
-      dataReady={
-        buyPoolAmountTrendData.value !== undefined &&
-        sellPoolAmountTrendData.value !== undefined
-      }
-      options={{
-        xAxis: {
-          type: "time",
-        },
-        yAxis: {
-          type: "value",
-        },
-        series: [
-          {
-            type: "line",
-            name: "买贝（左侧）",
-            smooth: true,
-            data:
-              buyPoolAmountTrendData.value === undefined
-                ? undefined
-                : Object.entries(buyPoolAmountTrendData.value),
-            color: "#3b82f6",
-          },
-          {
-            type: "line",
-            name: "卖贝（右侧）",
-            smooth: true,
-            data:
-              sellPoolAmountTrendData.value === undefined
-                ? undefined
-                : Object.entries(sellPoolAmountTrendData.value),
-            color: "#a855f7",
-          },
-        ],
-        tooltip: {
-          show: true,
-          trigger: "axis",
-        },
-      }}
-    />
-  );
-}
-
-export default function JPEPFTNMarketAnalyzer() {
-  useEffect(() => {
-    handleJPEPRulesFetch();
-    handlePriceFetch();
-    handlePoolAmountFetch();
-    handlePerPriceAmountDataFetch();
-    handlePriceTrendDataFetch();
-    handlePoolAmountTrendDataFetch();
-  }, []);
-
-  useEffect(() => {
-    amountDistribution.value = undefined;
-    handlePerPriceAmountDataFetch();
-  }, [perPriceAmountDataTradeType.value]);
-
-  useEffect(() => {
-    batch(() => {
-      buyPriceTrendData.value = undefined;
-      sellPriceTrendData.value = undefined;
-    });
-    handlePriceTrendDataFetch();
-  }, [priceTrendLineTimeRange.value]);
-
-  useEffect(() => {
-    batch(() => {
-      buyPoolAmountTrendData.value = undefined;
-      sellPoolAmountTrendData.value = undefined;
-    });
-    handlePoolAmountTrendDataFetch();
-  }, [poolAmountTrendLineTimeRange.value]);
-
-  return (
-    <Column>
+    <>
       <FieldBlock fieldName="平台状态">
-        <Text
-          color={
-            JPEPRules.value !== undefined
-              ? JPEPRules.value.isOpen
-                ? "text-green-500"
-                : "text-orange-500"
-              : undefined
-          }
-          bold
-        >
-          {JPEPRules.value !== undefined
-            ? JPEPRules.value.isOpen
-              ? "开放中"
-              : "休市中"
-            : "获取中..."}
-        </Text>
+        {JPEPRules.value !== undefined ? (
+          <Text
+            color={
+              JPEPRules.value.isOpen ? "text-green-500" : "text-orange-500"
+            }
+            bold
+          >
+            {JPEPRules.value.isOpen ? "开放中" : "休市中"}
+          </Text>
+        ) : (
+          <Text>获取中...</Text>
+        )}
       </FieldBlock>
       <Row>
         <FieldBlock rowClassName="flex-grow" fieldName="贝交易手续费">
@@ -331,6 +169,13 @@ export default function JPEPFTNMarketAnalyzer() {
           </Text>
         </FieldBlock>
       </Row>
+    </>
+  );
+}
+
+function CurrentPriceBlock() {
+  return (
+    <>
       <Text large bold>
         实时贝价
       </Text>
@@ -358,6 +203,13 @@ export default function JPEPFTNMarketAnalyzer() {
           </Text>
         </FieldBlock>
       </Row>
+    </>
+  );
+}
+
+function CurrentAmountBlock() {
+  return (
+    <>
       <Text large bold>
         实时挂单量
       </Text>
@@ -389,7 +241,13 @@ export default function JPEPFTNMarketAnalyzer() {
           </Text>
         </FieldBlock>
       </Row>
+    </>
+  );
+}
 
+function AmountDistributionChartBlock() {
+  return (
+    <>
       <Text large bold>
         实时挂单量分布
       </Text>
@@ -400,19 +258,187 @@ export default function JPEPFTNMarketAnalyzer() {
           { label: "卖单", value: "sell" },
         ]}
       />
-      <PerPriceAmountDataBar />
+      <SSBarChart
+        className="h-72 max-w-xl w-full"
+        dataReady={amountDistribution.value !== undefined}
+        options={{
+          xAxis: {
+            type: "category",
+          },
+          yAxis: {
+            type: "value",
+          },
+          series: [
+            {
+              type: "bar",
+              data:
+                amountDistribution.value === undefined
+                  ? undefined
+                  : Object.entries(amountDistribution.value),
+            },
+          ],
+          tooltip: {
+            show: true,
+            trigger: "axis",
+          },
+        }}
+      />
+    </>
+  );
+}
 
+function PriceHistoryChartBlock() {
+  return (
+    <>
       <Text large bold>
         贝价趋势
       </Text>
       <Switch value={priceTrendLineTimeRange} data={TimeRangeSwitchData} />
-      <PriceTrendLine />
+      <SSLineChart
+        className="h-72 max-w-lg w-full"
+        dataReady={
+          buyPriceTrendData.value !== undefined &&
+          sellPriceTrendData.value !== undefined
+        }
+        options={{
+          xAxis: {
+            type: "time",
+          },
+          yAxis: {
+            type: "value",
+            min: (value) => roundFloat(value.min - 0.01, 2),
+            max: (value) => roundFloat(value.max + 0.01, 2),
+          },
+          series: [
+            {
+              type: "line",
+              name: "买贝（左侧）",
+              smooth: true,
+              data:
+                buyPriceTrendData.value === undefined
+                  ? undefined
+                  : Object.entries(buyPriceTrendData.value),
+              color: "#3b82f6",
+            },
+            {
+              type: "line",
+              name: "卖贝（右侧）",
+              smooth: true,
+              data:
+                sellPriceTrendData.value === undefined
+                  ? undefined
+                  : Object.entries(sellPriceTrendData.value),
+              color: "#a855f7",
+            },
+          ],
+          legend: {
+            show: true,
+          },
+          tooltip: {
+            show: true,
+            trigger: "axis",
+          },
+        }}
+      />
+    </>
+  );
+}
 
+function AmountHistoryChartBlock() {
+  return (
+    <>
       <Text large bold>
         挂单量趋势
       </Text>
       <Switch value={poolAmountTrendLineTimeRange} data={TimeRangeSwitchData} />
-      <PoolAmountTrendLine />
+      <SSLineChart
+        className="h-72 max-w-lg w-full"
+        dataReady={
+          buyPoolAmountTrendData.value !== undefined &&
+          sellPoolAmountTrendData.value !== undefined
+        }
+        options={{
+          xAxis: {
+            type: "time",
+          },
+          yAxis: {
+            type: "value",
+          },
+          series: [
+            {
+              type: "line",
+              name: "买贝（左侧）",
+              smooth: true,
+              data:
+                buyPoolAmountTrendData.value === undefined
+                  ? undefined
+                  : Object.entries(buyPoolAmountTrendData.value),
+              color: "#3b82f6",
+            },
+            {
+              type: "line",
+              name: "卖贝（右侧）",
+              smooth: true,
+              data:
+                sellPoolAmountTrendData.value === undefined
+                  ? undefined
+                  : Object.entries(sellPoolAmountTrendData.value),
+              color: "#a855f7",
+            },
+          ],
+          legend: {
+            show: true,
+          },
+          tooltip: {
+            show: true,
+            trigger: "axis",
+          },
+        }}
+      />
+    </>
+  );
+}
+
+export default function JPEPFTNMarketAnalyzer() {
+  useEffect(() => {
+    handleRulesFetch();
+    handleCurrentPriceFetch();
+    handleCurrentAmountFetch();
+    handleCurrentAmountDistributionFetch();
+    handlePriceHistoryFetch();
+    handleAmountHistoryDataFetch();
+  }, []);
+
+  useEffect(() => {
+    amountDistribution.value = undefined;
+    handleCurrentAmountDistributionFetch();
+  }, [perPriceAmountDataTradeType.value]);
+
+  useEffect(() => {
+    batch(() => {
+      buyPriceTrendData.value = undefined;
+      sellPriceTrendData.value = undefined;
+    });
+    handlePriceHistoryFetch();
+  }, [priceTrendLineTimeRange.value]);
+
+  useEffect(() => {
+    batch(() => {
+      buyPoolAmountTrendData.value = undefined;
+      sellPoolAmountTrendData.value = undefined;
+    });
+    handleAmountHistoryDataFetch();
+  }, [poolAmountTrendLineTimeRange.value]);
+
+  return (
+    <Column>
+      <RulesBlock />
+      <CurrentPriceBlock />
+      <CurrentAmountBlock />
+
+      <AmountDistributionChartBlock />
+      <PriceHistoryChartBlock />
+      <AmountHistoryChartBlock />
     </Column>
   );
 }
