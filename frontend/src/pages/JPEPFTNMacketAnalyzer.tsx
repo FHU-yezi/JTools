@@ -193,6 +193,7 @@ function PriceTrendLine() {
               buyPriceTrendData.value === undefined
                 ? undefined
                 : Object.entries(buyPriceTrendData.value),
+            color: "#3b82f6",
           },
           {
             type: "line",
@@ -202,6 +203,7 @@ function PriceTrendLine() {
               sellPriceTrendData.value === undefined
                 ? undefined
                 : Object.entries(sellPriceTrendData.value),
+            color: "#a855f7",
           },
         ],
         legend: {
@@ -240,6 +242,7 @@ function PoolAmountTrendLine() {
               buyPoolAmountTrendData.value === undefined
                 ? undefined
                 : Object.entries(buyPoolAmountTrendData.value),
+            color: "#3b82f6",
           },
           {
             type: "line",
@@ -249,6 +252,7 @@ function PoolAmountTrendLine() {
               sellPoolAmountTrendData.value === undefined
                 ? undefined
                 : Object.entries(sellPoolAmountTrendData.value),
+            color: "#a855f7",
           },
         ],
         tooltip: {
@@ -299,7 +303,7 @@ export default function JPEPFTNMarketAnalyzer() {
             JPEPRules.value !== undefined
               ? JPEPRules.value.isOpen
                 ? "text-green-500"
-                : "text-red-500"
+                : "text-orange-500"
               : undefined
           }
           bold
