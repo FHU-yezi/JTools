@@ -2,13 +2,21 @@ export interface GetRewardsResponse {
   rewards: string[];
 }
 
-export interface GetRecordItem {
+export interface GetRecordsRequest {
+  offset?: number;
+  limit?: number;
+  target_rewards?: string[];
+}
+
+export interface GetRecordsItem {
   time: number;
   rewardName: string;
+  userName: string;
+  userUrl: string;
 }
 
 export interface GetRecordsResponse {
-  records: GetRecordItem[];
+  records: GetRecordsItem[];
 }
 
 export interface GetSummaryRewardItem {

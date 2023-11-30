@@ -1,18 +1,32 @@
 import { signal } from "@preact/signals";
-import { Column, LoadingArea, Switch, Text, Tooltip } from "@sscreator/ui";
+import {
+  Card,
+  Column,
+  ExternalLink,
+  LoadingArea,
+  Row,
+  Switch,
+  Text,
+  Tooltip,
+} from "@sscreator/ui";
 import type { ComponentChildren } from "preact";
 import { useEffect } from "preact/hooks";
 import SSTable from "../components/SSTable";
 import SSLineChart from "../components/charts/SSLineChart";
 import type {
+  GetRecordsItem,
+  GetRecordsRequest,
+  GetRecordsResponse,
   GetRewardWinsHistoryRequest,
   GetRewardWinsHistoryResponse,
+  GetRewardsResponse,
   GetSummaryRequest,
   GetSummaryResponse,
   GetSummaryRewardItem,
 } from "../models/lottery";
 import { roundFloat } from "../utils/numberHelper";
 import { sendRequest } from "../utils/sendRequest";
+import { parseTime } from "../utils/timeHelper";
 
 const timeRangeSwitchData = [
   { label: "1 天", value: "1d" },
@@ -29,6 +43,7 @@ const timeRangeWithoutAllSwitchData = [
 type TimeRange = "1d" | "7d" | "30d" | "all";
 type TimeRangeWithoutAll = "1d" | "7d" | "30d";
 
+const rewards = signal<string[] | undefined>(undefined);
 const perPrizeAnalyzeTimeRange = signal<TimeRange>("1d");
 const perPrizeAnalyzeData = signal<GetSummaryRewardItem[] | undefined>(
   undefined,
@@ -37,8 +52,9 @@ const rewardWinsTrendLineTimeRange = signal<TimeRangeWithoutAll>("1d");
 const rewardWinsTrendData = signal<Record<number, number> | undefined>(
   undefined,
 );
+const recentRecords = signal<GetRecordsItem[] | undefined>(undefined);
 
-function handlePerPrizeAnalayzeDataFetch() {
+function handleSummaryFetch() {
   sendRequest<GetSummaryRequest, GetSummaryResponse>({
     method: "GET",
     endpoint: "/v1/lottery/summary",
@@ -49,7 +65,7 @@ function handlePerPrizeAnalayzeDataFetch() {
   });
 }
 
-function handleRewardWinsTrendDataFetch() {
+function handleRewardWinsHistoryFetch() {
   sendRequest<GetRewardWinsHistoryRequest, GetRewardWinsHistoryResponse>({
     method: "GET",
     endpoint: "/v1/lottery/reward-wins-history",
@@ -58,6 +74,26 @@ function handleRewardWinsTrendDataFetch() {
       resolution: rewardWinsTrendLineTimeRange.value === "1d" ? "1h" : "1d",
     },
     onSuccess: ({ data }) => (rewardWinsTrendData.value = data.history),
+  });
+}
+
+function handleRecentRecordsFetch() {
+  sendRequest<Record<string, never>, GetRewardsResponse>({
+    method: "GET",
+    endpoint: "/v1/lottery/rewards",
+    onSuccess: ({ data: rewardsData }) => {
+      rewards.value = rewardsData.rewards;
+
+      sendRequest<GetRecordsRequest, GetRecordsResponse>({
+        method: "GET",
+        endpoint: "/v1/lottery/records",
+        queryArgs: {
+          limit: 5,
+          target_rewards: rewards.value!.filter((x) => x !== "收益加成卡100"),
+        },
+        onSuccess: ({ data }) => (recentRecords.value = data.records),
+      });
+    },
   });
 }
 
@@ -131,6 +167,41 @@ function PerPrizeAnalyzeTable() {
   );
 }
 
+function RecordItem({ data }: { data: GetRecordsItem }) {
+  return (
+    <Card className="!shadow-none" padding="px-4 py-2" rounded="rounded-0">
+      <Row className="justify-between" verticalCenter>
+        <Column gap="gap-0">
+          <ExternalLink href={data.userUrl}>{data.userName}</ExternalLink>
+          <Text gray>{parseTime(data.time).format("MM-DD HH:mm")}</Text>
+        </Column>
+        <Text large bold>
+          {data.rewardName}
+        </Text>
+      </Row>
+    </Card>
+  );
+}
+
+function RecentRecordsBlock() {
+  return (
+    <>
+      <Text large bold>
+        近期大奖
+      </Text>
+      <LoadingArea
+        className="h-[320px]"
+        loading={recentRecords.value === undefined}
+      >
+        <Column gap="gap-0">
+          {recentRecords.value !== undefined &&
+            recentRecords.value.map((item) => <RecordItem data={item} />)}
+        </Column>
+      </LoadingArea>
+    </>
+  );
+}
+
 function RewardWinsTrendLine() {
   return (
     <SSLineChart
@@ -164,18 +235,16 @@ function RewardWinsTrendLine() {
 
 export default function LotteryAnalyzer() {
   useEffect(() => {
-    handlePerPrizeAnalayzeDataFetch();
-    handleRewardWinsTrendDataFetch();
+    handleSummaryFetch();
+    handleRewardWinsHistoryFetch();
+    handleRecentRecordsFetch();
   }, []);
 
-  useEffect(
-    () => handlePerPrizeAnalayzeDataFetch(),
-    [perPrizeAnalyzeTimeRange.value],
-  );
+  useEffect(() => handleSummaryFetch(), [perPrizeAnalyzeTimeRange.value]);
 
   useEffect(() => {
     rewardWinsTrendData.value = undefined;
-    handleRewardWinsTrendDataFetch();
+    handleRewardWinsHistoryFetch();
   }, [rewardWinsTrendLineTimeRange.value]);
 
   return (
@@ -193,6 +262,8 @@ export default function LotteryAnalyzer() {
       <Tooltip tooltip="受简书接口限制，我们无法获取这两种奖品的中奖情况，故表中未予统计">
         关于免费开 1 次连载 / 锦鲤头像框
       </Tooltip>
+
+      <RecentRecordsBlock />
 
       <Text large bold>
         中奖次数趋势

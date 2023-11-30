@@ -177,6 +177,8 @@ async def get_rewards_handler() -> Response:
 class GetRecordItem(Struct, **RESPONSE_STRUCT_CONFIG):
     time: datetime
     reward_name: str
+    user_name: str
+    user_url: str
 
 
 class GetRecordsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
@@ -197,6 +199,7 @@ async def get_records_handler(
         Optional[List[str]], Parameter(description="奖项筛选列表", max_items=10)
     ] = None,
 ) -> Response:
+    print(target_rewards)
     result = (
         LOTTERY_COLLECTION.find(
             {
@@ -216,6 +219,8 @@ async def get_records_handler(
             GetRecordItem(
                 time=item["time"],
                 reward_name=item["reward_name"],
+                user_name=item["user"]["name"],
+                user_url=item["user"]["url"],
             )
         )
 
