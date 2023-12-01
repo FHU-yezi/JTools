@@ -1,6 +1,5 @@
 import { signal } from "@preact/signals";
 import {
-  Card,
   Column,
   ExternalLink,
   LoadingArea,
@@ -169,7 +168,7 @@ function PerPrizeAnalyzeTable() {
 
 function RecordItem({ data }: { data: GetRecordsItem }) {
   return (
-    <Card className="!shadow-none" padding="px-4 py-2" rounded="rounded-0">
+    <div className="border-b border-gray-300 px-4 py-2 dark:border-gray-500 last:border-none">
       <Row className="justify-between" verticalCenter>
         <Column gap="gap-0">
           <ExternalLink href={data.userUrl}>{data.userName}</ExternalLink>
@@ -179,7 +178,7 @@ function RecordItem({ data }: { data: GetRecordsItem }) {
           {data.rewardName}
         </Text>
       </Row>
-    </Card>
+    </div>
   );
 }
 

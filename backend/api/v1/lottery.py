@@ -199,7 +199,6 @@ async def get_records_handler(
         Optional[List[str]], Parameter(description="奖项筛选列表", max_items=10)
     ] = None,
 ) -> Response:
-    print(target_rewards)
     result = (
         LOTTERY_COLLECTION.find(
             {
