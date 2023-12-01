@@ -259,7 +259,7 @@ export default function LotteryAnalyzer() {
         {perPrizeAnalyzeData.value !== undefined && <PerPrizeAnalyzeTable />}
       </LoadingArea>
       <Tooltip tooltip="受简书接口限制，我们无法获取这两种奖品的中奖情况，故表中未予统计">
-        关于免费开 1 次连载 / 锦鲤头像框
+        <Text>关于免费开 1 次连载 / 锦鲤头像框</Text>
       </Tooltip>
 
       <RecentRecordsBlock />
