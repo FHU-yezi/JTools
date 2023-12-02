@@ -26,6 +26,8 @@ import { sendRequest } from "../utils/sendRequest";
 import { getDate, parseTime } from "../utils/timeHelper";
 import { toastWarning } from "../utils/toastHelper";
 
+const userNameRegex = /^[\u4e00-\u9fa5A-Za-z0-9_]*$/;
+
 const userUrlOrName = signal("");
 const userSlug = computed(() => {
   const matchResult = userUrlOrName.value.match(
@@ -37,7 +39,9 @@ const userSlug = computed(() => {
   return undefined;
 });
 const userName = computed(() =>
-  userSlug.value === undefined && userUrlOrName.value.length !== 0
+  userSlug.value === undefined &&
+  userUrlOrName.value.length !== 0 &&
+  userNameRegex.test(userUrlOrName.value)
     ? userUrlOrName.value.trim()
     : undefined,
 );
@@ -80,8 +84,11 @@ function handleCompleteItemUpdate(value: string) {
 }
 
 function handleQuery() {
-  if (userUrlOrName.value.length === 0) {
-    toastWarning({ message: "请输入用户昵称或个人主页链接" });
+  if (
+    userUrlOrName.value.length === 0 ||
+    (userSlug.value === undefined && userName.value === undefined)
+  ) {
+    toastWarning({ message: "请输入有效的昵称或用户个人主页链接" });
     return;
   }
 
