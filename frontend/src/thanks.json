@@ -204,23 +204,18 @@
       },
       {
         "name": "Sanic",
-        "desc": "API 服务框架",
-        "url": "https://github.com/sanic-org/sanic"
+        "desc": "后端框架",
+        "url": "https://github.com/litestar-org/litestar"
       },
       {
-        "name": "Pydantic",
+        "name": "Msgspec",
         "desc": "数据校验",
-        "url": "https://github.com/pydantic/pydantic"
+        "url": "https://github.com/jcrist/msgspec"
       },
       {
-        "name": "PyMongo",
+        "name": "Motor",
         "desc": "MongoDB 数据库操作",
-        "url": "https://github.com/mongodb/mongo-python-driver"
-      },
-      {
-        "name": "PyYAML",
-        "desc": "YAML 文件读取",
-        "url": "https://github.com/yaml/pyyaml"
+        "url": "https://github.com/mongodb/motor"
       },
       {
         "name": "SSpeedup",
