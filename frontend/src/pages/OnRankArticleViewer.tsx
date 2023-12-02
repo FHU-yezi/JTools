@@ -139,21 +139,24 @@ function handleQuery() {
 function handleLoadMore() {
   const endpoint =
     userSlug.value !== undefined
-      ? `/v1/users/${userSlug.value}/on-article-rank-summary`
-      : `/v1/users/name/${userName.value}/on-article-rank-summary`;
+      ? `/v1/users/${userSlug.value}/on-article-rank-records`
+      : `/v1/users/name/${userName.value}/on-article-rank-records`;
   sendRequest<GetOnArticleRankRecordsRequest, GetOnArticleRankRecordsResponse>({
     method: "GET",
     endpoint,
     queryArgs: {
       order_by: orderSelect.value.orderBy,
       order_direction: orderSelect.value.orderDirection,
+      offset: rankRecords.value!.length,
     },
     onSuccess: ({ data }) =>
       batch(() => {
-        rankRecords.value = data.records!.concat(data.records);
         if (data.records.length === 0) {
           hasMore.value = false;
+          return;
         }
+
+        rankRecords.value = rankRecords.value!.concat(data.records);
       }),
     isLoading,
   });
