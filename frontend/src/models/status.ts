@@ -12,9 +12,9 @@ export enum ToolStatusEnum {
 
 export interface GetToolStatusResponse {
   status: ToolStatusEnum;
-  reason?: string;
-  dataUpdateTime?: number;
-  dataUpdateFreq?: string;
-  dataCount?: number;
-  dataSource?: Record<string, string>;
+  reason: string | null;
+  dataUpdateTime: number | null;
+  dataUpdateFreq: string | null;
+  dataCount: number | null;
+  dataSource: Record<string, string> | null;
 }

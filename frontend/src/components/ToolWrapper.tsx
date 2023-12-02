@@ -3,7 +3,8 @@ import { batch, useSignal } from "@preact/signals";
 import {
   Column,
   ExternalLink,
-  FieldBlock,
+  Grid,
+  Icon,
   LoadingPage,
   Modal,
   PrimaryButton,
@@ -11,9 +12,14 @@ import {
   Text,
   WarningAlert,
 } from "@sscreator/ui";
-import type { Dayjs } from "dayjs";
 import type { JSX } from "preact";
 import { Suspense, useEffect } from "preact/compat";
+import {
+  MdOutlineAccessTime,
+  MdOutlineLink,
+  MdOutlineNumbers,
+  MdOutlineUpload,
+} from "react-icons/md";
 import { useLocation } from "wouter-preact";
 import type { GetToolStatusResponse } from "../models/status";
 import { ToolStatusEnum } from "../models/status";
@@ -30,13 +36,7 @@ interface Props {
 export default function ToolWrapper({ Component, toolName }: Props) {
   const [, setLocation] = useLocation();
 
-  const isLoading = useSignal(false);
-  const toolStatus = useSignal<ToolStatusEnum | undefined>(undefined);
-  const reason = useSignal<string | undefined>(undefined);
-  const dataUpdateTime = useSignal<Dayjs | null | undefined>(undefined);
-  const dataUpdateFreqDesc = useSignal<string | undefined>(undefined);
-  const dataCount = useSignal<number | undefined>(undefined);
-  const dataSource = useSignal<Record<string, string> | undefined>({});
+  const toolStatus = useSignal<GetToolStatusResponse | undefined>(undefined);
   const showDowngradeNotice = useSignal(false);
   const showUnavaliableModal = useSignal(false);
 
@@ -52,55 +52,72 @@ export default function ToolWrapper({ Component, toolName }: Props) {
       endpoint: `/v1/status/${getToolSlug()}`,
       onSuccess: ({ data }) =>
         batch(() => {
-          toolStatus.value = data.status;
-          reason.value = data.reason;
-          dataSource.value = data.dataSource;
-          dataUpdateTime.value = data.dataUpdateTime
-            ? parseTime(data.dataUpdateTime)
-            : null;
-          dataUpdateFreqDesc.value = data.dataUpdateFreq;
-          dataCount.value = data.dataCount;
+          toolStatus.value = data;
 
-          if (toolStatus.value === ToolStatusEnum.DOWNGRADED) {
+          if (data.status === ToolStatusEnum.DOWNGRADED) {
             showDowngradeNotice.value = true;
-          }
-
-          if (toolStatus.value === ToolStatusEnum.UNAVALIABLE) {
+          } else if (data.status === ToolStatusEnum.UNAVALIABLE) {
             showUnavaliableModal.value = true;
           }
         }),
-      isLoading,
     });
   }, []);
 
   return (
     <>
       <Header toolName={toolName} />
-      {!isLoading.value ? (
+      {toolStatus.value !== undefined ? (
         <Column>
-          <Row gap="gap-6">
-            {dataUpdateTime.value && (
-              <FieldBlock rowClassName="flex-1" fieldName="数据更新时间">
-                <Text>{getDateTimeWithoutSecond(dataUpdateTime.value!)}</Text>
+          <Grid cols="grid-cols-1 sm:grid-cols-2" gap="gap-2">
+            {toolStatus.value.dataUpdateTime !== null && (
+              <Row gap="gap-1" verticalCenter>
+                <Icon iconColor="text-zinc-500 dark:text-zinc-400">
+                  <MdOutlineAccessTime size={18} />
+                </Icon>
                 <Text gray small>
-                  {dataUpdateFreqDesc.value}
+                  更新时间：
+                  {getDateTimeWithoutSecond(
+                    parseTime(toolStatus.value.dataUpdateTime),
+                  )}
                 </Text>
-              </FieldBlock>
+              </Row>
             )}
-            {dataCount.value && (
-              <FieldBlock rowClassName="flex-1" fieldName="总数据量">
-                <Text>{dataCount.value}</Text>
-              </FieldBlock>
+            {toolStatus.value.dataUpdateFreq !== null && (
+              <Row gap="gap-1" verticalCenter>
+                <Icon iconColor="text-zinc-500 dark:text-zinc-400">
+                  <MdOutlineUpload size={18} />
+                </Icon>
+                <Text gray small nowrap>
+                  {toolStatus.value.dataUpdateFreq}
+                </Text>
+              </Row>
             )}
-          </Row>
-          {dataSource.value && (
-            <Column gap="gap-1">
-              <Text bold>数据来源</Text>
-              {Object.entries(dataSource.value).map(([name, url]) => (
-                <ExternalLink href={url}>{name}</ExternalLink>
-              ))}
-            </Column>
-          )}
+            {toolStatus.value.dataCount !== null && (
+              <Row gap="gap-1" verticalCenter>
+                <Icon iconColor="text-zinc-500 dark:text-zinc-400">
+                  <MdOutlineNumbers size={18} />
+                </Icon>
+                <Text gray small>
+                  数据量：{toolStatus.value.dataCount}
+                </Text>
+              </Row>
+            )}
+            {toolStatus.value.dataSource !== null && (
+              <Row gap="gap-1" verticalCenter>
+                <Icon iconColor="text-zinc-500 dark:text-zinc-400">
+                  <MdOutlineLink size={18} />
+                </Icon>
+                <Text gray small>
+                  数据来源：
+                  {Object.entries(toolStatus.value.dataSource).map(
+                    ([name, url]) => (
+                      <ExternalLink href={url}>{name}</ExternalLink>
+                    ),
+                  )}
+                </Text>
+              </Row>
+            )}
+          </Grid>
           {showDowngradeNotice.value && (
             <WarningAlert>
               <Column gap="gap-2">
@@ -108,7 +125,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
                   服务降级
                 </Text>
                 <Text>
-                  {reason.value ??
+                  {toolStatus.value?.reason ??
                     "该小工具处于降级状态，其功能、数据准确性和性能可能受到影响，请您留意。"}
                 </Text>
               </Column>
@@ -116,7 +133,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
           )}
 
           <Suspense fallback={<LoadingPage />}>
-            {!isLoading.value && <Component />}
+            {toolStatus.value !== undefined && <Component />}
           </Suspense>
         </Column>
       ) : (
@@ -131,7 +148,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
       >
         <Column>
           <Text>
-            {reason.value ??
+            {toolStatus.value?.reason ??
               "该小工具暂时不可用，请稍后再尝试访问，并留意相关公告。"}
           </Text>
           <PrimaryButton onClick={() => setLocation("/")} fullWidth>
