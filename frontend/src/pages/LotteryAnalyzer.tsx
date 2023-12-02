@@ -143,7 +143,9 @@ function PerPrizeAnalyzeTable() {
                   ),
                   平均每人中奖次数: (
                     <Text bold center>
-                      {roundFloat(totalAvagaeWinsCountPerWinner, 3)}
+                      {totalWins !== 0
+                        ? roundFloat(totalAvagaeWinsCountPerWinner, 3)
+                        : "---"}
                     </Text>
                   ),
                   中奖率: undefined,
