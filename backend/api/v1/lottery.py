@@ -195,16 +195,16 @@ class GetRecordsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 async def get_records_handler(
     offset: Annotated[int, Parameter(description="分页偏移", ge=0)] = 0,
     limit: Annotated[int, Parameter(description="结果数量", gt=0, lt=100)] = 20,
-    target_rewards: Annotated[
-        Optional[List[str]], Parameter(description="奖项筛选列表", max_items=10)
+    excluded_awards: Annotated[
+        Optional[List[str]], Parameter(description="排除奖项列表", max_items=10)
     ] = None,
 ) -> Response:
     result = (
         LOTTERY_COLLECTION.find(
             {
                 "reward_name": {
-                    "$in": target_rewards if target_rewards else REWARD_NAMES,
-                }
+                    "$nin": excluded_awards if excluded_awards else [],
+                },
             }
         )
         .sort("time", -1)

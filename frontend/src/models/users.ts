@@ -15,7 +15,7 @@ export interface GetVIPInfoResponse {
 export interface GetLotteryWinRecordsRequest {
   offset?: number;
   limit?: number;
-  target_rewards?: string[];
+  excluded_awards?: string[];
 }
 
 export interface GetLotteryWinRecordItem {

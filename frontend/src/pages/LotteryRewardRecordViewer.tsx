@@ -20,7 +20,6 @@ import type {
   GetLotteryWinRecordsResponse,
 } from "../models/users";
 import { sendRequest } from "../utils/sendRequest";
-import { removeSpace } from "../utils/textHelper";
 import { getDatetime, parseTime } from "../utils/timeHelper";
 import { toastWarning } from "../utils/toastHelper";
 
@@ -35,7 +34,7 @@ const userSlug = computed(() => {
   return undefined;
 });
 const rewards = signal<string[] | undefined>(undefined);
-const selectedRewards = signal<string[]>([]);
+const excludedAwards = signal<string[]>([]);
 const isLoading = signal(false);
 const hasMore = signal(true);
 const result = signal<GetLotteryWinRecordItem[] | undefined>(undefined);
@@ -50,7 +49,7 @@ function handleQuery() {
     method: "GET",
     endpoint: `/v1/users/${userSlug.value}/lottery-win-records`,
     queryArgs: {
-      target_rewards: selectedRewards.value,
+      excluded_awards: excludedAwards.value,
     },
     onSuccess: ({ data }) =>
       batch(() => {
@@ -73,7 +72,7 @@ function handleLoadMore() {
     method: "GET",
     endpoint: `/v1/users/${userSlug.value}/lottery-win-records`,
     queryArgs: {
-      target_rewards: selectedRewards.value,
+      excluded_awards: excludedAwards.value,
       offset: result.value!.length,
     },
     onSuccess: ({ data }) =>
@@ -98,7 +97,6 @@ function RewardsFliter() {
       onSuccess: ({ data }) =>
         batch(() => {
           rewards.value = data.rewards;
-          selectedRewards.value = data.rewards;
           rewards.value.forEach(
             (name) => (rewardSelectedSignals.value[name] = signal(true)),
           );
@@ -109,9 +107,9 @@ function RewardsFliter() {
 
   effect(
     () =>
-      (selectedRewards.value = Object.keys(rewardSelectedSignals.value)
-        .filter((name) => rewardSelectedSignals.value[name].value === true)
-        .map((item) => removeSpace(item))),
+      (excludedAwards.value = Object.keys(rewardSelectedSignals.value).filter(
+        (name) => rewardSelectedSignals.value[name].value === false,
+      )),
   );
 
   return (

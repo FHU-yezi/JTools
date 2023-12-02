@@ -5,7 +5,7 @@ export interface GetRewardsResponse {
 export interface GetRecordsRequest {
   offset?: number;
   limit?: number;
-  target_rewards?: string[];
+  excluded_awards?: string[];
 }
 
 export interface GetRecordsItem {

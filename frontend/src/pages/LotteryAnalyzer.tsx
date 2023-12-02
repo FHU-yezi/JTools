@@ -42,7 +42,6 @@ const timeRangeWithoutAllSwitchData = [
 type TimeRange = "1d" | "7d" | "30d" | "all";
 type TimeRangeWithoutAll = "1d" | "7d" | "30d";
 
-const rewards = signal<string[] | undefined>(undefined);
 const perPrizeAnalyzeTimeRange = signal<TimeRange>("1d");
 const perPrizeAnalyzeData = signal<GetSummaryRewardItem[] | undefined>(
   undefined,
@@ -77,22 +76,14 @@ function handleRewardWinsHistoryFetch() {
 }
 
 function handleRecentRecordsFetch() {
-  sendRequest<Record<string, never>, GetRewardsResponse>({
+  sendRequest<GetRecordsRequest, GetRecordsResponse>({
     method: "GET",
-    endpoint: "/v1/lottery/rewards",
-    onSuccess: ({ data: rewardsData }) => {
-      rewards.value = rewardsData.rewards;
-
-      sendRequest<GetRecordsRequest, GetRecordsResponse>({
-        method: "GET",
-        endpoint: "/v1/lottery/records",
-        queryArgs: {
-          limit: 5,
-          target_rewards: rewards.value!.filter((x) => x !== "收益加成卡100"),
-        },
-        onSuccess: ({ data }) => (recentRecords.value = data.records),
-      });
+    endpoint: "/v1/lottery/records",
+    queryArgs: {
+      limit: 5,
+      excluded_awards: ["收益加成卡100"],
     },
+    onSuccess: ({ data }) => (recentRecords.value = data.records),
   });
 }
 

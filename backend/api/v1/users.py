@@ -18,7 +18,6 @@ from sspeedup.api.litestar import (
 )
 from sspeedup.sync_to_async import sync_to_async
 
-from api.v1.lottery import REWARD_NAMES
 from utils.db import ARTICLE_FP_RANK_COLLECTION, LOTTERY_COLLECTION
 
 
@@ -98,8 +97,8 @@ async def get_lottery_win_records(
     ],
     offset: Annotated[int, Parameter(description="分页偏移", ge=0)] = 0,
     limit: Annotated[int, Parameter(description="结果数量", gt=0, lt=100)] = 20,
-    target_rewards: Annotated[
-        Optional[List[str]], Parameter(description="奖项筛选列表", max_items=10)
+    excluded_awards: Annotated[
+        Optional[List[str]], Parameter(description="排除奖项列表", max_items=10)
     ] = None,
 ) -> Response:
     try:
@@ -116,7 +115,7 @@ async def get_lottery_win_records(
             {
                 "user.url": user_url,
                 "reward_name": {
-                    "$in": target_rewards if target_rewards else REWARD_NAMES,
+                    "$nin": excluded_awards if excluded_awards else [],
                 },
             }
         )
