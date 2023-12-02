@@ -26,8 +26,14 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 
-select = ["A", "ANN", "B", "C", "E", "F", "I", "N", "RET", "S", "SIM", "UP", "W"]
+select = [
+    "A", "ANN", "ASYNC", "B", "BLE",
+    "C4", "E", "F", "FBT", "I",
+    "ICN", "ISC", "N", "PIE", "Q",
+    "RET", "RSE", "RUF", "S", "SIM",
+    "SLF", "TCH", "UP", "W"
+]
 
-ignore = ["ANN101", "ANN102", "ANN401", "C901", "E501", "S104"]
+ignore = ["RUF001", "RUF002", "RUF003"]
 
 target-version = "py38"
