@@ -69,15 +69,15 @@ export default function ToolWrapper({ Component, toolName }: Props) {
       {toolStatus.value !== undefined ? (
         <Column>
           <Grid cols="grid-cols-1 sm:grid-cols-2" gap="gap-2">
-            {toolStatus.value.dataUpdateTime !== null && (
+            {toolStatus.value.lastUpdateTime !== null && (
               <Row gap="gap-1" verticalCenter>
                 <Icon iconColor="text-zinc-500 dark:text-zinc-400">
                   <MdOutlineAccessTime size={18} />
                 </Icon>
                 <Text gray small>
-                  更新时间：
+                  最后更新时间：
                   {getDateTimeWithoutSecond(
-                    parseTime(toolStatus.value.dataUpdateTime),
+                    parseTime(toolStatus.value.lastUpdateTime),
                   )}
                 </Text>
               </Row>
@@ -88,7 +88,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
                   <MdOutlineUpload size={18} />
                 </Icon>
                 <Text gray small nowrap>
-                  {toolStatus.value.dataUpdateFreq}
+                  更新频率：{toolStatus.value.dataUpdateFreq}
                 </Text>
               </Row>
             )}

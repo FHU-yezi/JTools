@@ -31,7 +31,7 @@ COLLECTION_STRING_TO_OBJ: Dict[str, AgnosticCollection] = {
 }
 
 
-async def get_data_update_time(
+async def get_last_update_time(
     collection: AgnosticCollection,
     sort_key: str,
     sort_direction: Literal["asc", "desc"],
@@ -96,7 +96,7 @@ async def get_handler() -> Response:
 class GetToolStatusResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     status: ToolStatus
     reason: Optional[str]
-    data_update_time: Optional[datetime]
+    last_update_time: Optional[datetime]
     data_update_freq: Optional[str]
     data_count: Optional[int]
     data_source: Optional[Dict[str, str]]
@@ -123,15 +123,15 @@ async def get_tool_status_handler(
 
     status = tool_config.status
     reason = tool_config.reason
-    data_update_time = (
-        await get_data_update_time(
+    last_update_time = (
+        await get_last_update_time(
             collection=COLLECTION_STRING_TO_OBJ[
-                tool_config.data_update_time.collection
+                tool_config.last_update_time.collection
             ],
-            sort_key=tool_config.data_update_time.sort_key,
-            sort_direction=tool_config.data_update_time.sort_direction,
+            sort_key=tool_config.last_update_time.sort_key,
+            sort_direction=tool_config.last_update_time.sort_direction,
         )
-        if tool_config.data_update_time
+        if tool_config.last_update_time
         else None
     )
     data_update_freq = tool_config.data_update_freq
@@ -149,7 +149,7 @@ async def get_tool_status_handler(
         data=GetToolStatusResponse(
             status=status,
             reason=reason,
-            data_update_time=data_update_time,
+            last_update_time=last_update_time,
             data_update_freq=data_update_freq,
             data_count=data_count,
             data_source=data_source,

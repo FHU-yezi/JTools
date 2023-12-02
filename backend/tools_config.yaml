@@ -1,18 +1,18 @@
 article-wordcloud-generator:
     status: NORMAL
     reason: null
-    data_update_time: null
+    last_update_time: null
     data_update_freq: null
     data_count: null
     data_source: null
 JPEP-FTN-market-analyzer:
     status: NORMAL
     reason: null
-    data_update_time:
+    last_update_time:
         collection: JPEP_FTN_market
         sort_key: fetch_time
         sort_direction: desc
-    data_update_freq: 十分钟更新一次
+    data_update_freq: 十分钟一次
     data_count:
       collection: JPEP_FTN_market
       mode: estimated
@@ -21,11 +21,11 @@ JPEP-FTN-market-analyzer:
 lottery-analyzer:
     status: NORMAL
     reason: null
-    data_update_time:
+    last_update_time:
       collection: lottery
       sort_key: time
       sort_direction: desc
-    data_update_freq: 每天 2:00、9:00、14:00、21:00 更新
+    data_update_freq: 每天 2:00、9:00、14:00、21:00
     data_count:
       collection: lottery
       mode: estimated
@@ -34,11 +34,11 @@ lottery-analyzer:
 lottery-reward-record-viewer:
     status: NORMAL
     reason: null
-    data_update_time:
+    last_update_time:
       collection: lottery
       sort_key: time
       sort_direction: desc
-    data_update_freq: 每天 2:00、9:00、14:00、21:00 更新
+    data_update_freq: 每天 2:00、9:00、14:00、21:00
     data_count:
       collection: lottery
       mode: estimated
@@ -47,7 +47,7 @@ lottery-reward-record-viewer:
 LP-recommend-checker:
     status: NORMAL
     reason: null
-    data_update_time: null
+    last_update_time: null
     data_update_freq: null
     data_count: null
     data_source:
@@ -55,11 +55,11 @@ LP-recommend-checker:
 on-rank-article-viewer:
     status: NORMAL
     reason: null
-    data_update_time:
+    last_update_time:
       collection: article_FP_rank
       sort_key: date
       sort_direction: desc
-    data_update_freq: 每天凌晨 1:00 更新
+    data_update_freq: 每天凌晨 1:00
     data_count:
       collection: article_FP_rank
       mode: estimated
@@ -68,21 +68,21 @@ on-rank-article-viewer:
 URL-scheme-convertor:
     status: NORMAL
     reason: null
-    data_update_time: null
+    last_update_time: null
     data_update_freq: null
     data_count: null
     data_source: null
 VIP-info-viewer:
     status: NORMAL
     reason: null
-    data_update_time: null
+    last_update_time: null
     data_update_freq: null
     data_count: null
     data_source: null
 VIP-profit-compute:
     status: NORMAL
     reason: null
-    data_update_time: null
+    last_update_time: null
     data_update_freq: null
     data_count: null
     data_source:

@@ -13,7 +13,7 @@ export enum ToolStatusEnum {
 export interface GetToolStatusResponse {
   status: ToolStatusEnum;
   reason: string | null;
-  dataUpdateTime: number | null;
+  lastUpdateTime: number | null;
   dataUpdateFreq: string | null;
   dataCount: number | null;
   dataSource: Record<string, string> | null;

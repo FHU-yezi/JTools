@@ -31,7 +31,7 @@ class _DataCountItem(Struct, **_TOOLS_CONFIG_STRUCT_CONFIG):
 class _ToolConfig(Struct, **_TOOLS_CONFIG_STRUCT_CONFIG):
     status: ToolStatus
     reason: Optional[str]
-    data_update_time: Optional[_DataUpdateTimeItem]
+    last_update_time: Optional[_DataUpdateTimeItem]
     data_update_freq: Optional[str]
     data_count: Optional[_DataCountItem]
     data_source: Optional[Dict[str, str]]
