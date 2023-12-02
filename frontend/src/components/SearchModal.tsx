@@ -14,31 +14,9 @@ import { useLocation } from "wouter-preact";
 import { routes } from "../routes";
 import { removeSpace } from "../utils/textHelper";
 import umamiTrack from "../utils/umamiTrack";
-
-interface ToolItemProps {
-  name: string;
-  description: string;
-  onClick(): void;
-}
-
-function ToolItem({ name, description, onClick }: ToolItemProps) {
-  return (
-    <CardButton rounded="rounded-lg" onClick={onClick}>
-      <Column gap="gap-2">
-        <Text className="text-left" large bold>
-          {name}
-        </Text>
-        <Text className="text-left" gray>
-          {description}
-        </Text>
-      </Column>
-    </CardButton>
-  );
-}
+import ToolCard from "./ToolCard";
 
 export default function SearchModal() {
-  const [, setLocation] = useLocation();
-
   const searchModalOpen = useSignal(false);
   const textInputContent = useSignal("");
   const matchRouteItems = useComputed(() =>
@@ -83,10 +61,13 @@ export default function SearchModal() {
 
           {matchRouteItems.value.length !== 0 ? (
             matchRouteItems.value.map((item) => (
-              <ToolItem
-                name={item.toolName}
+              // 此处的 ToolCard 不展示小工具降级或不可用状态
+              <ToolCard
+                toolName={item.toolName}
                 description={item.description}
-                onClick={() => setLocation(item.path)}
+                path={item.path}
+                downgraded={false}
+                unavaliable={false}
               />
             ))
           ) : (
