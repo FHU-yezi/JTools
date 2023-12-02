@@ -20,8 +20,9 @@ export default function ToolCard({
   const [, setLocation] = useLocation();
   return (
     <CardButton
+      className="!shadow-none"
       onClick={!unavaliable ? () => setLocation(path) : undefined}
-      rounded="rounded-lg"
+      rounded="rounded-xl"
     >
       <Row className="justify-between" verticalCenter>
         <Column className="items-start" gap="gap-2">
