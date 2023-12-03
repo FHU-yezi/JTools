@@ -25,6 +25,7 @@ RANGE_TO_TIMEDELTA: Dict[str, Optional[timedelta]] = {
     "1d": timedelta(days=1),
     "7d": timedelta(days=7),
     "30d": timedelta(days=30),
+    "60d": timedelta(days=60),
     "all": None,
 }
 
@@ -302,7 +303,7 @@ class GetRewardWinsHistoryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     },
 )
 async def get_reward_wins_history_handler(
-    range: Annotated[Literal["1d", "7d", "30d"], Parameter(description="时间范围")],  # noqa: A002
+    range: Annotated[Literal["1d", "30d", "60d"], Parameter(description="时间范围")],  # noqa: A002
     resolution: Annotated[Literal["1h", "1d"], Parameter(description="统计粒度")],
 ) -> Response:
     history = await get_rewards_wins_history(

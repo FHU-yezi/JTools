@@ -18,7 +18,6 @@ import type {
   GetRecordsResponse,
   GetRewardWinsHistoryRequest,
   GetRewardWinsHistoryResponse,
-  GetRewardsResponse,
   GetSummaryRequest,
   GetSummaryResponse,
   GetSummaryRewardItem,
@@ -27,27 +26,25 @@ import { roundFloat } from "../utils/numberHelper";
 import { sendRequest } from "../utils/sendRequest";
 import { parseTime } from "../utils/timeHelper";
 
-const timeRangeSwitchData = [
+const summaryTimeRangeSwitchData = [
   { label: "1 天", value: "1d" },
   { label: "7 天", value: "7d" },
   { label: "30 天", value: "30d" },
   { label: "全部", value: "all" },
 ];
-const timeRangeWithoutAllSwitchData = [
+const rewardWinsHistoryTimeRangeSwitchData = [
   { label: "1 天", value: "1d" },
-  { label: "7 天", value: "7d" },
   { label: "30 天", value: "30d" },
+  { label: "60 天", value: "60d" },
 ];
 
-type TimeRange = "1d" | "7d" | "30d" | "all";
-type TimeRangeWithoutAll = "1d" | "7d" | "30d";
+type SummaryTimeRangeType = "1d" | "7d" | "30d" | "all";
+type RewardWinsHistoryTimeRangeType = "1d" | "30d" | "60d";
 
-const perPrizeAnalyzeTimeRange = signal<TimeRange>("1d");
-const perPrizeAnalyzeData = signal<GetSummaryRewardItem[] | undefined>(
-  undefined,
-);
-const rewardWinsTrendLineTimeRange = signal<TimeRangeWithoutAll>("1d");
-const rewardWinsTrendData = signal<Record<number, number> | undefined>(
+const summaryTimeRange = signal<SummaryTimeRangeType>("1d");
+const summaryResult = signal<GetSummaryRewardItem[] | undefined>(undefined);
+const rewardWinsHistoryTimeRange = signal<RewardWinsHistoryTimeRangeType>("1d");
+const rewardWinsHistoryResult = signal<Record<number, number> | undefined>(
   undefined,
 );
 const recentRecords = signal<GetRecordsItem[] | undefined>(undefined);
@@ -57,9 +54,9 @@ function handleSummaryFetch() {
     method: "GET",
     endpoint: "/v1/lottery/summary",
     queryArgs: {
-      range: perPrizeAnalyzeTimeRange.value,
+      range: summaryTimeRange.value,
     },
-    onSuccess: ({ data }) => (perPrizeAnalyzeData.value = data.rewards),
+    onSuccess: ({ data }) => (summaryResult.value = data.rewards),
   });
 }
 
@@ -68,10 +65,10 @@ function handleRewardWinsHistoryFetch() {
     method: "GET",
     endpoint: "/v1/lottery/reward-wins-history",
     queryArgs: {
-      range: rewardWinsTrendLineTimeRange.value,
-      resolution: rewardWinsTrendLineTimeRange.value === "1d" ? "1h" : "1d",
+      range: rewardWinsHistoryTimeRange.value,
+      resolution: rewardWinsHistoryTimeRange.value === "1d" ? "1h" : "1d",
     },
-    onSuccess: ({ data }) => (rewardWinsTrendData.value = data.history),
+    onSuccess: ({ data }) => (rewardWinsHistoryResult.value = data.history),
   });
 }
 
@@ -88,11 +85,8 @@ function handleRecentRecordsFetch() {
 }
 
 function PerPrizeAnalyzeTable() {
-  const totalWins = perPrizeAnalyzeData.value!.reduce(
-    (a, b) => a + b.winsCount,
-    0,
-  );
-  const totalWinners = perPrizeAnalyzeData.value!.reduce(
+  const totalWins = summaryResult.value!.reduce((a, b) => a + b.winsCount, 0);
+  const totalWinners = summaryResult.value!.reduce(
     (a, b) => a + b.winnersCount,
     0,
   );
@@ -101,7 +95,7 @@ function PerPrizeAnalyzeTable() {
   return (
     <SSTable
       className="min-w-[670px]"
-      data={perPrizeAnalyzeData
+      data={summaryResult
         .value!.map<Record<string, ComponentChildren>>((item) => ({
           奖品名称: <Text center>{item.rewardName}</Text>,
           中奖次数: <Text center>{item.winsCount}</Text>,
@@ -123,7 +117,7 @@ function PerPrizeAnalyzeTable() {
           ),
         }))
         .concat(
-          perPrizeAnalyzeData.value!.length !== 0
+          summaryResult.value!.length !== 0
             ? [
                 {
                   奖品名称: (
@@ -194,77 +188,78 @@ function RecentRecordsBlock() {
   );
 }
 
-function RewardWinsTrendLine() {
+function RewardWinsHistoryBlock() {
   return (
-    <SSLineChart
-      className="h-72 max-w-lg w-full"
-      dataReady={rewardWinsTrendData.value !== undefined}
-      options={{
-        xAxis: {
-          type: "time",
-        },
-        yAxis: {
-          type: "value",
-        },
-        series: [
-          {
-            type: "line",
-            smooth: true,
-            data:
-              rewardWinsTrendData.value === undefined
-                ? undefined
-                : Object.entries(rewardWinsTrendData.value),
+    <>
+      <Text large bold>
+        中奖次数趋势
+      </Text>
+      <Switch
+        value={rewardWinsHistoryTimeRange}
+        data={rewardWinsHistoryTimeRangeSwitchData}
+      />
+      <SSLineChart
+        className="h-72 max-w-lg w-full"
+        dataReady={rewardWinsHistoryResult.value !== undefined}
+        options={{
+          xAxis: {
+            type: "time",
           },
-        ],
-        tooltip: {
-          show: true,
-          trigger: "axis",
-        },
-      }}
-    />
+          yAxis: {
+            type: "value",
+          },
+          series: [
+            {
+              type: "line",
+              smooth: true,
+              data:
+                rewardWinsHistoryResult.value === undefined
+                  ? undefined
+                  : Object.entries(rewardWinsHistoryResult.value),
+            },
+          ],
+          tooltip: {
+            show: true,
+            trigger: "axis",
+          },
+        }}
+      />
+    </>
   );
 }
 
 export default function LotteryAnalyzer() {
   useEffect(() => {
     handleSummaryFetch();
-    handleRewardWinsHistoryFetch();
     handleRecentRecordsFetch();
+    handleRewardWinsHistoryFetch();
   }, []);
 
-  useEffect(() => handleSummaryFetch(), [perPrizeAnalyzeTimeRange.value]);
+  useEffect(() => handleSummaryFetch(), [summaryTimeRange.value]);
 
   useEffect(() => {
-    rewardWinsTrendData.value = undefined;
+    rewardWinsHistoryResult.value = undefined;
     handleRewardWinsHistoryFetch();
-  }, [rewardWinsTrendLineTimeRange.value]);
+  }, [rewardWinsHistoryTimeRange.value]);
 
   return (
     <Column>
       <Text large bold>
         综合统计
       </Text>
-      <Switch value={perPrizeAnalyzeTimeRange} data={timeRangeSwitchData} />
+      <Switch value={summaryTimeRange} data={summaryTimeRangeSwitchData} />
       <LoadingArea
         className="h-[291px]"
-        loading={perPrizeAnalyzeData.value === undefined}
+        loading={summaryResult.value === undefined}
       >
-        {perPrizeAnalyzeData.value !== undefined && <PerPrizeAnalyzeTable />}
+        {summaryResult.value !== undefined && <PerPrizeAnalyzeTable />}
       </LoadingArea>
       <Tooltip tooltip="受简书接口限制，我们无法获取这两种奖品的中奖情况，故表中未予统计">
         <Text>关于免费开 1 次连载 / 锦鲤头像框</Text>
       </Tooltip>
 
       <RecentRecordsBlock />
-
-      <Text large bold>
-        中奖次数趋势
-      </Text>
-      <Switch
-        value={rewardWinsTrendLineTimeRange}
-        data={timeRangeWithoutAllSwitchData}
-      />
-      <RewardWinsTrendLine />
+      <RewardWinsHistoryBlock />
     </Column>
   );
 }

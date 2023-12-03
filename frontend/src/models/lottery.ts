@@ -37,7 +37,7 @@ export interface GetSummaryResponse {
 }
 
 export interface GetRewardWinsHistoryRequest {
-  range: "1d" | "7d" | "30d";
+  range: "1d" | "30d" | "60d";
   resolution: "1h" | "1d";
 }
 
