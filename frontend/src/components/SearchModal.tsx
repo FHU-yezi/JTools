@@ -1,16 +1,13 @@
 import { useComputed, useSignal } from "@preact/signals";
 import {
-  CardButton,
   Column,
   GhostButton,
   Modal,
   NoResultNotice,
-  Text,
   TextInput,
 } from "@sscreator/ui";
 import { useEffect, useRef } from "preact/hooks";
 import { MdSearch } from "react-icons/md";
-import { useLocation } from "wouter-preact";
 import { routes } from "../routes";
 import { removeSpace } from "../utils/textHelper";
 import umamiTrack from "../utils/umamiTrack";
@@ -21,12 +18,14 @@ export default function SearchModal() {
   const textInputContent = useSignal("");
   const matchRouteItems = useComputed(() =>
     textInputContent.value === ""
-      ? routes
-      : routes.filter((item) =>
-          removeSpace(item.toolName).includes(
-            removeSpace(textInputContent.value),
-          ),
-        ),
+      ? routes.slice(0, 5)
+      : routes
+          .filter((item) =>
+            removeSpace(item.toolName).includes(
+              removeSpace(textInputContent.value),
+            ),
+          )
+          .slice(0, 5),
   );
   const textInputRef = useRef<HTMLInputElement>(null);
 
