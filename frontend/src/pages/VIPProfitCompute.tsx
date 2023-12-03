@@ -1,15 +1,19 @@
-// TODO: 由于 SegmentedControl 实现问题，暂时不展示会员图标
 import { computed, signal } from "@preact/signals";
+import {
+  Card,
+  Column,
+  Grid,
+  NumberInput,
+  Row,
+  Switch,
+  Text,
+} from "@sscreator/ui";
 import type { JSX } from "preact/jsx-runtime";
-import SSCard from "../components/SSCard";
-import SSNumberInput from "../components/SSNumberInput";
-import SSSegmentedControl from "../components/SSSegmentedControl";
-import SSText from "../components/SSText";
-import { RoundFloat } from "../utils/numberHelper";
-// import VIPBadgeBronzeURL from "/vip_badges/vip_badge_bronze.png";
-// import VIPBadgeGoldURL from "/vip_badges/vip_badge_gold.png";
-// import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";
-// import VIPBadgeSilverURL from "/vip_badges/vip_badge_silver.png";
+import { roundFloat } from "../utils/numberHelper";
+import VIPBadgeBronzeURL from "/vip_badges/vip_badge_bronze.png";
+import VIPBadgeGoldURL from "/vip_badges/vip_badge_gold.png";
+import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";
+import VIPBadgeSilverURL from "/vip_badges/vip_badge_silver.png";
 
 type VIPLevelType = "bronze" | "silver" | "gold" | "platina";
 
@@ -27,12 +31,52 @@ const VIPLevelToPrice: Record<VIPLevelType, number> = {
   platina: 64980,
 };
 
-// const VIPLevelToBadgeImageURL: Record<VIPLevelType, string> = {
-//   bronze: VIPBadgeBronzeURL,
-//   silver: VIPBadgeSilverURL,
-//   gold: VIPBadgeGoldURL,
-//   platina: VIPBadgePlatinaURL,
-// };
+const VIPSwitchData = [
+  {
+    label: "铜牌",
+    value: "bronze",
+    leftIcon: (
+      <img
+        className="mr-1.5 inline h-4 w-4"
+        src={VIPBadgeBronzeURL}
+        alt="铜牌会员图标"
+      />
+    ),
+  },
+  {
+    label: "银牌",
+    value: "silver",
+    leftIcon: (
+      <img
+        className="mr-1.5 inline h-4 w-4"
+        src={VIPBadgeSilverURL}
+        alt="银牌会员图标"
+      />
+    ),
+  },
+  {
+    label: "金牌",
+    value: "gold",
+    leftIcon: (
+      <img
+        className="mr-1.5 inline h-4 w-4"
+        src={VIPBadgeGoldURL}
+        alt="金牌会员图标"
+      />
+    ),
+  },
+  {
+    label: "白金",
+    value: "platina",
+    leftIcon: (
+      <img
+        className="mr-1.5 inline h-4 w-4"
+        src={VIPBadgePlatinaURL}
+        alt="白金会员图标"
+      />
+    ),
+  },
+];
 
 const VIPLevelToBaseEarningRate: Record<VIPLevelType, number> = {
   bronze: 0.048,
@@ -99,13 +143,6 @@ const promoterLevelToLevel2MembersFPEarningRate: Record<
   supreme: 0.012,
 };
 
-const VIPLevelSCData: Record<string, VIPLevelType> = {
-  铜牌: "bronze",
-  银牌: "silver",
-  金牌: "gold",
-  白金: "platina",
-};
-
 const VIPLevel = signal<VIPLevelType>("bronze");
 const VIPText = computed(() => VIPLevelToText[VIPLevel.value]);
 const VIPPrice = computed(() => VIPLevelToPrice[VIPLevel.value]);
@@ -135,7 +172,7 @@ const promoterLevelEarningRateFactor = computed(
   () => promoterLevelToPromoterEarningRateFactor[promoterLevel.value],
 );
 const earningRate = computed(() =>
-  RoundFloat(
+  roundFloat(
     baseEarningRate.value *
       FPCountEarningRateFactor.value *
       promoterLevelEarningRateFactor.value,
@@ -168,12 +205,12 @@ const annualEarning = computed(() => {
   }
   nowFPCount += earningFromLevel1Members.value;
   nowFPCount += earningFromLevel2Members.value;
-  return RoundFloat(nowFPCount - FPCount.value, 2);
+  return roundFloat(nowFPCount - FPCount.value, 2);
 });
 const pureAnnualEarning = computed(() => annualEarning.value - VIPPrice.value);
 const pureMonthlyEarning = computed(() => pureAnnualEarning.value / 12);
 const returnRate = computed(() =>
-  RoundFloat(pureAnnualEarning.value / (FPCount.value + VIPPrice.value), 4),
+  roundFloat(pureAnnualEarning.value / (FPCount.value + VIPPrice.value), 4),
 );
 const canGetMoneyBack = computed(() => pureAnnualEarning.value >= 0);
 
@@ -210,17 +247,15 @@ function ResultItem({
   }
 
   return (
-    <div className="flex justify-between">
-      <SSText bold={bold}>
+    <Row className="justify-between">
+      <Text bold={bold}>
         {label}
-        <SSText small>
-          {description.length !== 0 && `（${description}）`}
-        </SSText>
-      </SSText>
-      <SSText color={valueColor} bold={bold}>
+        <Text small>{description.length !== 0 && `（${description}）`}</Text>
+      </Text>
+      <Text color={valueColor} bold={bold}>
         {valuePart}
-      </SSText>
-    </div>
+      </Text>
+    </Row>
   );
 }
 
@@ -231,35 +266,28 @@ interface ResultGroupProps {
 
 function ResultGroup({ children, label }: ResultGroupProps) {
   return (
-    <SSCard title={label}>
-      <div className="flex flex-col gap-3">{children}</div>
-    </SSCard>
+    <Card>
+      <Column gap="gap-2">
+        <Text large bold>
+          {label}
+        </Text>
+        {children}
+      </Column>
+    </Card>
   );
 }
 
 export default function VIPProfitCompute() {
   return (
     <div className="flex flex-col gap-4">
-      <SSSegmentedControl
-        label="会员等级"
-        value={VIPLevel}
-        data={VIPLevelSCData}
-      />
-      <SSNumberInput label="持钻量" value={FPCount} min={0} />
-      <SSNumberInput label="旗下会员数" value={membersCount} min={0} />
-      <SSNumberInput
-        label="旗下一级会员持钻量"
-        value={Level1MembersFPCount}
-        min={0}
-      />
-      <SSNumberInput
-        label="旗下二级会员持钻量"
-        value={Level2MembersFPCount}
-        min={0}
-      />
-      <SSNumberInput label="每日创作收益" value={earningFromCreation} min={0} />
+      <Switch value={VIPLevel} data={VIPSwitchData} />
+      <NumberInput label="持钻量" value={FPCount} />
+      <NumberInput label="旗下会员数" value={membersCount} />
+      <NumberInput label="旗下一级会员持钻量" value={Level1MembersFPCount} />
+      <NumberInput label="旗下二级会员持钻量" value={Level2MembersFPCount} />
+      <NumberInput label="每日创作收益" value={earningFromCreation} />
 
-      <div className="grid grid-cols-1 mt-5 gap-4 sm:grid-cols-2">
+      <Grid cols="grid-cols-1 sm:grid-cols-2">
         <ResultGroup label="会员持钻收益">
           <ResultItem
             label="基础收益率"
@@ -341,17 +369,15 @@ export default function VIPProfitCompute() {
           />
         </ResultGroup>
         <ResultGroup label="注意事项">
-          <SSText>
+          <Text>
             1.
             收益计算已考虑复利，但未考虑持钻量增加对收益率的提升，计算结果可能偏低。
-          </SSText>
-          <SSText>
-            2. 每月净收益为平均值，由于持钻量上升，实际收益逐月增长。
-          </SSText>
-          <SSText>3. 全部数值单位均为简书贝。</SSText>
-          <SSText bold>本工具不作为投资参考。</SSText>
+          </Text>
+          <Text>2. 每月净收益为平均值，由于持钻量上升，实际收益逐月增长。</Text>
+          <Text>3. 全部数值单位均为简书贝。</Text>
+          <Text bold>本工具不作为投资参考。</Text>
         </ResultGroup>
-      </div>
+      </Grid>
     </div>
   );
 }

@@ -1,15 +1,17 @@
 import { useClipboard } from "@mantine/hooks";
 import type { Signal } from "@preact/signals";
 import { signal } from "@preact/signals";
-import { AiOutlineCheck } from "react-icons/ai";
-import { BiCopy, BiRightArrowAlt } from "react-icons/bi";
+import {
+  Center,
+  Column,
+  GhostButton,
+  PrimaryButton,
+  Row,
+  Text,
+  TextInput,
+} from "@sscreator/ui";
+import { MdContentCopy, MdDone, MdOutlineArrowForward } from "react-icons/md";
 import QRCode from "react-qr-code";
-import SSActionIcon from "../components/SSActionIcon";
-import SSButton from "../components/SSButton";
-import SSCenter from "../components/SSCenter";
-import SSText from "../components/SSText";
-import SSTextInput from "../components/SSTextInput";
-import SSTooltip from "../components/SSTooltip";
 import { toastWarning } from "../utils/toastHelper";
 
 interface JianshuURLType {
@@ -87,7 +89,7 @@ function handleConvert() {
   const urlType = getURLType(jianshuURL);
 
   if (urlType === "unknown") {
-    toastWarning("输入的不是有效的简书链接，请检查");
+    toastWarning({ message: "请输入有效的简书链接" });
     return;
   }
 
@@ -102,44 +104,37 @@ export default function URLSchemeConvertor() {
   const clipboard = useClipboard();
 
   return (
-    <div className="flex flex-col gap-4">
-      <SSTextInput
-        label="简书链接"
-        value={jianshuURL}
-        onEnter={handleConvert}
-      />
-      <SSButton onClick={handleConvert}>转换</SSButton>
+    <Column>
+      <TextInput label="简书链接" value={jianshuURL} onEnter={handleConvert} />
+      <PrimaryButton onClick={handleConvert} fullWidth>
+        转换
+      </PrimaryButton>
 
       {result.value !== undefined && (
-        <SSCenter>
-          <div className="mt-12 flex flex-col gap-4">
-            <div className="flex gap-2">
-              <SSText>{result.value}</SSText>
-              <SSTooltip tooltip="访问" hideIcon>
-                <SSActionIcon
-                  label="访问"
+        <Center>
+          <Column className="mt-12" gap="gap-4">
+            <Column gap="gap-2" horizontalCenter>
+              <Text>{result.value}</Text>
+              <Row verticalCenter>
+                <GhostButton
+                  icon={<MdOutlineArrowForward />}
                   onClick={() => window.open(result.value)}
                 >
-                  <BiRightArrowAlt />
-                </SSActionIcon>
-              </SSTooltip>
-              <SSTooltip
-                tooltip={!clipboard.copied ? "复制" : "复制成功"}
-                hideIcon
-              >
-                <SSActionIcon
+                  访问
+                </GhostButton>
+                <GhostButton
                   className={!clipboard.copied ? undefined : "bg-green-100"}
-                  label="复制"
+                  icon={!clipboard.copied ? <MdContentCopy /> : <MdDone />}
                   onClick={() => clipboard.copy(result.value)}
                 >
-                  {!clipboard.copied ? <BiCopy /> : <AiOutlineCheck />}
-                </SSActionIcon>
-              </SSTooltip>
-            </div>
-            <QRCode value={result.value} />
-          </div>
-        </SSCenter>
+                  {!clipboard.copied ? "复制" : "复制成功"}
+                </GhostButton>
+              </Row>
+            </Column>
+            <QRCode className="w-full" value={result.value} />
+          </Column>
+        </Center>
       )}
-    </div>
+    </Column>
   );
 }

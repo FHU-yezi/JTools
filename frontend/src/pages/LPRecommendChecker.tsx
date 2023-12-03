@@ -1,114 +1,88 @@
-import { batch, signal } from "@preact/signals";
-import type { Dayjs } from "dayjs";
-import SSBadge from "../components/SSBadge";
-import SSButton from "../components/SSButton";
-import SSCenter from "../components/SSCenter";
-import SSExternalLink from "../components/SSExternalLink";
-import SSTable from "../components/SSTable";
-import SSText from "../components/SSText";
-import SSTextInput from "../components/SSTextInput";
-import type {
-  CheckItem,
-  CheckRequest,
-  CheckResponse,
-} from "../models/LPRecommendChecker/CheckResult";
-import { commonAPIErrorHandler } from "../utils/errorHandler";
-import { fetchData } from "../utils/fetchData";
+import { computed, signal } from "@preact/signals";
 import {
-  getDatetime,
-  getHumanReadableTimeDelta,
-  parseTime,
-} from "../utils/timeHelper";
+  Column,
+  ExternalLink,
+  PrimaryButton,
+  Text,
+  TextInput,
+} from "@sscreator/ui";
+import type { GetLPRecommendCheckResponse } from "../models/articles";
+import { sendRequest } from "../utils/sendRequest";
+import { getDatetime, parseTime } from "../utils/timeHelper";
 import { toastWarning } from "../utils/toastHelper";
 
-const articleURL = signal("");
+const articleUrl = signal("");
+const articleSlug = computed(() => {
+  const matchResult = articleUrl.value!.match(
+    "https://www.jianshu.com/p/(\\w{12})",
+  );
+  if (matchResult !== null && matchResult[1] !== undefined) {
+    return matchResult[1];
+  }
+  return undefined;
+});
 const isLoading = signal(false);
-const articleTitle = signal<string | undefined>(undefined);
-const releaseTime = signal<Dayjs | undefined>(undefined);
-const checkPassed = signal<boolean | undefined>(undefined);
-const checkItems = signal<CheckItem[] | undefined>(undefined);
+const result = signal<GetLPRecommendCheckResponse | undefined>(undefined);
 
 function handleCheck() {
-  if (articleURL.value.length === 0) {
-    toastWarning("请输入文章链接");
+  if (articleSlug.value === undefined) {
+    toastWarning({ message: "请输入有效的文章链接" });
     return;
   }
 
-  fetchData<CheckRequest, CheckResponse>(
-    "POST",
-    "/tools/LP_recommend_checker/check",
-    {
-      article_url: articleURL.value,
-    },
-    (data) =>
-      batch(() => {
-        articleTitle.value = data.title;
-        releaseTime.value = parseTime(data.release_time);
-        checkPassed.value = data.check_passed;
-        checkItems.value = data.check_items;
-      }),
-    commonAPIErrorHandler,
+  sendRequest<Record<string, never>, GetLPRecommendCheckResponse>({
+    method: "GET",
+    endpoint: `/v1/articles/${articleSlug.value}/lp-recommend-check`,
+    onSuccess: ({ data }) => (result.value = data),
     isLoading,
-  );
+  });
 }
 
 export default function LPRecommendChecker() {
   return (
-    <div className="flex flex-col gap-4">
-      <SSTextInput label="文章链接" value={articleURL} onEnter={handleCheck} />
-      <SSButton onClick={handleCheck} loading={isLoading.value}>
-        查询
-      </SSButton>
+    <Column>
+      <TextInput label="文章链接" value={articleUrl} onEnter={handleCheck} />
+      <PrimaryButton onClick={handleCheck} loading={isLoading.value} fullWidth>
+        检测
+      </PrimaryButton>
 
-      {articleTitle.value !== undefined && articleURL.value !== undefined && (
-        <SSText center>
-          文章标题：
-          <SSExternalLink url={articleURL.value} label={articleTitle.value} />
-        </SSText>
+      {result.value !== undefined && (
+        <>
+          <Text
+            color={
+              result.value.canRecommendNow ? "text-green-500" : "text-red-500"
+            }
+            large
+            bold
+          >
+            {result.value.canRecommendNow ? "可推荐" : "不可推荐"}
+          </Text>
+          <Text truncate>
+            文章：
+            <ExternalLink href={articleUrl.value}>
+              {result.value.articleTitle}
+            </ExternalLink>
+          </Text>
+          <Text>
+            获钻量：
+            <Text
+              color={result.value.FPReward >= 35 ? "text-red-500" : undefined}
+              bold
+              inline
+            >
+              {result.value.FPReward}
+            </Text>
+          </Text>
+          <Text>
+            作者下次可推时间：
+            <Text bold inline>
+              {result.value.nextCanRecommendDate
+                ? getDatetime(parseTime(result.value.nextCanRecommendDate))
+                : "作者未上过榜"}
+            </Text>
+          </Text>
+        </>
       )}
-      {releaseTime.value !== undefined && (
-        <SSText center>{`发布于 ${getDatetime(
-          releaseTime.value!,
-        )}（${getHumanReadableTimeDelta(releaseTime.value!)}）`}</SSText>
-      )}
-      {checkPassed.value !== undefined && (
-        <SSText
-          color={checkPassed.value ? "text-green-600" : "text-red-500"}
-          bold
-          xlarge
-          center
-        >
-          {checkPassed.value ? "符合推荐标准" : "不符合推荐标准"}
-        </SSText>
-      )}
-      {checkItems.value !== undefined && (
-        <SSTable
-          className="min-w-[540px]"
-          data={checkItems.value.map((item) => ({
-            项目: <SSText center>{item.name}</SSText>,
-            检测结果: (
-              <SSCenter>
-                <SSBadge
-                  className={
-                    item.item_passed
-                      ? "bg-green-200 text-green-600 dark:bg-green-950"
-                      : "bg-red-200 text-red-500 dark:bg-red-950"
-                  }
-                >
-                  {item.item_passed ? "符合" : "不符合"}
-                </SSBadge>
-              </SSCenter>
-            ),
-            限制值: (
-              <SSText center>
-                {item.operator} {item.limit_value}
-              </SSText>
-            ),
-            实际值: <SSText center>{item.actual_value}</SSText>,
-          }))}
-          tableItemKey="name"
-        />
-      )}
-    </div>
+    </Column>
   );
 }

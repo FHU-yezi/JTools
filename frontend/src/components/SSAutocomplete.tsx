@@ -1,10 +1,9 @@
 import { useDebouncedValue } from "@mantine/hooks";
 import type { Signal } from "@preact/signals";
 import { useSignal } from "@preact/signals";
+import { Text, TextInput } from "@sscreator/ui";
 import clsx from "clsx";
 import { useEffect, useRef } from "preact/hooks";
-import SSText from "./SSText";
-import SSTextInput from "./SSTextInput";
 
 interface Props {
   label: string;
@@ -46,13 +45,13 @@ export default function SSAutocomplete({
 
   return (
     <div className="relative">
-      <SSTextInput
+      <TextInput
         label={label}
         value={value}
         description={description}
         placeholder={placeholder}
         onEnter={onEnter}
-        noSelectOnFocus={noSelectOnFocus}
+        noSelectAllOnFocus={noSelectOnFocus}
         inputRef={textInputRef}
       />
 
@@ -81,7 +80,7 @@ export default function SSAutocomplete({
                   value.value = item;
                 }}
               >
-                <SSText>{item}</SSText>
+                <Text>{item}</Text>
               </button>
             ))}
           </div>

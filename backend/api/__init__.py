@@ -1,12 +1,10 @@
-from sanic import Blueprint
+from litestar import Router
 
-from api.info import info_blueprint
-from api.status import status_blueprint
-from api.tools import tools_blueprint
+from .v1 import V1_ROUTER
 
-api_blueprint = Blueprint.group(
-    info_blueprint,
-    status_blueprint,
-    tools_blueprint,
-    url_prefix="/api",
+API_ROUTER = Router(
+    path="/",
+    route_handlers=[
+        V1_ROUTER,
+    ],
 )

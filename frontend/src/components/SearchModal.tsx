@@ -1,52 +1,31 @@
 import { useComputed, useSignal } from "@preact/signals";
+import {
+  Column,
+  GhostButton,
+  Modal,
+  NoResultNotice,
+  TextInput,
+} from "@sscreator/ui";
 import { useEffect, useRef } from "preact/hooks";
-import { AiOutlineSearch } from "react-icons/ai";
-import { useLocation } from "wouter-preact";
+import { MdSearch } from "react-icons/md";
 import { routes } from "../routes";
-import { whenEnterOrSpace } from "../utils/keyHelper";
 import { removeSpace } from "../utils/textHelper";
 import umamiTrack from "../utils/umamiTrack";
-import SSActionIcon from "./SSActionIcon";
-import SSModal from "./SSModal";
-import SSText from "./SSText";
-import SSTextInput from "./SSTextInput";
-
-interface ToolItemProps {
-  name: string;
-  description: string;
-  onClick(): void;
-}
-
-function ToolItem({ name, description, onClick }: ToolItemProps) {
-  return (
-    <div
-      role="button"
-      tabIndex={0}
-      className="w-full flex flex-col gap-1 rounded-lg p-2 hover:(bg-zinc-100 dark:bg-zinc-800)"
-      onClick={onClick}
-      onKeyUp={(event) => whenEnterOrSpace(event, onClick)}
-    >
-      <SSText large bold>
-        {name}
-      </SSText>
-      <SSText gray>{description}</SSText>
-    </div>
-  );
-}
+import ToolCard from "./ToolCard";
 
 export default function SearchModal() {
-  const [, setLocation] = useLocation();
-
   const searchModalOpen = useSignal(false);
   const textInputContent = useSignal("");
   const matchRouteItems = useComputed(() =>
     textInputContent.value === ""
-      ? routes
-      : routes.filter((item) =>
-          removeSpace(item.toolName).includes(
-            removeSpace(textInputContent.value),
-          ),
-        ),
+      ? routes.slice(0, 5)
+      : routes
+          .filter((item) =>
+            removeSpace(item.toolName).includes(
+              removeSpace(textInputContent.value),
+            ),
+          )
+          .slice(0, 5),
   );
   const textInputRef = useRef<HTMLInputElement>(null);
 
@@ -58,49 +37,43 @@ export default function SearchModal() {
 
   return (
     <>
-      <SSActionIcon
-        className="dark:hover:!bg-zinc-700"
-        label="搜索"
+      <GhostButton
+        icon={
+          <MdSearch className="text-zinc-500 dark:text-zinc-300" size={22} />
+        }
+        hoverBackgroundColor="hover:bg-zinc-200 dark:hover:bg-zinc-700"
         onClick={() => {
           searchModalOpen.value = true;
           umamiTrack("click-search-button");
         }}
-      >
-        <AiOutlineSearch
-          className="text-zinc-500 dark:text-zinc-300"
-          size={22}
-        />
-      </SSActionIcon>
+        ariaLabel="搜索"
+      />
 
-      <SSModal
-        isOpen={searchModalOpen}
-        onClose={() => (searchModalOpen.value = false)}
-        title="搜索"
-      >
-        <div className="h-2" />
-        <SSTextInput
-          label=""
-          value={textInputContent}
-          placeholder="输入工具名称..."
-          inputRef={textInputRef}
-        />
+      <Modal open={searchModalOpen} title="搜索">
+        <Column>
+          <TextInput
+            label=""
+            value={textInputContent}
+            placeholder="输入工具名称..."
+            inputRef={textInputRef}
+          />
 
-        <div className="mt-3 flex flex-col">
           {matchRouteItems.value.length !== 0 ? (
             matchRouteItems.value.map((item) => (
-              <ToolItem
-                name={item.toolName}
+              // 此处的 ToolCard 不展示小工具降级或不可用状态
+              <ToolCard
+                toolName={item.toolName}
                 description={item.description}
-                onClick={() => setLocation(item.path)}
+                path={item.path}
+                downgraded={false}
+                unavaliable={false}
               />
             ))
           ) : (
-            <SSText className="m-6" bold large center>
-              没有查询到数据
-            </SSText>
+            <NoResultNotice />
           )}
-        </div>
-      </SSModal>
+        </Column>
+      </Modal>
     </>
   );
 }

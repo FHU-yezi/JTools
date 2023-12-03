@@ -1,49 +1,47 @@
-import { batch, signal } from "@preact/signals";
-import SSButton from "../components/SSButton";
-import SSExternalLink from "../components/SSExternalLink";
-import SSText from "../components/SSText";
-import SSTextInput from "../components/SSTextInput";
+import { computed, signal } from "@preact/signals";
+import {
+  Column,
+  ExternalLink,
+  PrimaryButton,
+  Text,
+  TextInput,
+} from "@sscreator/ui";
 import SSWordcloud from "../components/charts/SSWordcloud";
-import type {
-  WordFreqDataItem,
-  WordFreqDataRequest,
-  WordFreqDataResponse,
-} from "../models/ArticleWordcloudGenerator/WordFreqData";
-import { commonAPIErrorHandler } from "../utils/errorHandler";
-import { fetchData } from "../utils/fetchData";
+import type { GetWordFreqResponse } from "../models/articles";
+import { sendRequest } from "../utils/sendRequest";
 import { toastWarning } from "../utils/toastHelper";
 
-const articleURL = signal("");
+const articleUrl = signal("");
+const articleSlug = computed(() => {
+  const matchResult = articleUrl.value!.match(
+    "https://www.jianshu.com/p/(\\w{12})",
+  );
+  if (matchResult !== null && matchResult[1] !== undefined) {
+    return matchResult[1];
+  }
+  return undefined;
+});
 const isLoading = signal(false);
-const articleTitle = signal<string | undefined>(undefined);
-const wordFreqData = signal<WordFreqDataItem | undefined>(undefined);
+const result = signal<GetWordFreqResponse | undefined>(undefined);
 
 function handleGenerate() {
-  if (articleURL.value.length === 0) {
-    toastWarning("请输入文章链接");
+  if (articleSlug.value === undefined) {
+    toastWarning({ message: "请输入有效的文章链接" });
     return;
   }
 
-  fetchData<WordFreqDataRequest, WordFreqDataResponse>(
-    "POST",
-    "/tools/article_wordcloud_generator/word_freq_data",
-    {
-      article_url: articleURL.value,
-    },
-    (data) =>
-      batch(() => {
-        articleTitle.value = data.title;
-        wordFreqData.value = data.word_freq;
-      }),
-    commonAPIErrorHandler,
+  sendRequest<Record<string, never>, GetWordFreqResponse>({
+    method: "GET",
+    endpoint: `/v1/articles/${articleSlug.value}/word-freq`,
+    onSuccess: ({ data }) => (result.value = data),
     isLoading,
-  );
+  });
 }
 
 function Wordcloud() {
   return (
     <SSWordcloud
-      data={Object.entries(wordFreqData.value!).map(([text, value]) => ({
+      data={Object.entries(result.value!.wordFreq).map(([text, value]) => ({
         text,
         value,
       }))}
@@ -53,31 +51,27 @@ function Wordcloud() {
 
 export default function ArticleWordcloudGenerator() {
   return (
-    <div className="flex flex-col gap-4">
-      <SSTextInput
-        label="文章链接"
-        value={articleURL}
-        onEnter={handleGenerate}
-      />
-      <SSButton onClick={handleGenerate} loading={isLoading.value}>
+    <Column>
+      <TextInput label="文章链接" value={articleUrl} onEnter={handleGenerate} />
+      <PrimaryButton
+        onClick={handleGenerate}
+        loading={isLoading.value}
+        fullWidth
+      >
         查询
-      </SSButton>
+      </PrimaryButton>
 
-      {articleTitle.value !== undefined && articleURL.value !== undefined && (
-        <SSText center>
-          文章：
-          <SSExternalLink
-            url={articleURL.value}
-            label={
-              articleTitle.value.length <= 17
-                ? articleTitle.value
-                : `${articleTitle.value.substring(0, 17)}...`
-            }
-          />
-        </SSText>
+      {result.value !== undefined && (
+        <>
+          <Text truncate>
+            文章标题：
+            <ExternalLink href={articleUrl.value}>
+              {result.value.title}
+            </ExternalLink>
+          </Text>
+          <Wordcloud />
+        </>
       )}
-
-      {wordFreqData.value !== undefined && <Wordcloud />}
-    </div>
+    </Column>
   );
 }

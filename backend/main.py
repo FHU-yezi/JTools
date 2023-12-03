@@ -1,12 +1,22 @@
-from sanic import Sanic
+import logging
+import logging.config
 
-from api import api_blueprint
+from uvicorn import run as uvicorn_run
+
 from utils.config import config
-from utils.log import run_logger
+from utils.log import logger
 
-app = Sanic(__name__)
-app.blueprint(api_blueprint)
+logging.getLogger("httpx").setLevel(logging.CRITICAL)
+logging.getLogger("httpcore").setLevel(logging.CRITICAL)
 
 if __name__ == "__main__":
-    run_logger.info("启动 API 服务...")
-    app.run(host="0.0.0.0", port=config.deploy.port, single_process=True)
+    logger.info("启动 API 服务")
+    uvicorn_run(
+        app="app:app",
+        host=config.deploy.host,
+        port=config.deploy.port,
+        log_level=config.deploy.uvicorn_log_level,
+        workers=config.deploy.workers,
+        reload=config.deploy.reload,
+        access_log=config.deploy.access_log,
+    )

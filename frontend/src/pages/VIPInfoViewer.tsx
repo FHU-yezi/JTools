@@ -1,17 +1,15 @@
-import { batch, signal } from "@preact/signals";
-import type { Dayjs } from "dayjs";
-import SSAvatar from "../components/SSAvatar";
-import SSBadge from "../components/SSBadge";
-import SSButton from "../components/SSButton";
-import SSExternalLink from "../components/SSExternalLink";
-import SSText from "../components/SSText";
-import SSTextInput from "../components/SSTextInput";
-import type {
-  VIPInfoRequest,
-  VIPInfoResponse,
-} from "../models/VIPInfoViewer/VIPInfo";
-import { commonAPIErrorHandler } from "../utils/errorHandler";
-import { fetchData } from "../utils/fetchData";
+import { computed, signal } from "@preact/signals";
+import {
+  Badge,
+  Column,
+  ExternalLink,
+  PrimaryButton,
+  Row,
+  Text,
+  TextInput,
+} from "@sscreator/ui";
+import type { GetVIPInfoResponse } from "../models/users";
+import { sendRequest } from "../utils/sendRequest";
 import {
   getDate,
   getHumanReadableTimeDelta,
@@ -23,16 +21,23 @@ import VIPBadgeGoldURL from "/vip_badges/vip_badge_gold.png";
 import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";
 import VIPBadgeSilverURL from "/vip_badges/vip_badge_silver.png";
 
-const userURL = signal("");
-const userName = signal<string | undefined>(undefined);
+const userUrl = signal("");
+const userSlug = computed(() => {
+  const matchResult = userUrl.value.match(
+    "https://www.jianshu.com/u/(\\w{6,12})",
+  );
+  if (matchResult !== null && matchResult[1] !== undefined) {
+    return matchResult[1];
+  }
+  return undefined;
+});
 const isLoading = signal(false);
-const VIPType = signal<string | undefined>(undefined);
-const VIPExpireTime = signal<Dayjs | undefined>(undefined);
+const result = signal<GetVIPInfoResponse | undefined>(undefined);
 
 const VIPTypeToBadgeImageURL: Record<string, string> = {
   铜牌: VIPBadgeBronzeURL,
   银牌: VIPBadgeSilverURL,
-  金牌: VIPBadgeGoldURL,
+  黄金: VIPBadgeGoldURL,
   白金: VIPBadgePlatinaURL,
 };
 
@@ -41,71 +46,71 @@ function handleQuery() {
     return;
   }
 
-  if (userURL.value.length === 0) {
-    toastWarning("请输入用户个人主页链接");
+  if (userUrl.value.length === 0) {
+    toastWarning({ message: "请输入用户个人主页链接" });
     return;
   }
 
-  fetchData<VIPInfoRequest, VIPInfoResponse>(
-    "POST",
-    "/tools/VIP_info_viewer/VIP_info",
-    {
-      user_url: userURL.value,
-    },
-    (data) =>
-      batch(() => {
-        userName.value = data.name;
-        VIPType.value = data.VIP_type;
-        if (data.VIP_expire_time !== undefined) {
-          VIPExpireTime.value = parseTime(data.VIP_expire_time);
-        }
-      }),
-    commonAPIErrorHandler,
+  sendRequest<Record<string, never>, GetVIPInfoResponse>({
+    method: "GET",
+    endpoint: `/v1/users/${userSlug.value}/vip-info`,
+    onSuccess: ({ data }) => (result.value = data),
     isLoading,
-  );
+  });
 }
 
 export default function VIPInfoViewer() {
   return (
-    <div className="flex flex-col gap-4">
-      <SSTextInput
+    <Column>
+      <TextInput
         label="用户个人主页链接"
-        value={userURL}
+        value={userUrl}
         onEnter={handleQuery}
       />
-      <SSButton onClick={handleQuery} loading={isLoading.value}>
+      <PrimaryButton onClick={handleQuery} loading={isLoading.value} fullWidth>
         查询
-      </SSButton>
+      </PrimaryButton>
 
-      {userName.value !== undefined && (
-        <SSText>
-          昵称：
-          <SSExternalLink url={userURL.value} label={userName.value} />
-        </SSText>
-      )}
-
-      {VIPType.value !== undefined && (
+      {result.value !== undefined && (
         <>
-          <div className="max-w-fit flex items-center gap-1">
-            <SSText>会员级别：</SSText>
-            <SSAvatar
-              className="mr-1.5 h-6 w-6"
-              src={VIPTypeToBadgeImageURL[VIPType.value]}
-              alt={`${VIPType.value} 徽章图标`}
-            />
-            <SSBadge className="bg-zinc-100 text-zinc-500 dark:(bg-zinc-800 text-zinc-400)">
-              {VIPType.value}
-            </SSBadge>
-          </div>
-          {VIPType.value !== "无会员" && (
-            <SSText>
+          <Text>
+            昵称：
+            <ExternalLink href={userUrl.value}>
+              {result.value.userName}
+            </ExternalLink>
+          </Text>
+
+          <Text>
+            会员等级：
+            {result.value.isVIP ? (
+              <Badge
+                textColor="text-zinc-500 dark:text-zinc-400"
+                backgroundColor="bg-zinc-100 dark:bg-zinc-800"
+              >
+                <Row className="!flex-inline" gap="gap-1" verticalCenter>
+                  <img
+                    className="inline h-4 w-4 rounded-full"
+                    src={VIPTypeToBadgeImageURL[result.value.type]}
+                    alt={`${result.value.type} 徽章图标`}
+                  />
+                  <Text inline>{result.value.type}</Text>
+                </Row>
+              </Badge>
+            ) : (
+              <Text bold inline>
+                无会员
+              </Text>
+            )}
+          </Text>
+          {result.value.isVIP && (
+            <Text>
               到期时间：
-              {getDate(VIPExpireTime.value!)}（
-              {getHumanReadableTimeDelta(VIPExpireTime.value!)}）
-            </SSText>
+              {getDate(parseTime(result.value.expireDate))}（
+              {getHumanReadableTimeDelta(parseTime(result.value.expireDate))}）
+            </Text>
           )}
         </>
       )}
-    </div>
+    </Column>
   );
 }

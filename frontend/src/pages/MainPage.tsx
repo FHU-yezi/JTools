@@ -1,5 +1,6 @@
 import { useDocumentTitle } from "@mantine/hooks";
 import { batch, signal } from "@preact/signals";
+import { Column, Text, Tooltip } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
 import { useLocation } from "wouter-preact";
 import {
@@ -8,12 +9,10 @@ import {
   V2UnimplementedRoutes,
 } from "../V2RedirectRoutes";
 import Header from "../components/Header";
-import SSTooltip from "../components/SSTooltip";
 import ToolCard from "../components/ToolCard";
-import type { StatusResponse } from "../models/status";
+import type { GetResponse } from "../models/status";
 import { routes } from "../routes";
-import { commonAPIErrorHandler } from "../utils/errorHandler";
-import { fetchData } from "../utils/fetchData";
+import { sendRequest } from "../utils/sendRequest";
 import umamiTrack from "../utils/umamiTrack";
 
 const downgradedTools = signal<string[]>([]);
@@ -56,23 +55,21 @@ export default function MainPage() {
   }, []);
 
   useEffect(() => {
-    fetchData<Record<string, never>, StatusResponse>(
-      "GET",
-      "/status",
-      {},
-      (data) =>
+    sendRequest<Record<string, never>, GetResponse>({
+      method: "GET",
+      endpoint: "/v1/status",
+      onSuccess: ({ data }) =>
         batch(() => {
-          downgradedTools.value = data.downgraded_tools;
-          unavaliableTools.value = data.unavaliable_tools;
+          downgradedTools.value = data.downgradedTools;
+          unavaliableTools.value = data.unavaliableTools;
         }),
-      commonAPIErrorHandler,
-    );
+    });
   }, []);
 
   return (
     <>
       <Header toolName="简书小工具集" hideBackArrow showIcon />
-      <div className="mt-4 flex flex-col gap-4">
+      <Column>
         {routes.map((item) => (
           <ToolCard
             key={item.toolName}
@@ -84,13 +81,15 @@ export default function MainPage() {
           />
         ))}
 
-        <SSTooltip tooltip="消零派辅助工具已在小工具集 v3 中下线，我们即将发布更强大的工具，敬请期待">
-          关于消零派辅助工具
-        </SSTooltip>
-        <SSTooltip tooltip="简书 App 中滑动到文章最后，网页端将鼠标悬浮在发布时间上即可查看文章更新时间，小工具集 v3 不再提供此工具">
-          关于文章发布时间查询工具
-        </SSTooltip>
-      </div>
+        <Column gap="gap-2">
+          <Tooltip tooltip="消零派辅助工具已在小工具集 v3 中下线，我们即将发布更强大的工具，敬请期待">
+            <Text>关于消零派辅助工具</Text>
+          </Tooltip>
+          <Tooltip tooltip="简书 App 中滑动到文章最后，网页端将鼠标悬浮在发布时间上即可查看文章更新时间，小工具集 v3 不再提供此工具">
+            <Text>关于文章发布时间查询工具</Text>
+          </Tooltip>
+        </Column>
+      </Column>
     </>
   );
 }

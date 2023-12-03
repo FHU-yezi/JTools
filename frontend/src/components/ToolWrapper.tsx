@@ -1,24 +1,32 @@
 import { useDocumentTitle } from "@mantine/hooks";
 import { batch, useSignal } from "@preact/signals";
-import clsx from "clsx";
-import type { Dayjs } from "dayjs";
+import {
+  Column,
+  ExternalLink,
+  Grid,
+  Icon,
+  LoadingPage,
+  Modal,
+  PrimaryButton,
+  Row,
+  Text,
+  WarningAlert,
+} from "@sscreator/ui";
 import type { JSX } from "preact";
 import { Suspense, useEffect } from "preact/compat";
+import {
+  MdOutlineAccessTime,
+  MdOutlineLink,
+  MdOutlineNumbers,
+  MdOutlineUpload,
+} from "react-icons/md";
 import { useLocation } from "wouter-preact";
-import type { InfoRequest, InfoResponse } from "../models/info";
-import { InfoStatus } from "../models/info";
+import type { GetToolStatusResponse } from "../models/status";
+import { ToolStatusEnum } from "../models/status";
 import { getToolSlug } from "../utils/URLHelper";
-import { commonAPIErrorHandler } from "../utils/errorHandler";
-import { fetchData } from "../utils/fetchData";
+import { sendRequest } from "../utils/sendRequest";
 import { getDateTimeWithoutSecond, parseTime } from "../utils/timeHelper";
-import { toastWarning } from "../utils/toastHelper";
 import Header from "./Header";
-import LoadingPage from "./LoadingPage";
-import SSButton from "./SSButton";
-import SSExternalLink from "./SSExternalLink";
-import SSModal from "./SSModal";
-import SSStat from "./SSStat";
-import SSText from "./SSText";
 
 interface Props {
   Component(): JSX.Element;
@@ -28,13 +36,8 @@ interface Props {
 export default function ToolWrapper({ Component, toolName }: Props) {
   const [, setLocation] = useLocation();
 
-  const isLoading = useSignal(false);
-  const toolStatus = useSignal<InfoStatus | undefined>(undefined);
-  const reason = useSignal<string | undefined>(undefined);
-  const dataUpdateTime = useSignal<Dayjs | undefined>(undefined);
-  const dataUpdateFreqDesc = useSignal<string | undefined>(undefined);
-  const dataCount = useSignal<number | undefined>(undefined);
-  const dataSource = useSignal<Record<string, string> | undefined>({});
+  const toolStatus = useSignal<GetToolStatusResponse | undefined>(undefined);
+  const showDowngradeNotice = useSignal(false);
   const showUnavaliableModal = useSignal(false);
 
   // 设置页面标题
@@ -44,108 +47,115 @@ export default function ToolWrapper({ Component, toolName }: Props) {
   useEffect(() => window.scrollTo(0, 0), []);
 
   useEffect(() => {
-    fetchData<InfoRequest, InfoResponse>(
-      "GET",
-      "/info",
-      {
-        tool_slug: getToolSlug(),
-      },
-      (data) => {
+    sendRequest<Record<string, never>, GetToolStatusResponse>({
+      method: "GET",
+      endpoint: `/v1/status/${getToolSlug()}`,
+      onSuccess: ({ data }) =>
         batch(() => {
-          toolStatus.value = data.status;
-          reason.value = data.reason;
-          dataSource.value = data.data_source;
-          if (data.data_update_time) {
-            dataUpdateTime.value = parseTime(data.data_update_time);
-            dataUpdateFreqDesc.value = data.data_update_freq_desc!;
-          }
-          if (data.data_count) {
-            dataCount.value = data.data_count;
-          }
-        });
+          toolStatus.value = data;
 
-        if (toolStatus.value === InfoStatus.DOWNGRADED) {
-          toastWarning(
-            `服务降级\n${
-              reason.value ??
-              "该小工具处于降级状态，其数据准确性、展示效果及性能可能受到影响，请您留意。"
-            }`,
-            4000,
-          );
-        }
-
-        if (toolStatus.value === InfoStatus.UNAVALIABLE) {
-          showUnavaliableModal.value = true;
-        }
-      },
-      commonAPIErrorHandler,
-      isLoading,
-    );
+          if (data.status === ToolStatusEnum.DOWNGRADED) {
+            showDowngradeNotice.value = true;
+          } else if (data.status === ToolStatusEnum.UNAVALIABLE) {
+            showUnavaliableModal.value = true;
+          }
+        }),
+    });
   }, []);
 
   return (
     <>
       <Header toolName={toolName} />
-      {!isLoading.value ? (
-        <>
-          <div
-            className={clsx("flex gap-6", {
-              "my-4":
-                dataUpdateTime.value !== undefined &&
-                dataCount.value !== undefined,
-            })}
-          >
-            {dataUpdateTime.value !== undefined && (
-              <SSStat
-                className="flex-grow"
-                title="数据更新时间"
-                value={getDateTimeWithoutSecond(dataUpdateTime.value!)}
-                desc={dataUpdateFreqDesc.value}
-              />
+      {toolStatus.value !== undefined ? (
+        <Column>
+          <Grid cols="grid-cols-1 sm:grid-cols-2" gap="gap-2">
+            {toolStatus.value.lastUpdateTime !== null && (
+              <Row gap="gap-1" verticalCenter>
+                <Icon iconColor="text-zinc-500 dark:text-zinc-400">
+                  <MdOutlineAccessTime size={18} />
+                </Icon>
+                <Text gray small>
+                  最后更新时间：
+                  {getDateTimeWithoutSecond(
+                    parseTime(toolStatus.value.lastUpdateTime),
+                  )}
+                </Text>
+              </Row>
             )}
-            {dataCount.value !== undefined && (
-              <SSStat
-                className="flex-grow"
-                title="总数据量"
-                value={dataCount.value}
-              />
+            {toolStatus.value.dataUpdateFreq !== null && (
+              <Row gap="gap-1" verticalCenter>
+                <Icon iconColor="text-zinc-500 dark:text-zinc-400">
+                  <MdOutlineUpload size={18} />
+                </Icon>
+                <Text gray small nowrap>
+                  更新频率：{toolStatus.value.dataUpdateFreq}
+                </Text>
+              </Row>
             )}
-          </div>
-          {dataSource.value !== undefined && (
-            <div className="my-4 flex flex-col gap-1">
-              <SSText bold>数据来源</SSText>
-              {Object.entries(dataSource.value).map(([name, url]) => (
-                <SSExternalLink label={name} url={url} />
-              ))}
-            </div>
+            {toolStatus.value.dataCount !== null && (
+              <Row gap="gap-1" verticalCenter>
+                <Icon iconColor="text-zinc-500 dark:text-zinc-400">
+                  <MdOutlineNumbers size={18} />
+                </Icon>
+                <Text gray small>
+                  数据量：{toolStatus.value.dataCount}
+                </Text>
+              </Row>
+            )}
+            {toolStatus.value.dataSource !== null && (
+              <Row gap="gap-1" verticalCenter>
+                <Icon iconColor="text-zinc-500 dark:text-zinc-400">
+                  <MdOutlineLink size={18} />
+                </Icon>
+                <Text gray small>
+                  数据来源：
+                  {Object.entries(toolStatus.value.dataSource).map(
+                    ([name, url]) => (
+                      <ExternalLink href={url}>{name}</ExternalLink>
+                    ),
+                  )}
+                </Text>
+              </Row>
+            )}
+          </Grid>
+          {showDowngradeNotice.value && (
+            <WarningAlert>
+              <Column gap="gap-2">
+                <Text large bold>
+                  服务降级
+                </Text>
+                <Text>
+                  {toolStatus.value?.reason ??
+                    "该小工具处于降级状态，其功能、数据准确性和性能可能受到影响，请您留意。"}
+                </Text>
+              </Column>
+            </WarningAlert>
           )}
 
           <Suspense fallback={<LoadingPage />}>
-            {!isLoading.value && <Component />}
+            {toolStatus.value !== undefined && <Component />}
           </Suspense>
-        </>
+        </Column>
       ) : (
         <LoadingPage />
       )}
 
-      <SSModal
-        isOpen={showUnavaliableModal}
-        onClose={() => null}
+      <Modal
+        open={showUnavaliableModal}
         title="服务不可用"
         hideCloseButton
         preventCloseByClickMask
-        preventCloseByEsc
       >
-        <div className="flex flex-col gap-4 p-2">
-          <SSText>
-            {reason.value ??
+        <Column>
+          <Text>
+            {toolStatus.value?.reason ??
               "该小工具暂时不可用，请稍后再尝试访问，并留意相关公告。"}
-          </SSText>
-          <SSButton light onClick={() => setLocation("/")}>
+          </Text>
+          <PrimaryButton onClick={() => setLocation("/")} fullWidth>
             返回首页
-          </SSButton>
-        </div>
-      </SSModal>
+          </PrimaryButton>
+        </Column>
+      </Modal>
     </>
   );
 }

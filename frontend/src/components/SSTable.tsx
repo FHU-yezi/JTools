@@ -1,7 +1,6 @@
+import { HorizontalScoll, Text } from "@sscreator/ui";
 import clsx from "clsx";
 import type { ComponentChildren } from "preact";
-import SSScolllable from "./SSScollable";
-import SSText from "./SSText";
 
 interface Props {
   className?: string;
@@ -11,15 +10,15 @@ interface Props {
 
 export default function SSTable({ className, data, tableItemKey }: Props) {
   return (
-    <SSScolllable>
+    <HorizontalScoll>
       <table className={clsx(className, "gray-border w-full rounded")}>
         <thead className="color-layer-2">
           <tr>
             {Object.keys(data[0]).map((item) => (
               <th className="gray-border px-2 py-1.5">
-                <SSText className="whitespace-nowrap" bold center>
+                <Text className="whitespace-nowrap" bold center>
                   {item}
-                </SSText>
+                </Text>
               </th>
             ))}
           </tr>
@@ -36,6 +35,6 @@ export default function SSTable({ className, data, tableItemKey }: Props) {
           ))}
         </tbody>
       </table>
-    </SSScolllable>
+    </HorizontalScoll>
   );
 }

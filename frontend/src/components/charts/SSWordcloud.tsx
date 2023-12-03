@@ -1,5 +1,5 @@
+import { HorizontalScoll } from "@sscreator/ui";
 import WordCloud from "react-d3-cloud";
-import SSScolllable from "../SSScollable";
 
 interface Props {
   data: { text: string; value: number }[];
@@ -7,7 +7,7 @@ interface Props {
 
 export default function SSWordcloud({ data }: Props) {
   return (
-    <SSScolllable>
+    <HorizontalScoll>
       <div
         className="select-none"
         style={{
@@ -25,6 +25,6 @@ export default function SSWordcloud({ data }: Props) {
           data={data}
         />
       </div>
-    </SSScolllable>
+    </HorizontalScoll>
   );
 }

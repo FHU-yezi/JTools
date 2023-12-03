@@ -1,76 +1,89 @@
 import type { Signal } from "@preact/signals";
-import { batch, effect, signal, useSignal } from "@preact/signals";
+import { batch, computed, effect, signal, useSignal } from "@preact/signals";
+import {
+  Checkbox,
+  Column,
+  Grid,
+  LoadingArea,
+  NoResultNotice,
+  PrimaryButton,
+  Text,
+  TextInput,
+  Tooltip,
+} from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
-import SSButton from "../components/SSButton";
-import SSCheckbox from "../components/SSCheckbox";
 import SSLazyLoadTable from "../components/SSLazyLoadTable";
-import SSSkeleton from "../components/SSSkeleton";
-import SSText from "../components/SSText";
-import SSTextInput from "../components/SSTextInput";
-import SSTooltip from "../components/SSTooltip";
+import type { GetRewardsResponse } from "../models/lottery";
 import type {
-  LotteryRecordItem,
-  LotteryRecordsRequest,
-  LotteryRecordsResponse,
-} from "../models/LotteryRewardRecordViewer/LotteryRecords";
-import type { RewardResponse } from "../models/LotteryRewardRecordViewer/Rewards";
-import { commonAPIErrorHandler } from "../utils/errorHandler";
-import { fetchData } from "../utils/fetchData";
-import { removeSpace } from "../utils/textHelper";
+  GetLotteryWinRecordItem,
+  GetLotteryWinRecordsRequest,
+  GetLotteryWinRecordsResponse,
+} from "../models/users";
+import { sendRequest } from "../utils/sendRequest";
 import { getDatetime, parseTime } from "../utils/timeHelper";
 import { toastWarning } from "../utils/toastHelper";
-import SSDataNotFoundNotice from "../components/SSDataNotFoundNotice";
 
+const userUrl = signal("");
+const userSlug = computed(() => {
+  const matchResult = userUrl.value.match(
+    "https://www.jianshu.com/u/(\\w{6,12})",
+  );
+  if (matchResult !== null && matchResult[1] !== undefined) {
+    return matchResult[1];
+  }
+  return undefined;
+});
 const rewards = signal<string[] | undefined>(undefined);
-const userURL = signal("");
-const selectedRewards = signal<string[]>([]);
+const excludedAwards = signal<string[]>([]);
 const isLoading = signal(false);
 const hasMore = signal(true);
-const result = signal<LotteryRecordItem[] | undefined>(undefined);
+const result = signal<GetLotteryWinRecordItem[] | undefined>(undefined);
 
 function handleQuery() {
-  if (userURL.value.length === 0) {
-    toastWarning("请输入用户个人主页链接");
+  if (userSlug.value === undefined) {
+    toastWarning({ message: "请输入有效的用户个人主页链接" });
     return;
   }
 
-  fetchData<LotteryRecordsRequest, LotteryRecordsResponse>(
-    "POST",
-    "/tools/lottery_reward_record_viewer/lottery_records",
-    {
-      user_url: userURL.value,
-      target_rewards: selectedRewards.value,
-      offset: 0,
+  sendRequest<GetLotteryWinRecordsRequest, GetLotteryWinRecordsResponse>({
+    method: "GET",
+    endpoint: `/v1/users/${userSlug.value}/lottery-win-records`,
+    queryArgs: {
+      excluded_awards: excludedAwards.value,
     },
-    (data) => {
-      result.value = data.records;
-      if (data.records.length === 0) {
-        hasMore.value = false;
-      }
-    },
-    commonAPIErrorHandler,
+    onSuccess: ({ data }) =>
+      batch(() => {
+        result.value = data.records;
+        if (data.records.length === 0) {
+          hasMore.value = false;
+        }
+      }),
     isLoading,
-  );
+  });
 }
 
 function handleLoadMore() {
-  fetchData<LotteryRecordsRequest, LotteryRecordsResponse>(
-    "POST",
-    "/tools/lottery_reward_record_viewer/lottery_records",
-    {
-      user_url: userURL.value,
-      target_rewards: selectedRewards.value,
-      offset: result.value!.length + 1,
+  if (userSlug.value === undefined) {
+    toastWarning({ message: "请输入有效的用户个人主页链接" });
+    return;
+  }
+
+  sendRequest<GetLotteryWinRecordsRequest, GetLotteryWinRecordsResponse>({
+    method: "GET",
+    endpoint: `/v1/users/${userSlug.value}/lottery-win-records`,
+    queryArgs: {
+      excluded_awards: excludedAwards.value,
+      offset: result.value!.length,
     },
-    (data) => {
-      result.value = result.value!.concat(data.records);
-      if (data.records.length === 0) {
-        hasMore.value = false;
-      }
-    },
-    commonAPIErrorHandler,
+    onSuccess: ({ data }) =>
+      batch(() => {
+        result.value = result.value!.concat(data.records);
+        if (data.records.length === 0) {
+          hasMore.value = false;
+        }
+      }),
     isLoading,
-  );
+  });
 }
 
 function RewardsFliter() {
@@ -78,46 +91,43 @@ function RewardsFliter() {
   const dataReady = useSignal(false);
 
   useEffect(() => {
-    fetchData<Record<string, never>, RewardResponse>(
-      "GET",
-      "/tools/lottery_reward_record_viewer/rewards",
-      {},
-      (data) =>
+    sendRequest<Record<string, never>, GetRewardsResponse>({
+      method: "GET",
+      endpoint: "/v1/lottery/rewards",
+      onSuccess: ({ data }) =>
         batch(() => {
           rewards.value = data.rewards;
-          selectedRewards.value = rewards.value.map((item) =>
-            removeSpace(item),
-          );
           rewards.value.forEach(
             (name) => (rewardSelectedSignals.value[name] = signal(true)),
           );
           dataReady.value = true;
         }),
-      commonAPIErrorHandler,
-    );
+    });
   }, []);
 
   effect(
     () =>
-      (selectedRewards.value = Object.keys(rewardSelectedSignals.value)
-        .filter((name) => rewardSelectedSignals.value[name].value === true)
-        .map((item) => removeSpace(item))),
+      (excludedAwards.value = Object.keys(rewardSelectedSignals.value).filter(
+        (name) => rewardSelectedSignals.value[name].value === false,
+      )),
   );
 
   return (
     <div>
-      <SSText className="mb-1.5" bold>
+      <Text className="mb-1.5" bold>
         奖项筛选
-      </SSText>
-      {dataReady.value ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {Object.entries(rewardSelectedSignals.value).map(([name, value]) => (
-            <SSCheckbox label={name} value={value} />
-          ))}
-        </div>
-      ) : (
-        <SSSkeleton className="h-36 w-full sm:h-16" />
-      )}
+      </Text>
+      <LoadingArea className="h-36 w-full sm:h-16" loading={!dataReady.value}>
+        {dataReady.value && (
+          <Grid cols="grid-cols-1 sm:grid-cols-2">
+            {Object.entries(rewardSelectedSignals.value).map(
+              ([name, value]) => (
+                <Checkbox label={name} value={value} />
+              ),
+            )}
+          </Grid>
+        )}
+      </LoadingArea>
     </div>
   );
 }
@@ -126,8 +136,8 @@ function ResultTable() {
   return (
     <SSLazyLoadTable
       data={result.value!.map((item) => ({
-        时间: <SSText center>{getDatetime(parseTime(item.time))}</SSText>,
-        奖项: <SSText center>{item.reward_name}</SSText>,
+        时间: <Text center>{getDatetime(parseTime(item.time))}</Text>,
+        奖项: <Text center>{item.rewardName}</Text>,
       }))}
       onLoadMore={handleLoadMore}
       hasMore={hasMore}
@@ -138,26 +148,26 @@ function ResultTable() {
 
 export default function LotteryRewardRecordViewer() {
   return (
-    <div className="flex flex-col gap-4">
-      <SSTextInput
+    <Column>
+      <TextInput
         label="用户个人主页链接"
-        value={userURL}
+        value={userUrl}
         onEnter={handleQuery}
       />
       <RewardsFliter />
-      <SSTooltip tooltip="受简书接口限制，我们无法获取这两种奖品的中奖情况，故无法进行查询">
-        关于免费开 1 次连载 / 锦鲤头像框
-      </SSTooltip>
-      <SSButton onClick={handleQuery} loading={isLoading.value}>
+      <Tooltip tooltip="受简书接口限制，我们无法获取这两种奖品的中奖情况，故无法进行查询">
+        <Text>关于免费开 1 次连载 / 锦鲤头像框</Text>
+      </Tooltip>
+      <PrimaryButton onClick={handleQuery} loading={isLoading.value} fullWidth>
         查询
-      </SSButton>
+      </PrimaryButton>
 
       {result.value !== undefined &&
         (result.value.length !== 0 ? (
           <ResultTable />
         ) : (
-          <SSDataNotFoundNotice message="无中奖记录" />
+          <NoResultNotice message="无中奖记录" />
         ))}
-    </div>
+    </Column>
   );
 }

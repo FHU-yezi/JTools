@@ -1,22 +1,27 @@
-import { LuServerOff } from "react-icons/lu";
+import { Center, Column, Icon, PrimaryButton, Text } from "@sscreator/ui";
+import { MdAppsOutage } from "react-icons/md";
 import { useLocation } from "wouter-preact";
-import SSButton from "../components/SSButton";
-import SSCenter from "../components/SSCenter";
-import SSText from "../components/SSText";
 
 export default function V2UnimplementedPage() {
   const [, setLocation] = useLocation();
 
   return (
-    <SSCenter className="h-screen">
-      <div className="max-w-4xl w-[90vw] flex flex-col gap-4">
-        <LuServerOff size={48} />
-        <SSText xlarge xbold>
-          正在开发中
-        </SSText>
-        <SSText>您正在访问的小工具尚未在简书小工具集 v3 中实现。</SSText>
-        <SSButton onClick={() => setLocation("/")}>返回首页</SSButton>
-      </div>
-    </SSCenter>
+    <Center className="h-screen">
+      <Column className="mx-8 max-w-4xl">
+        <Column gap="gap-2">
+          <Icon>
+            <MdAppsOutage size={48} />
+          </Icon>
+          <Text large bold>
+            正在开发中
+          </Text>
+        </Column>
+        <Text>您正在访问的小工具尚未在简书小工具集 v3 中实现。</Text>
+        <Text>如有疑问，请联系开发者。</Text>
+        <PrimaryButton onClick={() => setLocation("/")} fullWidth>
+          返回首页
+        </PrimaryButton>
+      </Column>
+    </Center>
   );
 }
