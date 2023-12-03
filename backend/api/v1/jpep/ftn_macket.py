@@ -123,13 +123,13 @@ async def get_price_history(
                     "_id": (
                         {
                             "$dateTrunc": {
-                                "date": "$_id",
+                                "date": "$fetch_time",
                                 "unit": time_unit,
                             },
                         }
                     )
                     if time_unit != "minute"
-                    else "$_id",
+                    else "$fetch_time",
                     "price": {
                         "$min" if type_ == "buy" else "$max": "$price",
                     },
