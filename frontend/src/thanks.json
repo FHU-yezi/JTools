@@ -116,6 +116,33 @@
       "user_name": "花花点点",
       "user_url": "https://www.jianshu.com/u/20b53892b0b2",
       "reward": 50
+    },
+    {
+      "time": "2023-12-17",
+      "type": "功能优化",
+      "module": "上榜文章查询工具",
+      "desc": "功能更新后维持默认倒序排列",
+      "user_name": "睿希颖瑶",
+      "user_url": "https://www.jianshu.com/u/4b86da352f87",
+      "reward": 30
+    },
+    {
+      "time": "2023-12-25",
+      "type": "非主流程功能异常",
+      "module": "上榜文章查询工具",
+      "desc": "昵称变更提示排版异常",
+      "user_name": "睿希颖瑶",
+      "user_url": "https://www.jianshu.com/u/4b86da352f87",
+      "reward": 30
+    },
+    {
+      "time": "2023-12-25",
+      "type": "功能异常",
+      "module": "上榜文章查询工具",
+      "desc": "作者名包含生僻字时无法正常查询",
+      "user_name": "花花点点",
+      "user_url": "https://www.jianshu.com/u/20b53892b0b2",
+      "reward": 50
     }
   ],
   "opensourcePackages": {
