@@ -111,7 +111,7 @@ class GetToolStatusResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     },
 )
 async def get_tool_status_handler(
-    tool_name: Annotated[str, Parameter(description="小工具名称", max_length=100)]
+    tool_name: Annotated[str, Parameter(description="小工具名称", max_length=100)],
 ) -> Response:
     tool_config = TOOLS_CONFIG.get(tool_name)
     if not tool_config:

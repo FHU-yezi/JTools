@@ -397,9 +397,7 @@ class GetHistoryNamesOnArticleRankSummaryResponse(Struct, **RESPONSE_STRUCT_CONF
     },
 )
 async def get_history_names_on_article_rank_summary_handler(
-    user_name: Annotated[
-        str, Parameter(description="用户昵称", max_length=50)
-    ],
+    user_name: Annotated[str, Parameter(description="用户昵称", max_length=50)],
 ) -> Response:
     url_query = await ARTICLE_FP_RANK_COLLECTION.find_one({"author.name": user_name})
     if not url_query:
