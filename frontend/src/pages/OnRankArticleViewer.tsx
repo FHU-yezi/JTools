@@ -26,8 +26,6 @@ import { sendRequest } from "../utils/sendRequest";
 import { getDate, parseTime } from "../utils/timeHelper";
 import { toastWarning } from "../utils/toastHelper";
 
-const userNameRegex = /^[\u4e00-\u9fa5A-Za-z0-9_]*$/;
-
 const userUrlOrName = signal("");
 const userSlug = computed(() => {
   const matchResult = userUrlOrName.value.match(
@@ -40,8 +38,7 @@ const userSlug = computed(() => {
 });
 const userName = computed(() =>
   userSlug.value === undefined &&
-  userUrlOrName.value.length !== 0 &&
-  userNameRegex.test(userUrlOrName.value)
+    userUrlOrName.value.length !== 0
     ? userUrlOrName.value.trim()
     : undefined,
 );
