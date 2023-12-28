@@ -48,7 +48,7 @@ const userName = computed(() =>
 const orderSelect = signal<{
   orderBy: "date" | "ranking";
   orderDirection: "asc" | "desc";
-}>({ orderBy: "date", orderDirection: "asc" });
+}>({ orderBy: "date", orderDirection: "desc" });
 const autocompleteItems = signal<string[]>([]);
 const isLoading = signal(false);
 const hasMore = signal(true);
