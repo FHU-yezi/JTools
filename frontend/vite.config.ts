@@ -50,6 +50,9 @@ export default defineConfig({
           },
         ],
       },
+      workbox: {
+        navigateFallbackDenylist: [/^\/api.*/],
+      },
     }),
     // GZip
     compression({ threshold: 4096 }),

@@ -1,8 +1,8 @@
 export enum VIPTypeEnum {
-  BRONZE = "bronze",
-  SLIVER = "sliver",
-  GOLD = "goid",
-  PLATINA = "platina",
+  BRONZE = "铜牌",
+  SLIVER = "银牌",
+  GOLD = "金牌",
+  PLATINA = "白金",
 }
 
 export interface GetVIPInfoResponse {

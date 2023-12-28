@@ -1,5 +1,4 @@
 import logging
-import logging.config
 
 from uvicorn import run as uvicorn_run
 

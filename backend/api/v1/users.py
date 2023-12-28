@@ -1,10 +1,8 @@
-from asyncio import gather
 from datetime import datetime
 from typing import Annotated, Dict, List, Literal, Optional
 
-from JianshuResearchTools.convert import UserSlugToUserUrl
-from JianshuResearchTools.exceptions import InputError, ResourceError
-from JianshuResearchTools.user import GetUserName, GetUserVIPInfo
+from jkit.exceptions import ResourceUnavailableError
+from jkit.user import MembershipEnum, User
 from litestar import Response, Router, get
 from litestar.params import Parameter
 from litestar.status_codes import HTTP_400_BAD_REQUEST
@@ -16,7 +14,6 @@ from sspeedup.api.litestar import (
     generate_response_spec,
     success,
 )
-from sspeedup.sync_to_async import sync_to_async
 
 from utils.db import ARTICLE_FP_RANK_COLLECTION, LOTTERY_COLLECTION
 
@@ -24,7 +21,7 @@ from utils.db import ARTICLE_FP_RANK_COLLECTION, LOTTERY_COLLECTION
 class GetVipInfoResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     user_name: str
     is_vip: bool = field(name="isVIP")
-    type: Optional[Literal["bronze", "sliver", "gold", "platina"]]  # noqa: A003
+    type: Optional[Literal["铜牌", "银牌", "金牌", "白金"]]  # noqa: A003
     expire_date: Optional[datetime]
 
 
@@ -42,33 +39,34 @@ async def get_vip_info_handler(
     ],
 ) -> Response:
     try:
-        user_url = UserSlugToUserUrl(user_slug)
-        user_name, vip_info = await gather(
-            sync_to_async(GetUserName, user_url),
-            sync_to_async(GetUserVIPInfo, user_url),
-        )
-    except InputError:
+        user = User.from_slug(user_slug)
+        await user.check()
+    except ValueError:
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
             api_code=Code.BAD_ARGUMENTS,
-            msg="输入的简书个人主页链接无效",
+            msg="用户 slug 无效",
         )
-    except ResourceError:
+    except ResourceUnavailableError:
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
             api_code=Code.BAD_ARGUMENTS,
-            msg="用户已注销或被封禁",
+            msg="用户不存在或已注销 / 被封禁",
         )
 
-    is_vip = vip_info["vip_type"] is not None
-    type_ = vip_info["vip_type"]
-    expire_date = vip_info["expire_date"]
+    user_info = await user.info
+    user_name = user_info.name
+    membership_info = user_info.membership_info
+
+    is_vip = membership_info.type != MembershipEnum.NONE
+    type_ = membership_info.type.value.replace("会员", "")
+    expire_date = membership_info.expired_at
 
     return success(
         data=GetVipInfoResponse(
             user_name=user_name,
             is_vip=is_vip,
-            type=type_,
+            type=type_,  # type: ignore
             expire_date=expire_date,
         )
     )
@@ -102,18 +100,18 @@ async def get_lottery_win_records(
     ] = None,
 ) -> Response:
     try:
-        user_url = UserSlugToUserUrl(user_slug)
-    except InputError:
+        user = User.from_slug(user_slug)
+    except ValueError:
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
             api_code=Code.BAD_ARGUMENTS,
-            msg="输入的简书个人主页链接无效",
+            msg="用户 slug 无效",
         )
 
     result = (
         LOTTERY_COLLECTION.find(
             {
-                "user.url": user_url,
+                "user.url": user.url,
                 "reward_name": {
                     "$nin": excluded_awards if excluded_awards else [],
                 },
@@ -173,16 +171,16 @@ async def get_on_article_rank_records_handler(
     limit: Annotated[int, Parameter(description="结果数量", gt=0, lt=100)] = 20,
 ) -> Response:
     try:
-        user_url = UserSlugToUserUrl(user_slug)
-    except InputError:
+        user = User.from_slug(user_slug)
+    except ValueError:
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
             api_code=Code.BAD_ARGUMENTS,
-            msg="输入的简书个人主页链接无效",
+            msg="用户 slug 无效",
         )
 
     result = (
-        ARTICLE_FP_RANK_COLLECTION.find({"author.url": user_url})
+        ARTICLE_FP_RANK_COLLECTION.find({"author.url": user.url})
         .sort(order_by, 1 if order_direction == "asc" else -1)
         .skip(offset)
         .limit(limit)
@@ -273,16 +271,16 @@ async def get_on_article_rank_summary_handler(
     ],
 ) -> Response:
     try:
-        user_url = UserSlugToUserUrl(user_slug)
-    except InputError:
+        user = User.from_slug(user_slug)
+    except ValueError:
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
             api_code=Code.BAD_ARGUMENTS,
-            msg="输入的简书个人主页链接无效",
+            msg="用户 slug 无效",
         )
 
     records = ARTICLE_FP_RANK_COLLECTION.find(
-        {"author.url": user_url},
+        {"author.url": user.url},
         {"_id": False, "ranking": True},
     )
 
@@ -397,9 +395,7 @@ class GetHistoryNamesOnArticleRankSummaryResponse(Struct, **RESPONSE_STRUCT_CONF
     },
 )
 async def get_history_names_on_article_rank_summary_handler(
-    user_name: Annotated[
-        str, Parameter(description="用户昵称", max_length=50)
-    ],
+    user_name: Annotated[str, Parameter(description="用户昵称", max_length=50)],
 ) -> Response:
     url_query = await ARTICLE_FP_RANK_COLLECTION.find_one({"author.name": user_name})
     if not url_query:

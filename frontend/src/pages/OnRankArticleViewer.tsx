@@ -26,8 +26,6 @@ import { sendRequest } from "../utils/sendRequest";
 import { getDate, parseTime } from "../utils/timeHelper";
 import { toastWarning } from "../utils/toastHelper";
 
-const userNameRegex = /^[\u4e00-\u9fa5A-Za-z0-9_]*$/;
-
 const userUrlOrName = signal("");
 const userSlug = computed(() => {
   const matchResult = userUrlOrName.value.match(
@@ -39,16 +37,14 @@ const userSlug = computed(() => {
   return undefined;
 });
 const userName = computed(() =>
-  userSlug.value === undefined &&
-  userUrlOrName.value.length !== 0 &&
-  userNameRegex.test(userUrlOrName.value)
+  userSlug.value === undefined && userUrlOrName.value.length !== 0
     ? userUrlOrName.value.trim()
     : undefined,
 );
 const orderSelect = signal<{
   orderBy: "date" | "ranking";
   orderDirection: "asc" | "desc";
-}>({ orderBy: "date", orderDirection: "asc" });
+}>({ orderBy: "date", orderDirection: "desc" });
 const autocompleteItems = signal<string[]>([]);
 const isLoading = signal(false);
 const hasMore = signal(true);
@@ -174,34 +170,33 @@ function HistoryNamesOnRankRecordFoundNotice() {
     <InfoAlert>
       <Column>
         <Text large bold>
-          数据不完整
+          昵称更改
         </Text>
-        <Text>您可能更改过简书昵称，我们找到了其它与您有关的上榜记录：</Text>
+        <Text>找到您曾用昵称的上榜记录：</Text>
         <Column gap="gap-2">
-          {Object.entries(historyNamesOnRankSummary.value!).map(
-            ([name, dataCount]) => (
-              <Text>
-                {name}：{dataCount} 条上榜记录
-              </Text>
-            ),
-          )}
+          {Object.entries(
+            historyNamesOnRankSummary.value!.historyNamesOnrankSummary,
+          ).map(([name, dataCount]) => (
+            <Text>
+              {name}：{dataCount} 条
+            </Text>
+          ))}
         </Column>
-      </Column>
 
-      <GhostButton
-        onClick={() => {
-          batch(() => {
-            // 替换当前输入的昵称为个人主页链接，同时隐藏该组件
-            userUrlOrName.value = historyNamesOnRankSummary.value!.userUrl;
-            showHistoryNamesOnRankRecordFoundNotice.value = false;
-          });
-          // 触发检索
-          handleQuery();
-        }}
-        fullWidth
-      >
-        查看完整数据
-      </GhostButton>
+        <GhostButton
+          onClick={() => {
+            batch(() => {
+              // 替换当前输入的昵称为个人主页链接，同时隐藏该组件
+              userUrlOrName.value = historyNamesOnRankSummary.value!.userUrl;
+              showHistoryNamesOnRankRecordFoundNotice.value = false;
+            });
+            // 触发检索
+            handleQuery();
+          }}
+        >
+          查看完整数据
+        </GhostButton>
+      </Column>
     </InfoAlert>
   );
 }

@@ -4,14 +4,8 @@ from typing import Annotated, Any, Dict, Optional, cast
 
 from bson import ObjectId
 from httpx import AsyncClient
-from JianshuResearchTools.article import (
-    GetArticleText,
-    GetArticleTitle,
-    GetArticleTotalFPCount,
-)
-from JianshuResearchTools.assert_funcs import AssertArticleStatusNormal
-from JianshuResearchTools.convert import ArticleSlugToArticleUrl, UserSlugToUserUrl
-from JianshuResearchTools.exceptions import InputError, ResourceError
+from jkit.article import Article
+from jkit.exceptions import ResourceUnavailableError
 from litestar import Response, Router, get
 from litestar.openapi.spec.example import Example
 from litestar.params import Parameter
@@ -25,7 +19,6 @@ from sspeedup.api.litestar import (
     generate_response_spec,
     success,
 )
-from sspeedup.sync_to_async import sync_to_async
 
 from utils.config import config
 from utils.db import ARTICLE_FP_RANK_COLLECTION
@@ -43,14 +36,6 @@ splitter = AbilityJiebaPossegSplitterV1(
     },
 )
 # fmt: on
-
-
-async def get_author_url(article_slug: str) -> str:
-    response = await CLIENT.get(f"https://www.jianshu.com/asimov/p/{article_slug}")
-    response.raise_for_status()
-
-    json = response.json()
-    return UserSlugToUserUrl(json["user"]["slug"])
 
 
 async def get_latest_onrank_record(
@@ -173,25 +158,24 @@ async def get_word_freq_handler(
     ],
 ) -> Response:
     try:
-        article_url = ArticleSlugToArticleUrl(article_slug)
-        title, article_text = await gather(
-            sync_to_async(GetArticleTitle, article_url),
-            sync_to_async(GetArticleText, article_url),
-        )
-    except InputError:
+        article = Article.from_slug(article_slug)
+        await article.check()
+    except ValueError:
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
             api_code=Code.BAD_ARGUMENTS,
-            msg="输入的文章链接无效",
+            msg="文章 slug 无效",
         )
-    except ResourceError:
+    except ResourceUnavailableError:
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
             api_code=Code.BAD_ARGUMENTS,
-            msg="文章已被删除、锁定或正在审核中",
+            msg="文章不存在或已被锁定 / 私密 / 删除",
         )
 
-    word_freq = dict((await splitter.get_word_freq(article_text)).most_common(100))
+    title, text = await gather(article.title, article.text_content)
+
+    word_freq = dict((await splitter.get_word_freq(text)).most_common(100))
 
     return success(
         data=GetWordFreqResponse(
@@ -234,39 +218,39 @@ async def get_LP_recommend_check_handler(  # noqa: N802
     ],
 ) -> Response:
     try:
-        article_url = ArticleSlugToArticleUrl(article_slug)
-        await sync_to_async(AssertArticleStatusNormal, article_url)
-    except InputError:
+        article = Article.from_slug(article_slug)
+        await article.check()
+    except ValueError:
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
             api_code=Code.BAD_ARGUMENTS,
-            msg="输入的文章链接无效",
+            msg="文章 slug 无效",
         )
-    except ResourceError:
+    except ResourceUnavailableError:
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
             api_code=Code.BAD_ARGUMENTS,
-            msg="文章已被删除、锁定或正在审核中",
+            msg="文章不存在或已被锁定 / 私密 / 删除",
         )
 
-    author_url = await get_author_url(article_slug)
+    article_info = await article.info
 
-    article_title, FP_reward, next_can_recommend_date = await gather(  # noqa: N806
-        sync_to_async(GetArticleTitle, article_url),
-        sync_to_async(GetArticleTotalFPCount, article_url),
-        caculate_next_can_recommend_date(author_url),
-    )
+    author_url = article_info.author_info.to_user_obj().url
+    article_title = article_info.title
+    article_fp_reward = article_info.earned_fp_amount
+    article_next_can_recommend_date = await caculate_next_can_recommend_date(author_url)
 
-    can_recommend_now = FP_reward < 35 and (
-        not next_can_recommend_date or next_can_recommend_date <= datetime.now()
+    can_recommend_now = article_fp_reward < 35 and (
+        not article_next_can_recommend_date
+        or article_next_can_recommend_date <= datetime.now()
     )
 
     return success(
         data=GetLPRecommendCheckResponse(
             article_title=article_title,
             can_recommend_now=can_recommend_now,
-            FP_reward=FP_reward,
-            next_can_recommend_date=next_can_recommend_date,
+            FP_reward=article_fp_reward,
+            next_can_recommend_date=article_next_can_recommend_date,
         )
     )
 

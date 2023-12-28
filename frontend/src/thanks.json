@@ -116,6 +116,33 @@
       "user_name": "花花点点",
       "user_url": "https://www.jianshu.com/u/20b53892b0b2",
       "reward": 50
+    },
+    {
+      "time": "2023-12-17",
+      "type": "功能优化",
+      "module": "上榜文章查询工具",
+      "desc": "功能更新后维持默认倒序排列",
+      "user_name": "睿希颖瑶",
+      "user_url": "https://www.jianshu.com/u/4b86da352f87",
+      "reward": 30
+    },
+    {
+      "time": "2023-12-25",
+      "type": "非主流程功能异常",
+      "module": "上榜文章查询工具",
+      "desc": "昵称变更提示排版异常",
+      "user_name": "睿希颖瑶",
+      "user_url": "https://www.jianshu.com/u/4b86da352f87",
+      "reward": 30
+    },
+    {
+      "time": "2023-12-25",
+      "type": "功能异常",
+      "module": "上榜文章查询工具",
+      "desc": "作者名包含生僻字时无法正常查询",
+      "user_name": "花花点点",
+      "user_url": "https://www.jianshu.com/u/20b53892b0b2",
+      "reward": 50
     }
   ],
   "opensourcePackages": {
@@ -198,12 +225,12 @@
     ],
     "后端": [
       {
-        "name": "JianshuResearchTools",
-        "desc": "数据采集",
-        "url": "https://github.com/FHU-yezi/JianshuResearchTools"
+        "name": "JKit",
+        "desc": "数据支持",
+        "url": "https://github.com/FHU-yezi/JKit"
       },
       {
-        "name": "Sanic",
+        "name": "Litestar",
         "desc": "后端框架",
         "url": "https://github.com/litestar-org/litestar"
       },
@@ -221,11 +248,6 @@
         "name": "SSpeedup",
         "desc": "开发工具箱",
         "url": "https://github.com/FHU-yezi/sspeedup"
-      },
-      {
-        "name": "Tomd",
-        "desc": "Markdown 转换",
-        "url": "https://github.com/gaojiuli/tomd"
       }
     ],
     "代码质量": [
@@ -251,18 +273,13 @@
       },
       {
         "name": "Ruff",
-        "desc": "Python 静态分析",
+        "desc": "Python 静态分析 & 格式化",
         "url": "https://github.com/astral-sh/ruff"
       },
       {
         "name": "Pyright",
         "desc": "Python 类型检查",
         "url": "https://github.com/microsoft/pyright"
-      },
-      {
-        "name": "Black",
-        "desc": "Python 格式化",
-        "url": "https://github.com/psf/black"
       }
     ],
     "能力服务": [

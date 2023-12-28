@@ -1,0 +1,46 @@
+name: Static Check
+
+on:
+  push:
+  workflow_call:
+
+jobs:
+  static-check-backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Poetry
+        run: pipx install poetry
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+          cache: "poetry"
+      - name: Install Dependencies
+        run: poetry install --all-extras --no-root
+      - name: Lint With Ruff
+        run: poetry run ruff check --output-format=github .
+      - name: Type checking with Pyright
+        run: poetry run pyright --warnings .
+  static-check-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: true
+          package_json_file: "frontend/package.json"
+      - uses: actions/setup-node@v4
+        with:
+          cache: "pnpm"
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - name: Lint with Eslint
+        run: pnpm eslint .
+      - name: Style check with Prettier
+        run: pnpm prettier --check .

@@ -37,7 +37,7 @@ const result = signal<GetVIPInfoResponse | undefined>(undefined);
 const VIPTypeToBadgeImageURL: Record<string, string> = {
   铜牌: VIPBadgeBronzeURL,
   银牌: VIPBadgeSilverURL,
-  黄金: VIPBadgeGoldURL,
+  金牌: VIPBadgeGoldURL,
   白金: VIPBadgePlatinaURL,
 };
 
