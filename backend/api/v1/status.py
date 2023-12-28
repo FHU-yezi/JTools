@@ -81,7 +81,7 @@ async def get_handler() -> Response:
     unavaliable_tools = [
         name
         for name, config in TOOLS_CONFIG.items()
-        if config.status == ToolStatus.UNAVALIABLE
+        if config.status == ToolStatus.UNAVAILABLE
     ]
 
     return success(

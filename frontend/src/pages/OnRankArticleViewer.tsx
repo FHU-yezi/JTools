@@ -37,8 +37,7 @@ const userSlug = computed(() => {
   return undefined;
 });
 const userName = computed(() =>
-  userSlug.value === undefined &&
-    userUrlOrName.value.length !== 0
+  userSlug.value === undefined && userUrlOrName.value.length !== 0
     ? userUrlOrName.value.trim()
     : undefined,
 );
@@ -175,13 +174,13 @@ function HistoryNamesOnRankRecordFoundNotice() {
         </Text>
         <Text>找到您曾用昵称的上榜记录：</Text>
         <Column gap="gap-2">
-          {Object.entries(historyNamesOnRankSummary.value!.historyNamesOnrankSummary).map(
-            ([name, dataCount]) => (
-              <Text>
-                {name}：{dataCount} 条
-              </Text>
-            ),
-          )}
+          {Object.entries(
+            historyNamesOnRankSummary.value!.historyNamesOnrankSummary,
+          ).map(([name, dataCount]) => (
+            <Text>
+              {name}：{dataCount} 条
+            </Text>
+          ))}
         </Column>
 
         <GhostButton
