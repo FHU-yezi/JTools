@@ -198,12 +198,12 @@
     ],
     "后端": [
       {
-        "name": "JianshuResearchTools",
-        "desc": "数据采集",
-        "url": "https://github.com/FHU-yezi/JianshuResearchTools"
+        "name": "JKit",
+        "desc": "数据支持",
+        "url": "https://github.com/FHU-yezi/JKit"
       },
       {
-        "name": "Sanic",
+        "name": "Litestar",
         "desc": "后端框架",
         "url": "https://github.com/litestar-org/litestar"
       },
@@ -221,11 +221,6 @@
         "name": "SSpeedup",
         "desc": "开发工具箱",
         "url": "https://github.com/FHU-yezi/sspeedup"
-      },
-      {
-        "name": "Tomd",
-        "desc": "Markdown 转换",
-        "url": "https://github.com/gaojiuli/tomd"
       }
     ],
     "代码质量": [
@@ -251,18 +246,13 @@
       },
       {
         "name": "Ruff",
-        "desc": "Python 静态分析",
+        "desc": "Python 静态分析 & 格式化",
         "url": "https://github.com/astral-sh/ruff"
       },
       {
         "name": "Pyright",
         "desc": "Python 类型检查",
         "url": "https://github.com/microsoft/pyright"
-      },
-      {
-        "name": "Black",
-        "desc": "Python 格式化",
-        "url": "https://github.com/psf/black"
       }
     ],
     "能力服务": [
