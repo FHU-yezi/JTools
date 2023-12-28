@@ -171,14 +171,14 @@ function HistoryNamesOnRankRecordFoundNotice() {
     <InfoAlert>
       <Column>
         <Text large bold>
-          数据不完整
+          昵称更改
         </Text>
-        <Text>您可能更改过简书昵称，我们找到了其它与您有关的上榜记录：</Text>
+        <Text>找到您曾用昵称的上榜记录：</Text>
         <Column gap="gap-2">
           {Object.entries(historyNamesOnRankSummary.value!.historyNamesOnrankSummary).map(
             ([name, dataCount]) => (
               <Text>
-                {name}：{dataCount} 条上榜记录
+                {name}：{dataCount} 条
               </Text>
             ),
           )}
