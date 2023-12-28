@@ -10,8 +10,8 @@ readme = "README.md"
 python = "^3.8"
 motor = "^3.3.0"
 jianshuresearchtools = "^2.11.0"
-sspeedup = {version = "^0.24.0", extras = ["logging", "config", "api-litestar"]}
-uvicorn = "^0.23.0"
+sspeedup = {version = "^0.25.0", extras = ["logging", "config", "api-litestar"]}
+uvicorn = "^0.23.2"
 httptools = "^0.6.0"
 uvloop = "^0.19.0"
 
@@ -34,6 +34,6 @@ select = [
     "TCH", "UP", "W"
 ]
 
-ignore = ["ANN101", "ANN401", "BLE001", "RUF001", "RUF002", "RUF003"]
+ignore = ["ANN101", "ANN401", "BLE001", "ISC001", "RUF001", "RUF002", "RUF003"]
 
 target-version = "py38"
