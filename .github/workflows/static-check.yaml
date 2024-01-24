@@ -31,16 +31,10 @@ jobs:
         working-directory: ./frontend
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8
-          run_install: true
-          package_json_file: "frontend/package.json"
-      - uses: actions/setup-node@v4
-        with:
-          cache: "pnpm"
-          cache-dependency-path: frontend/pnpm-lock.yaml
+      - uses: oven-sh/setup-bun@v1
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
       - name: Lint with Eslint
-        run: pnpm eslint .
+        run: bun run check:eslint
       - name: Style check with Prettier
-        run: pnpm prettier --check .
+        run: bun run check:prettier

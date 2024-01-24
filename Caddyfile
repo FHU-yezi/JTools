@@ -17,7 +17,7 @@
         root * ./static
         try_files {path} /index.html
         file_server {
-            precompressed br gzip
+            precompressed gzip
         }
     }
 
