@@ -1,11 +1,5 @@
 import { useComputed, useSignal } from "@preact/signals";
-import {
-  Column,
-  GhostButton,
-  Modal,
-  NoResultNotice,
-  TextInput,
-} from "@sscreator/ui";
+import { Column, LargeText, Modal, TextButton, TextInput } from "@sscreator/ui";
 import { useEffect, useRef } from "preact/hooks";
 import { MdSearch } from "react-icons/md";
 import { routes } from "../routes";
@@ -37,25 +31,25 @@ export default function SearchModal() {
 
   return (
     <>
-      <GhostButton
-        icon={
+      <TextButton
+        colorScheme="secondary"
+        leftIcon={
           <MdSearch className="text-zinc-500 dark:text-zinc-300" size={22} />
         }
-        hoverBackgroundColor="hover:bg-zinc-200 dark:hover:bg-zinc-700"
         onClick={() => {
           searchModalOpen.value = true;
           umamiTrack("click-search-button");
         }}
-        ariaLabel="搜索"
+        aria-label="搜索"
       />
 
       <Modal open={searchModalOpen} title="搜索">
         <Column>
           <TextInput
-            label=""
+            id="tool-name"
             value={textInputContent}
             placeholder="输入工具名称..."
-            inputRef={textInputRef}
+            ref={textInputRef}
           />
 
           {matchRouteItems.value.length !== 0 ? (
@@ -70,7 +64,7 @@ export default function SearchModal() {
               />
             ))
           ) : (
-            <NoResultNotice />
+            <LargeText>无结果</LargeText>
           )}
         </Column>
       </Modal>

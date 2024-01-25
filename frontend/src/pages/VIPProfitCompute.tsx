@@ -3,9 +3,11 @@ import {
   Card,
   Column,
   Grid,
+  LargeText,
   NumberInput,
   Row,
-  Switch,
+  Select,
+  SmallText,
   Text,
 } from "@sscreator/ui";
 import type { JSX } from "preact/jsx-runtime";
@@ -214,11 +216,13 @@ const returnRate = computed(() =>
 );
 const canGetMoneyBack = computed(() => pureAnnualEarning.value >= 0);
 
+const isVIPLevelSelectDropdownOpened = signal(false);
+
 interface ResultItemProps {
   label: string;
   description?: string;
   value: number;
-  valueColor?: string;
+  colorScheme?: "success" | "danger";
   ndigits: number;
   asPercentage?: boolean;
   asTimes?: boolean;
@@ -229,7 +233,7 @@ function ResultItem({
   label,
   description = "",
   value,
-  valueColor,
+  colorScheme,
   ndigits,
   asPercentage = false,
   asTimes = false,
@@ -250,9 +254,11 @@ function ResultItem({
     <Row className="justify-between">
       <Text bold={bold}>
         {label}
-        <Text small>{description.length !== 0 && `（${description}）`}</Text>
+        <SmallText>
+          {description.length !== 0 && `（${description}）`}
+        </SmallText>
       </Text>
-      <Text color={valueColor} bold={bold}>
+      <Text colorScheme={colorScheme} bold={bold}>
         {valuePart}
       </Text>
     </Row>
@@ -268,9 +274,7 @@ function ResultGroup({ children, label }: ResultGroupProps) {
   return (
     <Card>
       <Column gap="gap-2">
-        <Text large bold>
-          {label}
-        </Text>
+        <LargeText bold>{label}</LargeText>
         {children}
       </Column>
     </Card>
@@ -280,12 +284,29 @@ function ResultGroup({ children, label }: ResultGroupProps) {
 export default function VIPProfitCompute() {
   return (
     <div className="flex flex-col gap-4">
-      <Switch value={VIPLevel} data={VIPSwitchData} />
-      <NumberInput label="持钻量" value={FPCount} />
-      <NumberInput label="旗下会员数" value={membersCount} />
-      <NumberInput label="旗下一级会员持钻量" value={Level1MembersFPCount} />
-      <NumberInput label="旗下二级会员持钻量" value={Level2MembersFPCount} />
-      <NumberInput label="每日创作收益" value={earningFromCreation} />
+      <Select
+        id="vip-level"
+        isDropdownOpened={isVIPLevelSelectDropdownOpened}
+        value={VIPLevel}
+        options={VIPSwitchData}
+      />
+      <NumberInput id="fp-count" label="持钻量" value={FPCount} />
+      <NumberInput id="members-count" label="旗下会员数" value={membersCount} />
+      <NumberInput
+        id="level-1-members-fp-count"
+        label="旗下一级会员持钻量"
+        value={Level1MembersFPCount}
+      />
+      <NumberInput
+        id="level-2-members-fp-count"
+        label="旗下二级会员持钻量"
+        value={Level2MembersFPCount}
+      />
+      <NumberInput
+        id="daily-creation-earning"
+        label="每日创作收益"
+        value={earningFromCreation}
+      />
 
       <Grid cols="grid-cols-1 sm:grid-cols-2">
         <ResultGroup label="会员持钻收益">
@@ -361,9 +382,7 @@ export default function VIPProfitCompute() {
             label="年回报率"
             value={returnRate.value}
             ndigits={2}
-            valueColor={
-              canGetMoneyBack.value ? "text-green-600" : "text-red-500"
-            }
+            colorScheme={canGetMoneyBack.value ? "success" : "danger"}
             asPercentage
             bold
           />

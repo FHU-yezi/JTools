@@ -2,11 +2,12 @@ import { signal } from "@preact/signals";
 import {
   Column,
   ExternalLink,
+  LargeText,
   LoadingArea,
   Row,
-  Switch,
+  Select,
+  SmallText,
   Text,
-  Tooltip,
 } from "@sscreator/ui";
 import type { ComponentChildren } from "preact";
 import { useEffect } from "preact/hooks";
@@ -48,6 +49,9 @@ const rewardWinsHistoryResult = signal<Record<number, number> | undefined>(
   undefined,
 );
 const recentRecords = signal<GetRecordsItem[] | undefined>(undefined);
+
+const isRewardWinsHistoryTimeRangeSelectDropdownOpened = signal(false);
+const isSummaryTimeRangeSelectDropdownOpened = signal(false);
 
 function handleSummaryFetch() {
   sendRequest<GetSummaryRequest, GetSummaryResponse>({
@@ -97,23 +101,25 @@ function PerPrizeAnalyzeTable() {
       className="min-w-[670px]"
       data={summaryResult
         .value!.map<Record<string, ComponentChildren>>((item) => ({
-          奖品名称: <Text center>{item.rewardName}</Text>,
-          中奖次数: <Text center>{item.winsCount}</Text>,
-          中奖人数: <Text center>{item.winnersCount}</Text>,
+          奖品名称: <Text className="text-center">{item.rewardName}</Text>,
+          中奖次数: <Text className="text-center">{item.winsCount}</Text>,
+          中奖人数: <Text className="text-center">{item.winnersCount}</Text>,
           平均每人中奖次数: (
-            <Text center>
+            <Text className="text-center">
               {item.winsCount !== 0 ? item.averageWinsCountPerWinner : "---"}
             </Text>
           ),
           中奖率: (
-            <Text center>
+            <Text className="text-center">
               {item.winsCount !== 0
                 ? `${roundFloat(item.winningRate * 100, 2)}%`
                 : "---"}
             </Text>
           ),
           稀有度: (
-            <Text center>{item.winsCount !== 0 ? item.rarity : "---"}</Text>
+            <Text className="text-center">
+              {item.winsCount !== 0 ? item.rarity : "---"}
+            </Text>
           ),
         }))
         .concat(
@@ -121,22 +127,22 @@ function PerPrizeAnalyzeTable() {
             ? [
                 {
                   奖品名称: (
-                    <Text bold center>
+                    <Text className="text-center" bold>
                       总计
                     </Text>
                   ),
                   中奖次数: (
-                    <Text bold center>
+                    <Text className="text-center" bold>
                       {totalWins}
                     </Text>
                   ),
                   中奖人数: (
-                    <Text bold center>
+                    <Text className="text-center" bold>
                       {totalWinners}
                     </Text>
                   ),
                   平均每人中奖次数: (
-                    <Text bold center>
+                    <Text className="text-center" bold>
                       {totalWins !== 0
                         ? roundFloat(totalAvagaeWinsCountPerWinner, 3)
                         : "---"}
@@ -156,14 +162,14 @@ function PerPrizeAnalyzeTable() {
 function RecordItem({ data }: { data: GetRecordsItem }) {
   return (
     <div className="border-b border-gray-300 px-4 py-2 dark:border-gray-500 last:border-none">
-      <Row className="justify-between" verticalCenter>
+      <Row className="justify-between" itemsCenter>
         <Column gap="gap-0">
           <ExternalLink href={data.userUrl}>{data.userName}</ExternalLink>
-          <Text gray>{parseTime(data.time).format("MM-DD HH:mm")}</Text>
+          <Text colorScheme="gray">
+            {parseTime(data.time).format("MM-DD HH:mm")}
+          </Text>
         </Column>
-        <Text large bold>
-          {data.rewardName}
-        </Text>
+        <LargeText bold>{data.rewardName}</LargeText>
       </Row>
     </div>
   );
@@ -172,9 +178,7 @@ function RecordItem({ data }: { data: GetRecordsItem }) {
 function RecentRecordsBlock() {
   return (
     <>
-      <Text large bold>
-        近期大奖
-      </Text>
+      <LargeText bold>近期大奖</LargeText>
       <LoadingArea
         className="h-[320px]"
         loading={recentRecords.value === undefined}
@@ -191,12 +195,12 @@ function RecentRecordsBlock() {
 function RewardWinsHistoryBlock() {
   return (
     <>
-      <Text large bold>
-        中奖次数趋势
-      </Text>
-      <Switch
+      <LargeText bold>中奖次数趋势</LargeText>
+      <Select
+        id="reward-wins-history-time-range"
+        isDropdownOpened={isRewardWinsHistoryTimeRangeSelectDropdownOpened}
         value={rewardWinsHistoryTimeRange}
-        data={rewardWinsHistoryTimeRangeSwitchData}
+        options={rewardWinsHistoryTimeRangeSwitchData}
       />
       <SSLineChart
         className="h-72 max-w-lg w-full"
@@ -244,19 +248,22 @@ export default function LotteryAnalyzer() {
 
   return (
     <Column>
-      <Text large bold>
-        综合统计
-      </Text>
-      <Switch value={summaryTimeRange} data={summaryTimeRangeSwitchData} />
+      <LargeText bold>综合统计</LargeText>
+      <Select
+        id="summary-time-range"
+        value={summaryTimeRange}
+        isDropdownOpened={isSummaryTimeRangeSelectDropdownOpened}
+        options={summaryTimeRangeSwitchData}
+      />
       <LoadingArea
         className="h-[291px]"
         loading={summaryResult.value === undefined}
       >
         {summaryResult.value !== undefined && <PerPrizeAnalyzeTable />}
       </LoadingArea>
-      <Tooltip tooltip="受简书接口限制，我们无法获取这两种奖品的中奖情况，故表中未予统计">
-        <Text>关于免费开 1 次连载 / 锦鲤头像框</Text>
-      </Tooltip>
+      <SmallText colorScheme="gray">
+        受简书接口限制，本工具数据不包括免费开 1 次连载与锦鲤头像框
+      </SmallText>
 
       <RecentRecordsBlock />
       <RewardWinsHistoryBlock />

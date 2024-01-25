@@ -2,7 +2,7 @@ import { computed, signal } from "@preact/signals";
 import {
   Column,
   ExternalLink,
-  PrimaryButton,
+  SolidButton,
   Text,
   TextInput,
 } from "@sscreator/ui";
@@ -52,18 +52,20 @@ function Wordcloud() {
 export default function ArticleWordcloudGenerator() {
   return (
     <Column>
-      <TextInput label="文章链接" value={articleUrl} onEnter={handleGenerate} />
-      <PrimaryButton
-        onClick={handleGenerate}
-        loading={isLoading.value}
-        fullWidth
-      >
+      <TextInput
+        id="article-url"
+        label="文章链接"
+        value={articleUrl}
+        onEnter={handleGenerate}
+      />
+      <SolidButton onClick={handleGenerate} loading={isLoading.value} fullWidth>
         查询
-      </PrimaryButton>
+      </SolidButton>
 
       {result.value !== undefined && (
         <>
-          <Text truncate>
+          {/* TODO: truncate */}
+          <Text>
             文章标题：
             <ExternalLink href={articleUrl.value}>
               {result.value.title}

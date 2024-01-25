@@ -1,6 +1,6 @@
 import { useDocumentTitle } from "@mantine/hooks";
 import { batch, signal } from "@preact/signals";
-import { Column, Text, Tooltip } from "@sscreator/ui";
+import { Column } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
 import { useLocation } from "wouter-preact";
 import {
@@ -80,15 +80,6 @@ export default function MainPage() {
             unavaliable={unavaliableTools.value.includes(item.path.slice(1))}
           />
         ))}
-
-        <Column gap="gap-2">
-          <Tooltip tooltip="消零派辅助工具已在小工具集 v3 中下线，我们即将发布更强大的工具，敬请期待">
-            <Text>关于消零派辅助工具</Text>
-          </Tooltip>
-          <Tooltip tooltip="简书 App 中滑动到文章最后，网页端将鼠标悬浮在发布时间上即可查看文章更新时间，小工具集 v3 不再提供此工具">
-            <Text>关于文章发布时间查询工具</Text>
-          </Tooltip>
-        </Column>
       </Column>
     </>
   );

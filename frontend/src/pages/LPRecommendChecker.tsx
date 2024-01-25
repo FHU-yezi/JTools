@@ -2,7 +2,8 @@ import { computed, signal } from "@preact/signals";
 import {
   Column,
   ExternalLink,
-  PrimaryButton,
+  LargeText,
+  SolidButton,
   Text,
   TextInput,
 } from "@sscreator/ui";
@@ -41,23 +42,26 @@ function handleCheck() {
 export default function LPRecommendChecker() {
   return (
     <Column>
-      <TextInput label="文章链接" value={articleUrl} onEnter={handleCheck} />
-      <PrimaryButton onClick={handleCheck} loading={isLoading.value} fullWidth>
+      <TextInput
+        id="article-url"
+        label="文章链接"
+        value={articleUrl}
+        onEnter={handleCheck}
+      />
+      <SolidButton onClick={handleCheck} loading={isLoading.value} fullWidth>
         检测
-      </PrimaryButton>
+      </SolidButton>
 
       {result.value !== undefined && (
         <>
-          <Text
-            color={
-              result.value.canRecommendNow ? "text-green-500" : "text-red-500"
-            }
-            large
+          <LargeText
+            colorScheme={result.value.canRecommendNow ? "success" : "danger"}
             bold
           >
             {result.value.canRecommendNow ? "可推荐" : "不可推荐"}
-          </Text>
-          <Text truncate>
+          </LargeText>
+          {/* TODO: truncate */}
+          <Text>
             文章：
             <ExternalLink href={articleUrl.value}>
               {result.value.articleTitle}
@@ -66,7 +70,7 @@ export default function LPRecommendChecker() {
           <Text>
             获钻量：
             <Text
-              color={result.value.FPReward >= 35 ? "text-red-500" : undefined}
+              colorScheme={result.value.FPReward >= 35 ? "danger" : undefined}
               bold
               inline
             >

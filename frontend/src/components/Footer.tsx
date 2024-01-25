@@ -36,9 +36,9 @@ export default function Footer() {
         <ExternalLink href="https://wenjuan.feishu.cn/m?t=sjQp3W8yUrNi-g37f">
           意见反馈
         </ExternalLink>
-        <Text gray>版本：{version.value ?? "获取中..."}</Text>
-        <Text gray>Powered By Open-Source Software</Text>
-        <Text gray>
+        <Text colorScheme="gray">版本：{version.value ?? "获取中..."}</Text>
+        <Text colorScheme="gray">Powered By Open-Source Software</Text>
+        <Text colorScheme="gray">
           By{" "}
           <ExternalLink href="https://www.jianshu.com/u/ea36c8d8aa30">
             初心不变_叶子

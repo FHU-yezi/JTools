@@ -4,10 +4,10 @@ import { signal } from "@preact/signals";
 import {
   Center,
   Column,
-  GhostButton,
-  PrimaryButton,
   Row,
+  SolidButton,
   Text,
+  TextButton,
   TextInput,
 } from "@sscreator/ui";
 import { MdContentCopy, MdDone, MdOutlineArrowForward } from "react-icons/md";
@@ -105,30 +105,35 @@ export default function URLSchemeConvertor() {
 
   return (
     <Column>
-      <TextInput label="简书链接" value={jianshuURL} onEnter={handleConvert} />
-      <PrimaryButton onClick={handleConvert} fullWidth>
+      <TextInput
+        id="jianshu-url"
+        label="简书链接"
+        value={jianshuURL}
+        onEnter={handleConvert}
+      />
+      <SolidButton onClick={handleConvert} fullWidth>
         转换
-      </PrimaryButton>
+      </SolidButton>
 
       {result.value !== undefined && (
         <Center>
           <Column className="mt-12" gap="gap-4">
-            <Column gap="gap-2" horizontalCenter>
+            <Column gap="gap-2" itemsCenter>
               <Text>{result.value}</Text>
-              <Row verticalCenter>
-                <GhostButton
-                  icon={<MdOutlineArrowForward />}
+              <Row itemsCenter>
+                <TextButton
+                  rightIcon={<MdOutlineArrowForward />}
                   onClick={() => window.open(result.value)}
                 >
                   访问
-                </GhostButton>
-                <GhostButton
+                </TextButton>
+                <TextButton
                   className={!clipboard.copied ? undefined : "bg-green-100"}
-                  icon={!clipboard.copied ? <MdContentCopy /> : <MdDone />}
+                  rightIcon={!clipboard.copied ? <MdContentCopy /> : <MdDone />}
                   onClick={() => clipboard.copy(result.value)}
                 >
                   {!clipboard.copied ? "复制" : "复制成功"}
-                </GhostButton>
+                </TextButton>
               </Row>
             </Column>
             <QRCode className="w-full" value={result.value} />

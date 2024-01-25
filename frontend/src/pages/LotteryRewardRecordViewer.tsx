@@ -4,12 +4,12 @@ import {
   Checkbox,
   Column,
   Grid,
+  LargeText,
   LoadingArea,
-  NoResultNotice,
-  PrimaryButton,
+  SmallText,
+  SolidButton,
   Text,
   TextInput,
-  Tooltip,
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
 import SSLazyLoadTable from "../components/SSLazyLoadTable";
@@ -122,7 +122,7 @@ function RewardsFliter() {
           <Grid cols="grid-cols-1 sm:grid-cols-2">
             {Object.entries(rewardSelectedSignals.value).map(
               ([name, value]) => (
-                <Checkbox label={name} value={value} />
+                <Checkbox id={name} label={name} value={value} />
               ),
             )}
           </Grid>
@@ -136,8 +136,12 @@ function ResultTable() {
   return (
     <SSLazyLoadTable
       data={result.value!.map((item) => ({
-        时间: <Text center>{getDatetime(parseTime(item.time))}</Text>,
-        奖项: <Text center>{item.rewardName}</Text>,
+        时间: (
+          <Text className="text-center">
+            {getDatetime(parseTime(item.time))}
+          </Text>
+        ),
+        奖项: <Text className="text-center">{item.rewardName}</Text>,
       }))}
       onLoadMore={handleLoadMore}
       hasMore={hasMore}
@@ -150,23 +154,24 @@ export default function LotteryRewardRecordViewer() {
   return (
     <Column>
       <TextInput
+        id="user-url"
         label="用户个人主页链接"
         value={userUrl}
         onEnter={handleQuery}
       />
       <RewardsFliter />
-      <Tooltip tooltip="受简书接口限制，我们无法获取这两种奖品的中奖情况，故无法进行查询">
-        <Text>关于免费开 1 次连载 / 锦鲤头像框</Text>
-      </Tooltip>
-      <PrimaryButton onClick={handleQuery} loading={isLoading.value} fullWidth>
+      <SmallText colorScheme="gray">
+        受简书接口限制，本工具数据不包括免费开 1 次连载与锦鲤头像框
+      </SmallText>
+      <SolidButton onClick={handleQuery} loading={isLoading.value} fullWidth>
         查询
-      </PrimaryButton>
+      </SolidButton>
 
       {result.value !== undefined &&
         (result.value.length !== 0 ? (
           <ResultTable />
         ) : (
-          <NoResultNotice message="无中奖记录" />
+          <LargeText>无中奖记录</LargeText>
         ))}
     </Column>
   );

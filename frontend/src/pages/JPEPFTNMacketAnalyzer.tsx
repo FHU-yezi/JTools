@@ -1,5 +1,5 @@
 import { batch, computed, signal } from "@preact/signals";
-import { Column, FieldBlock, Row, Switch, Text } from "@sscreator/ui";
+import { Column, LargeText, Row, Select, SmallText, Text } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
 import SSBarChart from "../components/charts/SSBarChart";
 import SSLineChart from "../components/charts/SSLineChart";
@@ -48,6 +48,10 @@ const buyPoolAmountTrendData = signal<Record<number, number> | undefined>(
 const sellPoolAmountTrendData = signal<Record<number, number> | undefined>(
   undefined,
 );
+
+const isPerPriceAmountDataTradeTypeSelectDropdownOpened = signal(false);
+const isPriceTrendLineTimeRangeSelectDropdownOpened = signal(false);
+const isPoolAmountTrendLineTimeRangeSelectDropdownOpened = signal(false);
 
 function handleRulesFetch() {
   sendRequest<Record<string, never>, GetRulesResponse>({
@@ -139,35 +143,27 @@ function handleAmountHistoryDataFetch() {
 function RulesBlock() {
   return (
     <>
-      <FieldBlock fieldName="平台状态">
-        {JPEPRules.value !== undefined ? (
-          <Text
-            color={
-              JPEPRules.value.isOpen ? "text-green-500" : "text-orange-500"
-            }
-            bold
-          >
-            {JPEPRules.value.isOpen ? "开放中" : "休市中"}
-          </Text>
-        ) : (
-          <Text>获取中...</Text>
-        )}
-      </FieldBlock>
+      <Text>平台状态</Text>
+      {JPEPRules.value !== undefined ? (
+        <Text colorScheme={JPEPRules.value.isOpen ? "success" : "warning"} bold>
+          {JPEPRules.value.isOpen ? "开放中" : "休市中"}
+        </Text>
+      ) : (
+        <Text>获取中...</Text>
+      )}
       <Row>
-        <FieldBlock rowClassName="flex-grow" fieldName="贝交易手续费">
-          <Text large bold>
-            {JPEPRules.value !== undefined
-              ? `${JPEPRules.value.FTNOrderFee * 100}%`
-              : "获取中..."}
-          </Text>
-        </FieldBlock>
-        <FieldBlock rowClassName="flex-grow" fieldName="商品交易手续费">
-          <Text large bold>
-            {JPEPRules.value !== undefined
-              ? `${JPEPRules.value.goodsOrderFee * 100}%`
-              : "获取中..."}
-          </Text>
-        </FieldBlock>
+        <LargeText bold>
+          贝交易手续费
+          {JPEPRules.value !== undefined
+            ? `${JPEPRules.value.FTNOrderFee * 100}%`
+            : "获取中..."}
+        </LargeText>
+        <LargeText bold>
+          商品交易手续费
+          {JPEPRules.value !== undefined
+            ? `${JPEPRules.value.goodsOrderFee * 100}%`
+            : "获取中..."}
+        </LargeText>
       </Row>
     </>
   );
@@ -176,32 +172,28 @@ function RulesBlock() {
 function CurrentPriceBlock() {
   return (
     <>
-      <Text large bold>
-        实时贝价
-      </Text>
+      <LargeText bold>实时贝价</LargeText>
       <Row gap="gap-2">
-        <FieldBlock rowClassName="flex-grow" fieldName="买单">
-          <Text large bold>
-            {currentPrice.value?.buyPrice ?? "获取中..."}
-          </Text>
-          <Text small gray>
-            限价：
-            {JPEPRules.value !== undefined
-              ? JPEPRules.value.buyOrderMinimumPrice
-              : "获取中..."}
-          </Text>
-        </FieldBlock>
-        <FieldBlock rowClassName="flex-grow" fieldName="卖单">
-          <Text large bold>
-            {currentPrice.value?.sellPrice ?? "获取中..."}
-          </Text>
-          <Text small gray>
-            限价：
-            {JPEPRules.value !== undefined
-              ? JPEPRules.value.sellOrderMinimumPrice
-              : "获取中..."}
-          </Text>
-        </FieldBlock>
+        <LargeText bold>
+          买单
+          {currentPrice.value?.buyPrice ?? "获取中..."}
+        </LargeText>
+        <SmallText>
+          限价：
+          {JPEPRules.value !== undefined
+            ? JPEPRules.value.buyOrderMinimumPrice
+            : "获取中..."}
+        </SmallText>
+        <LargeText bold>
+          卖单
+          {currentPrice.value?.sellPrice ?? "获取中..."}
+        </LargeText>
+        <SmallText>
+          限价：
+          {JPEPRules.value !== undefined
+            ? JPEPRules.value.sellOrderMinimumPrice
+            : "获取中..."}
+        </SmallText>
       </Row>
     </>
   );
@@ -210,36 +202,32 @@ function CurrentPriceBlock() {
 function CurrentAmountBlock() {
   return (
     <>
-      <Text large bold>
-        实时挂单量
-      </Text>
+      <LargeText bold>实时挂单量</LargeText>
       <Row gap="gap-2">
-        <FieldBlock rowClassName="flex-grow" fieldName="买单">
-          <Text large bold>
-            {currentAmount.value?.buyAmount ?? "获取中..."}
-          </Text>
-          <Text small gray>
-            {currentAmount.value !== undefined
-              ? `占比 ${(
-                  (currentAmount.value.buyAmount / totalPoolAmount.value!) *
-                  100
-                ).toFixed(2)}%`
-              : "获取中..."}
-          </Text>
-        </FieldBlock>
-        <FieldBlock rowClassName="flex-grow" fieldName="卖单">
-          <Text large bold>
-            {currentAmount.value?.sellAmount ?? "获取中..."}
-          </Text>
-          <Text small gray>
-            {currentAmount.value !== undefined
-              ? `占比 ${(
-                  (currentAmount.value.sellAmount / totalPoolAmount.value!) *
-                  100
-                ).toFixed(2)}%`
-              : "获取中..."}
-          </Text>
-        </FieldBlock>
+        <Text>买单</Text>
+        <LargeText bold>
+          {currentAmount.value?.buyAmount ?? "获取中..."}
+        </LargeText>
+        <SmallText colorScheme="gray">
+          {currentAmount.value !== undefined
+            ? `占比 ${(
+                (currentAmount.value.buyAmount / totalPoolAmount.value!) *
+                100
+              ).toFixed(2)}%`
+            : "获取中..."}
+        </SmallText>
+        <Text>卖单</Text>
+        <LargeText bold>
+          {currentAmount.value?.sellAmount ?? "获取中..."}
+        </LargeText>
+        <SmallText colorScheme="gray">
+          {currentAmount.value !== undefined
+            ? `占比 ${(
+                (currentAmount.value.sellAmount / totalPoolAmount.value!) *
+                100
+              ).toFixed(2)}%`
+            : "获取中..."}
+        </SmallText>
       </Row>
     </>
   );
@@ -248,12 +236,12 @@ function CurrentAmountBlock() {
 function AmountDistributionChartBlock() {
   return (
     <>
-      <Text large bold>
-        实时挂单量分布
-      </Text>
-      <Switch
+      <LargeText bold>实时挂单量分布</LargeText>
+      <Select
+        id="per-price-amount-data-trade-type"
+        isDropdownOpened={isPerPriceAmountDataTradeTypeSelectDropdownOpened}
         value={perPriceAmountDataTradeType}
-        data={[
+        options={[
           { label: "买单", value: "buy" },
           { label: "卖单", value: "sell" },
         ]}
@@ -290,10 +278,13 @@ function AmountDistributionChartBlock() {
 function PriceHistoryChartBlock() {
   return (
     <>
-      <Text large bold>
-        贝价趋势
-      </Text>
-      <Switch value={priceTrendLineTimeRange} data={TimeRangeSwitchData} />
+      <LargeText bold>贝价趋势</LargeText>
+      <Select
+        id="price-trend-line-time-range"
+        isDropdownOpened={isPriceTrendLineTimeRangeSelectDropdownOpened}
+        value={priceTrendLineTimeRange}
+        options={TimeRangeSwitchData}
+      />
       <SSLineChart
         className="h-72 max-w-lg w-full"
         dataReady={
@@ -347,10 +338,13 @@ function PriceHistoryChartBlock() {
 function AmountHistoryChartBlock() {
   return (
     <>
-      <Text large bold>
-        挂单量趋势
-      </Text>
-      <Switch value={poolAmountTrendLineTimeRange} data={TimeRangeSwitchData} />
+      <LargeText bold>挂单量趋势</LargeText>
+      <Select
+        id="pool-amount-trend-line-time-range"
+        isDropdownOpened={isPoolAmountTrendLineTimeRangeSelectDropdownOpened}
+        value={poolAmountTrendLineTimeRange}
+        options={TimeRangeSwitchData}
+      />
       <SSLineChart
         className="h-72 max-w-lg w-full"
         dataReady={

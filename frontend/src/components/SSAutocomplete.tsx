@@ -6,6 +6,7 @@ import clsx from "clsx";
 import { useEffect, useRef } from "preact/hooks";
 
 interface Props {
+  id: string;
   label: string;
   value: Signal<string>;
   description?: string;
@@ -18,6 +19,7 @@ interface Props {
 }
 
 export default function SSAutocomplete({
+  id,
   label,
   value,
   description,
@@ -46,13 +48,14 @@ export default function SSAutocomplete({
   return (
     <div className="relative">
       <TextInput
+        id={id}
         label={label}
         value={value}
-        description={description}
+        helpText={description}
         placeholder={placeholder}
         onEnter={onEnter}
-        noSelectAllOnFocus={noSelectOnFocus}
-        inputRef={textInputRef}
+        selectAllOnFocus={!noSelectOnFocus}
+        ref={textInputRef}
       />
 
       {/* 如果同时满足以下条件，展示下拉菜单：

@@ -16,7 +16,7 @@ export function toastSuccess({ message, duration = 2000 }: ToastFunctionProps) {
   toast(<Text>{message}</Text>, {
     duration,
     icon: (
-      <Text color="text-green-400 dark:text-green-600">
+      <Text colorScheme="success">
         <MdCheckCircle size={18} />
       </Text>
     ),
@@ -32,7 +32,7 @@ export function toastWarning({ message, duration = 4000 }: ToastFunctionProps) {
   toast(<Text>{message}</Text>, {
     duration,
     icon: (
-      <Text color="text-orange-400 dark:text-orange-600">
+      <Text colorScheme="warning">
         <MdOutlineError size={18} />
       </Text>
     ),
@@ -48,7 +48,7 @@ export function toastError({ message, duration = 4000 }: ToastFunctionProps) {
   toast(<Text>{message}</Text>, {
     duration,
     icon: (
-      <Text color="text-red-400 dark:text-red-600">
+      <Text colorScheme="danger">
         <IoMdCloseCircle size={18} />
       </Text>
     ),

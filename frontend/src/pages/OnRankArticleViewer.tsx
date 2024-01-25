@@ -2,13 +2,11 @@ import { batch, computed, signal } from "@preact/signals";
 import {
   Column,
   ExternalLink,
-  FieldBlock,
-  GhostButton,
   Grid,
-  InfoAlert,
-  NoResultNotice,
-  PrimaryButton,
-  Switch,
+  LargeText,
+  Notice,
+  Select,
+  SolidButton,
   Text,
 } from "@sscreator/ui";
 import SSAutocomplete from "../components/SSAutocomplete";
@@ -45,6 +43,7 @@ const orderSelect = signal<{
   orderBy: "date" | "ranking";
   orderDirection: "asc" | "desc";
 }>({ orderBy: "date", orderDirection: "desc" });
+const isOrderBySelectDropdownOpened = signal(false);
 const autocompleteItems = signal<string[]>([]);
 const isLoading = signal(false);
 const hasMore = signal(true);
@@ -167,37 +166,32 @@ function handleLoadMore() {
 
 function HistoryNamesOnRankRecordFoundNotice() {
   return (
-    <InfoAlert>
-      <Column>
-        <Text large bold>
-          昵称更改
-        </Text>
-        <Text>找到您曾用昵称的上榜记录：</Text>
-        <Column gap="gap-2">
-          {Object.entries(
-            historyNamesOnRankSummary.value!.historyNamesOnrankSummary,
-          ).map(([name, dataCount]) => (
-            <Text>
-              {name}：{dataCount} 条
-            </Text>
-          ))}
-        </Column>
-
-        <GhostButton
-          onClick={() => {
-            batch(() => {
-              // 替换当前输入的昵称为个人主页链接，同时隐藏该组件
-              userUrlOrName.value = historyNamesOnRankSummary.value!.userUrl;
-              showHistoryNamesOnRankRecordFoundNotice.value = false;
-            });
-            // 触发检索
-            handleQuery();
-          }}
-        >
-          查看完整数据
-        </GhostButton>
+    <Notice className="flex flex-col" colorScheme="info" title="昵称更改">
+      <Text>找到您曾用昵称的上榜记录：</Text>
+      <Column gap="gap-2">
+        {Object.entries(
+          historyNamesOnRankSummary.value!.historyNamesOnrankSummary,
+        ).map(([name, dataCount]) => (
+          <Text>
+            {name}：{dataCount} 条
+          </Text>
+        ))}
       </Column>
-    </InfoAlert>
+
+      <SolidButton
+        onClick={() => {
+          batch(() => {
+            // 替换当前输入的昵称为个人主页链接，同时隐藏该组件
+            userUrlOrName.value = historyNamesOnRankSummary.value!.userUrl;
+            showHistoryNamesOnRankRecordFoundNotice.value = false;
+          });
+          // 触发检索
+          handleQuery();
+        }}
+      >
+        查看完整数据
+      </SolidButton>
+    </Notice>
   );
 }
 
@@ -205,18 +199,19 @@ function ResultTable() {
   return (
     <SSLazyLoadTable
       data={rankRecords.value!.map((item) => ({
-        日期: <Text center>{getDate(parseTime(item.date))}</Text>,
-        排名: <Text center>{item.ranking}</Text>,
+        日期: (
+          <Text className="text-center">{getDate(parseTime(item.date))}</Text>
+        ),
+        排名: <Text className="text-center">{item.ranking}</Text>,
         文章: (
           <ExternalLink
             className="block max-w-[60vw] overflow-hidden text-ellipsis whitespace-nowrap"
             href={item.articleUrl}
-            hideIcon
           >
             {item.articleTitle}
           </ExternalLink>
         ),
-        获钻量: <Text center>{item.FPReward}</Text>,
+        获钻量: <Text className="text-center">{item.FPReward}</Text>,
       }))}
       onLoadMore={handleLoadMore}
       hasMore={hasMore}
@@ -229,16 +224,19 @@ export default function OnRankArticleViewer() {
   return (
     <Column>
       <SSAutocomplete
+        id="user-name-or-url"
         label="用户昵称 / 个人主页链接"
         value={userUrlOrName}
         onEnter={handleQuery}
         onValueChange={handleCompleteItemUpdate}
         completeItems={autocompleteItems}
       />
-      <Switch
+      <Select
+        id="order-by"
         label="排序依据"
+        isDropdownOpened={isOrderBySelectDropdownOpened}
         value={orderSelect}
-        data={[
+        options={[
           {
             label: "上榜日期（倒序）",
             value: { orderBy: "date", orderDirection: "desc" },
@@ -257,9 +255,9 @@ export default function OnRankArticleViewer() {
           },
         ]}
       />
-      <PrimaryButton onClick={handleQuery} loading={isLoading.value} fullWidth>
+      <SolidButton onClick={handleQuery} loading={isLoading.value} fullWidth>
         查询
-      </PrimaryButton>
+      </SolidButton>
 
       {historyNamesOnRankSummary.value !== undefined &&
         showHistoryNamesOnRankRecordFoundNotice.value && (
@@ -268,26 +266,22 @@ export default function OnRankArticleViewer() {
 
       {rankSummary.value !== undefined && rankSummary.value.total !== 0 && (
         <Grid className="place-items-center" cols="grid-cols-2" gap="gap-6">
-          <FieldBlock fieldName="前 10 名次数">
-            <Text large bold>
-              {rankSummary.value.top10}
-            </Text>
-          </FieldBlock>
-          <FieldBlock fieldName="前 30 名次数">
-            <Text large bold>
-              {rankSummary.value.top30}
-            </Text>
-          </FieldBlock>
-          <FieldBlock fieldName="前 50 名次数">
-            <Text large bold>
-              {rankSummary.value.top50}
-            </Text>
-          </FieldBlock>
-          <FieldBlock fieldName="总上榜次数">
-            <Text large bold>
-              {rankSummary.value.total}
-            </Text>
-          </FieldBlock>
+          <LargeText bold>
+            前 10 名次数
+            {rankSummary.value.top10}
+          </LargeText>
+          <LargeText bold>
+            前 30 名次数
+            {rankSummary.value.top30}
+          </LargeText>
+          <LargeText bold>
+            前 50 名次数
+            {rankSummary.value.top50}
+          </LargeText>
+          <LargeText bold>
+            总上榜次数
+            {rankSummary.value.total}
+          </LargeText>
         </Grid>
       )}
 
@@ -295,7 +289,7 @@ export default function OnRankArticleViewer() {
         (rankRecords.value.length !== 0 ? (
           <ResultTable />
         ) : (
-          <NoResultNotice message="没有上榜记录" />
+          <LargeText>没有上榜记录</LargeText>
         ))}
     </Column>
   );

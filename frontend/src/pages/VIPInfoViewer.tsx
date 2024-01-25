@@ -3,8 +3,8 @@ import {
   Badge,
   Column,
   ExternalLink,
-  PrimaryButton,
   Row,
+  SolidButton,
   Text,
   TextInput,
 } from "@sscreator/ui";
@@ -63,13 +63,14 @@ export default function VIPInfoViewer() {
   return (
     <Column>
       <TextInput
+        id="user-url"
         label="用户个人主页链接"
         value={userUrl}
         onEnter={handleQuery}
       />
-      <PrimaryButton onClick={handleQuery} loading={isLoading.value} fullWidth>
+      <SolidButton onClick={handleQuery} loading={isLoading.value} fullWidth>
         查询
-      </PrimaryButton>
+      </SolidButton>
 
       {result.value !== undefined && (
         <>
@@ -83,11 +84,8 @@ export default function VIPInfoViewer() {
           <Text>
             会员等级：
             {result.value.isVIP ? (
-              <Badge
-                textColor="text-zinc-500 dark:text-zinc-400"
-                backgroundColor="bg-zinc-100 dark:bg-zinc-800"
-              >
-                <Row className="!flex-inline" gap="gap-1" verticalCenter>
+              <Badge colorScheme="gray">
+                <Row className="!flex-inline" gap="gap-1" itemsCenter>
                   <img
                     className="inline h-4 w-4 rounded-full"
                     src={VIPTypeToBadgeImageURL[result.value.type]}

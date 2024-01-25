@@ -7,10 +7,11 @@ import {
   Icon,
   LoadingPage,
   Modal,
-  PrimaryButton,
+  Notice,
   Row,
+  SmallText,
+  SolidButton,
   Text,
-  WarningAlert,
 } from "@sscreator/ui";
 import type { JSX } from "preact";
 import { Suspense, useEffect } from "preact/compat";
@@ -70,66 +71,59 @@ export default function ToolWrapper({ Component, toolName }: Props) {
         <Column>
           <Grid cols="grid-cols-1 sm:grid-cols-2" gap="gap-2">
             {toolStatus.value.lastUpdateTime !== null && (
-              <Row gap="gap-1" verticalCenter>
-                <Icon iconColor="text-zinc-500 dark:text-zinc-400">
-                  <MdOutlineAccessTime size={18} />
-                </Icon>
-                <Text gray small>
+              <Row gap="gap-1" itemsCenter>
+                <Icon
+                  colorScheme="gray"
+                  icon={<MdOutlineAccessTime size={18} />}
+                />
+                <SmallText colorScheme="gray">
                   最后更新时间：
                   {getDateTimeWithoutSecond(
                     parseTime(toolStatus.value.lastUpdateTime),
                   )}
-                </Text>
+                </SmallText>
               </Row>
             )}
             {toolStatus.value.dataUpdateFreq !== null && (
-              <Row gap="gap-1" verticalCenter>
-                <Icon iconColor="text-zinc-500 dark:text-zinc-400">
-                  <MdOutlineUpload size={18} />
-                </Icon>
-                <Text gray small nowrap>
+              <Row gap="gap-1" itemsCenter>
+                <Icon colorScheme="gray" icon={<MdOutlineUpload size={18} />} />
+                <SmallText colorScheme="gray" nowrap>
                   更新频率：{toolStatus.value.dataUpdateFreq}
-                </Text>
+                </SmallText>
               </Row>
             )}
             {toolStatus.value.dataCount !== null && (
-              <Row gap="gap-1" verticalCenter>
-                <Icon iconColor="text-zinc-500 dark:text-zinc-400">
-                  <MdOutlineNumbers size={18} />
-                </Icon>
-                <Text gray small>
+              <Row gap="gap-1" itemsCenter>
+                <Icon
+                  colorScheme="gray"
+                  icon={<MdOutlineNumbers size={18} />}
+                />
+                <SmallText colorScheme="gray">
                   数据量：{toolStatus.value.dataCount}
-                </Text>
+                </SmallText>
               </Row>
             )}
             {toolStatus.value.dataSource !== null && (
-              <Row gap="gap-1" verticalCenter>
-                <Icon iconColor="text-zinc-500 dark:text-zinc-400">
-                  <MdOutlineLink size={18} />
-                </Icon>
-                <Text gray small>
+              <Row gap="gap-1" itemsCenter>
+                <Icon colorScheme="gray" icon={<MdOutlineLink size={18} />} />
+                <SmallText colorScheme="gray">
                   数据来源：
                   {Object.entries(toolStatus.value.dataSource).map(
                     ([name, url]) => (
                       <ExternalLink href={url}>{name}</ExternalLink>
                     ),
                   )}
-                </Text>
+                </SmallText>
               </Row>
             )}
           </Grid>
           {showDowngradeNotice.value && (
-            <WarningAlert>
-              <Column gap="gap-2">
-                <Text large bold>
-                  服务降级
-                </Text>
-                <Text>
-                  {toolStatus.value?.reason ??
-                    "该小工具处于降级状态，其功能、数据准确性和性能可能受到影响，请您留意。"}
-                </Text>
-              </Column>
-            </WarningAlert>
+            <Notice colorScheme="warning" title="服务降级">
+              <Text>
+                {toolStatus.value?.reason ??
+                  "该小工具处于降级状态，其功能、数据准确性和性能可能受到影响，请您留意。"}
+              </Text>
+            </Notice>
           )}
 
           <Suspense fallback={<LoadingPage />}>
@@ -140,20 +134,15 @@ export default function ToolWrapper({ Component, toolName }: Props) {
         <LoadingPage />
       )}
 
-      <Modal
-        open={showUnavaliableModal}
-        title="服务不可用"
-        hideCloseButton
-        preventCloseByClickMask
-      >
+      <Modal open={showUnavaliableModal} title="服务不可用" notCloseable>
         <Column>
           <Text>
             {toolStatus.value?.reason ??
               "该小工具暂时不可用，请稍后再尝试访问，并留意相关公告。"}
           </Text>
-          <PrimaryButton onClick={() => setLocation("/")} fullWidth>
+          <SolidButton onClick={() => setLocation("/")} fullWidth>
             返回首页
-          </PrimaryButton>
+          </SolidButton>
         </Column>
       </Modal>
     </>

@@ -1,5 +1,13 @@
 import { useDocumentTitle } from "@mantine/hooks";
-import { Card, Column, ExternalLink, Grid, Text } from "@sscreator/ui";
+import {
+  Card,
+  Column,
+  ExternalLink,
+  Grid,
+  LargeText,
+  SmallText,
+  Text,
+} from "@sscreator/ui";
 import Header from "../components/Header";
 import {
   debugProjectRecords,
@@ -15,18 +23,14 @@ export default function ThanksPage() {
     <Column>
       <Header toolName="鸣谢" />
 
-      <Text large bold>
-        「捉虫计划」反馈
-      </Text>
+      <LargeText bold>「捉虫计划」反馈</LargeText>
       <Grid cols="grid-cols-1 sm:grid-cols-2">
         {debugProjectRecords.reverse().map((item) => (
           <Card>
             <Column gap="gap-3">
               <Column gap="gap-0.5">
                 <Text bold>{item.type}</Text>
-                <Text gray small>
-                  {item.module}
-                </Text>
+                <SmallText colorScheme="gray">{item.module}</SmallText>
               </Column>
               <Text>{item.desc}</Text>
               <Text>
@@ -41,16 +45,12 @@ export default function ThanksPage() {
         ))}
       </Grid>
 
-      <Text large bold>
-        开源库
-      </Text>
+      <LargeText bold>开源库</LargeText>
       <Grid cols="grid-cols-1 sm:grid-cols-2">
         {Object.entries(opensourcePackages).map(([partName, part]) => (
           <Card>
             <Column gap="gap-3">
-              <Text large bold>
-                {partName}
-              </Text>
+              <LargeText bold>{partName}</LargeText>
               {part.map(({ name, desc, url }) => (
                 <Text>
                   {desc}：<ExternalLink href={url}>{name}</ExternalLink>
@@ -63,25 +63,19 @@ export default function ThanksPage() {
 
       <Column>
         <Column gap="gap-0.5">
-          <Text large bold>
-            v3 Beta 内测成员
-          </Text>
-          <Text small gray>
-            排名不分先后
-          </Text>
+          <LargeText bold>v3 Beta 内测成员</LargeText>
+          <SmallText colorScheme="gray">排名不分先后</SmallText>
         </Column>
         {Object.entries(v3BetaPaticipants).map(([name, url]) => (
           <Text>
-            {name}
-            ：
-            <ExternalLink href={url} />
+            {name}：<ExternalLink href={url}>{url}</ExternalLink>
           </Text>
         ))}
 
         <div className="h-16" />
-        <Text large center>
+        <LargeText className="text-center">
           还有，感谢为简书生态奉献的你。
-        </Text>
+        </LargeText>
       </Column>
     </Column>
   );

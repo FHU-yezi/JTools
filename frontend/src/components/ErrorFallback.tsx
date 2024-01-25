@@ -1,79 +1,62 @@
-import { signal } from "@preact/signals";
 import {
-  Accordion,
+  Badge,
   Center,
   Column,
-  ExternalLink,
+  Heading1,
   Icon,
-  Key,
-  PrimaryButton,
-  Row,
-  SecondaryButton,
+  SmallText,
+  SolidButton,
   Text,
+  TextButton,
 } from "@sscreator/ui";
-import { MdOutlineWarningAmber } from "react-icons/md";
+import { VscBracketError } from "react-icons/vsc";
 import { useLocation } from "wouter-preact";
-
-const isMoreTechInfoAccordionOpened = signal(false);
 
 interface Props {
   error: Error;
 }
 
 export default function ErrorFallback({ error }: Props) {
-  const [, setLocation] = useLocation();
-
-  // eslint-disable-next-line no-console
-  console.error(`${error.name}: ${error.message}\n${error.stack}`);
+  const [location] = useLocation();
 
   return (
-    <Center className="h-screen">
-      <Column className="mx-8 max-w-4xl">
+    <Center className="mx-auto h-screen">
+      <Column className="max-w-2xl w-[80vw]">
         <Column gap="gap-2">
-          <Icon>
-            <MdOutlineWarningAmber size={48} />
-          </Icon>
-          <Text large bold>
-            发生意外错误
+          <Icon icon={<VscBracketError className="font-bold" size={48} />} />
+          <Heading1>啊呀，出错了...</Heading1>
+        </Column>
+
+        <Column gap="gap-2">
+          <SmallText bold>时间</SmallText>
+          <Text colorScheme="gray">
+            {new Date().toISOString().replace("T", " ").replace(/\..*Z/, "")}
           </Text>
         </Column>
-        <Text>非常抱歉给您带来不好的体验，您可尝试点击下方按钮刷新页面。</Text>
-        <Text>如果您多次看到此页面，请向开发者反馈。</Text>
-        <ExternalLink href="https://wenjuan.feishu.cn/m?t=sGzpuZGzUrNi-cbbb">
-          前往反馈表单
-        </ExternalLink>
-        <Text gray>{error.toString()}</Text>
 
-        <Row>
-          <SecondaryButton
-            className="flex-1"
-            onClick={() => {
-              setLocation("/");
-              window.location.reload();
-            }}
-            fullWidth
-          >
-            返回首页
-          </SecondaryButton>
-          <PrimaryButton
-            className="flex-1"
-            onClick={() => window.location.reload()}
-            fullWidth
-          >
-            刷新
-          </PrimaryButton>
-        </Row>
+        <Column gap="gap-2">
+          <SmallText bold>页面路径</SmallText>
+          <Text colorScheme="gray">{location}</Text>
+        </Column>
 
-        <Accordion
-          isOpened={isMoreTechInfoAccordionOpened}
-          title="我如何提供更多技术信息？"
-        >
-          <Text>
-            如果您使用电脑访问本服务，请按下<Key>F12</Key>
-            打开开发者工具，在顶栏中选择
-            Console（控制台）选项，截图其内容并在反馈时一并发送。
-          </Text>
-        </Accordion>
+        <Column gap="gap-2">
+          <SmallText bold>错误信息</SmallText>
+          <Badge className="mr-2" colorScheme="danger">
+            {error.name}
+          </Badge>
+          <Text colorScheme="gray">{error.message}</Text>
+        </Column>
+
+        <SolidButton onClick={() => window.location.reload()} fullWidth>
+          刷新
+        </SolidButton>
+        {location !== "/" && (
+          <Center>
+            <TextButton onClick={() => window.location.replace("/")}>
+              返回首页
+            </TextButton>
+          </Center>
+        )}
       </Column>
     </Center>
   );

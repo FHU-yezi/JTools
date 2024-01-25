@@ -1,4 +1,4 @@
-import { Badge, CardButton, Column, Icon, Row, Text } from "@sscreator/ui";
+import { Badge, Column, Icon, LargeText, Row, Text } from "@sscreator/ui";
 import { AiOutlineRight } from "react-icons/ai";
 import { useLocation } from "wouter-preact";
 
@@ -19,44 +19,25 @@ export default function ToolCard({
 }: Props) {
   const [, setLocation] = useLocation();
   return (
-    <CardButton
-      className="!shadow-none"
+    <button
+      type="button"
       onClick={!unavaliable ? () => setLocation(path) : undefined}
-      rounded="rounded-xl"
     >
-      <Row className="justify-between" verticalCenter>
+      <Row className="justify-between" itemsCenter>
         <Column className="items-start" gap="gap-2">
           <Row gap="gap-2">
-            <Text className="text-left" large bold>
+            <LargeText className="text-left" bold>
               {toolName}
-            </Text>
-            {downgraded && (
-              <Badge
-                backgroundColor="bg-orange-200 dark:bg-orange-950"
-                textColor="text-orange-500"
-              >
-                降级
-              </Badge>
-            )}
-            {unavaliable && (
-              <Badge
-                backgroundColor="bg-red-200 dark:bg-red-950"
-                textColor="text-red-500"
-              >
-                不可用
-              </Badge>
-            )}
+            </LargeText>
+            {downgraded && <Badge colorScheme="warning">降级</Badge>}
+            {unavaliable && <Badge colorScheme="danger">不可用</Badge>}
           </Row>
-          <Text className="text-left" gray>
+          <Text colorScheme="gray" className="text-left">
             {description}
           </Text>
         </Column>
-        {!unavaliable && (
-          <Icon>
-            <AiOutlineRight size={24} />
-          </Icon>
-        )}
+        {!unavaliable && <Icon icon={<AiOutlineRight size={24} />} />}
       </Row>
-    </CardButton>
+    </button>
   );
 }

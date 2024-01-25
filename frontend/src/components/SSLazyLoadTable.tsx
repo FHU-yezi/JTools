@@ -56,7 +56,7 @@ export default function SSLazyLoadTable({
             <tr>
               {Object.keys(data[0]).map((item) => (
                 <th className="gray-border px-2 py-1.5">
-                  <Text className="whitespace-nowrap" bold center>
+                  <Text className="whitespace-nowrap text-center" bold>
                     {item}
                   </Text>
                 </th>
@@ -83,7 +83,7 @@ export default function SSLazyLoadTable({
       />
       {isLoading.value && (
         <Center className="mt-2 h-12 w-full">
-          <LoadingIcon />
+          <LoadingIcon size={24} />
         </Center>
       )}
     </div>
