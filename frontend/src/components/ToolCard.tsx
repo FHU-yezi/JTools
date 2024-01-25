@@ -1,5 +1,5 @@
-import { Badge, Column, Icon, LargeText, Row, Text } from "@sscreator/ui";
-import { AiOutlineRight } from "react-icons/ai";
+import { Badge, Card, Column, Icon, LargeText, Row, Text } from "@sscreator/ui";
+import { MdKeyboardArrowRight } from "react-icons/md";
 import { useLocation } from "wouter-preact";
 
 interface Props {
@@ -21,14 +21,13 @@ export default function ToolCard({
   return (
     <button
       type="button"
+      className={unavaliable ? "cursor-not-allowed" : undefined}
       onClick={!unavaliable ? () => setLocation(path) : undefined}
     >
-      <Row className="justify-between" itemsCenter>
-        <Column className="items-start" gap="gap-2">
+      <Card className="flex items-center justify-between gap-2" withPadding>
+        <Column gap="gap-2">
           <Row gap="gap-2">
-            <LargeText className="text-left" bold>
-              {toolName}
-            </LargeText>
+            <LargeText bold>{toolName}</LargeText>
             {downgraded && <Badge colorScheme="warning">降级</Badge>}
             {unavaliable && <Badge colorScheme="danger">不可用</Badge>}
           </Row>
@@ -36,8 +35,8 @@ export default function ToolCard({
             {description}
           </Text>
         </Column>
-        {!unavaliable && <Icon icon={<AiOutlineRight size={24} />} />}
-      </Row>
+        {!unavaliable && <Icon icon={<MdKeyboardArrowRight size={36} />} />}
+      </Card>
     </button>
   );
 }
