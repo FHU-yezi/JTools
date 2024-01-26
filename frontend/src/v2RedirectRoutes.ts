@@ -1,4 +1,4 @@
-export const V2RedirectRoutes: { [orginal: string]: string } = {
+export const v2RedirectRoutes: { [orginal: string]: string } = {
   article_wordcloud_generator: "/article-wordcloud-generator",
   URL_scheme_convertor: "/URL-scheme-convertor",
   lottery_data_analyze: "/lottery-analyzer",
@@ -10,9 +10,9 @@ export const V2RedirectRoutes: { [orginal: string]: string } = {
   thanks: "/thanks",
 };
 
-export const V2UnavaliableRoutes: string[] = [
+export const v2UnavaliableRoutes: string[] = [
   "diszeroer_helper",
   "article_publish_time_viewer",
 ];
 
-export const V2UnimplementedRoutes: string[] = ["article_downloader"];
+export const v2UnimplementedRoutes: string[] = ["article_downloader"];

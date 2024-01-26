@@ -3,10 +3,10 @@ import { Column } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
 import { useLocation } from "wouter-preact";
 import {
-  V2RedirectRoutes,
-  V2UnavaliableRoutes,
-  V2UnimplementedRoutes,
-} from "../V2RedirectRoutes";
+  v2RedirectRoutes,
+  v2UnavaliableRoutes,
+  v2UnimplementedRoutes,
+} from "../v2RedirectRoutes";
 import ToolCard from "../components/ToolCard";
 import type { GetResponse } from "../models/status";
 import { tools } from "../routes";
@@ -20,19 +20,19 @@ function handleV2Redirect(
   appName: string,
   setLocation: (location: string) => void,
 ) {
-  if (appName in V2RedirectRoutes) {
-    umamiTrack("v2-redirect", { from: appName, to: V2RedirectRoutes[appName] });
-    setLocation(V2RedirectRoutes[appName]);
+  if (appName in v2RedirectRoutes) {
+    umamiTrack("v2-redirect", { from: appName, to: v2RedirectRoutes[appName] });
+    setLocation(v2RedirectRoutes[appName]);
     return;
   }
 
-  if (V2UnimplementedRoutes.includes(appName)) {
+  if (v2UnimplementedRoutes.includes(appName)) {
     umamiTrack("v2-redirect", { from: appName, to: "/v2-unimplemented" });
     setLocation("/v2-unimplemented");
     return;
   }
 
-  if (V2UnavaliableRoutes.includes(appName)) {
+  if (v2UnavaliableRoutes.includes(appName)) {
     umamiTrack("v2-redirect", { from: appName, to: "/v2-unavaliable" });
     setLocation("/v2-unavaliable");
   }
