@@ -35,7 +35,7 @@ function handleCheck() {
   });
 }
 
-function ResultBlock() {
+function Result() {
   const shouldFPRewardHighlight = result.value!.FPReward >= 35;
   const shouldnextCanRecommendDateHighlight = result.value!.nextCanRecommendDate
     ? parseTime(result.value!.nextCanRecommendDate) >= dayjs()
@@ -109,7 +109,7 @@ export default function LPRecommendChecker() {
         检测
       </SolidButton>
 
-      {result.value && <ResultBlock />}
+      {result.value && <Result />}
     </Column>
   );
 }
