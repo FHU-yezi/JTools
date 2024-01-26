@@ -1,19 +1,25 @@
 import { useDocumentTitle } from "@mantine/hooks";
 import {
+  Badge,
   Card,
   Column,
   ExternalLink,
   Grid,
+  Heading1,
+  Heading2,
   LargeText,
+  Row,
   SmallText,
   Text,
 } from "@sscreator/ui";
+import dayjs from "dayjs";
 import HeaderBlock from "../components/HeaderBlock";
 import {
   debugProjectRecords,
   opensourcePackages,
   v3BetaPaticipants,
 } from "../thanks.json";
+import { getDate } from "../utils/timeHelper";
 
 export default function ThanksPage() {
   // 设置页面标题
@@ -23,59 +29,59 @@ export default function ThanksPage() {
     <Column>
       <HeaderBlock toolName="鸣谢" />
 
-      <LargeText bold>「捉虫计划」反馈</LargeText>
-      <Grid cols="grid-cols-1 sm:grid-cols-2">
+      <Heading1>「捉虫计划」反馈</Heading1>
+      <Grid cols="grid-cols-1 md:grid-cols-2">
         {debugProjectRecords.reverse().map((item) => (
-          <Card>
-            <Column gap="gap-3">
-              <Column gap="gap-0.5">
-                <Text bold>{item.type}</Text>
-                <SmallText colorScheme="gray">{item.module}</SmallText>
-              </Column>
-              <Text>{item.desc}</Text>
-              <Text>
-                反馈者：
-                <ExternalLink href={item.user_url}>
-                  {item.user_name}
-                </ExternalLink>
-              </Text>
-              <Text>{`奖励：${item.reward} 简书贝`}</Text>
-            </Column>
+          <Card className="flex flex-col gap-3" withPadding>
+            <Row gap="gap-2" itemsCenter>
+              <Badge>{item.type}</Badge>
+              <LargeText bold>{item.module}</LargeText>
+            </Row>
+            <Text>{item.desc}</Text>
+            <Text>{`奖励：${item.reward} 简书贝`}</Text>
+            <Text colorScheme="gray">
+              By{" "}
+              <ExternalLink href={item.user_url}>{item.user_name}</ExternalLink>{" "}
+              @ {item.time}
+            </Text>
           </Card>
         ))}
       </Grid>
 
-      <LargeText bold>开源库</LargeText>
+      <Heading1>开源库</Heading1>
       <Grid cols="grid-cols-1 sm:grid-cols-2">
         {Object.entries(opensourcePackages).map(([partName, part]) => (
-          <Card>
-            <Column gap="gap-3">
-              <LargeText bold>{partName}</LargeText>
-              {part.map(({ name, desc, url }) => (
-                <Text>
-                  {desc}：<ExternalLink href={url}>{name}</ExternalLink>
-                </Text>
-              ))}
-            </Column>
+          <Card className="flex flex-col gap-2" withPadding>
+            <Heading2>{partName}</Heading2>
+            {part.map(({ name, desc, url }) => (
+              <Text>
+                {desc}：<ExternalLink href={url}>{name}</ExternalLink>
+              </Text>
+            ))}
           </Card>
         ))}
       </Grid>
 
       <Column>
-        <Column gap="gap-0.5">
-          <LargeText bold>v3 Beta 内测成员</LargeText>
-          <SmallText colorScheme="gray">排名不分先后</SmallText>
+        <Column gap="gap-1">
+          <Heading1>v3 Beta 内测成员</Heading1>
+          <Text colorScheme="gray">排名不分先后</Text>
         </Column>
-        {Object.entries(v3BetaPaticipants).map(([name, url]) => (
-          <Text>
-            {name}：<ExternalLink href={url}>{url}</ExternalLink>
-          </Text>
-        ))}
+        <Column gap="gap-2">
+          {Object.entries(v3BetaPaticipants).map(([name, url]) => (
+            <ExternalLink href={url}>{name}</ExternalLink>
+          ))}
+        </Column>
 
-        <div className="h-16" />
-        <LargeText className="text-center">
-          还有，感谢为简书生态奉献的你。
-        </LargeText>
+        <Column gap="gap-2">
+          <LargeText className="text-center">
+            感谢为简书生态奉献的你。
+          </LargeText>
+          <LargeText className="text-center">探索未知。</LargeText>
+          <SmallText className="text-center">
+            简书小工具集 @ {getDate(dayjs())}
+          </SmallText>
+        </Column>
       </Column>
     </Column>
   );
