@@ -20,20 +20,13 @@ import type {
   GetOnArticleRankRecordsResponse,
   GetOnArticleRankSummaryResponse,
 } from "../models/users";
+import { userUrlToSlug } from "../utils/jianshuHelper";
 import { sendRequest } from "../utils/sendRequest";
 import { getDate, parseTime } from "../utils/timeHelper";
 import { toastWarning } from "../utils/toastHelper";
 
 const userUrlOrName = signal("");
-const userSlug = computed(() => {
-  const matchResult = userUrlOrName.value.match(
-    "https://www.jianshu.com/u/(\\w{6,12})",
-  );
-  if (matchResult !== null && matchResult[1] !== undefined) {
-    return matchResult[1];
-  }
-  return undefined;
-});
+const userSlug = computed(() => userUrlToSlug(userUrlOrName.value));
 const userName = computed(() =>
   userSlug.value === undefined && userUrlOrName.value.length !== 0
     ? userUrlOrName.value.trim()

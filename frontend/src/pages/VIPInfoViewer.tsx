@@ -9,6 +9,7 @@ import {
   TextInput,
 } from "@sscreator/ui";
 import type { GetVIPInfoResponse } from "../models/users";
+import { userUrlToSlug } from "../utils/jianshuHelper";
 import { sendRequest } from "../utils/sendRequest";
 import {
   getDate,
@@ -22,15 +23,7 @@ import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";
 import VIPBadgeSilverURL from "/vip_badges/vip_badge_silver.png";
 
 const userUrl = signal("");
-const userSlug = computed(() => {
-  const matchResult = userUrl.value.match(
-    "https://www.jianshu.com/u/(\\w{6,12})",
-  );
-  if (matchResult !== null && matchResult[1] !== undefined) {
-    return matchResult[1];
-  }
-  return undefined;
-});
+const userSlug = computed(() => userUrlToSlug(userUrl.value));
 const isLoading = signal(false);
 const result = signal<GetVIPInfoResponse | undefined>(undefined);
 

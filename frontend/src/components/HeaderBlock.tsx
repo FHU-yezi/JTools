@@ -5,7 +5,7 @@ import {
   Row,
   TextButton,
 } from "@sscreator/ui";
-import { MdOutlineArrowBack } from "react-icons/md";
+import { MdKeyboardArrowLeft } from "react-icons/md";
 import { useLocation } from "wouter-preact";
 import SearchModal from "./SearchModal";
 import icon from "/favicon-64.png";
@@ -30,7 +30,7 @@ export default function HeaderBlock({ pageName, isMainPage = false }: Props) {
         ) : (
           <TextButton
             colorScheme="secondary"
-            leftIcon={<MdOutlineArrowBack size={22} />}
+            leftIcon={<MdKeyboardArrowLeft size={22} />}
             onClick={() => setLocation("/")}
           />
         )}

@@ -19,20 +19,13 @@ import type {
   GetLotteryWinRecordsRequest,
   GetLotteryWinRecordsResponse,
 } from "../models/users";
+import { userUrlToSlug } from "../utils/jianshuHelper";
 import { sendRequest } from "../utils/sendRequest";
 import { getDatetime, parseTime } from "../utils/timeHelper";
 import { toastWarning } from "../utils/toastHelper";
 
 const userUrl = signal("");
-const userSlug = computed(() => {
-  const matchResult = userUrl.value.match(
-    "https://www.jianshu.com/u/(\\w{6,12})",
-  );
-  if (matchResult !== null && matchResult[1] !== undefined) {
-    return matchResult[1];
-  }
-  return undefined;
-});
+const userSlug = computed(() => userUrlToSlug(userUrl.value));
 const rewards = signal<string[] | undefined>(undefined);
 const excludedAwards = signal<string[]>([]);
 const isLoading = signal(false);

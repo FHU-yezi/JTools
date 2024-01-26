@@ -8,20 +8,13 @@ import {
   TextInput,
 } from "@sscreator/ui";
 import type { GetLPRecommendCheckResponse } from "../models/articles";
+import { articleUrlToSlug } from "../utils/jianshuHelper";
 import { sendRequest } from "../utils/sendRequest";
 import { getDatetime, parseTime } from "../utils/timeHelper";
 import { toastWarning } from "../utils/toastHelper";
 
 const articleUrl = signal("");
-const articleSlug = computed(() => {
-  const matchResult = articleUrl.value!.match(
-    "https://www.jianshu.com/p/(\\w{12})",
-  );
-  if (matchResult !== null && matchResult[1] !== undefined) {
-    return matchResult[1];
-  }
-  return undefined;
-});
+const articleSlug = computed(() => articleUrlToSlug(articleUrl.value));
 const isLoading = signal(false);
 const result = signal<GetLPRecommendCheckResponse | undefined>(undefined);
 

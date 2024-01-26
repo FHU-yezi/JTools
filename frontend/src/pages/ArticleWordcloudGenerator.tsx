@@ -8,24 +8,17 @@ import {
 } from "@sscreator/ui";
 import SSWordcloud from "../components/charts/SSWordcloud";
 import type { GetWordFreqResponse } from "../models/articles";
+import { articleUrlToSlug } from "../utils/jianshuHelper";
 import { sendRequest } from "../utils/sendRequest";
 import { toastWarning } from "../utils/toastHelper";
 
 const articleUrl = signal("");
-const articleSlug = computed(() => {
-  const matchResult = articleUrl.value!.match(
-    "https://www.jianshu.com/p/(\\w{12})",
-  );
-  if (matchResult !== null && matchResult[1] !== undefined) {
-    return matchResult[1];
-  }
-  return undefined;
-});
+const articleSlug = computed(() => articleUrlToSlug(articleUrl.value));
 const isLoading = signal(false);
 const result = signal<GetWordFreqResponse | undefined>(undefined);
 
 function handleGenerate() {
-  if (articleSlug.value === undefined) {
+  if (!articleSlug.value) {
     toastWarning({ message: "请输入有效的文章链接" });
     return;
   }
@@ -57,9 +50,12 @@ export default function ArticleWordcloudGenerator() {
         label="文章链接"
         value={articleUrl}
         onEnter={handleGenerate}
+        errorMessage={
+          articleUrl.value && !articleSlug.value ? "链接无效" : undefined
+        }
       />
       <SolidButton onClick={handleGenerate} loading={isLoading.value} fullWidth>
-        查询
+        生成
       </SolidButton>
 
       {result.value !== undefined && (
