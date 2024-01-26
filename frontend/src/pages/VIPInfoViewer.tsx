@@ -1,8 +1,8 @@
 import { computed, signal } from "@preact/signals";
 import {
-  Badge,
   Column,
   ExternalLink,
+  LargeText,
   Row,
   SolidButton,
   Text,
@@ -52,6 +52,49 @@ function handleQuery() {
   });
 }
 
+function Result() {
+  if (!result.value) {
+    return null;
+  }
+
+  const expireDate = result.value.expireDate
+    ? parseTime(result.value.expireDate)
+    : null;
+
+  return (
+    <>
+      <Column gap="gap-1">
+        <Text colorScheme="gray">用户</Text>
+        <ExternalLink className="text-lg" href={userUrl.value}>
+          {result.value.userName}
+        </ExternalLink>
+      </Column>
+      <Column gap="gap-1">
+        <Text colorScheme="gray">会员等级</Text>
+        <Row gap="gap-1" itemsCenter>
+          <img
+            className="h-5 w-5"
+            src={VIPTypeToBadgeImageURL[result.value.type]}
+            alt={`${result.value.type}会员图标`}
+          />
+          <LargeText>
+            {result.value.isVIP ? result.value.type : "无会员"}
+          </LargeText>
+        </Row>
+      </Column>
+      {result.value.isVIP && (
+        <Column gap="gap-1">
+          <Text colorScheme="gray">会员到期时间</Text>
+          <LargeText>{getDate(expireDate!)}</LargeText>
+          <Text colorScheme="gray">
+            {getHumanReadableTimeDelta(expireDate!)}
+          </Text>
+        </Column>
+      )}
+    </>
+  );
+}
+
 export default function VIPInfoViewer() {
   return (
     <Column>
@@ -60,48 +103,13 @@ export default function VIPInfoViewer() {
         label="用户个人主页链接"
         value={userUrl}
         onEnter={handleQuery}
+        selectAllOnFocus
       />
       <SolidButton onClick={handleQuery} loading={isLoading.value} fullWidth>
         查询
       </SolidButton>
 
-      {result.value !== undefined && (
-        <>
-          <Text>
-            昵称：
-            <ExternalLink href={userUrl.value}>
-              {result.value.userName}
-            </ExternalLink>
-          </Text>
-
-          <Text>
-            会员等级：
-            {result.value.isVIP ? (
-              <Badge colorScheme="gray">
-                <Row className="!flex-inline" gap="gap-1" itemsCenter>
-                  <img
-                    className="inline h-4 w-4 rounded-full"
-                    src={VIPTypeToBadgeImageURL[result.value.type]}
-                    alt={`${result.value.type} 徽章图标`}
-                  />
-                  <Text inline>{result.value.type}</Text>
-                </Row>
-              </Badge>
-            ) : (
-              <Text bold inline>
-                无会员
-              </Text>
-            )}
-          </Text>
-          {result.value.isVIP && (
-            <Text>
-              到期时间：
-              {getDate(parseTime(result.value.expireDate))}（
-              {getHumanReadableTimeDelta(parseTime(result.value.expireDate))}）
-            </Text>
-          )}
-        </>
-      )}
+      {result.value && <Result />}
     </Column>
   );
 }

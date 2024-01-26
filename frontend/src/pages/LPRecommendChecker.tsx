@@ -36,56 +36,54 @@ function handleCheck() {
 }
 
 function Result() {
-  const shouldFPRewardHighlight = result.value!.FPReward >= 35;
-  const shouldnextCanRecommendDateHighlight = result.value!.nextCanRecommendDate
+  if (!result.value) {
+    return null;
+  }
+
+  const shouldFPRewardHighlight = result.value.FPReward >= 35;
+  const shouldnextCanRecommendDateHighlight = result.value.nextCanRecommendDate
     ? parseTime(result.value!.nextCanRecommendDate) >= dayjs()
     : false;
 
   return (
-    result.value && (
-      <>
-        <LargeText
-          colorScheme={result.value.canRecommendNow ? "success" : "danger"}
-          bold
-        >
-          {result.value.canRecommendNow ? "可推荐" : "不可推荐"}
+    <>
+      <LargeText
+        colorScheme={result.value.canRecommendNow ? "success" : "danger"}
+        bold
+      >
+        {result.value.canRecommendNow ? "可推荐" : "不可推荐"}
+      </LargeText>
+      <Column gap="gap-1">
+        <Text colorScheme="gray">文章</Text>
+        <ExternalLink className="text-lg" href={articleUrl.value}>
+          {result.value.articleTitle}
+        </ExternalLink>
+      </Column>
+      <Column gap="gap-1">
+        <Text colorScheme={shouldFPRewardHighlight ? "danger" : "gray"}>
+          获钻量
+        </Text>
+        <LargeText colorScheme={shouldFPRewardHighlight ? "danger" : undefined}>
+          {result.value.FPReward}
         </LargeText>
-        <Column gap="gap-2">
-          <Text colorScheme="gray">文章</Text>
-          <ExternalLink className="text-lg" href={articleUrl.value}>
-            {result.value.articleTitle}
-          </ExternalLink>
-        </Column>
-        <Column gap="gap-2">
-          <Text colorScheme={shouldFPRewardHighlight ? "danger" : "gray"}>
-            获钻量
-          </Text>
-          <LargeText
-            colorScheme={shouldFPRewardHighlight ? "danger" : undefined}
-          >
-            {result.value.FPReward}
-          </LargeText>
-        </Column>
-        <Column gap="gap-2">
-          <Text
-            colorScheme={
-              shouldnextCanRecommendDateHighlight ? "danger" : "gray"
-            }
-          >
-            作者下次可推时间
-          </Text>
-          <LargeText
-            colorScheme={
-              shouldnextCanRecommendDateHighlight ? "danger" : undefined
-            }
-          >
-            {result.value.nextCanRecommendDate
-              ? getDate(parseTime(result.value.nextCanRecommendDate))
-              : "作者未上过榜"}
-          </LargeText>
-        </Column>
-      </>
-    )
+      </Column>
+      <Column gap="gap-1">
+        <Text
+          colorScheme={shouldnextCanRecommendDateHighlight ? "danger" : "gray"}
+        >
+          作者下次可推时间
+        </Text>
+        <LargeText
+          colorScheme={
+            shouldnextCanRecommendDateHighlight ? "danger" : undefined
+          }
+        >
+          {result.value.nextCanRecommendDate
+            ? getDate(parseTime(result.value.nextCanRecommendDate))
+            : "作者未上过榜"}
+        </LargeText>
+      </Column>
+    </>
   );
 }
 
