@@ -1,6 +1,5 @@
 import { useComputed, useSignal } from "@preact/signals";
 import { Column, LargeText, Modal, TextButton, TextInput } from "@sscreator/ui";
-import { useEffect, useRef } from "preact/hooks";
 import { MdSearch } from "react-icons/md";
 import { routes } from "../routes";
 import { removeSpace } from "../utils/textHelper";
@@ -8,25 +7,18 @@ import umamiTrack from "../utils/umamiTrack";
 import ToolCard from "./ToolCard";
 
 export default function SearchModal() {
-  const searchModalOpen = useSignal(false);
-  const textInputContent = useSignal("");
+  const isSearchModalOpened = useSignal(false);
+  const inputContent = useSignal("");
   const matchRouteItems = useComputed(() =>
-    textInputContent.value === ""
-      ? routes.slice(0, 5)
-      : routes
+    inputContent.value !== ""
+      ? routes
           .filter((item) =>
             removeSpace(item.toolName).includes(
-              removeSpace(textInputContent.value),
+              removeSpace(inputContent.value),
             ),
           )
-          .slice(0, 5),
-  );
-  const textInputRef = useRef<HTMLInputElement>(null);
-
-  // Modal 展开时聚焦到搜索框
-  useEffect(
-    () => (searchModalOpen.value ? textInputRef.current?.focus() : undefined),
-    [searchModalOpen.value],
+          .slice(0, 5)
+      : [],
   );
 
   return (
@@ -36,22 +28,21 @@ export default function SearchModal() {
           <MdSearch className="text-zinc-950 dark:text-zinc-50" size={24} />
         }
         onClick={() => {
-          searchModalOpen.value = true;
+          isSearchModalOpened.value = true;
           umamiTrack("click-search-button");
         }}
         aria-label="搜索"
       />
 
-      <Modal open={searchModalOpen} title="搜索">
+      <Modal open={isSearchModalOpened} title="搜索小工具">
         <Column>
           <TextInput
             id="tool-name"
-            value={textInputContent}
+            value={inputContent}
             placeholder="输入工具名称..."
-            ref={textInputRef}
           />
 
-          {matchRouteItems.value.length !== 0 ? (
+          {inputContent.value === "" || matchRouteItems.value.length !== 0 ? (
             matchRouteItems.value.map((item) => (
               // 此处的 ToolCard 不展示小工具降级或不可用状态
               <ToolCard
@@ -63,7 +54,7 @@ export default function SearchModal() {
               />
             ))
           ) : (
-            <LargeText>无结果</LargeText>
+            <LargeText className="text-center">无结果</LargeText>
           )}
         </Column>
       </Modal>
