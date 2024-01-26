@@ -64,7 +64,6 @@ export default function ArticleWordcloudGenerator() {
 
       {result.value !== undefined && (
         <>
-          {/* TODO: truncate */}
           <Text>
             文章标题：
             <ExternalLink href={articleUrl.value}>

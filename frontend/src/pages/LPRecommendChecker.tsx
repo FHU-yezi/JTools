@@ -60,7 +60,6 @@ export default function LPRecommendChecker() {
           >
             {result.value.canRecommendNow ? "可推荐" : "不可推荐"}
           </LargeText>
-          {/* TODO: truncate */}
           <Text>
             文章：
             <ExternalLink href={articleUrl.value}>

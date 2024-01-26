@@ -1,4 +1,4 @@
-import { LoadingPage, useColorScheme } from "@sscreator/ui";
+import { LoadingPage } from "@sscreator/ui";
 import "@unocss/reset/tailwind.css";
 import type { VNode } from "preact";
 import { StrictMode, Suspense, lazy, render } from "preact/compat";
@@ -27,8 +27,6 @@ registerSW({ immediate: true });
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 
 export default function Main() {
-  const { colorScheme } = useColorScheme();
-
   return (
     <StrictMode>
       <ErrorBoundary FallbackComponent={ErrorFallback}>
@@ -54,20 +52,9 @@ export default function Main() {
             </Suspense>
           </Route>
         </Switch>
+
+        <Toaster />
       </ErrorBoundary>
-
-      <Toaster
-        toastOptions={{
-          style: {
-            background: colorScheme === "dark" ? "#3f3f46" : undefined,
-            color: colorScheme === "dark" ? "#f4f4f5" : undefined,
-          },
-
-          blank: {
-            duration: 2000,
-          },
-        }}
-      />
     </StrictMode>
   );
 }
