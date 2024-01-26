@@ -11,11 +11,11 @@ import SearchModal from "./SearchModal";
 import icon from "/favicon-64.png";
 
 interface Props {
-  toolName: string;
+  pageName?: string;
   isMainPage?: boolean;
 }
 
-export default function HeaderBlock({ toolName, isMainPage = false }: Props) {
+export default function HeaderBlock({ pageName, isMainPage = false }: Props) {
   const [, setLocation] = useLocation();
 
   return (
@@ -35,7 +35,7 @@ export default function HeaderBlock({ toolName, isMainPage = false }: Props) {
           />
         )}
         <LargeText className="overflow-x-hidden" bold nowrap>
-          {toolName}
+          {pageName ?? "简书小工具集"}
         </LargeText>
       </Row>
 

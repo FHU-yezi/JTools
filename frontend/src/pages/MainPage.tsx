@@ -1,4 +1,3 @@
-import { useDocumentTitle } from "@mantine/hooks";
 import { batch, signal } from "@preact/signals";
 import { Column } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
@@ -8,10 +7,9 @@ import {
   V2UnavaliableRoutes,
   V2UnimplementedRoutes,
 } from "../V2RedirectRoutes";
-import HeaderBlock from "../components/HeaderBlock";
 import ToolCard from "../components/ToolCard";
 import type { GetResponse } from "../models/status";
-import { routes } from "../routes";
+import { tools } from "../routes";
 import { sendRequest } from "../utils/sendRequest";
 import umamiTrack from "../utils/umamiTrack";
 
@@ -43,9 +41,6 @@ function handleV2Redirect(
 export default function MainPage() {
   const [, setLocation] = useLocation();
 
-  // 设置页面标题
-  useDocumentTitle("简书小工具集");
-
   useEffect(() => {
     const queryArguments = new URLSearchParams(window.location.search);
     const V2AppName = queryArguments.get("app");
@@ -67,20 +62,17 @@ export default function MainPage() {
   }, []);
 
   return (
-    <>
-      <HeaderBlock toolName="简书小工具集" isMainPage />
-      <Column>
-        {routes.map((item) => (
-          <ToolCard
-            key={item.toolName}
-            toolName={item.toolName}
-            path={item.path}
-            description={item.description}
-            downgraded={downgradedTools.value.includes(item.path.slice(1))}
-            unavaliable={unavaliableTools.value.includes(item.path.slice(1))}
-          />
-        ))}
-      </Column>
-    </>
+    <Column>
+      {tools.map((item) => (
+        <ToolCard
+          key={item.pageName}
+          toolName={item.pageName}
+          path={item.path}
+          description={item.description}
+          downgraded={downgradedTools.value.includes(item.path.slice(1))}
+          unavaliable={unavaliableTools.value.includes(item.path.slice(1))}
+        />
+      ))}
+    </Column>
   );
 }

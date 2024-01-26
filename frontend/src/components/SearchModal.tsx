@@ -1,7 +1,7 @@
 import { useComputed, useSignal } from "@preact/signals";
 import { Column, LargeText, Modal, TextButton, TextInput } from "@sscreator/ui";
 import { MdSearch } from "react-icons/md";
-import { routes } from "../routes";
+import { tools } from "../routes";
 import { removeSpace } from "../utils/textHelper";
 import umamiTrack from "../utils/umamiTrack";
 import ToolCard from "./ToolCard";
@@ -11,9 +11,9 @@ export default function SearchModal() {
   const inputContent = useSignal("");
   const matchRouteItems = useComputed(() =>
     inputContent.value !== ""
-      ? routes
+      ? tools
           .filter((item) =>
-            removeSpace(item.toolName).includes(
+            removeSpace(item.pageName).includes(
               removeSpace(inputContent.value),
             ),
           )
@@ -46,7 +46,7 @@ export default function SearchModal() {
             matchRouteItems.value.map((item) => (
               // 此处的 ToolCard 不展示小工具降级或不可用状态
               <ToolCard
-                toolName={item.toolName}
+                toolName={item.pageName}
                 description={item.description}
                 path={item.path}
                 downgraded={false}

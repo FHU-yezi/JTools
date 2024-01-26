@@ -5,7 +5,7 @@ import { useLocation } from "wouter-preact";
 interface Props {
   toolName: string;
   path: string;
-  description: string;
+  description?: string;
   downgraded: boolean;
   unavaliable: boolean;
 }

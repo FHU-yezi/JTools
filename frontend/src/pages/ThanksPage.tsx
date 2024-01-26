@@ -27,7 +27,7 @@ export default function ThanksPage() {
 
   return (
     <Column>
-      <HeaderBlock toolName="鸣谢" />
+      <HeaderBlock pageName="鸣谢" />
 
       <Heading1>「捉虫计划」反馈</Heading1>
       <Grid cols="grid-cols-1 md:grid-cols-2">

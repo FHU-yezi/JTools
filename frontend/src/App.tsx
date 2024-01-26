@@ -10,12 +10,8 @@ import { registerSW } from "virtual:pwa-register";
 import type { RouteProps } from "wouter-preact";
 import { Route, Switch } from "wouter-preact";
 import ErrorFallback from "./components/ErrorFallback";
-import FooterBlock from "./components/FooterBlock";
-import ToolWrapper from "./components/ToolWrapper";
+import PageWrapper from "./components/PageWrapper";
 import MainPage from "./pages/MainPage";
-import ThanksPage from "./pages/ThanksPage";
-import V2UnavaliablePage from "./pages/V2UnavaliablePage";
-import V2UnimplementedPage from "./pages/V2UnimplementedPage";
 import { routes } from "./routes";
 
 import "@sscreator/ui/dist/sscreator-ui.css";
@@ -36,44 +32,28 @@ export default function Main() {
   return (
     <StrictMode>
       <ErrorBoundary FallbackComponent={ErrorFallback}>
-        <div className="mx-auto my-7 max-w-4xl min-h-screen w-[90vw]">
-          <Switch>
-            <Route path="/">
-              <MainPage />
-            </Route>
-            {
-              routes.map((item) => (
-                <Route key={item.path} path={item.path}>
-                  <ToolWrapper
-                    toolName={item.toolName}
-                    Component={item.component}
-                  />
-                </Route>
-              )) as unknown as VNode<RouteProps<undefined, string>>
-            }
-            <Route path="/thanks">
-              <Suspense fallback={<LoadingPage />}>
-                <ThanksPage />
-              </Suspense>
-            </Route>
-            <Route path="/v2-unimplemented">
-              <Suspense fallback={<LoadingPage />}>
-                <V2UnimplementedPage />
-              </Suspense>
-            </Route>
-            <Route path="/v2-unavaliable">
-              <Suspense fallback={<LoadingPage />}>
-                <V2UnavaliablePage />
-              </Suspense>
-            </Route>
-            <Route>
-              <Suspense fallback={<LoadingPage />}>
-                <NotFoundPage />
-              </Suspense>
-            </Route>
-          </Switch>
-        </div>
-        <FooterBlock />
+        <Switch>
+          <Route path="/">
+            <PageWrapper Component={MainPage} disableToolMetaInfo isMainPage />
+          </Route>
+          {
+            routes.map((item) => (
+              <Route key={item.path} path={item.path}>
+                <PageWrapper
+                  pageName={item.pageName}
+                  Component={item.component}
+                  disableToolMetaInfo={!item.isTool}
+                  hideDecorations={item.hideDecorations}
+                />
+              </Route>
+            )) as unknown as VNode<RouteProps<undefined, string>>
+          }
+          <Route>
+            <Suspense fallback={<LoadingPage />}>
+              <NotFoundPage />
+            </Suspense>
+          </Route>
+        </Switch>
       </ErrorBoundary>
 
       <Toaster
