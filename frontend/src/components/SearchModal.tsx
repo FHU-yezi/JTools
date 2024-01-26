@@ -32,9 +32,8 @@ export default function SearchModal() {
   return (
     <>
       <TextButton
-        colorScheme="secondary"
         leftIcon={
-          <MdSearch className="text-zinc-500 dark:text-zinc-300" size={22} />
+          <MdSearch className="text-zinc-950 dark:text-zinc-50" size={24} />
         }
         onClick={() => {
           searchModalOpen.value = true;

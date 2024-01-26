@@ -27,7 +27,7 @@ import { ToolStatusEnum } from "../models/status";
 import { getToolSlug } from "../utils/URLHelper";
 import { sendRequest } from "../utils/sendRequest";
 import { getDateTimeWithoutSecond, parseTime } from "../utils/timeHelper";
-import Header from "./Header";
+import HeaderBlock from "./HeaderBlock";
 
 interface Props {
   Component(): JSX.Element;
@@ -66,7 +66,7 @@ export default function ToolWrapper({ Component, toolName }: Props) {
 
   return (
     <>
-      <Header toolName={toolName} />
+      <HeaderBlock toolName={toolName} />
       {toolStatus.value !== undefined ? (
         <Column>
           <Grid cols="grid-cols-1 sm:grid-cols-2" gap="gap-2">

@@ -8,7 +8,7 @@ import {
   V2UnavaliableRoutes,
   V2UnimplementedRoutes,
 } from "../V2RedirectRoutes";
-import Header from "../components/Header";
+import HeaderBlock from "../components/HeaderBlock";
 import ToolCard from "../components/ToolCard";
 import type { GetResponse } from "../models/status";
 import { routes } from "../routes";
@@ -68,7 +68,7 @@ export default function MainPage() {
 
   return (
     <>
-      <Header toolName="简书小工具集" hideBackArrow showIcon />
+      <HeaderBlock toolName="简书小工具集" isMainPage />
       <Column>
         {routes.map((item) => (
           <ToolCard

@@ -10,7 +10,7 @@ import { registerSW } from "virtual:pwa-register";
 import type { RouteProps } from "wouter-preact";
 import { Route, Switch } from "wouter-preact";
 import ErrorFallback from "./components/ErrorFallback";
-import Footer from "./components/Footer";
+import FooterBlock from "./components/FooterBlock";
 import ToolWrapper from "./components/ToolWrapper";
 import MainPage from "./pages/MainPage";
 import ThanksPage from "./pages/ThanksPage";
@@ -73,7 +73,7 @@ export default function Main() {
             </Route>
           </Switch>
         </div>
-        <Footer />
+        <FooterBlock />
       </ErrorBoundary>
 
       <Toaster

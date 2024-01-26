@@ -8,7 +8,7 @@ import {
   SmallText,
   Text,
 } from "@sscreator/ui";
-import Header from "../components/Header";
+import HeaderBlock from "../components/HeaderBlock";
 import {
   debugProjectRecords,
   opensourcePackages,
@@ -21,7 +21,7 @@ export default function ThanksPage() {
 
   return (
     <Column>
-      <Header toolName="鸣谢" />
+      <HeaderBlock toolName="鸣谢" />
 
       <LargeText bold>「捉虫计划」反馈</LargeText>
       <Grid cols="grid-cols-1 sm:grid-cols-2">
