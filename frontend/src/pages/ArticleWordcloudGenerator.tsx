@@ -6,7 +6,7 @@ import {
   Text,
   TextInput,
 } from "@sscreator/ui";
-import SSWordcloud from "../components/charts/SSWordcloud";
+import SSWordCloud from "../components/charts/SSWordcloud";
 import type { GetWordFreqResponse } from "../models/articles";
 import { articleUrlToSlug } from "../utils/jianshuHelper";
 import { sendRequest } from "../utils/sendRequest";
@@ -31,13 +31,25 @@ function handleGenerate() {
   });
 }
 
-function Wordcloud() {
+function WordCloud() {
   return (
-    <SSWordcloud
-      data={Object.entries(result.value!.wordFreq).map(([text, value]) => ({
-        text,
-        value,
-      }))}
+    <SSWordCloud
+      className="aspect-video max-w-2xl"
+      options={{
+        series: [
+          {
+            type: "wordCloud",
+            data: Object.entries(result.value!.wordFreq).map(
+              ([word, freq]) => ({ name: word, value: freq }),
+            ),
+            textStyle: {
+              color: "#EA6F5A",
+            },
+            width: "100%",
+            height: "100%",
+          },
+        ],
+      }}
     />
   );
 }
@@ -66,7 +78,7 @@ export default function ArticleWordcloudGenerator() {
               {result.value.title}
             </ExternalLink>
           </Text>
-          <Wordcloud />
+          <WordCloud />
         </>
       )}
     </Column>
