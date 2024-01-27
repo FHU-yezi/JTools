@@ -1,7 +1,6 @@
-import { Text, getColorScheme } from "@sscreator/ui";
+import { Icon, Text } from "@sscreator/ui";
 import { toast } from "react-hot-toast";
-import { IoMdCloseCircle } from "react-icons/io";
-import { MdCheckCircle, MdOutlineError } from "react-icons/md";
+import { MdCheck, MdClose, MdWarningAmber } from "react-icons/md";
 
 export { Toaster } from "react-hot-toast";
 
@@ -11,49 +10,43 @@ interface ToastFunctionProps {
 }
 
 export function toastSuccess({ message, duration = 2000 }: ToastFunctionProps) {
-  const colorScheme = getColorScheme();
+  toast(
+    <Text colorScheme="success" bold>
+      {message}
+    </Text>,
+    {
+      duration,
+      icon: <Icon colorScheme="success" icon={<MdCheck />} />,
 
-  toast(<Text>{message}</Text>, {
-    duration,
-    icon: (
-      <Text colorScheme="success">
-        <MdCheckCircle size={18} />
-      </Text>
-    ),
-    style: {
-      backgroundColor: colorScheme === "dark" ? "#27272a" : undefined,
+      className: "dark:bg-zinc-900",
     },
-  });
+  );
 }
 
 export function toastWarning({ message, duration = 4000 }: ToastFunctionProps) {
-  const colorScheme = getColorScheme();
+  toast(
+    <Text colorScheme="warning" bold>
+      {message}
+    </Text>,
+    {
+      duration,
+      icon: <Icon colorScheme="warning" icon={<MdWarningAmber />} />,
 
-  toast(<Text>{message}</Text>, {
-    duration,
-    icon: (
-      <Text colorScheme="warning">
-        <MdOutlineError size={18} />
-      </Text>
-    ),
-    style: {
-      backgroundColor: colorScheme === "dark" ? "#27272a" : undefined,
+      className: "dark:bg-zinc-900",
     },
-  });
+  );
 }
 
 export function toastError({ message, duration = 4000 }: ToastFunctionProps) {
-  const colorScheme = getColorScheme();
+  toast(
+    <Text colorScheme="danger" bold>
+      {message}
+    </Text>,
+    {
+      duration,
+      icon: <Icon colorScheme="danger" icon={<MdClose />} />,
 
-  toast(<Text>{message}</Text>, {
-    duration,
-    icon: (
-      <Text colorScheme="danger">
-        <IoMdCloseCircle size={18} />
-      </Text>
-    ),
-    style: {
-      backgroundColor: colorScheme === "dark" ? "#27272a" : undefined,
+      className: "dark:bg-zinc-900",
     },
-  });
+  );
 }
