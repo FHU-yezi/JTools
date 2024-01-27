@@ -1,4 +1,5 @@
 import { useSignal } from "@preact/signals";
+import { useColorScheme } from "@sscreator/ui";
 import clsx from "clsx";
 import type { PieSeriesOption } from "echarts/charts";
 import { PieChart } from "echarts/charts";
@@ -11,7 +12,6 @@ import type { ComposeOption } from "echarts/core";
 import * as echarts from "echarts/core";
 import { SVGRenderer } from "echarts/renderers";
 import { useEffect, useRef } from "preact/hooks";
-import { useColorScheme } from "../../utils/colorSchemeHelper";
 
 echarts.use([PieChart, LegendComponent, TooltipComponent, SVGRenderer]);
 

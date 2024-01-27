@@ -1,4 +1,5 @@
 import { useSignal } from "@preact/signals";
+import { useColorScheme } from "@sscreator/ui";
 import clsx from "clsx";
 import "echarts-wordcloud";
 import { GridComponent } from "echarts/components";
@@ -6,7 +7,6 @@ import type { ComposeOption } from "echarts/core";
 import * as echarts from "echarts/core";
 import type { WordCloudSeriesOption } from "echarts/types/dist/echarts";
 import { useEffect, useRef } from "preact/hooks";
-import { useColorScheme } from "../../utils/colorSchemeHelper";
 
 echarts.use([GridComponent]);
 
