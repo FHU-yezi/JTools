@@ -1,3 +1,16 @@
+export function getDefaultOptions(hasLegend: boolean) {
+  return {
+    // 移除边距
+    grid: {
+      top: hasLegend ? "15%" : 10,
+      bottom: 0,
+      left: 0,
+      right: 0,
+      containLabel: true,
+    },
+  };
+}
+
 export function getLoadingConfig(colorScheme: "light" | "dark") {
   return {
     text: "加载中",

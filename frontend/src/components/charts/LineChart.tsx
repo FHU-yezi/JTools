@@ -13,13 +13,13 @@ import {
   LegendComponent,
   TooltipComponent,
 } from "echarts/components";
-import type { ComposeOption } from "echarts/core";
-import * as echarts from "echarts/core";
+import type { ComposeOption, EChartsType } from "echarts/core";
+import { init as echartsInit, use as echartsUse } from "echarts/core";
 import { SVGRenderer } from "echarts/renderers";
 import { useEffect, useRef } from "preact/hooks";
-import { getLoadingConfig } from "./base";
+import { getDefaultOptions, getLoadingConfig } from "./base";
 
-echarts.use([
+echartsUse([
   EchartsLineChart,
   GridComponent,
   LegendComponent,
@@ -47,60 +47,51 @@ export default function LineChart({
 }: Props) {
   const { colorScheme } = useColorScheme();
 
-  const echartObject = useSignal<echarts.ECharts | undefined>(undefined);
+  const chartEl = useRef<HTMLDivElement>(null);
+  const chartObj = useSignal<EChartsType | null>(null);
+  const observer = new ResizeObserver(() => chartObj.value!.resize());
 
-  const chartDivRef = useRef<HTMLDivElement>(null);
-
-  const observer = new ResizeObserver(() => echartObject.value!.resize());
-
-  const optionsToApply = {
+  const finalOptions: OptionType = {
+    ...getDefaultOptions(Boolean(options.legend)),
     ...options,
-    // 透明背景
-    backgroundColor: "",
-    // 移除边距
-    grid: {
-      top: options.legend ? "15%" : 20,
-      bottom: 0,
-      left: 0,
-      right: 0,
-      containLabel: true,
-    },
   };
 
+  // 挂载 / 颜色主题改变时时初始化图表
   useEffect(() => {
-    if (echartObject.value === undefined && chartDivRef.current !== null) {
-      echartObject.value = echarts.init(chartDivRef.current);
-      echartObject.value.setOption(optionsToApply);
-      observer.observe(chartDivRef.current);
-
-      return () => {
-        echartObject.value!.dispose();
-        observer.unobserve(chartDivRef.current!);
-      };
+    if (chartObj.value) {
+      chartObj.value.dispose();
     }
-  }, []);
+    chartObj.value = echartsInit(
+      chartEl.current,
+      colorScheme === "dark" ? "dark" : undefined,
+    );
+    chartObj.value.setOption(finalOptions);
 
-  useEffect(() => {
-    if (echartObject.value !== undefined && chartDivRef.current !== null) {
-      echartObject.value.dispose();
-      echartObject.value = echarts.init(
-        chartDivRef.current,
-        colorScheme === "dark" ? "dark" : undefined,
-      );
-      echartObject.value.setOption(optionsToApply);
-    }
+    return () => {
+      chartObj.value!.dispose();
+    };
   }, [colorScheme]);
 
+  // 使图表跟随页面缩放自动调整大小
   useEffect(() => {
-    if (echartObject.value !== undefined) {
+    if (chartEl.current) {
+      observer.observe(chartEl.current!);
+    }
+
+    return () => observer.unobserve(chartEl.current!);
+  }, []);
+
+  // 数据就绪状态变化时更改加载状态
+  useEffect(() => {
+    if (chartObj.value) {
       if (!dataReady) {
-        echartObject.value.showLoading(getLoadingConfig(colorScheme));
+        chartObj.value.showLoading(getLoadingConfig(colorScheme));
       } else {
-        echartObject.value.setOption(optionsToApply);
-        echartObject.value.hideLoading();
+        chartObj.value.setOption(finalOptions);
+        chartObj.value.hideLoading();
       }
     }
   }, [dataReady]);
 
-  return <div className={clsx(className, "mx-auto")} ref={chartDivRef} />;
+  return <div className={clsx(className, "mx-auto")} ref={chartEl} />;
 }
