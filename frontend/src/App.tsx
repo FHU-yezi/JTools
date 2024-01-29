@@ -2,12 +2,10 @@ import { LoadingPage } from "@sscreator/ui";
 import "@unocss/reset/tailwind.css";
 import type { VNode } from "preact";
 import { StrictMode, Suspense, lazy, render } from "preact/compat";
-import { ErrorBoundary } from "react-error-boundary";
 import { Toaster } from "react-hot-toast";
 import { install } from "resize-observer";
 import "uno.css";
 import { registerSW } from "virtual:pwa-register";
-import type { RouteProps } from "wouter-preact";
 import { Route, Switch } from "wouter-preact";
 import ErrorFallback from "./components/ErrorFallback";
 import PageWrapper from "./components/PageWrapper";
@@ -29,7 +27,7 @@ const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 export default function Main() {
   return (
     <StrictMode>
-      <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <ErrorFallback>
         <Switch>
           <Route path="/">
             <PageWrapper Component={MainPage} disableToolMetaInfo isMainPage />
@@ -44,7 +42,7 @@ export default function Main() {
                   hideDecorations={item.hideDecorations}
                 />
               </Route>
-            )) as unknown as VNode<RouteProps<undefined, string>>
+            )) as unknown as VNode
           }
           <Route>
             <Suspense fallback={<LoadingPage />}>
@@ -54,7 +52,7 @@ export default function Main() {
         </Switch>
 
         <Toaster />
-      </ErrorBoundary>
+      </ErrorFallback>
     </StrictMode>
   );
 }

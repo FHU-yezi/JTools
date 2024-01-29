@@ -9,15 +9,22 @@ import {
   Text,
   TextButton,
 } from "@sscreator/ui";
+import type { ComponentChildren, VNode } from "preact";
+import { useErrorBoundary } from "preact/hooks";
 import { VscBracketError } from "react-icons/vsc";
 import { useLocation } from "wouter-preact";
 
 interface Props {
-  error: Error;
+  children: ComponentChildren;
 }
 
-export default function ErrorFallback({ error }: Props) {
+export default function ErrorFallback({ children }: Props) {
+  const [error]: [Error, any] = useErrorBoundary();
   const [location] = useLocation();
+
+  if (!error) {
+    return children as VNode;
+  }
 
   return (
     <Center className="mx-auto h-screen">
