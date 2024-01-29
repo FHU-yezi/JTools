@@ -1,7 +1,8 @@
-import { signal } from "@preact/signals";
+import { useSignal } from "@preact/signals";
 import {
   Column,
   ExternalLink,
+  Heading1,
   LargeText,
   LoadingArea,
   Row,
@@ -14,91 +15,24 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  Text,
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
 import SSLineChart from "../components/charts/SSLineChart";
 import type {
-  GetRecordsItem,
   GetRecordsRequest,
   GetRecordsResponse,
   GetRewardWinsHistoryRequest,
   GetRewardWinsHistoryResponse,
   GetSummaryRequest,
   GetSummaryResponse,
-  GetSummaryRewardItem,
 } from "../models/lottery";
 import { roundFloat } from "../utils/numberHelper";
 import { sendRequest } from "../utils/sendRequest";
-import { parseTime } from "../utils/timeHelper";
+import { getHumanReadableTimeDelta, parseTime } from "../utils/timeHelper";
 
-const summaryTimeRangeSwitchData = [
-  { label: "1 天", value: "1d" },
-  { label: "7 天", value: "7d" },
-  { label: "30 天", value: "30d" },
-  { label: "全部", value: "all" },
-];
-const rewardWinsHistoryTimeRangeSwitchData = [
-  { label: "1 天", value: "1d" },
-  { label: "30 天", value: "30d" },
-  { label: "60 天", value: "60d" },
-];
-
-type SummaryTimeRangeType = "1d" | "7d" | "30d" | "all";
-type RewardWinsHistoryTimeRangeType = "1d" | "30d" | "60d";
-
-const summaryTimeRange = signal<SummaryTimeRangeType>("1d");
-const summaryResult = signal<GetSummaryRewardItem[] | undefined>(undefined);
-const rewardWinsHistoryTimeRange = signal<RewardWinsHistoryTimeRangeType>("1d");
-const rewardWinsHistoryResult = signal<Record<number, number> | undefined>(
-  undefined,
-);
-const recentRecords = signal<GetRecordsItem[] | undefined>(undefined);
-
-const isRewardWinsHistoryTimeRangeSelectDropdownOpened = signal(false);
-const isSummaryTimeRangeSelectDropdownOpened = signal(false);
-
-function handleSummaryFetch() {
-  sendRequest<GetSummaryRequest, GetSummaryResponse>({
-    method: "GET",
-    endpoint: "/v1/lottery/summary",
-    queryArgs: {
-      range: summaryTimeRange.value,
-    },
-    onSuccess: ({ data }) => (summaryResult.value = data.rewards),
-  });
-}
-
-function handleRewardWinsHistoryFetch() {
-  sendRequest<GetRewardWinsHistoryRequest, GetRewardWinsHistoryResponse>({
-    method: "GET",
-    endpoint: "/v1/lottery/reward-wins-history",
-    queryArgs: {
-      range: rewardWinsHistoryTimeRange.value,
-      resolution: rewardWinsHistoryTimeRange.value === "1d" ? "1h" : "1d",
-    },
-    onSuccess: ({ data }) => (rewardWinsHistoryResult.value = data.history),
-  });
-}
-
-function handleRecentRecordsFetch() {
-  sendRequest<GetRecordsRequest, GetRecordsResponse>({
-    method: "GET",
-    endpoint: "/v1/lottery/records",
-    queryArgs: {
-      limit: 5,
-      excluded_awards: ["收益加成卡100"],
-    },
-    onSuccess: ({ data }) => (recentRecords.value = data.records),
-  });
-}
-
-function PerPrizeAnalyzeTable() {
-  const totalWins = summaryResult.value!.reduce((a, b) => a + b.winsCount, 0);
-  const totalWinners = summaryResult.value!.reduce(
-    (a, b) => a + b.winnersCount,
-    0,
-  );
+function SummaryTable({ data }: { data: GetSummaryResponse }) {
+  const totalWins = data.rewards.reduce((a, b) => a + b.winsCount, 0);
+  const totalWinners = data.rewards.reduce((a, b) => a + b.winnersCount, 0);
   const totalAvagaeWinsCountPerWinner = totalWins / totalWinners;
 
   return (
@@ -112,7 +46,7 @@ function PerPrizeAnalyzeTable() {
         <TableHead>稀有度</TableHead>
       </TableHeader>
       <TableBody>
-        {summaryResult.value!.map((item) => (
+        {data.rewards.map((item) => (
           <TableRow>
             <TableCell>{item.rewardName}</TableCell>
             <TableCell>{item.winsCount}</TableCell>
@@ -146,52 +80,157 @@ function PerPrizeAnalyzeTable() {
   );
 }
 
-function RecordItem({ data }: { data: GetRecordsItem }) {
+function Summary() {
+  const tiameRangeOptions = [
+    { label: "1 天", value: "1d" },
+    { label: "7 天", value: "7d" },
+    { label: "30 天", value: "30d" },
+    { label: "全部", value: "all" },
+  ];
+
+  const timeRange = useSignal<"1d" | "7d" | "30d" | "all">("1d");
+  const isDropdownOpened = useSignal(false);
+  const summaryData = useSignal<GetSummaryResponse | null>(null);
+
+  useEffect(() => {
+    sendRequest<GetSummaryRequest, GetSummaryResponse>({
+      method: "GET",
+      endpoint: "/v1/lottery/summary",
+      queryArgs: {
+        range: timeRange.value,
+      },
+      onSuccess: ({ data }) => (summaryData.value = data),
+    });
+  }, []);
+
+  useEffect(() => {
+    summaryData.value = null;
+    sendRequest<GetSummaryRequest, GetSummaryResponse>({
+      method: "GET",
+      endpoint: "/v1/lottery/summary",
+      queryArgs: {
+        range: timeRange.value,
+      },
+      onSuccess: ({ data }) => (summaryData.value = data),
+    });
+  }, [timeRange.value]);
+
   return (
-    <div className="border-b border-gray-300 px-4 py-2 dark:border-gray-500 last:border-none">
-      <Row className="justify-between" itemsCenter>
-        <Column gap="gap-0">
-          <ExternalLink href={data.userUrl}>{data.userName}</ExternalLink>
-          <Text colorScheme="gray">
-            {parseTime(data.time).format("MM-DD HH:mm")}
-          </Text>
-        </Column>
-        <LargeText bold>{data.rewardName}</LargeText>
-      </Row>
-    </div>
+    <>
+      <Heading1>综合统计</Heading1>
+      <Select
+        id="summary-time-range"
+        value={timeRange}
+        isDropdownOpened={isDropdownOpened}
+        options={tiameRangeOptions}
+        fullWidth
+      />
+      <LoadingArea className="h-[198px]" loading={!summaryData.value}>
+        {summaryData.value && <SummaryTable data={summaryData.value} />}
+      </LoadingArea>
+      <SmallText colorScheme="gray">
+        受简书接口限制，免费开 1 次连载与锦鲤头像框未予统计
+      </SmallText>
+    </>
   );
 }
 
-function RecentRecordsBlock() {
+function RecentWins() {
+  const recentRecords = useSignal<GetRecordsResponse | null>(null);
+
+  useEffect(() => {
+    sendRequest<GetRecordsRequest, GetRecordsResponse>({
+      method: "GET",
+      endpoint: "/v1/lottery/records",
+      queryArgs: {
+        limit: 5,
+        excluded_awards: ["收益加成卡100"],
+      },
+      onSuccess: ({ data }) => (recentRecords.value = data),
+    });
+  }, []);
+
   return (
     <>
-      <LargeText bold>近期大奖</LargeText>
-      <LoadingArea
-        className="h-[320px]"
-        loading={recentRecords.value === undefined}
-      >
-        <Column gap="gap-0">
-          {recentRecords.value !== undefined &&
-            recentRecords.value.map((item) => <RecordItem data={item} />)}
-        </Column>
+      <Heading1>近期大奖</Heading1>
+      <LoadingArea className="h-[320px]" loading={!recentRecords.value}>
+        {recentRecords.value && (
+          <Column gap="gap-0">
+            {recentRecords.value.records.map((item) => (
+              <Row
+                className="justify-between border-zinc-300 p-2 not-last:border-b dark:border-zinc-700"
+                gap="gap-0"
+                itemsCenter
+              >
+                <Column gap="gap-1">
+                  <ExternalLink href={item.userUrl}>
+                    {item.userName}
+                  </ExternalLink>
+                  <SmallText colorScheme="gray">
+                    {getHumanReadableTimeDelta(parseTime(item.time))}
+                  </SmallText>
+                </Column>
+                <LargeText bold>{item.rewardName}</LargeText>
+              </Row>
+            ))}
+          </Column>
+        )}
       </LoadingArea>
     </>
   );
 }
 
-function RewardWinsHistoryBlock() {
+function WinsTrend() {
+  const tiameRangeOptions = [
+    { label: "1 天", value: "1d" },
+    { label: "30 天", value: "30d" },
+    { label: "60 天", value: "60d" },
+  ];
+
+  const timeRange = useSignal<"1d" | "30d" | "60d">("1d");
+  const isDropdownOpened = useSignal(false);
+  const rewardWinsHistory = useSignal<GetRewardWinsHistoryResponse | null>(
+    null,
+  );
+
+  useEffect(() => {
+    sendRequest<GetRewardWinsHistoryRequest, GetRewardWinsHistoryResponse>({
+      method: "GET",
+      endpoint: "/v1/lottery/reward-wins-history",
+      queryArgs: {
+        range: timeRange.value,
+        resolution: timeRange.value === "1d" ? "1h" : "1d",
+      },
+      onSuccess: ({ data }) => (rewardWinsHistory.value = data),
+    });
+  }, []);
+
+  useEffect(() => {
+    rewardWinsHistory.value = null;
+    sendRequest<GetRewardWinsHistoryRequest, GetRewardWinsHistoryResponse>({
+      method: "GET",
+      endpoint: "/v1/lottery/reward-wins-history",
+      queryArgs: {
+        range: timeRange.value,
+        resolution: timeRange.value === "1d" ? "1h" : "1d",
+      },
+      onSuccess: ({ data }) => (rewardWinsHistory.value = data),
+    });
+  }, [timeRange.value]);
+
   return (
     <>
-      <LargeText bold>中奖次数趋势</LargeText>
+      <Heading1>中奖趋势</Heading1>
       <Select
         id="reward-wins-history-time-range"
-        isDropdownOpened={isRewardWinsHistoryTimeRangeSelectDropdownOpened}
-        value={rewardWinsHistoryTimeRange}
-        options={rewardWinsHistoryTimeRangeSwitchData}
+        isDropdownOpened={isDropdownOpened}
+        value={timeRange}
+        options={tiameRangeOptions}
+        fullWidth
       />
       <SSLineChart
         className="h-72 max-w-lg w-full"
-        dataReady={rewardWinsHistoryResult.value !== undefined}
+        dataReady={Boolean(rewardWinsHistory.value)}
         options={{
           xAxis: {
             type: "time",
@@ -203,10 +242,9 @@ function RewardWinsHistoryBlock() {
             {
               type: "line",
               smooth: true,
-              data:
-                rewardWinsHistoryResult.value === undefined
-                  ? undefined
-                  : Object.entries(rewardWinsHistoryResult.value),
+              data: rewardWinsHistory.value
+                ? Object.entries(rewardWinsHistory.value.history)
+                : undefined,
             },
           ],
           tooltip: {
@@ -220,40 +258,11 @@ function RewardWinsHistoryBlock() {
 }
 
 export default function LotteryAnalyzer() {
-  useEffect(() => {
-    handleSummaryFetch();
-    handleRecentRecordsFetch();
-    handleRewardWinsHistoryFetch();
-  }, []);
-
-  useEffect(() => handleSummaryFetch(), [summaryTimeRange.value]);
-
-  useEffect(() => {
-    rewardWinsHistoryResult.value = undefined;
-    handleRewardWinsHistoryFetch();
-  }, [rewardWinsHistoryTimeRange.value]);
-
   return (
     <Column>
-      <LargeText bold>综合统计</LargeText>
-      <Select
-        id="summary-time-range"
-        value={summaryTimeRange}
-        isDropdownOpened={isSummaryTimeRangeSelectDropdownOpened}
-        options={summaryTimeRangeSwitchData}
-      />
-      <LoadingArea
-        className="h-[291px]"
-        loading={summaryResult.value === undefined}
-      >
-        {summaryResult.value !== undefined && <PerPrizeAnalyzeTable />}
-      </LoadingArea>
-      <SmallText colorScheme="gray">
-        受简书接口限制，本工具数据不包括免费开 1 次连载与锦鲤头像框
-      </SmallText>
-
-      <RecentRecordsBlock />
-      <RewardWinsHistoryBlock />
+      <Summary />
+      <RecentWins />
+      <WinsTrend />
     </Column>
   );
 }
