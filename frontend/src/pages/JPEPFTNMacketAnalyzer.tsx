@@ -1,8 +1,8 @@
 import { batch, computed, signal } from "@preact/signals";
 import { Column, LargeText, Row, Select, SmallText, Text } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
-import SSBarChart from "../components/charts/SSBarChart";
-import SSLineChart from "../components/charts/SSLineChart";
+import BarChart from "../components/charts/BarChart";
+import LineChart from "../components/charts/LineChart";
 import type {
   GetCurrentAmountDistributionRequest,
   GetCurrentAmountDistributionResponse,
@@ -246,7 +246,7 @@ function AmountDistributionChartBlock() {
           { label: "卖单", value: "sell" },
         ]}
       />
-      <SSBarChart
+      <BarChart
         className="h-72 max-w-xl w-full"
         dataReady={amountDistribution.value !== undefined}
         options={{
@@ -285,7 +285,7 @@ function PriceHistoryChartBlock() {
         value={priceTrendLineTimeRange}
         options={TimeRangeSwitchData}
       />
-      <SSLineChart
+      <LineChart
         className="h-72 max-w-lg w-full"
         dataReady={
           buyPriceTrendData.value !== undefined &&
@@ -345,7 +345,7 @@ function AmountHistoryChartBlock() {
         value={poolAmountTrendLineTimeRange}
         options={TimeRangeSwitchData}
       />
-      <SSLineChart
+      <LineChart
         className="h-72 max-w-lg w-full"
         dataReady={
           buyPoolAmountTrendData.value !== undefined &&

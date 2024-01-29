@@ -12,7 +12,7 @@ import {
   TextInput,
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
-import SSLazyLoadTable from "../components/SSLazyLoadTable";
+import LazyLoadTable from "../components/LazyLoadTable";
 import type { GetRewardsResponse } from "../models/lottery";
 import type {
   GetLotteryWinRecordItem,
@@ -127,7 +127,7 @@ function RewardsFliter() {
 
 function ResultTable() {
   return (
-    <SSLazyLoadTable
+    <LazyLoadTable
       data={result.value!.map((item) => ({
         时间: (
           <Text className="text-center">

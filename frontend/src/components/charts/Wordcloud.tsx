@@ -18,7 +18,7 @@ interface Props {
   dataReady?: boolean;
 }
 
-export default function SSWordCloud({
+export default function WordCloud({
   className,
   options,
   dataReady = true,

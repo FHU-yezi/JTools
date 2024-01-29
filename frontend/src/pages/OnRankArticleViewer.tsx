@@ -9,8 +9,8 @@ import {
   SolidButton,
   Text,
 } from "@sscreator/ui";
-import SSAutocomplete from "../components/SSAutocomplete";
-import SSLazyLoadTable from "../components/SSLazyLoadTable";
+import Autocomplete from "../components/Autocomplete";
+import LazyLoadTable from "../components/LazyLoadTable";
 import type {
   GetHistoryNamesOnArticleRankSummaryResponse,
   GetNameAutocompleteRequest,
@@ -190,7 +190,7 @@ function HistoryNamesOnRankRecordFoundNotice() {
 
 function ResultTable() {
   return (
-    <SSLazyLoadTable
+    <LazyLoadTable
       data={rankRecords.value!.map((item) => ({
         日期: (
           <Text className="text-center">{getDate(parseTime(item.date))}</Text>
@@ -216,7 +216,7 @@ function ResultTable() {
 export default function OnRankArticleViewer() {
   return (
     <Column>
-      <SSAutocomplete
+      <Autocomplete
         id="user-name-or-url"
         label="用户昵称 / 个人主页链接"
         value={userUrlOrName}

@@ -17,7 +17,7 @@ import {
   TableRow,
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
-import SSLineChart from "../components/charts/SSLineChart";
+import LineChart from "../components/charts/LineChart";
 import type {
   GetRecordsRequest,
   GetRecordsResponse,
@@ -228,7 +228,7 @@ function WinsTrend() {
         options={tiameRangeOptions}
         fullWidth
       />
-      <SSLineChart
+      <LineChart
         className="h-72 max-w-lg w-full"
         dataReady={Boolean(rewardWinsHistory.value)}
         options={{

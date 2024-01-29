@@ -6,7 +6,7 @@ import {
   Text,
   TextInput,
 } from "@sscreator/ui";
-import SSWordCloud from "../components/charts/SSWordcloud";
+import WordCloud from "../components/charts/Wordcloud";
 import type { GetWordFreqResponse } from "../models/articles";
 import { articleUrlToSlug } from "../utils/jianshuHelper";
 import { sendRequest } from "../utils/sendRequest";
@@ -31,9 +31,9 @@ function handleGenerate() {
   });
 }
 
-function WordCloud() {
+function ArticleWordCloud() {
   return (
-    <SSWordCloud
+    <WordCloud
       className="aspect-video max-w-2xl"
       options={{
         series: [
@@ -78,7 +78,7 @@ export default function ArticleWordcloudGenerator() {
               {result.value.title}
             </ExternalLink>
           </Text>
-          <WordCloud />
+          <ArticleWordCloud />
         </>
       )}
     </Column>

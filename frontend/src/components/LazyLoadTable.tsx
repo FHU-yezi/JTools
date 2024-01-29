@@ -14,7 +14,7 @@ interface Props {
   tableItemKey?: string;
 }
 
-export default function SSLazyLoadTable({
+export default function LazyLoadTable({
   className,
   data,
   onLoadMore,

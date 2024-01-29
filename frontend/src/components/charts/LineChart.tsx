@@ -1,8 +1,8 @@
 import { useSignal } from "@preact/signals";
 import { useColorScheme } from "@sscreator/ui";
 import clsx from "clsx";
-import type { BarSeriesOption } from "echarts/charts";
-import { BarChart } from "echarts/charts";
+import type { LineSeriesOption } from "echarts/charts";
+import { LineChart as EchartsLineChart } from "echarts/charts";
 import type {
   GridComponentOption,
   LegendComponentOption,
@@ -19,7 +19,7 @@ import { SVGRenderer } from "echarts/renderers";
 import { useEffect, useRef } from "preact/hooks";
 
 echarts.use([
-  BarChart,
+  EchartsLineChart,
   GridComponent,
   LegendComponent,
   TooltipComponent,
@@ -27,7 +27,7 @@ echarts.use([
 ]);
 
 type OptionType = ComposeOption<
-  | BarSeriesOption
+  | LineSeriesOption
   | GridComponentOption
   | LegendComponentOption
   | TooltipComponentOption
@@ -39,7 +39,7 @@ interface Props {
   dataReady?: boolean;
 }
 
-export default function SSBarChart({
+export default function LineChart({
   className,
   options,
   dataReady = true,

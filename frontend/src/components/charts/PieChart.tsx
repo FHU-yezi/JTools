@@ -1,36 +1,22 @@
 import { useSignal } from "@preact/signals";
 import { useColorScheme } from "@sscreator/ui";
 import clsx from "clsx";
-import type { LineSeriesOption } from "echarts/charts";
-import { LineChart } from "echarts/charts";
+import type { PieSeriesOption } from "echarts/charts";
+import { PieChart as EchartsPieChart } from "echarts/charts";
 import type {
-  GridComponentOption,
   LegendComponentOption,
   TooltipComponentOption,
 } from "echarts/components";
-import {
-  GridComponent,
-  LegendComponent,
-  TooltipComponent,
-} from "echarts/components";
+import { LegendComponent, TooltipComponent } from "echarts/components";
 import type { ComposeOption } from "echarts/core";
 import * as echarts from "echarts/core";
 import { SVGRenderer } from "echarts/renderers";
 import { useEffect, useRef } from "preact/hooks";
 
-echarts.use([
-  LineChart,
-  GridComponent,
-  LegendComponent,
-  TooltipComponent,
-  SVGRenderer,
-]);
+echarts.use([EchartsPieChart, LegendComponent, TooltipComponent, SVGRenderer]);
 
 type OptionType = ComposeOption<
-  | LineSeriesOption
-  | GridComponentOption
-  | LegendComponentOption
-  | TooltipComponentOption
+  PieSeriesOption | LegendComponentOption | TooltipComponentOption
 >;
 
 interface Props {
@@ -39,7 +25,7 @@ interface Props {
   dataReady?: boolean;
 }
 
-export default function SSLineChart({
+export default function PieChart({
   className,
   options,
   dataReady = true,
@@ -58,7 +44,7 @@ export default function SSLineChart({
     backgroundColor: "",
     // 移除边距
     grid: {
-      top: options.legend ? "15%" : 20,
+      top: "15%",
       bottom: 0,
       left: 0,
       right: 0,

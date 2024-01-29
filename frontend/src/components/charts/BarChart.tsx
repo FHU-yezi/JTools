@@ -1,22 +1,36 @@
 import { useSignal } from "@preact/signals";
 import { useColorScheme } from "@sscreator/ui";
 import clsx from "clsx";
-import type { PieSeriesOption } from "echarts/charts";
-import { PieChart } from "echarts/charts";
+import type { BarSeriesOption } from "echarts/charts";
+import { BarChart as EchartsBarChart } from "echarts/charts";
 import type {
+  GridComponentOption,
   LegendComponentOption,
   TooltipComponentOption,
 } from "echarts/components";
-import { LegendComponent, TooltipComponent } from "echarts/components";
+import {
+  GridComponent,
+  LegendComponent,
+  TooltipComponent,
+} from "echarts/components";
 import type { ComposeOption } from "echarts/core";
 import * as echarts from "echarts/core";
 import { SVGRenderer } from "echarts/renderers";
 import { useEffect, useRef } from "preact/hooks";
 
-echarts.use([PieChart, LegendComponent, TooltipComponent, SVGRenderer]);
+echarts.use([
+  EchartsBarChart,
+  GridComponent,
+  LegendComponent,
+  TooltipComponent,
+  SVGRenderer,
+]);
 
 type OptionType = ComposeOption<
-  PieSeriesOption | LegendComponentOption | TooltipComponentOption
+  | BarSeriesOption
+  | GridComponentOption
+  | LegendComponentOption
+  | TooltipComponentOption
 >;
 
 interface Props {
@@ -25,7 +39,7 @@ interface Props {
   dataReady?: boolean;
 }
 
-export default function SSPieChart({
+export default function BarChart({
   className,
   options,
   dataReady = true,
@@ -44,7 +58,7 @@ export default function SSPieChart({
     backgroundColor: "",
     // 移除边距
     grid: {
-      top: "15%",
+      top: options.legend ? "15%" : 20,
       bottom: 0,
       left: 0,
       right: 0,

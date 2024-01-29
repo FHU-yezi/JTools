@@ -18,7 +18,7 @@ interface Props {
   noSelectOnFocus?: boolean;
 }
 
-export default function SSAutocomplete({
+export default function Autocomplete({
   id,
   label,
   value,
