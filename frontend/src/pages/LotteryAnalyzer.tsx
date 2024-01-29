@@ -7,11 +7,16 @@ import {
   Row,
   Select,
   SmallText,
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
   Text,
 } from "@sscreator/ui";
-import type { ComponentChildren } from "preact";
 import { useEffect } from "preact/hooks";
-import SSTable from "../components/SSTable";
 import SSLineChart from "../components/charts/SSLineChart";
 import type {
   GetRecordsItem,
@@ -97,65 +102,47 @@ function PerPrizeAnalyzeTable() {
   const totalAvagaeWinsCountPerWinner = totalWins / totalWinners;
 
   return (
-    <SSTable
-      className="min-w-[670px]"
-      data={summaryResult
-        .value!.map<Record<string, ComponentChildren>>((item) => ({
-          奖品名称: <Text className="text-center">{item.rewardName}</Text>,
-          中奖次数: <Text className="text-center">{item.winsCount}</Text>,
-          中奖人数: <Text className="text-center">{item.winnersCount}</Text>,
-          平均每人中奖次数: (
-            <Text className="text-center">
+    <Table className="min-w-xl w-full whitespace-nowrap text-center">
+      <TableHeader>
+        <TableHead>奖品名称</TableHead>
+        <TableHead>中奖次数</TableHead>
+        <TableHead>中奖人数</TableHead>
+        <TableHead>平均每人中奖次数</TableHead>
+        <TableHead>中奖率</TableHead>
+        <TableHead>稀有度</TableHead>
+      </TableHeader>
+      <TableBody>
+        {summaryResult.value!.map((item) => (
+          <TableRow>
+            <TableCell>{item.rewardName}</TableCell>
+            <TableCell>{item.winsCount}</TableCell>
+            <TableCell>{item.winnersCount}</TableCell>
+            <TableCell>
               {item.winsCount !== 0 ? item.averageWinsCountPerWinner : "---"}
-            </Text>
-          ),
-          中奖率: (
-            <Text className="text-center">
+            </TableCell>
+            <TableCell>
               {item.winsCount !== 0
                 ? `${roundFloat(item.winningRate * 100, 2)}%`
                 : "---"}
-            </Text>
-          ),
-          稀有度: (
-            <Text className="text-center">
-              {item.winsCount !== 0 ? item.rarity : "---"}
-            </Text>
-          ),
-        }))
-        .concat(
-          summaryResult.value!.length !== 0
-            ? [
-                {
-                  奖品名称: (
-                    <Text className="text-center" bold>
-                      总计
-                    </Text>
-                  ),
-                  中奖次数: (
-                    <Text className="text-center" bold>
-                      {totalWins}
-                    </Text>
-                  ),
-                  中奖人数: (
-                    <Text className="text-center" bold>
-                      {totalWinners}
-                    </Text>
-                  ),
-                  平均每人中奖次数: (
-                    <Text className="text-center" bold>
-                      {totalWins !== 0
-                        ? roundFloat(totalAvagaeWinsCountPerWinner, 3)
-                        : "---"}
-                    </Text>
-                  ),
-                  中奖率: undefined,
-                  稀有度: undefined,
-                },
-              ]
-            : [],
-        )}
-      tableItemKey="reward_name"
-    />
+            </TableCell>
+            <TableCell>{item.winsCount !== 0 ? item.rarity : "---"}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+      <TableFooter>
+        <TableRow>
+          <TableCell>总计</TableCell>
+          <TableCell>{totalWins}</TableCell>
+          <TableCell>{totalWinners}</TableCell>
+          <TableCell>
+            {totalWins !== 0
+              ? roundFloat(totalAvagaeWinsCountPerWinner, 3)
+              : "---"}
+          </TableCell>
+          <TableCell colSpan={2}> </TableCell>
+        </TableRow>
+      </TableFooter>
+    </Table>
   );
 }
 
