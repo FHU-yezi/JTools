@@ -12,6 +12,7 @@ import type { ComposeOption } from "echarts/core";
 import * as echarts from "echarts/core";
 import { SVGRenderer } from "echarts/renderers";
 import { useEffect, useRef } from "preact/hooks";
+import { getLoadingConfig } from "./base";
 
 echarts.use([EchartsPieChart, LegendComponent, TooltipComponent, SVGRenderer]);
 
@@ -79,14 +80,7 @@ export default function PieChart({
   useEffect(() => {
     if (echartObject.value !== undefined) {
       if (!dataReady) {
-        echartObject.value.showLoading({
-          text: "   加载中...",
-          fontSize: 16,
-          spinnerRadius: 15,
-          lineWidth: 2,
-          textColor: colorScheme === "dark" ? "#f4f4f5" : undefined,
-          maskColor: colorScheme === "dark" ? "rgba(9, 9, 11, 0.8)" : undefined,
-        });
+        echartObject.value.showLoading(getLoadingConfig(colorScheme));
       } else {
         echartObject.value.setOption(optionsToApply);
         echartObject.value.hideLoading();

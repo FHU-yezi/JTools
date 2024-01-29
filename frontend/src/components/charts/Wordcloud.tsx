@@ -7,6 +7,7 @@ import type { ComposeOption } from "echarts/core";
 import * as echarts from "echarts/core";
 import type { WordCloudSeriesOption } from "echarts/types/dist/echarts";
 import { useEffect, useRef } from "preact/hooks";
+import { getLoadingConfig } from "./base";
 
 echarts.use([GridComponent]);
 
@@ -72,14 +73,7 @@ export default function WordCloud({
   useEffect(() => {
     if (chartObj.value) {
       if (!dataReady) {
-        chartObj.value.showLoading({
-          text: "   加载中...",
-          fontSize: 16,
-          spinnerRadius: 15,
-          lineWidth: 2,
-          textColor: colorScheme === "dark" ? "#f4f4f5" : undefined,
-          maskColor: colorScheme === "dark" ? "rgba(9, 9, 11, 0.8)" : undefined,
-        });
+        chartObj.value.showLoading(getLoadingConfig(colorScheme));
       } else {
         chartObj.value.setOption(finalOptions);
         chartObj.value.hideLoading();
