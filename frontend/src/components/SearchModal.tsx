@@ -25,6 +25,7 @@ export default function SearchModal() {
   return (
     <>
       <TextButton
+        colorScheme="secondary"
         leftIcon={<MdSearch size={24} />}
         onClick={() => {
           isSearchModalOpened.value = true;
