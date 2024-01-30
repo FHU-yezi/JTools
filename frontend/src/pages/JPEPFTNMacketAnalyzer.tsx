@@ -12,7 +12,6 @@ import type {
   GetPriceHistoryResponse,
   GetRulesResponse,
 } from "../models/JPEPFTNMacket";
-import { roundFloat } from "../utils/numberHelper";
 import { sendRequest } from "../utils/sendRequest";
 
 const TimeRangeSwitchData = [
@@ -297,8 +296,8 @@ function PriceHistoryChartBlock() {
           },
           yAxis: {
             type: "value",
-            min: (value) => roundFloat(value.min - 0.01, 2),
-            max: (value) => roundFloat(value.max + 0.01, 2),
+            min: (value) => (value.min - 0.01).toFixed(2),
+            max: (value) => (value.max + 0.01).toFixed(2),
           },
           series: [
             {

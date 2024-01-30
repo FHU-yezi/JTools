@@ -26,7 +26,6 @@ import type {
   GetSummaryRequest,
   GetSummaryResponse,
 } from "../models/lottery";
-import { roundFloat } from "../utils/numberHelper";
 import { sendRequest } from "../utils/sendRequest";
 import { getHumanReadableTimeDelta, parseTime } from "../utils/timeHelper";
 
@@ -56,7 +55,7 @@ function SummaryTable({ data }: { data: GetSummaryResponse }) {
             </TableCell>
             <TableCell>
               {item.winsCount !== 0
-                ? `${roundFloat(item.winningRate * 100, 2)}%`
+                ? `${(item.winningRate * 100).toFixed(2)}%`
                 : "---"}
             </TableCell>
             <TableCell>{item.winsCount !== 0 ? item.rarity : "---"}</TableCell>
@@ -69,9 +68,7 @@ function SummaryTable({ data }: { data: GetSummaryResponse }) {
           <TableCell>{totalWins}</TableCell>
           <TableCell>{totalWinners}</TableCell>
           <TableCell>
-            {totalWins !== 0
-              ? roundFloat(totalAvagaeWinsCountPerWinner, 3)
-              : "---"}
+            {totalWins !== 0 ? totalAvagaeWinsCountPerWinner.toFixed(3) : "---"}
           </TableCell>
           <TableCell colSpan={2}> </TableCell>
         </TableRow>
