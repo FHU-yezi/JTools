@@ -51,11 +51,16 @@ export default function LazyLoadTable({
   return (
     <div className="relative">
       <HorizontalScoll>
-        <table className={clsx(className, "gray-border w-full rounded")}>
-          <thead className="color-layer-2">
+        <table
+          className={clsx(
+            className,
+            "border border-zinc-300 dark:border-zinc-700 w-full rounded",
+          )}
+        >
+          <thead className="bg-zinc-50 dark:bg-zinc-800">
             <tr>
               {Object.keys(data[0]).map((item) => (
-                <th className="gray-border px-2 py-1.5">
+                <th className="border border-zinc-300 px-2 py-1.5 dark:border-zinc-700">
                   <Text className="whitespace-nowrap text-center" bold>
                     {item}
                   </Text>
@@ -67,7 +72,7 @@ export default function LazyLoadTable({
             {data.map((line) => (
               <tr key={tableItemKey && line[tableItemKey]}>
                 {Object.values(line).map((item) => (
-                  <td className="gray-border color-layer-1 px-2 py-1.5">
+                  <td className="border border-zinc-300 bg-white px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-900">
                     {item}
                   </td>
                 ))}

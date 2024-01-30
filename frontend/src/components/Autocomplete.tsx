@@ -67,7 +67,7 @@ export default function Autocomplete({
         value.value !== completeItems.value[0] && (
           <div
             className={clsx(
-              "color-layer-2 gray-border absolute left-0 top-full z-10 mt-2 flex w-full flex-col rounded p-2 shadow transition-opacity",
+              "bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 absolute left-0 top-full z-10 mt-2 flex w-full flex-col rounded p-2 shadow transition-opacity",
               {
                 "opacity-0": !showDropdown.value,
                 "opacity-100": showDropdown.value,

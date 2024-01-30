@@ -1,16 +1,3 @@
 body {
-  --at-apply: bg-white dark:bg-zinc-950 transition-colors;
-}
-body ::selection {
-  --at-apply: bg-zinc-300 dark:bg-zinc-700
-}
-
-.gray-border {
-  --at-apply: border border-zinc-200 dark:border-zinc-600;
-}
-.color-layer-1 {
-  --at-apply: bg-white dark:bg-zinc-900;
-}
-.color-layer-2 {
-  --at-apply: bg-zinc-50 dark:bg-zinc-800;
+  --at-apply: bg-white dark:bg-zinc-950;
 }
