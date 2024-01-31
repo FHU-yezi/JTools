@@ -8,11 +8,17 @@ import {
   LoadingArea,
   SmallText,
   SolidButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
   Text,
   TextInput,
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
-import LazyLoadTable from "../components/LazyLoadTable";
+import InfiniteScrollTable from "../components/InfiniteScrollTable";
 import type { GetRewardsResponse } from "../models/lottery";
 import type {
   GetLotteryWinRecordItem,
@@ -127,19 +133,26 @@ function RewardsFliter() {
 
 function ResultTable() {
   return (
-    <LazyLoadTable
-      data={result.value!.map((item) => ({
-        时间: (
-          <Text className="text-center">
-            {getDatetime(parseTime(item.time))}
-          </Text>
-        ),
-        奖项: <Text className="text-center">{item.rewardName}</Text>,
-      }))}
+    <InfiniteScrollTable
       onLoadMore={handleLoadMore}
       hasMore={hasMore}
       isLoading={isLoading}
-    />
+    >
+      <Table className="w-full whitespace-nowrap text-center">
+        <TableHeader>
+          <TableHead>时间</TableHead>
+          <TableHead>奖项</TableHead>
+        </TableHeader>
+        <TableBody>
+          {result.value!.map((item) => (
+            <TableRow key={item.time}>
+              <TableCell>{getDatetime(parseTime(item.time))}</TableCell>
+              <TableCell>{item.rewardName}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </InfiniteScrollTable>
   );
 }
 

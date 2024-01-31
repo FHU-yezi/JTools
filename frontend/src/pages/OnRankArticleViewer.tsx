@@ -8,9 +8,15 @@ import {
   Notice,
   Select,
   SolidButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
   Text,
 } from "@sscreator/ui";
-import LazyLoadTable from "../components/LazyLoadTable";
+import InfiniteScrollTable from "../components/InfiniteScrollTable";
 import type {
   GetHistoryNamesOnArticleRankSummaryResponse,
   GetNameAutocompleteRequest,
@@ -183,26 +189,37 @@ function HistoryNamesOnRankRecordFoundNotice() {
 
 function ResultTable() {
   return (
-    <LazyLoadTable
-      data={rankRecords.value!.map((item) => ({
-        日期: (
-          <Text className="text-center">{getDate(parseTime(item.date))}</Text>
-        ),
-        排名: <Text className="text-center">{item.ranking}</Text>,
-        文章: (
-          <ExternalLink
-            className="block max-w-[60vw] overflow-hidden text-ellipsis whitespace-nowrap"
-            href={item.articleUrl}
-          >
-            {item.articleTitle}
-          </ExternalLink>
-        ),
-        获钻量: <Text className="text-center">{item.FPReward}</Text>,
-      }))}
+    <InfiniteScrollTable
       onLoadMore={handleLoadMore}
       hasMore={hasMore}
       isLoading={isLoading}
-    />
+    >
+      <Table className="w-full whitespace-nowrap text-center">
+        <TableHeader>
+          <TableHead>日期</TableHead>
+          <TableHead>排名</TableHead>
+          <TableHead>文章</TableHead>
+          <TableHead>获钻量</TableHead>
+        </TableHeader>
+        <TableBody>
+          {rankRecords.value!.map((item) => (
+            <TableRow key={`${item.date}-${item.articleUrl}`}>
+              <TableCell>{getDate(parseTime(item.date))}</TableCell>
+              <TableCell>{item.ranking}</TableCell>
+              <TableCell className="text-left">
+                <ExternalLink
+                  className="block max-w-[60vw] overflow-hidden text-ellipsis"
+                  href={item.articleUrl}
+                >
+                  {item.articleTitle}
+                </ExternalLink>
+              </TableCell>
+              <TableCell>{item.FPReward}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </InfiniteScrollTable>
   );
 }
 
