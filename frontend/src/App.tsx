@@ -24,7 +24,7 @@ registerSW({ immediate: true });
 
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 
-export default function Main() {
+export default function App() {
   return (
     <StrictMode>
       <ErrorFallback>
@@ -57,4 +57,4 @@ export default function Main() {
   );
 }
 
-render(<Main />, document.body);
+render(<App />, document.body);

@@ -1,5 +1,7 @@
 export function getDefaultOptions(hasLegend: boolean) {
   return {
+    // 透明背景
+    backgroundColor: "",
     // 移除边距
     grid: {
       top: hasLegend ? "15%" : 10,
