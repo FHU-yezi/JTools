@@ -48,10 +48,6 @@ const sellPoolAmountTrendData = signal<Record<number, number> | undefined>(
   undefined,
 );
 
-const isPerPriceAmountDataTradeTypeSelectDropdownOpened = signal(false);
-const isPriceTrendLineTimeRangeSelectDropdownOpened = signal(false);
-const isPoolAmountTrendLineTimeRangeSelectDropdownOpened = signal(false);
-
 function handleRulesFetch() {
   sendRequest<Record<string, never>, GetRulesResponse>({
     method: "GET",
@@ -238,7 +234,6 @@ function AmountDistributionChartBlock() {
       <LargeText bold>实时挂单量分布</LargeText>
       <Select
         id="per-price-amount-data-trade-type"
-        isDropdownOpened={isPerPriceAmountDataTradeTypeSelectDropdownOpened}
         value={perPriceAmountDataTradeType}
         options={[
           { label: "买单", value: "buy" },
@@ -280,7 +275,6 @@ function PriceHistoryChartBlock() {
       <LargeText bold>贝价趋势</LargeText>
       <Select
         id="price-trend-line-time-range"
-        isDropdownOpened={isPriceTrendLineTimeRangeSelectDropdownOpened}
         value={priceTrendLineTimeRange}
         options={TimeRangeSwitchData}
       />
@@ -340,7 +334,6 @@ function AmountHistoryChartBlock() {
       <LargeText bold>挂单量趋势</LargeText>
       <Select
         id="pool-amount-trend-line-time-range"
-        isDropdownOpened={isPoolAmountTrendLineTimeRangeSelectDropdownOpened}
         value={poolAmountTrendLineTimeRange}
         options={TimeRangeSwitchData}
       />

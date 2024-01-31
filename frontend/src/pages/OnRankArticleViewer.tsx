@@ -36,7 +36,6 @@ const orderSelect = signal<{
   orderBy: "date" | "ranking";
   orderDirection: "asc" | "desc";
 }>({ orderBy: "date", orderDirection: "desc" });
-const isOrderBySelectDropdownOpened = signal(false);
 const autocompleteItems = signal<string[]>([]);
 const isLoading = signal(false);
 const hasMore = signal(true);
@@ -227,7 +226,6 @@ export default function OnRankArticleViewer() {
       <Select
         id="order-by"
         label="排序依据"
-        isDropdownOpened={isOrderBySelectDropdownOpened}
         value={orderSelect}
         options={[
           {

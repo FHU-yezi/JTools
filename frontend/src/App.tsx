@@ -12,7 +12,7 @@ import PageWrapper from "./components/PageWrapper";
 import MainPage from "./pages/MainPage";
 import { routes } from "./routes";
 
-import "@sscreator/ui/dist/sscreator-ui.css";
+import "@sscreator/ui/sscreator-ui.css";
 
 // 处理 Safari 浏览器上的 ResizeObserver 兼容性问题
 if (!window.ResizeObserver) {

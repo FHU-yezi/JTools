@@ -1,4 +1,4 @@
-import { computed, signal, useSignal, useSignalEffect } from "@preact/signals";
+import { computed, signal, useSignalEffect } from "@preact/signals";
 import {
   Card,
   Column,
@@ -225,12 +225,10 @@ function VIPLevelSelect() {
     },
   ];
 
-  const isDropdownOpened = useSignal(false);
   return (
     <Select
       id="vip-level"
       label="会员等级"
-      isDropdownOpened={isDropdownOpened}
       value={VIPLevel}
       options={VIPLevelOptions}
       fullWidth

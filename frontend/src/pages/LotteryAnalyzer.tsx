@@ -86,7 +86,6 @@ function Summary() {
   ];
 
   const timeRange = useSignal<"1d" | "7d" | "30d" | "all">("1d");
-  const isDropdownOpened = useSignal(false);
   const summaryData = useSignal<GetSummaryResponse | null>(null);
 
   useEffect(() => {
@@ -118,7 +117,6 @@ function Summary() {
       <Select
         id="summary-time-range"
         value={timeRange}
-        isDropdownOpened={isDropdownOpened}
         options={tiameRangeOptions}
         fullWidth
       />
@@ -185,7 +183,6 @@ function WinsTrend() {
   ];
 
   const timeRange = useSignal<"1d" | "30d" | "60d">("1d");
-  const isDropdownOpened = useSignal(false);
   const rewardWinsHistory = useSignal<GetRewardWinsHistoryResponse | null>(
     null,
   );
@@ -220,7 +217,6 @@ function WinsTrend() {
       <Heading1>中奖趋势</Heading1>
       <Select
         id="reward-wins-history-time-range"
-        isDropdownOpened={isDropdownOpened}
         value={timeRange}
         options={tiameRangeOptions}
         fullWidth
