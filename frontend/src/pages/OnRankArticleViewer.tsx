@@ -1,5 +1,6 @@
-import { batch, computed, signal } from "@preact/signals";
+import { batch, computed, signal, useSignalEffect } from "@preact/signals";
 import {
+  AutoCompleteInput,
   Column,
   ExternalLink,
   Grid,
@@ -9,7 +10,6 @@ import {
   SolidButton,
   Text,
 } from "@sscreator/ui";
-import Autocomplete from "../components/Autocomplete";
 import LazyLoadTable from "../components/LazyLoadTable";
 import type {
   GetHistoryNamesOnArticleRankSummaryResponse,
@@ -28,7 +28,7 @@ import { toastWarning } from "../utils/toastHelper";
 const userUrlOrName = signal("");
 const userSlug = computed(() => userUrlToSlug(userUrlOrName.value));
 const userName = computed(() =>
-  userSlug.value === undefined && userUrlOrName.value.length !== 0
+  !userSlug.value && userUrlOrName.value
     ? userUrlOrName.value.trim()
     : undefined,
 );
@@ -71,20 +71,16 @@ function handleCompleteItemUpdate(value: string) {
 }
 
 function handleQuery() {
-  if (
-    userUrlOrName.value.length === 0 ||
-    (userSlug.value === undefined && userName.value === undefined)
-  ) {
+  if (!userUrlOrName.value) {
     toastWarning({ message: "请输入有效的昵称或用户个人主页链接" });
     return;
   }
 
   hasMore.value = true;
 
-  const endpointForRankRecords =
-    userSlug.value !== undefined
-      ? `/v1/users/${userSlug.value}/on-article-rank-records`
-      : `/v1/users/name/${userName.value}/on-article-rank-records`;
+  const endpointForRankRecords = userSlug.value
+    ? `/v1/users/${userSlug.value}/on-article-rank-records`
+    : `/v1/users/name/${userName.value}/on-article-rank-records`;
   sendRequest<GetOnArticleRankRecordsRequest, GetOnArticleRankRecordsResponse>({
     method: "GET",
     endpoint: endpointForRankRecords,
@@ -102,17 +98,16 @@ function handleQuery() {
     isLoading,
   });
 
-  const endpointForRankSummary =
-    userSlug.value !== undefined
-      ? `/v1/users/${userSlug.value}/on-article-rank-summary`
-      : `/v1/users/name/${userName.value}/on-article-rank-summary`;
+  const endpointForRankSummary = userSlug.value
+    ? `/v1/users/${userSlug.value}/on-article-rank-summary`
+    : `/v1/users/name/${userName.value}/on-article-rank-summary`;
   sendRequest<Record<string, never>, GetOnArticleRankSummaryResponse>({
     method: "GET",
     endpoint: endpointForRankSummary,
     onSuccess: ({ data }) => (rankSummary.value = data),
   });
 
-  if (userName.value !== undefined) {
+  if (userName.value) {
     sendRequest<
       Record<string, never>,
       GetHistoryNamesOnArticleRankSummaryResponse
@@ -131,10 +126,9 @@ function handleQuery() {
 }
 
 function handleLoadMore() {
-  const endpoint =
-    userSlug.value !== undefined
-      ? `/v1/users/${userSlug.value}/on-article-rank-records`
-      : `/v1/users/name/${userName.value}/on-article-rank-records`;
+  const endpoint = userSlug.value
+    ? `/v1/users/${userSlug.value}/on-article-rank-records`
+    : `/v1/users/name/${userName.value}/on-article-rank-records`;
   sendRequest<GetOnArticleRankRecordsRequest, GetOnArticleRankRecordsResponse>({
     method: "GET",
     endpoint,
@@ -213,15 +207,17 @@ function ResultTable() {
 }
 
 export default function OnRankArticleViewer() {
+  useSignalEffect(() => handleCompleteItemUpdate(userUrlOrName.value));
+
   return (
     <Column>
-      <Autocomplete
+      <AutoCompleteInput
         id="user-name-or-url"
         label="用户昵称 / 个人主页链接"
         value={userUrlOrName}
         onEnter={handleQuery}
-        onValueChange={handleCompleteItemUpdate}
-        completeItems={autocompleteItems}
+        options={autocompleteItems.value}
+        fullWidth
       />
       <Select
         id="order-by"
