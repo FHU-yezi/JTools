@@ -223,7 +223,7 @@ function WinsTrend() {
       />
       <LineChart
         className="h-72 max-w-lg w-full"
-        dataReady={Boolean(rewardWinsHistory.value)}
+        dataReady={!rewardWinsHistory.value}
         options={{
           xAxis: {
             type: "time",

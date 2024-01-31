@@ -52,7 +52,7 @@ export default function LineChart({
   const observer = new ResizeObserver(() => chartObj.value!.resize());
 
   const finalOptions: OptionType = {
-    ...getDefaultOptions(Boolean(options.legend)),
+    ...getDefaultOptions(!!options.legend),
     ...options,
   };
 

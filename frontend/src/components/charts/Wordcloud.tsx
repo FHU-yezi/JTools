@@ -32,7 +32,7 @@ export default function WordCloud({
   const observer = new ResizeObserver(() => chartObj.value!.resize());
 
   const finalOptions: OptionType = {
-    ...getDefaultOptions(Boolean(options.legend)),
+    ...getDefaultOptions(!!options.legend),
     ...options,
   };
 
