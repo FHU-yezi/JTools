@@ -1,23 +1,24 @@
-import { batch, computed, signal, useSignalEffect } from "@preact/signals";
+import { computed, signal, useSignal, useSignalEffect } from "@preact/signals";
 import {
   AutoCompleteInput,
   Column,
   ExternalLink,
-  Grid,
+  InfiniteScrollTable,
   LargeText,
   Notice,
+  Row,
   Select,
   SolidButton,
   Table,
   TableBody,
-  toastWarning,
   TableCell,
   TableHead,
   TableHeader,
-  InfiniteScrollTable,
   TableRow,
   Text,
+  toastWarning,
 } from "@sscreator/ui";
+import { useEffect } from "preact/hooks";
 import type {
   GetHistoryNamesOnArticleRankSummaryResponse,
   GetNameAutocompleteRequest,
@@ -34,47 +35,15 @@ import { getDate, parseTime } from "../utils/timeHelper";
 const userUrlOrName = signal("");
 const userSlug = computed(() => userUrlToSlug(userUrlOrName.value));
 const userName = computed(() =>
-  !userSlug.value && userUrlOrName.value
-    ? userUrlOrName.value.trim()
-    : undefined,
+  !userSlug.value && userUrlOrName.value ? userUrlOrName.value.trim() : null,
 );
-const orderSelect = signal<{
+const orderBy = signal<{
   orderBy: "date" | "ranking";
   orderDirection: "asc" | "desc";
 }>({ orderBy: "date", orderDirection: "desc" });
-const autocompleteItems = signal<string[]>([]);
+
 const isLoading = signal(false);
-const hasMore = signal(true);
-const rankRecords = signal<GetOnArticleRankRecordItem[] | undefined>(undefined);
-const rankSummary = signal<GetOnArticleRankSummaryResponse | undefined>(
-  undefined,
-);
-const historyNamesOnRankSummary = signal<
-  GetHistoryNamesOnArticleRankSummaryResponse | undefined
->(undefined);
-const showHistoryNamesOnRankRecordFoundNotice = signal(false);
-
-function isURL(string: string): boolean {
-  return string.startsWith("https://");
-}
-
-function handleCompleteItemUpdate(value: string) {
-  if (value.length === 0 || value.length > 15) {
-    return;
-  }
-  if (isURL(value)) {
-    return;
-  }
-
-  sendRequest<GetNameAutocompleteRequest, GetNameAutocompleteResponse>({
-    method: "GET",
-    endpoint: "/v1/users/name-autocomplete",
-    queryArgs: {
-      name_part: value.trim(),
-    },
-    onSuccess: ({ data }) => (autocompleteItems.value = data.names),
-  });
-}
+const showResult = signal(false);
 
 function handleQuery() {
   if (!userUrlOrName.value) {
@@ -82,101 +51,131 @@ function handleQuery() {
     return;
   }
 
-  hasMore.value = true;
+  showResult.value = true;
+}
 
-  const endpointForRankRecords = userSlug.value
-    ? `/v1/users/${userSlug.value}/on-article-rank-records`
-    : `/v1/users/name/${userName.value}/on-article-rank-records`;
-  sendRequest<GetOnArticleRankRecordsRequest, GetOnArticleRankRecordsResponse>({
-    method: "GET",
-    endpoint: endpointForRankRecords,
-    queryArgs: {
-      order_by: orderSelect.value.orderBy,
-      order_direction: orderSelect.value.orderDirection,
+function AutoCompleteUserNameOrUrl() {
+  const autocompleteOptions = useSignal<string[]>([]);
+
+  useSignalEffect(() => {
+    if (!userUrlOrName.value.length) {
+      return;
+    }
+    if (userUrlOrName.value.startsWith("https://")) {
+      return;
+    }
+
+    sendRequest<GetNameAutocompleteRequest, GetNameAutocompleteResponse>({
+      method: "GET",
+      endpoint: "/v1/users/name-autocomplete",
+      queryArgs: {
+        name_part: userUrlOrName.value.trim(),
+      },
+      onSuccess: ({ data }) => (autocompleteOptions.value = data.names),
+    });
+  });
+
+  useEffect(() => {
+    showResult.value = false;
+  }, [userUrlOrName.value]);
+
+  return (
+    <AutoCompleteInput
+      id="user-name-or-url"
+      label="用户昵称 / 个人主页链接"
+      value={userUrlOrName}
+      onEnter={handleQuery}
+      options={autocompleteOptions.value}
+      fullWidth
+    />
+  );
+}
+
+function OrderBy() {
+  const timeRangeOptions = [
+    {
+      label: "上榜日期（倒序）",
+      value: { orderBy: "date", orderDirection: "desc" },
     },
-    onSuccess: ({ data }) =>
-      batch(() => {
-        rankRecords.value = data.records;
-        if (data.records.length === 0) {
-          hasMore.value = false;
-        }
-      }),
-    isLoading,
-  });
+    {
+      label: "上榜日期（正序）",
+      value: { orderBy: "date", orderDirection: "asc" },
+    },
+    {
+      label: "排名（倒序）",
+      value: { orderBy: "ranking", orderDirection: "asc" },
+    },
+    {
+      label: "排名（正序）",
+      value: { orderBy: "ranking", orderDirection: "asc" },
+    },
+  ];
 
-  const endpointForRankSummary = userSlug.value
-    ? `/v1/users/${userSlug.value}/on-article-rank-summary`
-    : `/v1/users/name/${userName.value}/on-article-rank-summary`;
-  sendRequest<Record<string, never>, GetOnArticleRankSummaryResponse>({
-    method: "GET",
-    endpoint: endpointForRankSummary,
-    onSuccess: ({ data }) => (rankSummary.value = data),
-  });
+  useEffect(() => {
+    showResult.value = false;
+  }, [orderBy.value]);
 
-  if (userName.value) {
+  return (
+    <Select
+      id="order-by"
+      label="排序依据"
+      value={orderBy}
+      options={timeRangeOptions}
+      fullWidth
+    />
+  );
+}
+
+function HistoryNamesFoundNotice() {
+  const historyNamesData =
+    useSignal<GetHistoryNamesOnArticleRankSummaryResponse | null>(null);
+
+  useEffect(() => {
+    if (!showResult.value) {
+      return;
+    }
+    if (!userName.value) {
+      return;
+    }
+
+    historyNamesData.value = null;
     sendRequest<
       Record<string, never>,
       GetHistoryNamesOnArticleRankSummaryResponse
     >({
       method: "GET",
       endpoint: `/v1/users/name/${userName.value}/history-names-on-article-rank-summary`,
-      onSuccess: ({ data }) =>
-        batch(() => {
-          historyNamesOnRankSummary.value = data;
-          if (Object.keys(data.historyNamesOnrankSummary).length !== 0) {
-            showHistoryNamesOnRankRecordFoundNotice.value = true;
-          }
-        }),
+      onSuccess: ({ data }) => (historyNamesData.value = data),
     });
+  }, [showResult.value]);
+
+  if (!showResult.value || !historyNamesData.value) {
+    return null;
   }
-}
 
-function handleLoadMore() {
-  const endpoint = userSlug.value
-    ? `/v1/users/${userSlug.value}/on-article-rank-records`
-    : `/v1/users/name/${userName.value}/on-article-rank-records`;
-  sendRequest<GetOnArticleRankRecordsRequest, GetOnArticleRankRecordsResponse>({
-    method: "GET",
-    endpoint,
-    queryArgs: {
-      order_by: orderSelect.value.orderBy,
-      order_direction: orderSelect.value.orderDirection,
-      offset: rankRecords.value!.length,
-    },
-    onSuccess: ({ data }) =>
-      batch(() => {
-        if (data.records.length === 0) {
-          hasMore.value = false;
-          return;
-        }
+  // 无曾用昵称
+  if (!Object.keys(historyNamesData.value.historyNamesOnrankSummary).length) {
+    return null;
+  }
 
-        rankRecords.value = rankRecords.value!.concat(data.records);
-      }),
-    isLoading,
-  });
-}
-
-function HistoryNamesOnRankRecordFoundNotice() {
   return (
-    <Notice className="flex flex-col" colorScheme="info" title="昵称更改">
+    <Notice className="flex flex-col" colorScheme="info" title="曾用昵称">
       <Text>找到您曾用昵称的上榜记录：</Text>
       <Column gap="gap-2">
-        {Object.entries(
-          historyNamesOnRankSummary.value!.historyNamesOnrankSummary,
-        ).map(([name, dataCount]) => (
-          <Text>
-            {name}：{dataCount} 条
-          </Text>
-        ))}
+        {Object.entries(historyNamesData.value.historyNamesOnrankSummary).map(
+          ([name, dataCount]) => (
+            <Text>
+              {name}：{dataCount} 条
+            </Text>
+          ),
+        )}
       </Column>
 
       <SolidButton
         onClick={() => {
-          batch(() => {
-            // 替换当前输入的昵称为个人主页链接，同时隐藏该组件
-            userUrlOrName.value = historyNamesOnRankSummary.value!.userUrl;
-            showHistoryNamesOnRankRecordFoundNotice.value = false;
-          });
+          // 替换当前输入的昵称为个人主页链接，同时隐藏该组件
+          userUrlOrName.value = historyNamesData.value!.userUrl;
+          historyNamesData.value = null;
           // 触发检索
           handleQuery();
         }}
@@ -187,10 +186,127 @@ function HistoryNamesOnRankRecordFoundNotice() {
   );
 }
 
-function ResultTable() {
+function OnRankSummary() {
+  const rankSummary = useSignal<GetOnArticleRankSummaryResponse | null>(null);
+
+  useEffect(() => {
+    if (!showResult.value) {
+      return;
+    }
+
+    rankSummary.value = null;
+    const endpoint = userSlug.value
+      ? `/v1/users/${userSlug.value}/on-article-rank-summary`
+      : `/v1/users/name/${userName.value}/on-article-rank-summary`;
+    sendRequest<Record<string, never>, GetOnArticleRankSummaryResponse>({
+      method: "GET",
+      endpoint,
+      onSuccess: ({ data }) => (rankSummary.value = data),
+    });
+  }, [showResult.value]);
+
+  if (!showResult.value || !rankSummary.value) {
+    return null;
+  }
+
+  // 用户无上榜文章
+  if (!rankSummary.value.total) {
+    return null;
+  }
+
+  return (
+    <Row className="flex-wrap justify-around">
+      <Column gap="gap-1">
+        <Text>总共上榜</Text>
+        <LargeText bold>{rankSummary.value.total} 次</LargeText>
+      </Column>
+      <Column gap="gap-1">
+        <Text>前 10 名</Text>
+        <LargeText bold>{rankSummary.value.top10} 次</LargeText>
+      </Column>
+      <Column gap="gap-1">
+        <Text>前 30 名</Text>
+        <LargeText bold>{rankSummary.value.top30} 次</LargeText>
+      </Column>
+      <Column gap="gap-1">
+        <Text>前 50 名</Text>
+        <LargeText bold>{rankSummary.value.top50} 次</LargeText>
+      </Column>
+    </Row>
+  );
+}
+
+function OnRankRecordsTable() {
+  const endpoint = userSlug.value
+    ? `/v1/users/${userSlug.value}/on-article-rank-records`
+    : `/v1/users/name/${userName.value}/on-article-rank-records`;
+
+  const onRankRecords = useSignal<GetOnArticleRankRecordItem[] | null>(null);
+  const hasMore = useSignal(true);
+
+  const onLoadMore = () => {
+    sendRequest<
+      GetOnArticleRankRecordsRequest,
+      GetOnArticleRankRecordsResponse
+    >({
+      method: "GET",
+      endpoint,
+      queryArgs: {
+        order_by: orderBy.value.orderBy,
+        order_direction: orderBy.value.orderDirection,
+        offset: onRankRecords.value!.length,
+      },
+      onSuccess: ({ data }) => {
+        if (!data.records) {
+          hasMore.value = false;
+          return;
+        }
+
+        onRankRecords.value = onRankRecords.value!.concat(data.records);
+      },
+      isLoading,
+    });
+  };
+
+  useEffect(() => {
+    if (!showResult.value) {
+      return;
+    }
+
+    onRankRecords.value = null;
+    sendRequest<
+      GetOnArticleRankRecordsRequest,
+      GetOnArticleRankRecordsResponse
+    >({
+      method: "GET",
+      endpoint,
+      queryArgs: {
+        order_by: orderBy.value.orderBy,
+        order_direction: orderBy.value.orderDirection,
+      },
+      onSuccess: ({ data }) => {
+        if (!data.records) {
+          hasMore.value = false;
+        }
+
+        onRankRecords.value = data.records;
+      },
+      isLoading,
+    });
+  }, [showResult.value]);
+
+  if (!showResult.value || !onRankRecords.value) {
+    return null;
+  }
+
+  // 无上榜记录
+  if (!onRankRecords.value.length) {
+    return <LargeText className="text-center">无上榜记录</LargeText>;
+  }
+
   return (
     <InfiniteScrollTable
-      onLoadMore={handleLoadMore}
+      onLoadMore={onLoadMore}
       hasMore={hasMore}
       isLoading={isLoading}
     >
@@ -202,7 +318,7 @@ function ResultTable() {
           <TableHead>获钻量</TableHead>
         </TableHeader>
         <TableBody>
-          {rankRecords.value!.map((item) => (
+          {onRankRecords.value!.map((item) => (
             <TableRow key={`${item.date}-${item.articleUrl}`}>
               <TableCell>{getDate(parseTime(item.date))}</TableCell>
               <TableCell>{item.ranking}</TableCell>
@@ -224,77 +340,17 @@ function ResultTable() {
 }
 
 export default function OnRankArticleViewer() {
-  useSignalEffect(() => handleCompleteItemUpdate(userUrlOrName.value));
-
   return (
     <Column>
-      <AutoCompleteInput
-        id="user-name-or-url"
-        label="用户昵称 / 个人主页链接"
-        value={userUrlOrName}
-        onEnter={handleQuery}
-        options={autocompleteItems.value}
-        fullWidth
-      />
-      <Select
-        id="order-by"
-        label="排序依据"
-        value={orderSelect}
-        options={[
-          {
-            label: "上榜日期（倒序）",
-            value: { orderBy: "date", orderDirection: "desc" },
-          },
-          {
-            label: "上榜日期（正序）",
-            value: { orderBy: "date", orderDirection: "asc" },
-          },
-          {
-            label: "排名（倒序）",
-            value: { orderBy: "ranking", orderDirection: "asc" },
-          },
-          {
-            label: "排名（正序）",
-            value: { orderBy: "ranking", orderDirection: "asc" },
-          },
-        ]}
-      />
+      <AutoCompleteUserNameOrUrl />
+      <OrderBy />
       <SolidButton onClick={handleQuery} loading={isLoading.value} fullWidth>
         查询
       </SolidButton>
 
-      {historyNamesOnRankSummary.value !== undefined &&
-        showHistoryNamesOnRankRecordFoundNotice.value && (
-          <HistoryNamesOnRankRecordFoundNotice />
-        )}
-
-      {rankSummary.value !== undefined && rankSummary.value.total !== 0 && (
-        <Grid className="place-items-center" cols="grid-cols-2" gap="gap-6">
-          <LargeText bold>
-            前 10 名次数
-            {rankSummary.value.top10}
-          </LargeText>
-          <LargeText bold>
-            前 30 名次数
-            {rankSummary.value.top30}
-          </LargeText>
-          <LargeText bold>
-            前 50 名次数
-            {rankSummary.value.top50}
-          </LargeText>
-          <LargeText bold>
-            总上榜次数
-            {rankSummary.value.total}
-          </LargeText>
-        </Grid>
-      )}
-
-      {rankRecords.value !== undefined &&
-        (rankRecords.value.length !== 0 ? (
-          <ResultTable />
-        ) : (
-          <LargeText>没有上榜记录</LargeText>
-        ))}
+      <HistoryNamesFoundNotice />
+      <OnRankSummary />
+      <OnRankRecordsTable />
     </Column>
   );
 }
