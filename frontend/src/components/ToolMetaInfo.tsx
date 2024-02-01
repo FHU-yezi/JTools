@@ -50,7 +50,7 @@ export default function ToolMetaInfo() {
   }, []);
 
   return (
-    <Column>
+    <Column className="mb-4">
       {toolStatus.value && (
         <Grid cols="grid-cols-1 sm:grid-cols-2" gap="gap-2">
           {toolStatus.value.lastUpdateTime && (

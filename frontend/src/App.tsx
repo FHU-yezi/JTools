@@ -38,7 +38,9 @@ export default function App() {
                 <PageWrapper
                   pageName={item.pageName}
                   Component={item.component}
-                  disableToolMetaInfo={!item.isTool}
+                  disableToolMetaInfo={
+                    item.isTool !== undefined ? !item.isTool : false
+                  }
                   hideDecorations={item.hideDecorations}
                 />
               </Route>

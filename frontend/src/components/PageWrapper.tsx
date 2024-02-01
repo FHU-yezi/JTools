@@ -33,10 +33,10 @@ export default function PageWrapper({
         <HeaderBlock pageName={pageName} isMainPage={isMainPage} />
       )}
       <Column className="my-4">
-        {!disableToolMetaInfo && <ToolMetaInfo />}
-
         <Suspense fallback={<LoadingPage />}>
           <main className="mx-auto max-w-4xl min-h-screen w-[90vw]">
+            {!disableToolMetaInfo && <ToolMetaInfo />}
+
             <Component />
           </main>
         </Suspense>
