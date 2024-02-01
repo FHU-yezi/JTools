@@ -1,4 +1,4 @@
-import { toastError, toastWarning } from "./toastHelper";
+import { toastError, toastWarning } from "@sscreator/ui";
 import type { ErrorCallbackArgs } from "./sendRequest";
 
 export function commonAPIErrorHandler({

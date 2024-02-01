@@ -5,12 +5,12 @@ import {
   SolidButton,
   Text,
   TextInput,
+  toastWarning,
 } from "@sscreator/ui";
 import WordCloud from "../components/charts/Wordcloud";
 import type { GetWordFreqResponse } from "../models/articles";
 import { articleUrlToSlug } from "../utils/jianshuHelper";
 import { sendRequest } from "../utils/sendRequest";
-import { toastWarning } from "../utils/toastHelper";
 
 const articleUrl = signal("");
 const articleSlug = computed(() => articleUrlToSlug(articleUrl.value));

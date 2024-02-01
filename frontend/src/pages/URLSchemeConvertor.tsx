@@ -5,6 +5,7 @@ import {
   Column,
   Row,
   SmallText,
+  toastWarning,
   SolidButton,
   Text,
   TextButton,
@@ -12,7 +13,6 @@ import {
 } from "@sscreator/ui";
 import { MdContentCopy, MdDone, MdOutlineArrowForward } from "react-icons/md";
 import QRCode from "react-qr-code";
-import { toastWarning } from "../utils/toastHelper";
 
 interface UrlMappingItem {
   name: string;

@@ -6,6 +6,7 @@ import {
   Row,
   SolidButton,
   Text,
+  toastWarning,
   TextInput,
 } from "@sscreator/ui";
 import type { GetVIPInfoResponse } from "../models/users";
@@ -16,7 +17,6 @@ import {
   getHumanReadableTimeDelta,
   parseTime,
 } from "../utils/timeHelper";
-import { toastWarning } from "../utils/toastHelper";
 import VIPBadgeBronzeURL from "/vip_badges/vip_badge_bronze.png";
 import VIPBadgeGoldURL from "/vip_badges/vip_badge_gold.png";
 import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";

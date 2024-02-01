@@ -1,9 +1,14 @@
-import type { Signal } from "@preact/signals";
-import { batch, computed, effect, signal, useSignal } from "@preact/signals";
 import {
-  Checkbox,
+  batch,
+  computed,
+  signal,
+  useSignal,
+  useSignalEffect,
+} from "@preact/signals";
+import {
+  CheckboxGroup,
   Column,
-  Grid,
+  InfiniteScrollTable,
   LargeText,
   LoadingArea,
   SmallText,
@@ -14,11 +19,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  Text,
   TextInput,
+  toastWarning,
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
-import InfiniteScrollTable from "../components/InfiniteScrollTable";
 import type { GetRewardsResponse } from "../models/lottery";
 import type {
   GetLotteryWinRecordItem,
@@ -28,18 +32,17 @@ import type {
 import { userUrlToSlug } from "../utils/jianshuHelper";
 import { sendRequest } from "../utils/sendRequest";
 import { getDatetime, parseTime } from "../utils/timeHelper";
-import { toastWarning } from "../utils/toastHelper";
 
 const userUrl = signal("");
 const userSlug = computed(() => userUrlToSlug(userUrl.value));
-const rewards = signal<string[] | undefined>(undefined);
+
 const excludedAwards = signal<string[]>([]);
 const isLoading = signal(false);
 const hasMore = signal(true);
-const result = signal<GetLotteryWinRecordItem[] | undefined>(undefined);
+const lotteryWinRecords = signal<GetLotteryWinRecordItem[] | undefined>(undefined);
 
 function handleQuery() {
-  if (userSlug.value === undefined) {
+  if (!userSlug.value) {
     toastWarning({ message: "请输入有效的用户个人主页链接" });
     return;
   }
@@ -52,7 +55,7 @@ function handleQuery() {
     },
     onSuccess: ({ data }) =>
       batch(() => {
-        result.value = data.records;
+        lotteryWinRecords.value = data.records;
         if (data.records.length === 0) {
           hasMore.value = false;
         }
@@ -62,7 +65,7 @@ function handleQuery() {
 }
 
 function handleLoadMore() {
-  if (userSlug.value === undefined) {
+  if (!userSlug.value) {
     toastWarning({ message: "请输入有效的用户个人主页链接" });
     return;
   }
@@ -72,66 +75,74 @@ function handleLoadMore() {
     endpoint: `/v1/users/${userSlug.value}/lottery-win-records`,
     queryArgs: {
       excluded_awards: excludedAwards.value,
-      offset: result.value!.length,
+      offset: lotteryWinRecords.value!.length,
     },
-    onSuccess: ({ data }) =>
-      batch(() => {
-        result.value = result.value!.concat(data.records);
-        if (data.records.length === 0) {
-          hasMore.value = false;
-        }
-      }),
+    onSuccess: ({ data }) => {
+      if (!data.records) {
+        hasMore.value = false;
+      } else {
+        lotteryWinRecords.value = lotteryWinRecords.value!.concat(data.records);
+      }
+    },
     isLoading,
   });
 }
 
 function RewardsFliter() {
-  const rewardSelectedSignals = useSignal<Record<string, Signal<boolean>>>({});
-  const dataReady = useSignal(false);
+  const rewards = useSignal<GetRewardsResponse | null>(null);
+  const selectedRewards = useSignal<Array<string>>([]);
 
   useEffect(() => {
     sendRequest<Record<string, never>, GetRewardsResponse>({
       method: "GET",
       endpoint: "/v1/lottery/rewards",
-      onSuccess: ({ data }) =>
-        batch(() => {
-          rewards.value = data.rewards;
-          rewards.value.forEach(
-            (name) => (rewardSelectedSignals.value[name] = signal(true)),
-          );
-          dataReady.value = true;
-        }),
+      onSuccess: ({ data }) => {
+        rewards.value = data;
+        selectedRewards.value = data.rewards;
+      },
     });
   }, []);
 
-  effect(
-    () =>
-      (excludedAwards.value = Object.keys(rewardSelectedSignals.value).filter(
-        (name) => rewardSelectedSignals.value[name].value === false,
-      )),
-  );
+  useSignalEffect(() => {
+    if (!rewards.value) {
+      excludedAwards.value = [];
+      return;
+    }
+
+    excludedAwards.value = rewards.value.rewards.filter(
+      (item) => !selectedRewards.value.includes(item),
+    );
+  });
 
   return (
-    <div>
-      <Text className="mb-1.5" bold>
-        奖项筛选
-      </Text>
-      <LoadingArea className="h-36 w-full sm:h-16" loading={!dataReady.value}>
-        {dataReady.value && (
-          <Grid cols="grid-cols-1 sm:grid-cols-2">
-            {Object.entries(rewardSelectedSignals.value).map(
-              ([name, value]) => (
-                <Checkbox id={name} label={name} value={value} />
-              ),
-            )}
-          </Grid>
-        )}
-      </LoadingArea>
-    </div>
+    <LoadingArea className="h-[56px]" loading={!rewards.value}>
+      <CheckboxGroup
+        id="rewards"
+        className="flex flex-wrap gap-x-4 gap-y-2"
+        label="奖项筛选"
+        value={selectedRewards}
+        options={
+          !rewards.value
+            ? []
+            : rewards.value.rewards.map((item) => ({
+                label: item,
+                value: item,
+              }))
+        }
+      />
+    </LoadingArea>
   );
 }
 
-function ResultTable() {
+function Result() {
+  if (!lotteryWinRecords.value) {
+    return null;
+  }
+
+  if (!lotteryWinRecords.value.length) {
+    return <LargeText className="text-center">无中奖记录</LargeText>;
+  }
+
   return (
     <InfiniteScrollTable
       onLoadMore={handleLoadMore}
@@ -144,7 +155,7 @@ function ResultTable() {
           <TableHead>奖项</TableHead>
         </TableHeader>
         <TableBody>
-          {result.value!.map((item) => (
+          {lotteryWinRecords.value!.map((item) => (
             <TableRow key={item.time}>
               <TableCell>{getDatetime(parseTime(item.time))}</TableCell>
               <TableCell>{item.rewardName}</TableCell>
@@ -173,12 +184,7 @@ export default function LotteryRewardRecordViewer() {
         查询
       </SolidButton>
 
-      {result.value !== undefined &&
-        (result.value.length !== 0 ? (
-          <ResultTable />
-        ) : (
-          <LargeText>无中奖记录</LargeText>
-        ))}
+      <Result />
     </Column>
   );
 }

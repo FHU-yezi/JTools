@@ -6,6 +6,7 @@ import {
   SmallText,
   SolidButton,
   Text,
+  toastWarning,
   TextInput,
 } from "@sscreator/ui";
 import dayjs from "dayjs";
@@ -13,7 +14,6 @@ import type { GetLPRecommendCheckResponse } from "../models/articles";
 import { articleUrlToSlug } from "../utils/jianshuHelper";
 import { sendRequest } from "../utils/sendRequest";
 import { getDate, parseTime } from "../utils/timeHelper";
-import { toastWarning } from "../utils/toastHelper";
 
 const articleUrl = signal("");
 const articleSlug = computed(() => articleUrlToSlug(articleUrl.value));

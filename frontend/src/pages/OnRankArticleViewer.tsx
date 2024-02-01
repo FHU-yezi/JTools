@@ -10,13 +10,14 @@ import {
   SolidButton,
   Table,
   TableBody,
+  toastWarning,
   TableCell,
   TableHead,
   TableHeader,
+  InfiniteScrollTable,
   TableRow,
   Text,
 } from "@sscreator/ui";
-import InfiniteScrollTable from "../components/InfiniteScrollTable";
 import type {
   GetHistoryNamesOnArticleRankSummaryResponse,
   GetNameAutocompleteRequest,
@@ -29,7 +30,6 @@ import type {
 import { userUrlToSlug } from "../utils/jianshuHelper";
 import { sendRequest } from "../utils/sendRequest";
 import { getDate, parseTime } from "../utils/timeHelper";
-import { toastWarning } from "../utils/toastHelper";
 
 const userUrlOrName = signal("");
 const userSlug = computed(() => userUrlToSlug(userUrlOrName.value));

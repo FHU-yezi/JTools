@@ -300,7 +300,7 @@ function RealtimeData() {
     <Column>
       <Heading1>实时数据</Heading1>
 
-      <Grid cols="grid-cols-1 md:grid-cols-2">
+      <Grid cols="grid-cols-1 sm:grid-cols-2">
         <RealtimePrice />
         <RealtimeAmount />
       </Grid>
