@@ -39,7 +39,9 @@ const userSlug = computed(() => userUrlToSlug(userUrl.value));
 const excludedAwards = signal<string[]>([]);
 const isLoading = signal(false);
 const hasMore = signal(true);
-const lotteryWinRecords = signal<GetLotteryWinRecordItem[] | undefined>(undefined);
+const lotteryWinRecords = signal<GetLotteryWinRecordItem[] | undefined>(
+  undefined,
+);
 
 function handleQuery() {
   if (!userSlug.value) {

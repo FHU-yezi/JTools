@@ -1,4 +1,4 @@
-import { batch, useSignal } from "@preact/signals";
+import { useComputed } from "@preact/signals";
 import {
   Column,
   ExternalLink,
@@ -11,7 +11,6 @@ import {
   SolidButton,
   Text,
 } from "@sscreator/ui";
-import { useEffect } from "preact/hooks";
 import {
   MdOutlineAccessTime,
   MdOutlineLink,
@@ -19,41 +18,30 @@ import {
   MdOutlineUpload,
 } from "react-icons/md";
 import { useLocation } from "wouter-preact";
+import { useData } from "../hooks/useData";
 import type { GetToolStatusResponse } from "../models/status";
 import { ToolStatusEnum } from "../models/status";
 import { getToolSlug } from "../utils/URLHelper";
-import { sendRequest } from "../utils/sendRequest";
 import { getDateTimeWithoutSecond, parseTime } from "../utils/timeHelper";
 
 export default function ToolMetaInfo() {
   const [, setLocation] = useLocation();
-
-  const toolStatus = useSignal<GetToolStatusResponse | null>(null);
-  const showDowngradeNotice = useSignal(false);
-  const showUnavaliableModal = useSignal(false);
-
-  useEffect(() => {
-    sendRequest<Record<string, never>, GetToolStatusResponse>({
-      method: "GET",
-      endpoint: `/v1/status/${getToolSlug()}`,
-      onSuccess: ({ data }) =>
-        batch(() => {
-          toolStatus.value = data;
-
-          if (data.status === ToolStatusEnum.DOWNGRADED) {
-            showDowngradeNotice.value = true;
-          } else if (data.status === ToolStatusEnum.UNAVALIABLE) {
-            showUnavaliableModal.value = true;
-          }
-        }),
-    });
-  }, []);
+  const { data: toolStatus } = useData<
+    Record<string, never>,
+    GetToolStatusResponse
+  >({
+    method: "GET",
+    endpoint: `/v1/status/${getToolSlug()}`,
+  });
+  const showUnavaliableModal = useComputed(() =>
+    toolStatus ? toolStatus.status === ToolStatusEnum.UNAVALIABLE : false,
+  );
 
   return (
     <Column className="mb-4">
-      {toolStatus.value && (
+      {toolStatus && (
         <Grid cols="grid-cols-1 sm:grid-cols-2" gap="gap-2">
-          {toolStatus.value.lastUpdateTime && (
+          {toolStatus.lastUpdateTime && (
             <Row gap="gap-1" itemsCenter>
               <Icon
                 colorScheme="gray"
@@ -61,48 +49,44 @@ export default function ToolMetaInfo() {
               />
               <SmallText colorScheme="gray">
                 最后更新时间：
-                {getDateTimeWithoutSecond(
-                  parseTime(toolStatus.value.lastUpdateTime),
-                )}
+                {getDateTimeWithoutSecond(parseTime(toolStatus.lastUpdateTime))}
               </SmallText>
             </Row>
           )}
-          {toolStatus.value.dataUpdateFreq && (
+          {toolStatus.dataUpdateFreq && (
             <Row gap="gap-1" itemsCenter>
               <Icon colorScheme="gray" icon={<MdOutlineUpload size={18} />} />
               <SmallText colorScheme="gray" nowrap>
-                更新频率：{toolStatus.value.dataUpdateFreq}
+                更新频率：{toolStatus.dataUpdateFreq}
               </SmallText>
             </Row>
           )}
-          {toolStatus.value.dataCount && (
+          {toolStatus.dataCount && (
             <Row gap="gap-1" itemsCenter>
               <Icon colorScheme="gray" icon={<MdOutlineNumbers size={18} />} />
               <SmallText colorScheme="gray">
-                数据量：{toolStatus.value.dataCount}
+                数据量：{toolStatus.dataCount}
               </SmallText>
             </Row>
           )}
-          {toolStatus.value.dataSource && (
+          {toolStatus.dataSource && (
             <Row gap="gap-1" itemsCenter>
               <Icon colorScheme="gray" icon={<MdOutlineLink size={18} />} />
               <SmallText colorScheme="gray">
                 数据来源：
-                {Object.entries(toolStatus.value.dataSource).map(
-                  ([name, url]) => (
-                    <ExternalLink href={url}>{name}</ExternalLink>
-                  ),
-                )}
+                {Object.entries(toolStatus.dataSource).map(([name, url]) => (
+                  <ExternalLink href={url}>{name}</ExternalLink>
+                ))}
               </SmallText>
             </Row>
           )}
         </Grid>
       )}
 
-      {showDowngradeNotice.value && (
+      {toolStatus?.status === ToolStatusEnum.DOWNGRADED && (
         <Notice colorScheme="warning" title="服务降级">
           <Text>
-            {toolStatus.value?.reason ??
+            {toolStatus?.reason ??
               "该小工具处于降级状态，其功能、数据准确性和性能可能受到影响，请您留意。"}
           </Text>
         </Notice>
@@ -111,7 +95,7 @@ export default function ToolMetaInfo() {
       <Modal open={showUnavaliableModal} title="服务不可用" notCloseable>
         <Column>
           <Text>
-            {toolStatus.value?.reason ??
+            {toolStatus?.reason ??
               "该小工具暂时不可用，请稍后再尝试访问，并留意相关公告。"}
           </Text>
           <SolidButton onClick={() => setLocation("/")} fullWidth>

@@ -18,6 +18,7 @@ import {
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
 import LineChart from "../components/charts/LineChart";
+import { useData } from "../hooks/useData";
 import type {
   GetRecordsRequest,
   GetRecordsResponse,
@@ -26,7 +27,6 @@ import type {
   GetSummaryRequest,
   GetSummaryResponse,
 } from "../models/lottery";
-import { sendRequest } from "../utils/sendRequest";
 import { getHumanReadableTimeDelta, parseTime } from "../utils/timeHelper";
 
 function SummaryTable({ data }: { data: GetSummaryResponse }) {
@@ -86,30 +86,13 @@ function Summary() {
   ];
 
   const timeRange = useSignal<"1d" | "7d" | "30d" | "all">("1d");
-  const summaryData = useSignal<GetSummaryResponse | null>(null);
-
-  useEffect(() => {
-    sendRequest<GetSummaryRequest, GetSummaryResponse>({
-      method: "GET",
-      endpoint: "/v1/lottery/summary",
-      queryArgs: {
-        range: timeRange.value,
-      },
-      onSuccess: ({ data }) => (summaryData.value = data),
-    });
-  }, []);
-
-  useEffect(() => {
-    summaryData.value = null;
-    sendRequest<GetSummaryRequest, GetSummaryResponse>({
-      method: "GET",
-      endpoint: "/v1/lottery/summary",
-      queryArgs: {
-        range: timeRange.value,
-      },
-      onSuccess: ({ data }) => (summaryData.value = data),
-    });
-  }, [timeRange.value]);
+  const { data: summaryData } = useData<GetSummaryRequest, GetSummaryResponse>({
+    method: "GET",
+    endpoint: "/v1/lottery/summary",
+    queryArgs: {
+      range: timeRange.value,
+    },
+  });
 
   return (
     <>
@@ -120,8 +103,8 @@ function Summary() {
         options={tiameRangeOptions}
         fullWidth
       />
-      <LoadingArea className="h-[198px]" loading={!summaryData.value}>
-        {summaryData.value && <SummaryTable data={summaryData.value} />}
+      <LoadingArea className="h-[198px]" loading={!summaryData}>
+        {summaryData && <SummaryTable data={summaryData} />}
       </LoadingArea>
       <SmallText colorScheme="gray">
         受简书接口限制，免费开 1 次连载与锦鲤头像框未予统计
@@ -131,27 +114,25 @@ function Summary() {
 }
 
 function RecentWins() {
-  const recentRecords = useSignal<GetRecordsResponse | null>(null);
-
-  useEffect(() => {
-    sendRequest<GetRecordsRequest, GetRecordsResponse>({
-      method: "GET",
-      endpoint: "/v1/lottery/records",
-      queryArgs: {
-        limit: 5,
-        excluded_awards: ["收益加成卡100"],
-      },
-      onSuccess: ({ data }) => (recentRecords.value = data),
-    });
-  }, []);
+  const { data: recentRecords } = useData<
+    GetRecordsRequest,
+    GetRecordsResponse
+  >({
+    method: "GET",
+    endpoint: "/v1/lottery/records",
+    queryArgs: {
+      limit: 5,
+      excluded_awards: ["收益加成卡100"],
+    },
+  });
 
   return (
     <>
       <Heading1>近期大奖</Heading1>
-      <LoadingArea className="h-[320px]" loading={!recentRecords.value}>
-        {recentRecords.value && (
+      <LoadingArea className="h-[320px]" loading={!recentRecords}>
+        {recentRecords && (
           <Column gap="gap-0">
-            {recentRecords.value.records.map((item) => (
+            {recentRecords.records.map((item) => (
               <Row
                 className="justify-between border-zinc-300 p-2 not-last:border-b dark:border-zinc-700"
                 gap="gap-0"
@@ -183,34 +164,17 @@ function WinsTrend() {
   ];
 
   const timeRange = useSignal<"1d" | "30d" | "60d">("1d");
-  const rewardWinsHistory = useSignal<GetRewardWinsHistoryResponse | null>(
-    null,
-  );
-
-  useEffect(() => {
-    sendRequest<GetRewardWinsHistoryRequest, GetRewardWinsHistoryResponse>({
-      method: "GET",
-      endpoint: "/v1/lottery/reward-wins-history",
-      queryArgs: {
-        range: timeRange.value,
-        resolution: timeRange.value === "1d" ? "1h" : "1d",
-      },
-      onSuccess: ({ data }) => (rewardWinsHistory.value = data),
-    });
-  }, []);
-
-  useEffect(() => {
-    rewardWinsHistory.value = null;
-    sendRequest<GetRewardWinsHistoryRequest, GetRewardWinsHistoryResponse>({
-      method: "GET",
-      endpoint: "/v1/lottery/reward-wins-history",
-      queryArgs: {
-        range: timeRange.value,
-        resolution: timeRange.value === "1d" ? "1h" : "1d",
-      },
-      onSuccess: ({ data }) => (rewardWinsHistory.value = data),
-    });
-  }, [timeRange.value]);
+  const { data: rewardWinsHistory } = useData<
+    GetRewardWinsHistoryRequest,
+    GetRewardWinsHistoryResponse
+  >({
+    method: "GET",
+    endpoint: "/v1/lottery/reward-wins-history",
+    queryArgs: {
+      range: timeRange.value,
+      resolution: timeRange.value === "1d" ? "1h" : "1d",
+    },
+  });
 
   return (
     <>
@@ -223,7 +187,7 @@ function WinsTrend() {
       />
       <LineChart
         className="h-72 max-w-lg w-full"
-        dataReady={!rewardWinsHistory.value}
+        dataReady={!rewardWinsHistory}
         options={{
           xAxis: {
             type: "time",
@@ -235,8 +199,8 @@ function WinsTrend() {
             {
               type: "line",
               smooth: true,
-              data: rewardWinsHistory.value
-                ? Object.entries(rewardWinsHistory.value.history)
+              data: rewardWinsHistory
+                ? Object.entries(rewardWinsHistory.history)
                 : undefined,
             },
           ],

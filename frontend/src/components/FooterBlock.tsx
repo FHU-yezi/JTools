@@ -1,22 +1,14 @@
-import { signal } from "@preact/signals";
 import { ExternalLink, Footer, InternalLink, Text } from "@sscreator/ui";
-import { useEffect } from "preact/hooks";
 import { useLocation } from "wouter-preact";
+import { useData } from "../hooks/useData";
 import type { GetResponse } from "../models/status";
-import { sendRequest } from "../utils/sendRequest";
-
-const version = signal<string | undefined>(undefined);
 
 export default function FooterBlock() {
   const [, setLocation] = useLocation();
-
-  useEffect(() => {
-    sendRequest<Record<string, never>, GetResponse>({
-      method: "GET",
-      endpoint: "/v1/status",
-      onSuccess: ({ data }) => (version.value = data.version),
-    });
-  }, []);
+  const { data: toolStatus } = useData<Record<string, never>, GetResponse>({
+    method: "GET",
+    endpoint: "/v1/status",
+  });
 
   return (
     <Footer className="mx-auto max-w-4xl w-[90vw]">
@@ -29,7 +21,7 @@ export default function FooterBlock() {
       <ExternalLink href="https://wenjuan.feishu.cn/m?t=sjQp3W8yUrNi-g37f">
         意见反馈
       </ExternalLink>
-      <Text colorScheme="gray">版本：{version.value ?? "获取中..."}</Text>
+      <Text colorScheme="gray">版本：{toolStatus?.version ?? "获取中..."}</Text>
       <Text colorScheme="gray">Powered By Open-Source Software</Text>
       <Text colorScheme="gray">
         By{" "}

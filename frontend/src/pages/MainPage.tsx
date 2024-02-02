@@ -1,20 +1,16 @@
-import { batch, signal } from "@preact/signals";
 import { Column } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
 import { useLocation } from "wouter-preact";
+import ToolCard from "../components/ToolCard";
+import { useData } from "../hooks/useData";
+import type { GetResponse } from "../models/status";
+import { tools } from "../routes";
+import umamiTrack from "../utils/umamiTrack";
 import {
   v2RedirectRoutes,
   v2UnavaliableRoutes,
   v2UnimplementedRoutes,
 } from "../v2RedirectRoutes";
-import ToolCard from "../components/ToolCard";
-import type { GetResponse } from "../models/status";
-import { tools } from "../routes";
-import { sendRequest } from "../utils/sendRequest";
-import umamiTrack from "../utils/umamiTrack";
-
-const downgradedTools = signal<string[]>([]);
-const unavaliableTools = signal<string[]>([]);
 
 function handleV2Redirect(
   appName: string,
@@ -40,6 +36,10 @@ function handleV2Redirect(
 
 export default function MainPage() {
   const [, setLocation] = useLocation();
+  const { data: toolStatus } = useData<Record<string, never>, GetResponse>({
+    method: "GET",
+    endpoint: "/v1/status",
+  });
 
   useEffect(() => {
     const queryArguments = new URLSearchParams(window.location.search);
@@ -47,18 +47,6 @@ export default function MainPage() {
     if (V2AppName) {
       handleV2Redirect(V2AppName, setLocation);
     }
-  }, []);
-
-  useEffect(() => {
-    sendRequest<Record<string, never>, GetResponse>({
-      method: "GET",
-      endpoint: "/v1/status",
-      onSuccess: ({ data }) =>
-        batch(() => {
-          downgradedTools.value = data.downgradedTools;
-          unavaliableTools.value = data.unavaliableTools;
-        }),
-    });
   }, []);
 
   return (
@@ -69,8 +57,12 @@ export default function MainPage() {
           toolName={item.pageName}
           path={item.path}
           description={item.description}
-          downgraded={downgradedTools.value.includes(item.path.slice(1))}
-          unavaliable={unavaliableTools.value.includes(item.path.slice(1))}
+          downgraded={
+            toolStatus?.downgradedTools.includes(item.path.slice(1)) ?? false
+          }
+          unavaliable={
+            toolStatus?.unavaliableTools.includes(item.path.slice(1)) ?? false
+          }
         />
       ))}
     </Column>
