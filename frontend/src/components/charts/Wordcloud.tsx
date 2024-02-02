@@ -8,7 +8,7 @@ import type { ComposeOption, EChartsType } from "echarts/core";
 import { init as echartsInit, use as echartsUse } from "echarts/core";
 import type { WordCloudSeriesOption } from "echarts/types/dist/echarts";
 import { useEffect, useRef } from "preact/hooks";
-import { getDefaultOptions, getLoadingConfig } from "./base";
+import { getFinalOptions, getLoadingConfig } from "./base";
 
 echartsUse([GridComponent]);
 
@@ -31,11 +31,6 @@ export default function WordCloud({
   const chartObj = useSignal<EChartsType | null>(null);
   const observer = new ResizeObserver(() => chartObj.value!.resize());
 
-  const finalOptions: OptionType = {
-    ...getDefaultOptions(!!options.legend),
-    ...options,
-  };
-
   // 挂载 / 颜色主题改变时时初始化图表
   useEffect(() => {
     if (chartObj.value) {
@@ -45,7 +40,7 @@ export default function WordCloud({
       chartEl.current,
       colorScheme === "dark" ? "dark" : undefined,
     );
-    chartObj.value.setOption(finalOptions);
+    chartObj.value.setOption(getFinalOptions(options, !!options.legend));
 
     return () => {
       chartObj.value!.dispose();
@@ -63,15 +58,19 @@ export default function WordCloud({
 
   // 数据就绪状态变化时更改加载状态
   useEffect(() => {
-    if (chartObj.value) {
-      if (!dataReady) {
-        chartObj.value.showLoading(getLoadingConfig(colorScheme));
-      } else {
-        chartObj.value.setOption(finalOptions);
-        chartObj.value.hideLoading();
-      }
+    if (!dataReady) {
+      chartObj.value?.showLoading(getLoadingConfig(colorScheme));
+    } else {
+      chartObj.value?.setOption(getFinalOptions(options, !!options.legend));
+      chartObj.value?.hideLoading();
     }
   }, [dataReady]);
+
+  // 数据变化时自动更新图表
+  useEffect(
+    () => chartObj.value?.setOption(getFinalOptions(options, !!options.legend)),
+    [options],
+  );
 
   return <div className={clsx(className, "mx-auto")} ref={chartEl} />;
 }

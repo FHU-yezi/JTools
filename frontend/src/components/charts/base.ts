@@ -13,6 +13,14 @@ export function getDefaultOptions(hasLegend: boolean) {
   };
 }
 
+export function getFinalOptions(
+  options: Record<string, any>,
+  hasLegend: boolean,
+) {
+  const defaultOptions = getDefaultOptions(hasLegend);
+  return { ...defaultOptions, ...options };
+}
+
 export function getLoadingConfig(colorScheme: "light" | "dark") {
   return {
     text: "加载中",
