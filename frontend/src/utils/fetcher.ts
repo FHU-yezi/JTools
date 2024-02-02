@@ -50,7 +50,7 @@ export async function fetcher<TRequest>({
   // 如果是 GET 请求且传入了 Query Args，构建请求参数字符串并拼接 URL
   if (method === "GET" && queryArgs) {
     const queryArgsString = buildQueryArgsString(queryArgs);
-    url = `${BASE_URL}${endpoint}?${queryArgsString}`;
+    url = `${BASE_URL}${endpoint}${queryArgsString}`;
   } else {
     url = `${BASE_URL}${endpoint}`;
   }
