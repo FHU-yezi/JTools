@@ -16,7 +16,6 @@ import {
   TableHeader,
   TableRow,
 } from "@sscreator/ui";
-import { useEffect } from "preact/hooks";
 import LineChart from "../components/charts/LineChart";
 import { useData } from "../hooks/useData";
 import type {
@@ -187,7 +186,7 @@ function WinsTrend() {
       />
       <LineChart
         className="h-72 max-w-lg w-full"
-        dataReady={!rewardWinsHistory}
+        loading={!rewardWinsHistory}
         options={{
           xAxis: {
             type: "time",

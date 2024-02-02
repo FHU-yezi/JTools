@@ -249,7 +249,7 @@ function RealtimeAmountDistribution() {
       />
       <BarChart
         className="h-72 max-w-xl w-full"
-        dataReady={!!amountDistribution}
+        loading={!amountDistribution}
         options={{
           xAxis: {
             type: "category",
@@ -328,7 +328,7 @@ function PriceHistory() {
       />
       <LineChart
         className="h-72 max-w-lg w-full"
-        dataReady={!!buyPriceTrending && !!sellPriceTrending}
+        loading={!buyPriceTrending || !sellPriceTrending}
         options={{
           xAxis: {
             type: "time",
@@ -409,7 +409,7 @@ function AmountHistory() {
       />
       <LineChart
         className="h-72 max-w-lg w-full"
-        dataReady={!!buyAmountTrending && !!sellAmountTrending}
+        loading={!buyAmountTrending || !sellAmountTrending}
         options={{
           xAxis: {
             type: "time",
