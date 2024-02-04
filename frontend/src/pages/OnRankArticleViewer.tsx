@@ -1,4 +1,5 @@
-import { computed, signal, useSignal, useSignalEffect } from "@preact/signals";
+import type { Signal } from "@preact/signals";
+import { computed, signal, useSignalEffect } from "@preact/signals";
 import {
   AutoCompleteInput,
   Column,
@@ -19,18 +20,16 @@ import {
   toastWarning,
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
-import { useDataTrigger } from "../hooks/useData";
+import { useDataTrigger, useDataTriggerInfinite } from "../hooks/useData";
 import type {
   GetHistoryNamesOnArticleRankSummaryResponse,
   GetNameAutocompleteRequest,
   GetNameAutocompleteResponse,
-  GetOnArticleRankRecordItem,
   GetOnArticleRankRecordsRequest,
   GetOnArticleRankRecordsResponse,
   GetOnArticleRankSummaryResponse,
 } from "../models/users";
 import { userUrlToSlug } from "../utils/jianshuHelper";
-import { sendRequest } from "../utils/sendRequest";
 import { getDate, parseTime } from "../utils/timeHelper";
 
 const userUrlOrName = signal("");
@@ -45,9 +44,6 @@ const orderBy = signal<{
   orderDirection: "asc" | "desc";
 }>({ orderBy: "date", orderDirection: "desc" });
 
-const isLoading = signal(false);
-const showResult = signal(false);
-
 function handleQuery(triggers: Array<() => void>) {
   if (!userUrlOrName.value) {
     toastWarning({ message: "请输入有效的昵称或用户个人主页链接" });
@@ -55,7 +51,6 @@ function handleQuery(triggers: Array<() => void>) {
   }
 
   triggers.map((trigger) => trigger());
-  showResult.value = true;
 }
 
 function AutoCompleteUserNameOrUrl({ onEnter }: { onEnter: () => void }) {
@@ -76,10 +71,6 @@ function AutoCompleteUserNameOrUrl({ onEnter }: { onEnter: () => void }) {
 
     setTimeout(trigger);
   });
-
-  useEffect(() => {
-    showResult.value = false;
-  }, [userUrlOrName.value]);
 
   return (
     <AutoCompleteInput
@@ -112,10 +103,6 @@ function OrderBy() {
       value: { orderBy: "ranking", orderDirection: "asc" },
     },
   ];
-
-  useEffect(() => {
-    showResult.value = false;
-  }, [orderBy.value]);
 
   return (
     <Select
@@ -198,79 +185,31 @@ function OnRankSummary({
   );
 }
 
-function OnRankRecordsTable() {
-  const endpoint = userSlug.value
-    ? `/v1/users/${userSlug.value}/on-article-rank-records`
-    : `/v1/users/name/${userName.value}/on-article-rank-records`;
-
-  const onRankRecords = useSignal<GetOnArticleRankRecordItem[] | null>(null);
-  const hasMore = useSignal(true);
-
-  const onLoadMore = () => {
-    sendRequest<
-      GetOnArticleRankRecordsRequest,
-      GetOnArticleRankRecordsResponse
-    >({
-      method: "GET",
-      endpoint,
-      queryArgs: {
-        order_by: orderBy.value.orderBy,
-        order_direction: orderBy.value.orderDirection,
-        offset: onRankRecords.value!.length,
-      },
-      onSuccess: ({ data }) => {
-        if (!data.records) {
-          hasMore.value = false;
-          return;
-        }
-
-        onRankRecords.value = onRankRecords.value!.concat(data.records);
-      },
-      isLoading,
-    });
-  };
-
-  useEffect(() => {
-    if (!showResult.value) {
-      return;
-    }
-
-    onRankRecords.value = null;
-    sendRequest<
-      GetOnArticleRankRecordsRequest,
-      GetOnArticleRankRecordsResponse
-    >({
-      method: "GET",
-      endpoint,
-      queryArgs: {
-        order_by: orderBy.value.orderBy,
-        order_direction: orderBy.value.orderDirection,
-      },
-      onSuccess: ({ data }) => {
-        if (!data.records) {
-          hasMore.value = false;
-        }
-
-        onRankRecords.value = data.records;
-      },
-      isLoading,
-    });
-  }, [showResult.value]);
-
-  if (!showResult.value || !onRankRecords.value) {
+function OnRankRecordsTable({
+  onRankRecords,
+  isLoading,
+  onLoadMore,
+}: {
+  onRankRecords?: GetOnArticleRankRecordsResponse[];
+  isLoading: boolean;
+  onLoadMore: () => void;
+}) {
+  if (!onRankRecords || !onRankRecords.length) {
     return null;
   }
 
   // 无上榜记录
-  if (!onRankRecords.value.length) {
+  if (!onRankRecords[0].records.length) {
     return <LargeText className="text-center">无上榜记录</LargeText>;
   }
+
+  const flattedRecords = onRankRecords.map((page) => page.records).flat();
 
   return (
     <InfiniteScrollTable
       onLoadMore={onLoadMore}
-      hasMore={hasMore}
-      isLoading={isLoading}
+      hasMore={{ value: true } as unknown as Signal}
+      isLoading={{ value: isLoading } as unknown as Signal}
     >
       <Table className="w-full whitespace-nowrap text-center">
         <TableHeader>
@@ -280,7 +219,7 @@ function OnRankRecordsTable() {
           <TableHead>获钻量</TableHead>
         </TableHeader>
         <TableBody>
-          {onRankRecords.value!.map((item) => (
+          {flattedRecords.map((item) => (
             <TableRow key={`${item.date}-${item.articleUrl}`}>
               <TableCell>{getDate(parseTime(item.date))}</TableCell>
               <TableCell>{item.ranking}</TableCell>
@@ -323,21 +262,50 @@ export default function OnRankArticleViewer() {
       ? `/v1/users/${userSlug.value}/on-article-rank-summary`
       : `/v1/users/name/${userName.value}/on-article-rank-summary`,
   });
+  const {
+    data: onRankRecords,
+    isLoading,
+    nextPage,
+    trigger: triggerOnRankRecords,
+    reset: resetOnRankRecords,
+  } = useDataTriggerInfinite<
+    GetOnArticleRankRecordsRequest,
+    GetOnArticleRankRecordsResponse
+  >(({ currentPage, previousPageData }) =>
+    previousPageData && !previousPageData.records.length
+      ? null
+      : {
+          method: "GET",
+          endpoint: userSlug.value
+            ? `/v1/users/${userSlug.value}/on-article-rank-records`
+            : `/v1/users/name/${userName.value}/on-article-rank-records`,
+          queryArgs: {
+            order_by: orderBy.value.orderBy,
+            order_direction: orderBy.value.orderDirection,
+            offset: currentPage * 20,
+          },
+        },
+  );
 
   useEffect(() => {
     resetHistoryNames();
     resetRankSummary();
+    resetOnRankRecords();
   }, [userUrlOrName.value, orderBy.value]);
+
+  const triggers = [
+    triggerHistoryNames,
+    triggerRankSummary,
+    triggerOnRankRecords,
+  ];
 
   return (
     <Column>
-      <AutoCompleteUserNameOrUrl
-        onEnter={() => handleQuery([triggerHistoryNames, triggerRankSummary])}
-      />
+      <AutoCompleteUserNameOrUrl onEnter={() => handleQuery(triggers)} />
       <OrderBy />
       <SolidButton
-        onClick={() => handleQuery([triggerHistoryNames, triggerRankSummary])}
-        loading={isLoading.value}
+        onClick={() => handleQuery(triggers)}
+        loading={isLoading}
         fullWidth
       >
         查询
@@ -350,11 +318,15 @@ export default function OnRankArticleViewer() {
           userUrlOrName.value = historyNames!.userUrl;
           resetHistoryNames();
           // 触发检索
-          handleQuery([triggerHistoryNames, triggerRankSummary]);
+          handleQuery(triggers);
         }}
       />
       <OnRankSummary rankSummary={rankSummary} />
-      <OnRankRecordsTable />
+      <OnRankRecordsTable
+        onRankRecords={onRankRecords}
+        isLoading={isLoading}
+        onLoadMore={nextPage}
+      />
     </Column>
   );
 }

@@ -13,8 +13,8 @@ import { routes } from "./routes";
 import { onError } from "./utils/errorHandler";
 import { fetcher } from "./utils/fetcher";
 
-import "@sscreator/ui/sscreator-ui.css";
 import "@unocss/reset/tailwind.css";
+import "@sscreator/ui/sscreator-ui.css";
 import "uno.css";
 
 // 处理 Safari 浏览器上的 ResizeObserver 兼容性问题

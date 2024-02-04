@@ -1,4 +1,5 @@
-import { batch, computed, signal, useSignal } from "@preact/signals";
+import type { Signal } from "@preact/signals";
+import { computed, signal, useSignal } from "@preact/signals";
 import {
   CheckboxGroup,
   Column,
@@ -17,72 +18,26 @@ import {
   toastWarning,
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
-import { useData } from "../hooks/useData";
+import { useData, useDataTriggerInfinite } from "../hooks/useData";
 import type { GetRewardsResponse } from "../models/lottery";
 import type {
-  GetLotteryWinRecordItem,
   GetLotteryWinRecordsRequest,
   GetLotteryWinRecordsResponse,
 } from "../models/users";
 import { userUrlToSlug } from "../utils/jianshuHelper";
-import { sendRequest } from "../utils/sendRequest";
 import { getDatetime, parseTime } from "../utils/timeHelper";
 
 const userUrl = signal("");
 const userSlug = computed(() => userUrlToSlug(userUrl.value));
-
 const excludedAwards = signal<string[]>([]);
-const isLoading = signal(false);
-const hasMore = signal(true);
-const lotteryWinRecords = signal<GetLotteryWinRecordItem[] | undefined>(
-  undefined,
-);
 
-function handleQuery() {
+function handleQuery(trigger: () => void) {
   if (!userSlug.value) {
     toastWarning({ message: "请输入有效的用户个人主页链接" });
     return;
   }
 
-  sendRequest<GetLotteryWinRecordsRequest, GetLotteryWinRecordsResponse>({
-    method: "GET",
-    endpoint: `/v1/users/${userSlug.value}/lottery-win-records`,
-    queryArgs: {
-      excluded_awards: excludedAwards.value,
-    },
-    onSuccess: ({ data }) =>
-      batch(() => {
-        lotteryWinRecords.value = data.records;
-        if (data.records.length === 0) {
-          hasMore.value = false;
-        }
-      }),
-    isLoading,
-  });
-}
-
-function handleLoadMore() {
-  if (!userSlug.value) {
-    toastWarning({ message: "请输入有效的用户个人主页链接" });
-    return;
-  }
-
-  sendRequest<GetLotteryWinRecordsRequest, GetLotteryWinRecordsResponse>({
-    method: "GET",
-    endpoint: `/v1/users/${userSlug.value}/lottery-win-records`,
-    queryArgs: {
-      excluded_awards: excludedAwards.value,
-      offset: lotteryWinRecords.value!.length,
-    },
-    onSuccess: ({ data }) => {
-      if (!data.records) {
-        hasMore.value = false;
-      } else {
-        lotteryWinRecords.value = lotteryWinRecords.value!.concat(data.records);
-      }
-    },
-    isLoading,
-  });
+  trigger();
 }
 
 function RewardsFliter() {
@@ -132,20 +87,30 @@ function RewardsFliter() {
   );
 }
 
-function Result() {
-  if (!lotteryWinRecords.value) {
+function Result({
+  lotteryWinRecords,
+  isLoading,
+  onLoadMore,
+}: {
+  lotteryWinRecords?: GetLotteryWinRecordsResponse[];
+  isLoading: boolean;
+  onLoadMore: () => void;
+}) {
+  if (!lotteryWinRecords || !lotteryWinRecords.length) {
     return null;
   }
 
-  if (!lotteryWinRecords.value.length) {
+  if (!lotteryWinRecords[0].records.length) {
     return <LargeText className="text-center">无中奖记录</LargeText>;
   }
 
+  const flattedRecords = lotteryWinRecords.map((page) => page.records).flat();
+
   return (
     <InfiniteScrollTable
-      onLoadMore={handleLoadMore}
-      hasMore={hasMore}
-      isLoading={isLoading}
+      onLoadMore={onLoadMore}
+      hasMore={{ value: true } as unknown as Signal}
+      isLoading={{ value: isLoading } as unknown as Signal}
     >
       <Table className="w-full whitespace-nowrap text-center">
         <TableHeader>
@@ -153,7 +118,7 @@ function Result() {
           <TableHead>奖项</TableHead>
         </TableHeader>
         <TableBody>
-          {lotteryWinRecords.value!.map((item) => (
+          {flattedRecords.map((item) => (
             <TableRow key={item.time}>
               <TableCell>{getDatetime(parseTime(item.time))}</TableCell>
               <TableCell>{item.rewardName}</TableCell>
@@ -166,23 +131,57 @@ function Result() {
 }
 
 export default function LotteryRewardRecordViewer() {
+  const {
+    data: lotteryWinRecords,
+    isLoading,
+    nextPage,
+    trigger,
+    reset,
+  } = useDataTriggerInfinite<
+    GetLotteryWinRecordsRequest,
+    GetLotteryWinRecordsResponse
+  >(({ currentPage, previousPageData }) =>
+    previousPageData && !previousPageData.records.length
+      ? null
+      : {
+          method: "GET",
+          endpoint: `/v1/users/${userSlug.value}/lottery-win-records`,
+          queryArgs: {
+            excluded_awards: excludedAwards.value,
+            offset: currentPage * 20,
+          },
+        },
+  );
+
+  useEffect(() => {
+    reset();
+  }, [userUrl.value, excludedAwards.value]);
+
   return (
     <Column>
       <TextInput
         id="user-url"
         label="用户个人主页链接"
         value={userUrl}
-        onEnter={handleQuery}
+        onEnter={() => handleQuery(trigger)}
       />
       <RewardsFliter />
       <SmallText colorScheme="gray">
         受简书接口限制，本工具数据不包括免费开 1 次连载与锦鲤头像框
       </SmallText>
-      <SolidButton onClick={handleQuery} loading={isLoading.value} fullWidth>
+      <SolidButton
+        onClick={() => handleQuery(trigger)}
+        loading={isLoading}
+        fullWidth
+      >
         查询
       </SolidButton>
 
-      <Result />
+      <Result
+        lotteryWinRecords={lotteryWinRecords}
+        isLoading={isLoading}
+        onLoadMore={nextPage}
+      />
     </Column>
   );
 }
