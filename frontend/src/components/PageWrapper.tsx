@@ -1,7 +1,8 @@
 import { useDocumentTitle } from "@mantine/hooks";
 import { Column, LoadingPage } from "@sscreator/ui";
 import type { JSX } from "preact";
-import { Suspense, useEffect } from "preact/compat";
+import { Suspense } from "preact/compat";
+import { useEffect } from "preact/hooks";
 import FooterBlock from "./FooterBlock";
 import HeaderBlock from "./HeaderBlock";
 import ToolMetaInfo from "./ToolMetaInfo";

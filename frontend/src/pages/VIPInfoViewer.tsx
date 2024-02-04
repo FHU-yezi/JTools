@@ -10,7 +10,7 @@ import {
   toastWarning,
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
-import { useTriggerData } from "../hooks/useData";
+import { useDataTrigger } from "../hooks/useData";
 import type { GetVIPInfoResponse } from "../models/users";
 import { userUrlToSlug } from "../utils/jianshuHelper";
 import {
@@ -85,7 +85,7 @@ export default function VIPInfoViewer() {
     isLoading,
     trigger,
     reset,
-  } = useTriggerData<Record<string, never>, GetVIPInfoResponse>({
+  } = useDataTrigger<Record<string, never>, GetVIPInfoResponse>({
     method: "GET",
     endpoint: `/v1/users/${userSlug.value}/vip-info`,
   });

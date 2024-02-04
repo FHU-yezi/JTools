@@ -9,7 +9,7 @@ import {
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
 import WordCloud from "../components/charts/Wordcloud";
-import { useTriggerData } from "../hooks/useData";
+import { useDataTrigger } from "../hooks/useData";
 import type { GetWordFreqResponse } from "../models/articles";
 import { articleUrlToSlug } from "../utils/jianshuHelper";
 
@@ -63,7 +63,7 @@ export default function ArticleWordcloudGenerator() {
     isLoading,
     trigger,
     reset,
-  } = useTriggerData<Record<string, never>, GetWordFreqResponse>({
+  } = useDataTrigger<Record<string, never>, GetWordFreqResponse>({
     method: "GET",
     endpoint: `/v1/articles/${articleSlug.value}/word-freq`,
   });

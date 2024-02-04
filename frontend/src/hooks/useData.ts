@@ -14,20 +14,20 @@ export function useData<
   return useSWR<TResponse>(keys, options);
 }
 
-type TriggerDataReponse<TResponse> = Omit<
+type DataTriggerReponse<TResponse> = Omit<
   SWRMutationResponse<TResponse, Error>,
   "isMutating"
 > & {
   isLoading: Boolean;
 };
 
-export function useTriggerData<
+export function useDataTrigger<
   TRequest extends Record<string, any>,
   TResponse extends Record<string, any>,
 >(
   keys: FetcherArgs<TRequest>,
   options?: SWRMutationConfiguration<TResponse, Error>,
-): TriggerDataReponse<TResponse> {
+): DataTriggerReponse<TResponse> {
   const response = useSWRMutation<TResponse>(keys, options as any);
 
   return {

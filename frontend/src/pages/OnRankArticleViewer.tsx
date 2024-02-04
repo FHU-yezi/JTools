@@ -19,7 +19,7 @@ import {
   toastWarning,
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
-import { useTriggerData } from "../hooks/useData";
+import { useDataTrigger } from "../hooks/useData";
 import type {
   GetHistoryNamesOnArticleRankSummaryResponse,
   GetNameAutocompleteRequest,
@@ -59,7 +59,7 @@ function handleQuery(triggers: Array<() => void>) {
 }
 
 function AutoCompleteUserNameOrUrl({ onEnter }: { onEnter: () => void }) {
-  const { data: autocompleteOptions, trigger } = useTriggerData<
+  const { data: autocompleteOptions, trigger } = useDataTrigger<
     GetNameAutocompleteRequest,
     GetNameAutocompleteResponse
   >({
@@ -306,7 +306,7 @@ export default function OnRankArticleViewer() {
     data: historyNames,
     trigger: triggerHistoryNames,
     reset: resetHistoryNames,
-  } = useTriggerData<
+  } = useDataTrigger<
     Record<string, never>,
     GetHistoryNamesOnArticleRankSummaryResponse
   >({
@@ -317,7 +317,7 @@ export default function OnRankArticleViewer() {
     data: rankSummary,
     trigger: triggerRankSummary,
     reset: resetRankSummary,
-  } = useTriggerData<Record<string, never>, GetOnArticleRankSummaryResponse>({
+  } = useDataTrigger<Record<string, never>, GetOnArticleRankSummaryResponse>({
     method: "GET",
     endpoint: userSlug.value
       ? `/v1/users/${userSlug.value}/on-article-rank-summary`
