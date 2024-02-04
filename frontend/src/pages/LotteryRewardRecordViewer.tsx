@@ -1,4 +1,3 @@
-import type { Signal } from "@preact/signals";
 import { computed, signal, useSignal } from "@preact/signals";
 import {
   CheckboxGroup,
@@ -107,11 +106,7 @@ function Result({
   const flattedRecords = lotteryWinRecords.map((page) => page.records).flat();
 
   return (
-    <InfiniteScrollTable
-      onLoadMore={onLoadMore}
-      hasMore={{ value: true } as unknown as Signal}
-      isLoading={{ value: isLoading } as unknown as Signal}
-    >
+    <InfiniteScrollTable onLoadMore={onLoadMore} hasMore isLoading={isLoading}>
       <Table className="w-full whitespace-nowrap text-center">
         <TableHeader>
           <TableHead>时间</TableHead>

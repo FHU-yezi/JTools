@@ -1,4 +1,3 @@
-import type { Signal } from "@preact/signals";
 import { computed, signal, useSignalEffect } from "@preact/signals";
 import {
   AutoCompleteInput,
@@ -206,11 +205,7 @@ function OnRankRecordsTable({
   const flattedRecords = onRankRecords.map((page) => page.records).flat();
 
   return (
-    <InfiniteScrollTable
-      onLoadMore={onLoadMore}
-      hasMore={{ value: true } as unknown as Signal}
-      isLoading={{ value: isLoading } as unknown as Signal}
-    >
+    <InfiniteScrollTable onLoadMore={onLoadMore} hasMore isLoading={isLoading}>
       <Table className="w-full whitespace-nowrap text-center">
         <TableHeader>
           <TableHead>日期</TableHead>
