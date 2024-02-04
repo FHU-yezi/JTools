@@ -85,7 +85,7 @@ export default function ArticleWordcloudGenerator() {
       />
       <SolidButton
         onClick={() => handleGenerate(trigger)}
-        loading={isLoading as boolean}
+        loading={isLoading}
         fullWidth
       >
         生成

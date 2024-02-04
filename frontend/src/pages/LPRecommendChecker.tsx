@@ -114,7 +114,7 @@ export default function LPRecommendChecker() {
       />
       <SolidButton
         onClick={() => handleCheck(trigger)}
-        loading={isLoading as boolean}
+        loading={isLoading}
         fullWidth
       >
         检测

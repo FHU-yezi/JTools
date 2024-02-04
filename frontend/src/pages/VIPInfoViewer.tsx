@@ -105,7 +105,7 @@ export default function VIPInfoViewer() {
       />
       <SolidButton
         onClick={() => handleQuery(trigger)}
-        loading={isLoading as boolean}
+        loading={isLoading}
         fullWidth
       >
         查询

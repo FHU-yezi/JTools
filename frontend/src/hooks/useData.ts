@@ -23,7 +23,7 @@ type DataTriggerReponse<TResponse> = Omit<
   SWRMutationResponse<TResponse, Error>,
   "isMutating"
 > & {
-  isLoading: Boolean;
+  isLoading: boolean;
 };
 
 export function useDataTrigger<
