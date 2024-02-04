@@ -14,10 +14,11 @@ export default defineConfig({
     VitePWA({
       injectRegister: "inline",
       registerType: "autoUpdate",
-      devOptions: {
-        enabled: true,
-      },
-      includeAssets: ["favicon-64.ico", "favicon-180.png"],
+      includeAssets: [
+        "favicon-64.ico",
+        "/favicon-vector.svg",
+        "favicon-180.png",
+      ],
       manifest: {
         name: "简书小工具集",
         short_name: "简书小工具集",
