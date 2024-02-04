@@ -19,6 +19,7 @@ import {
   toastWarning,
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
+import { useTriggerData } from "../hooks/useData";
 import type {
   GetHistoryNamesOnArticleRankSummaryResponse,
   GetNameAutocompleteRequest,
@@ -35,7 +36,9 @@ import { getDate, parseTime } from "../utils/timeHelper";
 const userUrlOrName = signal("");
 const userSlug = computed(() => userUrlToSlug(userUrlOrName.value));
 const userName = computed(() =>
-  !userSlug.value && userUrlOrName.value ? userUrlOrName.value.trim() : null,
+  userUrlOrName.value && !userSlug.value
+    ? userUrlOrName.value.trim()
+    : undefined,
 );
 const orderBy = signal<{
   orderBy: "date" | "ranking";
@@ -45,34 +48,33 @@ const orderBy = signal<{
 const isLoading = signal(false);
 const showResult = signal(false);
 
-function handleQuery() {
+function handleQuery(triggers: Array<() => void>) {
   if (!userUrlOrName.value) {
     toastWarning({ message: "请输入有效的昵称或用户个人主页链接" });
     return;
   }
 
+  triggers.map((trigger) => trigger());
   showResult.value = true;
 }
 
-function AutoCompleteUserNameOrUrl() {
-  const autocompleteOptions = useSignal<string[]>([]);
+function AutoCompleteUserNameOrUrl({ onEnter }: { onEnter: () => void }) {
+  const { data: autocompleteOptions, trigger } = useTriggerData<
+    GetNameAutocompleteRequest,
+    GetNameAutocompleteResponse
+  >({
+    method: "GET",
+    endpoint: "/v1/users/name-autocomplete",
+    queryArgs: {
+      name_part: userName.value ?? "",
+    },
+  });
 
   useSignalEffect(() => {
-    if (!userUrlOrName.value.length) {
-      return;
-    }
-    if (userUrlOrName.value.startsWith("https://")) {
-      return;
-    }
+    if (!userName.value) return;
+    if (userName.value.length >= 15) return;
 
-    sendRequest<GetNameAutocompleteRequest, GetNameAutocompleteResponse>({
-      method: "GET",
-      endpoint: "/v1/users/name-autocomplete",
-      queryArgs: {
-        name_part: userUrlOrName.value.trim(),
-      },
-      onSuccess: ({ data }) => (autocompleteOptions.value = data.names),
-    });
+    setTimeout(trigger);
   });
 
   useEffect(() => {
@@ -84,8 +86,8 @@ function AutoCompleteUserNameOrUrl() {
       id="user-name-or-url"
       label="用户昵称 / 个人主页链接"
       value={userUrlOrName}
-      onEnter={handleQuery}
-      options={autocompleteOptions.value}
+      onEnter={onEnter}
+      options={autocompleteOptions?.names ?? []}
       fullWidth
     />
   );
@@ -126,35 +128,19 @@ function OrderBy() {
   );
 }
 
-function HistoryNamesFoundNotice() {
-  const historyNamesData =
-    useSignal<GetHistoryNamesOnArticleRankSummaryResponse | null>(null);
-
-  useEffect(() => {
-    if (!showResult.value) {
-      return;
-    }
-    if (!userName.value) {
-      return;
-    }
-
-    historyNamesData.value = null;
-    sendRequest<
-      Record<string, never>,
-      GetHistoryNamesOnArticleRankSummaryResponse
-    >({
-      method: "GET",
-      endpoint: `/v1/users/name/${userName.value}/history-names-on-article-rank-summary`,
-      onSuccess: ({ data }) => (historyNamesData.value = data),
-    });
-  }, [showResult.value]);
-
-  if (!showResult.value || !historyNamesData.value) {
+function HistoryNamesFoundNotice({
+  historyNames,
+  onShowFullData,
+}: {
+  historyNames?: GetHistoryNamesOnArticleRankSummaryResponse;
+  onShowFullData: () => void;
+}) {
+  if (!historyNames) {
     return null;
   }
 
   // 无曾用昵称
-  if (!Object.keys(historyNamesData.value.historyNamesOnrankSummary).length) {
+  if (!Object.keys(historyNames.historyNamesOnrankSummary).length) {
     return null;
   }
 
@@ -162,7 +148,7 @@ function HistoryNamesFoundNotice() {
     <Notice className="flex flex-col" colorScheme="info" title="曾用昵称">
       <Text>找到您曾用昵称的上榜记录：</Text>
       <Column gap="gap-2">
-        {Object.entries(historyNamesData.value.historyNamesOnrankSummary).map(
+        {Object.entries(historyNames.historyNamesOnrankSummary).map(
           ([name, dataCount]) => (
             <Text>
               {name}：{dataCount} 条
@@ -171,46 +157,22 @@ function HistoryNamesFoundNotice() {
         )}
       </Column>
 
-      <SolidButton
-        onClick={() => {
-          // 替换当前输入的昵称为个人主页链接，同时隐藏该组件
-          userUrlOrName.value = historyNamesData.value!.userUrl;
-          historyNamesData.value = null;
-          // 触发检索
-          handleQuery();
-        }}
-      >
-        查看完整数据
-      </SolidButton>
+      <SolidButton onClick={onShowFullData}>查看完整数据</SolidButton>
     </Notice>
   );
 }
 
-function OnRankSummary() {
-  const rankSummary = useSignal<GetOnArticleRankSummaryResponse | null>(null);
-
-  useEffect(() => {
-    if (!showResult.value) {
-      return;
-    }
-
-    rankSummary.value = null;
-    const endpoint = userSlug.value
-      ? `/v1/users/${userSlug.value}/on-article-rank-summary`
-      : `/v1/users/name/${userName.value}/on-article-rank-summary`;
-    sendRequest<Record<string, never>, GetOnArticleRankSummaryResponse>({
-      method: "GET",
-      endpoint,
-      onSuccess: ({ data }) => (rankSummary.value = data),
-    });
-  }, [showResult.value]);
-
-  if (!showResult.value || !rankSummary.value) {
+function OnRankSummary({
+  rankSummary,
+}: {
+  rankSummary?: GetOnArticleRankSummaryResponse;
+}) {
+  if (!rankSummary) {
     return null;
   }
 
   // 用户无上榜文章
-  if (!rankSummary.value.total) {
+  if (!rankSummary.total) {
     return null;
   }
 
@@ -218,19 +180,19 @@ function OnRankSummary() {
     <Row className="flex-wrap justify-around">
       <Column gap="gap-1">
         <Text>总共上榜</Text>
-        <LargeText bold>{rankSummary.value.total} 次</LargeText>
+        <LargeText bold>{rankSummary.total} 次</LargeText>
       </Column>
       <Column gap="gap-1">
         <Text>前 10 名</Text>
-        <LargeText bold>{rankSummary.value.top10} 次</LargeText>
+        <LargeText bold>{rankSummary.top10} 次</LargeText>
       </Column>
       <Column gap="gap-1">
         <Text>前 30 名</Text>
-        <LargeText bold>{rankSummary.value.top30} 次</LargeText>
+        <LargeText bold>{rankSummary.top30} 次</LargeText>
       </Column>
       <Column gap="gap-1">
         <Text>前 50 名</Text>
-        <LargeText bold>{rankSummary.value.top50} 次</LargeText>
+        <LargeText bold>{rankSummary.top50} 次</LargeText>
       </Column>
     </Row>
   );
@@ -340,16 +302,58 @@ function OnRankRecordsTable() {
 }
 
 export default function OnRankArticleViewer() {
+  const {
+    data: historyNames,
+    trigger: triggerHistoryNames,
+    reset: resetHistoryNames,
+  } = useTriggerData<
+    Record<string, never>,
+    GetHistoryNamesOnArticleRankSummaryResponse
+  >({
+    method: "GET",
+    endpoint: `/v1/users/name/${userName.value}/history-names-on-article-rank-summary`,
+  });
+  const {
+    data: rankSummary,
+    trigger: triggerRankSummary,
+    reset: resetRankSummary,
+  } = useTriggerData<Record<string, never>, GetOnArticleRankSummaryResponse>({
+    method: "GET",
+    endpoint: userSlug.value
+      ? `/v1/users/${userSlug.value}/on-article-rank-summary`
+      : `/v1/users/name/${userName.value}/on-article-rank-summary`,
+  });
+
+  useEffect(() => {
+    resetHistoryNames();
+    resetRankSummary();
+  }, [userUrlOrName.value, orderBy.value]);
+
   return (
     <Column>
-      <AutoCompleteUserNameOrUrl />
+      <AutoCompleteUserNameOrUrl
+        onEnter={() => handleQuery([triggerHistoryNames, triggerRankSummary])}
+      />
       <OrderBy />
-      <SolidButton onClick={handleQuery} loading={isLoading.value} fullWidth>
+      <SolidButton
+        onClick={() => handleQuery([triggerHistoryNames, triggerRankSummary])}
+        loading={isLoading.value}
+        fullWidth
+      >
         查询
       </SolidButton>
 
-      <HistoryNamesFoundNotice />
-      <OnRankSummary />
+      <HistoryNamesFoundNotice
+        historyNames={historyNames}
+        onShowFullData={() => {
+          // 替换当前输入的昵称为个人主页链接，同时隐藏该组件
+          userUrlOrName.value = historyNames!.userUrl;
+          resetHistoryNames();
+          // 触发检索
+          handleQuery([triggerHistoryNames, triggerRankSummary]);
+        }}
+      />
+      <OnRankSummary rankSummary={rankSummary} />
       <OnRankRecordsTable />
     </Column>
   );

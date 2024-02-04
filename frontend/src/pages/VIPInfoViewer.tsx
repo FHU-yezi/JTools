@@ -6,12 +6,13 @@ import {
   Row,
   SolidButton,
   Text,
-  toastWarning,
   TextInput,
+  toastWarning,
 } from "@sscreator/ui";
+import { useEffect } from "preact/hooks";
+import { useTriggerData } from "../hooks/useData";
 import type { GetVIPInfoResponse } from "../models/users";
 import { userUrlToSlug } from "../utils/jianshuHelper";
-import { sendRequest } from "../utils/sendRequest";
 import {
   getDate,
   getHumanReadableTimeDelta,
@@ -24,8 +25,6 @@ import VIPBadgeSilverURL from "/vip_badges/vip_badge_silver.png";
 
 const userUrl = signal("");
 const userSlug = computed(() => userUrlToSlug(userUrl.value));
-const isLoading = signal(false);
-const result = signal<GetVIPInfoResponse | undefined>(undefined);
 
 const VIPTypeToBadgeImageURL: Record<string, string> = {
   铜牌: VIPBadgeBronzeURL,
@@ -34,39 +33,26 @@ const VIPTypeToBadgeImageURL: Record<string, string> = {
   白金: VIPBadgePlatinaURL,
 };
 
-function handleQuery() {
-  if (isLoading.value) {
-    return;
-  }
-
+function handleQuery(trigger: () => void) {
   if (userUrl.value.length === 0) {
     toastWarning({ message: "请输入用户个人主页链接" });
     return;
   }
 
-  sendRequest<Record<string, never>, GetVIPInfoResponse>({
-    method: "GET",
-    endpoint: `/v1/users/${userSlug.value}/vip-info`,
-    onSuccess: ({ data }) => (result.value = data),
-    isLoading,
-  });
+  trigger();
 }
 
-function Result() {
-  if (!result.value) {
-    return null;
-  }
+function Result({ VIPInfo }: { VIPInfo?: GetVIPInfoResponse }) {
+  if (!VIPInfo) return null;
 
-  const expireDate = result.value.expireDate
-    ? parseTime(result.value.expireDate)
-    : null;
+  const expireDate = VIPInfo.expireDate ? parseTime(VIPInfo.expireDate) : null;
 
   return (
     <>
       <Column gap="gap-1">
         <Text colorScheme="gray">用户</Text>
         <ExternalLink className="text-lg" href={userUrl.value}>
-          {result.value.userName}
+          {VIPInfo.userName}
         </ExternalLink>
       </Column>
       <Column gap="gap-1">
@@ -74,15 +60,13 @@ function Result() {
         <Row gap="gap-1" itemsCenter>
           <img
             className="h-5 w-5"
-            src={VIPTypeToBadgeImageURL[result.value.type]}
-            alt={`${result.value.type}会员图标`}
+            src={VIPTypeToBadgeImageURL[VIPInfo.type]}
+            alt={`${VIPInfo.type}会员图标`}
           />
-          <LargeText>
-            {result.value.isVIP ? result.value.type : "无会员"}
-          </LargeText>
+          <LargeText>{VIPInfo.isVIP ? VIPInfo.type : "无会员"}</LargeText>
         </Row>
       </Column>
-      {result.value.isVIP && (
+      {VIPInfo.isVIP && (
         <Column gap="gap-1">
           <Text colorScheme="gray">会员到期时间</Text>
           <LargeText>{getDate(expireDate!)}</LargeText>
@@ -96,20 +80,38 @@ function Result() {
 }
 
 export default function VIPInfoViewer() {
+  const {
+    data: VIPInfo,
+    isLoading,
+    trigger,
+    reset,
+  } = useTriggerData<Record<string, never>, GetVIPInfoResponse>({
+    method: "GET",
+    endpoint: `/v1/users/${userSlug.value}/vip-info`,
+  });
+
+  useEffect(() => {
+    reset();
+  }, [userUrl.value]);
+
   return (
     <Column>
       <TextInput
         id="user-url"
         label="用户个人主页链接"
         value={userUrl}
-        onEnter={handleQuery}
+        onEnter={() => handleQuery(trigger)}
         selectAllOnFocus
       />
-      <SolidButton onClick={handleQuery} loading={isLoading.value} fullWidth>
+      <SolidButton
+        onClick={() => handleQuery(trigger)}
+        loading={isLoading as boolean}
+        fullWidth
+      >
         查询
       </SolidButton>
 
-      {result.value && <Result />}
+      <Result VIPInfo={VIPInfo} />
     </Column>
   );
 }

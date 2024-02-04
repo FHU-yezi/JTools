@@ -1,10 +1,4 @@
-import {
-  batch,
-  computed,
-  signal,
-  useSignal,
-  useSignalEffect,
-} from "@preact/signals";
+import { batch, computed, signal, useSignal } from "@preact/signals";
 import {
   CheckboxGroup,
   Column,
@@ -23,6 +17,7 @@ import {
   toastWarning,
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
+import { useData } from "../hooks/useData";
 import type { GetRewardsResponse } from "../models/lottery";
 import type {
   GetLotteryWinRecordItem,
@@ -91,42 +86,43 @@ function handleLoadMore() {
 }
 
 function RewardsFliter() {
-  const rewards = useSignal<GetRewardsResponse | null>(null);
+  const { data: rewards, isLoading: isRewardsLoading } = useData<
+    Record<string, never>,
+    GetRewardsResponse
+  >({
+    method: "GET",
+    endpoint: "/v1/lottery/rewards",
+  });
   const selectedRewards = useSignal<Array<string>>([]);
 
   useEffect(() => {
-    sendRequest<Record<string, never>, GetRewardsResponse>({
-      method: "GET",
-      endpoint: "/v1/lottery/rewards",
-      onSuccess: ({ data }) => {
-        rewards.value = data;
-        selectedRewards.value = data.rewards;
-      },
-    });
-  }, []);
+    if (!isRewardsLoading) {
+      selectedRewards.value = rewards!.rewards;
+    }
+  }, [isRewardsLoading]);
 
-  useSignalEffect(() => {
-    if (!rewards.value) {
+  useEffect(() => {
+    if (!rewards) {
       excludedAwards.value = [];
       return;
     }
 
-    excludedAwards.value = rewards.value.rewards.filter(
+    excludedAwards.value = rewards.rewards.filter(
       (item) => !selectedRewards.value.includes(item),
     );
-  });
+  }, [selectedRewards.value]);
 
   return (
-    <LoadingArea className="h-[56px]" loading={!rewards.value}>
+    <LoadingArea className="h-[56px]" loading={!rewards}>
       <CheckboxGroup
         id="rewards"
         className="flex flex-wrap gap-x-4 gap-y-2"
         label="奖项筛选"
         value={selectedRewards}
         options={
-          !rewards.value
+          !rewards
             ? []
-            : rewards.value.rewards.map((item) => ({
+            : rewards.rewards.map((item) => ({
                 label: item,
                 value: item,
               }))

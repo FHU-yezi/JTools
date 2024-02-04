@@ -6,57 +6,52 @@ import {
   SmallText,
   SolidButton,
   Text,
-  toastWarning,
   TextInput,
+  toastWarning,
 } from "@sscreator/ui";
 import dayjs from "dayjs";
+import { useEffect } from "preact/hooks";
+import { useTriggerData } from "../hooks/useData";
 import type { GetLPRecommendCheckResponse } from "../models/articles";
 import { articleUrlToSlug } from "../utils/jianshuHelper";
-import { sendRequest } from "../utils/sendRequest";
 import { getDate, parseTime } from "../utils/timeHelper";
 
 const articleUrl = signal("");
 const articleSlug = computed(() => articleUrlToSlug(articleUrl.value));
 
-const isLoading = signal(false);
-const result = signal<GetLPRecommendCheckResponse | null>(null);
-
-function handleCheck() {
+function handleCheck(trigger: () => void) {
   if (!articleSlug.value) {
     toastWarning({ message: "请输入有效的文章链接" });
     return;
   }
 
-  sendRequest<Record<string, never>, GetLPRecommendCheckResponse>({
-    method: "GET",
-    endpoint: `/v1/articles/${articleSlug.value}/lp-recommend-check`,
-    onSuccess: ({ data }) => (result.value = data),
-    isLoading,
-  });
+  trigger();
 }
 
-function Result() {
-  if (!result.value) {
-    return null;
-  }
+function Result({
+  checkResult,
+}: {
+  checkResult?: GetLPRecommendCheckResponse;
+}) {
+  if (!checkResult) return null;
 
-  const shouldFPRewardHighlight = result.value.FPReward >= 35;
-  const shouldnextCanRecommendDateHighlight = result.value.nextCanRecommendDate
-    ? parseTime(result.value!.nextCanRecommendDate) >= dayjs()
+  const shouldFPRewardHighlight = checkResult.FPReward >= 35;
+  const shouldnextCanRecommendDateHighlight = checkResult.nextCanRecommendDate
+    ? parseTime(checkResult.nextCanRecommendDate) >= dayjs()
     : false;
 
   return (
     <>
       <LargeText
-        colorScheme={result.value.canRecommendNow ? "success" : "danger"}
+        colorScheme={checkResult.canRecommendNow ? "success" : "danger"}
         bold
       >
-        {result.value.canRecommendNow ? "可推荐" : "不可推荐"}
+        {checkResult.canRecommendNow ? "可推荐" : "不可推荐"}
       </LargeText>
       <Column gap="gap-1">
         <Text colorScheme="gray">文章</Text>
         <ExternalLink className="text-lg" href={articleUrl.value}>
-          {result.value.articleTitle}
+          {checkResult.articleTitle}
         </ExternalLink>
       </Column>
       <Column gap="gap-1">
@@ -64,7 +59,7 @@ function Result() {
           获钻量
         </Text>
         <LargeText colorScheme={shouldFPRewardHighlight ? "danger" : undefined}>
-          {result.value.FPReward}
+          {checkResult.FPReward}
         </LargeText>
       </Column>
       <Column gap="gap-1">
@@ -78,8 +73,8 @@ function Result() {
             shouldnextCanRecommendDateHighlight ? "danger" : undefined
           }
         >
-          {result.value.nextCanRecommendDate
-            ? getDate(parseTime(result.value.nextCanRecommendDate))
+          {checkResult.nextCanRecommendDate
+            ? getDate(parseTime(checkResult.nextCanRecommendDate))
             : "作者未上过榜"}
         </LargeText>
       </Column>
@@ -88,6 +83,20 @@ function Result() {
 }
 
 export default function LPRecommendChecker() {
+  const {
+    data: checkResult,
+    isLoading,
+    trigger,
+    reset,
+  } = useTriggerData<Record<string, never>, GetLPRecommendCheckResponse>({
+    method: "GET",
+    endpoint: `/v1/articles/${articleSlug.value}/lp-recommend-check`,
+  });
+
+  useEffect(() => {
+    reset();
+  }, [articleUrl.value]);
+
   return (
     <Column>
       <SmallText colorScheme="gray">
@@ -97,17 +106,21 @@ export default function LPRecommendChecker() {
         id="article-url"
         label="文章链接"
         value={articleUrl}
-        onEnter={handleCheck}
+        onEnter={() => handleCheck(trigger)}
         errorMessage={
           articleUrl.value && !articleSlug.value ? "链接无效" : undefined
         }
         selectAllOnFocus
       />
-      <SolidButton onClick={handleCheck} loading={isLoading.value} fullWidth>
+      <SolidButton
+        onClick={() => handleCheck(trigger)}
+        loading={isLoading as boolean}
+        fullWidth
+      >
         检测
       </SolidButton>
 
-      {result.value && <Result />}
+      <Result checkResult={checkResult} />
     </Column>
   );
 }
