@@ -32,7 +32,7 @@ splitter = AbilityJiebaPossegSplitterV1(
     allowed_word_types={
         "Ag", "a", "ad", "an", "dg", "g", "i",
         "j", "l", "Ng", "n", "nr", "ns", "nt",
-        "nz","tg","vg","v","vd","vn","un",
+        "nz", "tg", "vg", "v", "vd", "vn", "un",
     },
 )
 # fmt: on
