@@ -95,9 +95,7 @@ function Result({
   isLoading: boolean;
   onLoadMore: () => void;
 }) {
-  if (!lotteryWinRecords || !lotteryWinRecords.length) {
-    return null;
-  }
+  if (!lotteryWinRecords || !lotteryWinRecords.length) return null;
 
   if (!lotteryWinRecords[0].records.length) {
     return <LargeText className="text-center">无中奖记录</LargeText>;

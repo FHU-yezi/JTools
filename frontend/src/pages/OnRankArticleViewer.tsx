@@ -125,14 +125,10 @@ function HistoryNamesFoundNotice({
   historyNames?: GetHistoryNamesOnArticleRankSummaryResponse;
   onShowFullData: () => void;
 }) {
-  if (!historyNames) {
-    return null;
-  }
+  if (!historyNames) return null;
 
   // 无曾用昵称
-  if (!Object.keys(historyNames.historyNamesOnrankSummary).length) {
-    return null;
-  }
+  if (!Object.keys(historyNames.historyNamesOnrankSummary).length) return null;
 
   return (
     <Notice className="flex flex-col gap-4" colorScheme="info" title="曾用昵称">
@@ -157,14 +153,10 @@ function OnRankSummary({
 }: {
   rankSummary?: GetOnArticleRankSummaryResponse;
 }) {
-  if (!rankSummary) {
-    return null;
-  }
+  if (!rankSummary) return null;
 
   // 用户无上榜文章
-  if (!rankSummary.total) {
-    return null;
-  }
+  if (!rankSummary.total) return null;
 
   return (
     <Row className="flex-wrap justify-around">
@@ -197,9 +189,7 @@ function OnRankRecordsTable({
   isLoading: boolean;
   onLoadMore: () => void;
 }) {
-  if (!onRankRecords || !onRankRecords.length) {
-    return null;
-  }
+  if (!onRankRecords || !onRankRecords.length) return null;
 
   // 无上榜记录
   if (!onRankRecords[0].records.length) {

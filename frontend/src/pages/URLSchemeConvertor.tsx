@@ -76,9 +76,7 @@ function handleConvert() {
 function Result() {
   const clipboard = useClipboard();
 
-  if (!urlScheme.value) {
-    return null;
-  }
+  if (!urlScheme.value) return null;
 
   return (
     <Center>
