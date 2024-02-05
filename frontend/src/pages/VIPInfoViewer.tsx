@@ -48,7 +48,7 @@ function Result({ VIPInfo }: { VIPInfo?: GetVIPInfoResponse }) {
   const expireDate = VIPInfo.expireDate ? parseTime(VIPInfo.expireDate) : null;
 
   return (
-    <>
+    <Row className="flex-wrap justify-around">
       <Column gap="gap-1">
         <Text colorScheme="gray">用户</Text>
         <ExternalLink className="text-lg" href={userUrl.value}>
@@ -75,7 +75,7 @@ function Result({ VIPInfo }: { VIPInfo?: GetVIPInfoResponse }) {
           </Text>
         </Column>
       )}
-    </>
+    </Row>
   );
 }
 

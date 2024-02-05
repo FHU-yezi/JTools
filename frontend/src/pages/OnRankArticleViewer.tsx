@@ -1,4 +1,5 @@
-import { computed, signal, useSignalEffect } from "@preact/signals";
+import { useDebouncedValue } from "@mantine/hooks";
+import { computed, signal } from "@preact/signals";
 import {
   AutoCompleteInput,
   Column,
@@ -29,13 +30,15 @@ import type {
   GetOnArticleRankSummaryResponse,
 } from "../models/users";
 import { userUrlToSlug } from "../utils/jianshuHelper";
+import { replaceAll } from "../utils/textHelper";
 import { getDate, parseTime } from "../utils/timeHelper";
 
 const userUrlOrName = signal("");
 const userSlug = computed(() => userUrlToSlug(userUrlOrName.value));
 const userName = computed(() =>
   userUrlOrName.value && !userSlug.value
-    ? userUrlOrName.value.trim()
+    ? // 名称中含有 / 会导致 404 报错
+      replaceAll(userUrlOrName.value.trim(), "/", "")
     : undefined,
 );
 const orderBy = signal<{
@@ -53,6 +56,7 @@ function handleQuery(triggers: Array<() => void>) {
 }
 
 function AutoCompleteUserNameOrUrl({ onEnter }: { onEnter: () => void }) {
+  const [debouncedUserName] = useDebouncedValue(userUrlOrName.value, 100);
   const { data: autocompleteOptions, trigger } = useDataTrigger<
     GetNameAutocompleteRequest,
     GetNameAutocompleteResponse
@@ -60,16 +64,16 @@ function AutoCompleteUserNameOrUrl({ onEnter }: { onEnter: () => void }) {
     method: "GET",
     endpoint: "/v1/users/name-autocomplete",
     queryArgs: {
-      name_part: userName.value ?? "",
+      name_part: debouncedUserName ?? "",
     },
   });
 
-  useSignalEffect(() => {
-    if (!userName.value) return;
-    if (userName.value.length >= 15) return;
+  useEffect(() => {
+    if (!debouncedUserName) return;
+    if (debouncedUserName.length >= 15) return;
 
     setTimeout(trigger);
-  });
+  }, [debouncedUserName]);
 
   return (
     <AutoCompleteInput
@@ -95,7 +99,7 @@ function OrderBy() {
     },
     {
       label: "排名（倒序）",
-      value: { orderBy: "ranking", orderDirection: "asc" },
+      value: { orderBy: "ranking", orderDirection: "desc" },
     },
     {
       label: "排名（正序）",
@@ -131,7 +135,7 @@ function HistoryNamesFoundNotice({
   }
 
   return (
-    <Notice className="flex flex-col" colorScheme="info" title="曾用昵称">
+    <Notice className="flex flex-col gap-4" colorScheme="info" title="曾用昵称">
       <Text>找到您曾用昵称的上榜记录：</Text>
       <Column gap="gap-2">
         {Object.entries(historyNames.historyNamesOnrankSummary).map(
@@ -208,10 +212,12 @@ function OnRankRecordsTable({
     <InfiniteScrollTable onLoadMore={onLoadMore} hasMore isLoading={isLoading}>
       <Table className="w-full whitespace-nowrap text-center">
         <TableHeader>
-          <TableHead>日期</TableHead>
-          <TableHead>排名</TableHead>
-          <TableHead>文章</TableHead>
-          <TableHead>获钻量</TableHead>
+          <TableRow>
+            <TableHead>日期</TableHead>
+            <TableHead>排名</TableHead>
+            <TableHead>文章</TableHead>
+            <TableHead>获钻量</TableHead>
+          </TableRow>
         </TableHeader>
         <TableBody>
           {flattedRecords.map((item) => (
@@ -238,6 +244,7 @@ function OnRankRecordsTable({
 export default function OnRankArticleViewer() {
   const {
     data: historyNames,
+    isLoading: isHistoryNamesLoading,
     trigger: triggerHistoryNames,
     reset: resetHistoryNames,
   } = useDataTrigger<
@@ -249,6 +256,7 @@ export default function OnRankArticleViewer() {
   });
   const {
     data: rankSummary,
+    isLoading: isRankSummaryLoading,
     trigger: triggerRankSummary,
     reset: resetRankSummary,
   } = useDataTrigger<Record<string, never>, GetOnArticleRankSummaryResponse>({
@@ -259,7 +267,7 @@ export default function OnRankArticleViewer() {
   });
   const {
     data: onRankRecords,
-    isLoading,
+    isLoading: isOnRankRecordsLoading,
     nextPage,
     trigger: triggerOnRankRecords,
     reset: resetOnRankRecords,
@@ -300,7 +308,11 @@ export default function OnRankArticleViewer() {
       <OrderBy />
       <SolidButton
         onClick={() => handleQuery(triggers)}
-        loading={isLoading}
+        loading={
+          isHistoryNamesLoading || isRankSummaryLoading
+          // TODO
+          // isOnRankRecordsLoading
+        }
         fullWidth
       >
         查询
@@ -319,7 +331,7 @@ export default function OnRankArticleViewer() {
       <OnRankSummary rankSummary={rankSummary} />
       <OnRankRecordsTable
         onRankRecords={onRankRecords}
-        isLoading={isLoading}
+        isLoading={isOnRankRecordsLoading}
         onLoadMore={nextPage}
       />
     </Column>

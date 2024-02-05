@@ -27,7 +27,7 @@ export function useDynamicColorScheme({
     chartObj.value.setOption(getFinalOptions(options, !!options.legend));
 
     return () => {
-      chartObj.value!.dispose();
+      chartObj.value?.dispose();
     };
   }, [colorScheme]);
 }

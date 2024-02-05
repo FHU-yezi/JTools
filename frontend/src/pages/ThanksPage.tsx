@@ -13,8 +13,6 @@ import {
   Text,
 } from "@sscreator/ui";
 import dayjs from "dayjs";
-// eslint-disable-next-line import/no-cycle
-import HeaderBlock from "../components/HeaderBlock";
 import {
   debugProjectRecords,
   opensourcePackages,
@@ -28,8 +26,6 @@ export default function ThanksPage() {
 
   return (
     <Column>
-      <HeaderBlock pageName="鸣谢" />
-
       <Heading1>「捉虫计划」反馈</Heading1>
       <Grid cols="grid-cols-1 md:grid-cols-2">
         {debugProjectRecords.reverse().map((item) => (

@@ -3,6 +3,7 @@ import {
   Column,
   ExternalLink,
   LargeText,
+  Row,
   SmallText,
   SolidButton,
   Text,
@@ -48,36 +49,42 @@ function Result({
       >
         {checkResult.canRecommendNow ? "可推荐" : "不可推荐"}
       </LargeText>
-      <Column gap="gap-1">
-        <Text colorScheme="gray">文章</Text>
-        <ExternalLink className="text-lg" href={articleUrl.value}>
-          {checkResult.articleTitle}
-        </ExternalLink>
-      </Column>
-      <Column gap="gap-1">
-        <Text colorScheme={shouldFPRewardHighlight ? "danger" : "gray"}>
-          获钻量
-        </Text>
-        <LargeText colorScheme={shouldFPRewardHighlight ? "danger" : undefined}>
-          {checkResult.FPReward}
-        </LargeText>
-      </Column>
-      <Column gap="gap-1">
-        <Text
-          colorScheme={shouldnextCanRecommendDateHighlight ? "danger" : "gray"}
-        >
-          作者下次可推时间
-        </Text>
-        <LargeText
-          colorScheme={
-            shouldnextCanRecommendDateHighlight ? "danger" : undefined
-          }
-        >
-          {checkResult.nextCanRecommendDate
-            ? getDate(parseTime(checkResult.nextCanRecommendDate))
-            : "作者未上过榜"}
-        </LargeText>
-      </Column>
+      <Row className="flex-wrap justify-around">
+        <Column gap="gap-1">
+          <Text colorScheme="gray">文章</Text>
+          <ExternalLink className="text-lg" href={articleUrl.value}>
+            {checkResult.articleTitle}
+          </ExternalLink>
+        </Column>
+        <Column gap="gap-1">
+          <Text colorScheme={shouldFPRewardHighlight ? "danger" : "gray"}>
+            获钻量
+          </Text>
+          <LargeText
+            colorScheme={shouldFPRewardHighlight ? "danger" : undefined}
+          >
+            {checkResult.FPReward}
+          </LargeText>
+        </Column>
+        <Column gap="gap-1">
+          <Text
+            colorScheme={
+              shouldnextCanRecommendDateHighlight ? "danger" : "gray"
+            }
+          >
+            作者下次可推时间
+          </Text>
+          <LargeText
+            colorScheme={
+              shouldnextCanRecommendDateHighlight ? "danger" : undefined
+            }
+          >
+            {checkResult.nextCanRecommendDate
+              ? getDate(parseTime(checkResult.nextCanRecommendDate))
+              : "作者未上过榜"}
+          </LargeText>
+        </Column>
+      </Row>
     </>
   );
 }

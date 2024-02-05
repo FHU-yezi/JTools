@@ -35,7 +35,7 @@ function ArticleWordCloud({ wordFreq }: { wordFreq?: GetWordFreqResponse }) {
         <ExternalLink href={articleUrl.value}>{wordFreq.title}</ExternalLink>
       </Text>
       <WordCloud
-        className="aspect-video max-w-2xl"
+        className="aspect-video h-72 max-w-2xl"
         options={{
           series: [
             {

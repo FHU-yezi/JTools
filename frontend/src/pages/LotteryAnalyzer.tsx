@@ -2,6 +2,7 @@ import { useSignal } from "@preact/signals";
 import {
   Column,
   ExternalLink,
+  Grid,
   Heading1,
   LargeText,
   LoadingArea,
@@ -36,12 +37,14 @@ function SummaryTable({ data }: { data: GetSummaryResponse }) {
   return (
     <Table className="min-w-xl w-full whitespace-nowrap text-center">
       <TableHeader>
-        <TableHead>奖品名称</TableHead>
-        <TableHead>中奖次数</TableHead>
-        <TableHead>中奖人数</TableHead>
-        <TableHead>平均每人中奖次数</TableHead>
-        <TableHead>中奖率</TableHead>
-        <TableHead>稀有度</TableHead>
+        <TableRow>
+          <TableHead>奖品名称</TableHead>
+          <TableHead>中奖次数</TableHead>
+          <TableHead>中奖人数</TableHead>
+          <TableHead>平均每人中奖次数</TableHead>
+          <TableHead>中奖率</TableHead>
+          <TableHead>稀有度</TableHead>
+        </TableRow>
       </TableHeader>
       <TableBody>
         {data.rewards.map((item) => (
@@ -94,7 +97,7 @@ function Summary() {
   });
 
   return (
-    <>
+    <Column>
       <Heading1>综合统计</Heading1>
       <Select
         id="summary-time-range"
@@ -108,7 +111,7 @@ function Summary() {
       <SmallText colorScheme="gray">
         受简书接口限制，免费开 1 次连载与锦鲤头像框未予统计
       </SmallText>
-    </>
+    </Column>
   );
 }
 
@@ -126,7 +129,7 @@ function RecentWins() {
   });
 
   return (
-    <>
+    <Column>
       <Heading1>近期大奖</Heading1>
       <LoadingArea className="h-[320px]" loading={!recentRecords}>
         {recentRecords && (
@@ -151,7 +154,7 @@ function RecentWins() {
           </Column>
         )}
       </LoadingArea>
-    </>
+    </Column>
   );
 }
 
@@ -176,7 +179,7 @@ function WinsTrend() {
   });
 
   return (
-    <>
+    <Column>
       <Heading1>中奖趋势</Heading1>
       <Select
         id="reward-wins-history-time-range"
@@ -209,16 +212,19 @@ function WinsTrend() {
           },
         }}
       />
-    </>
+    </Column>
   );
 }
 
 export default function LotteryAnalyzer() {
   return (
-    <Column>
+    <Column gap="gap-8">
       <Summary />
-      <RecentWins />
-      <WinsTrend />
+
+      <Grid cols="grid-cols-1 lg:grid-cols-2" gap="gap-8">
+        <RecentWins />
+        <WinsTrend />
+      </Grid>
     </Column>
   );
 }

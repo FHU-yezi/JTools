@@ -192,7 +192,6 @@ class GetLPRecommendCheckResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     next_can_recommend_date: Optional[datetime]
 
 
-# TODO: 实现 LP 理事会推文检测接口
 @get(
     "/{article_slug: str}/lp-recommend-check",
     summary="获取 LP 理事会推文检测结果",

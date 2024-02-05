@@ -25,7 +25,7 @@ import type {
   GetRulesResponse,
 } from "../models/JPEPFTNMacket";
 
-const timeRangeSwitchData = [
+const timeRangeOptions = [
   { label: "24 小时", value: "24h" },
   { label: "7 天", value: "7d" },
   { label: "15 天", value: "15d" },
@@ -240,7 +240,7 @@ function RealtimeAmountDistribution() {
 
   return (
     <Column gap="gap-2">
-      <Heading2>挂单量分布</Heading2>
+      <Heading2>挂单价格分布</Heading2>
       <Select
         id="amount-distribution-trade-type"
         value={tradeType}
@@ -323,7 +323,7 @@ function PriceHistory() {
       <Select
         id="price-trending-time-range"
         value={timeRange}
-        options={timeRangeSwitchData}
+        options={timeRangeOptions}
         fullWidth
       />
       <LineChart
@@ -404,7 +404,7 @@ function AmountHistory() {
       <Select
         id="amount-trending-time-range"
         value={timeRange}
-        options={timeRangeSwitchData}
+        options={timeRangeOptions}
         fullWidth
       />
       <LineChart
