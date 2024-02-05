@@ -24,9 +24,28 @@ export default function ThanksPage() {
   // 设置页面标题
   useDocumentTitle("鸣谢 - 简书小工具集");
 
+  const allContributorsName = Array.from(
+    new Set(debugProjectRecords.map((item) => item.user_name)),
+  );
+
   return (
     <Column>
       <Heading1>「捉虫计划」反馈</Heading1>
+      <Heading2>贡献者</Heading2>
+      <Row className="flex-wrap">
+        {allContributorsName.map((item) => (
+          <ExternalLink
+            href={
+              debugProjectRecords.filter(
+                (record) => record.user_name === item,
+              )[0].user_url
+            }
+          >
+            {item}
+          </ExternalLink>
+        ))}
+      </Row>
+      <Heading2>捉虫记录</Heading2>
       <Grid cols="grid-cols-1 md:grid-cols-2">
         {debugProjectRecords.reverse().map((item) => (
           <Card className="flex flex-col gap-3" withPadding>
@@ -45,30 +64,29 @@ export default function ThanksPage() {
         ))}
       </Grid>
 
-      <Heading1>开源库</Heading1>
-      <Grid cols="grid-cols-1 sm:grid-cols-2">
-        {Object.entries(opensourcePackages).map(([partName, part]) => (
-          <Card className="flex flex-col gap-2" withPadding>
-            <Heading2>{partName}</Heading2>
-            {part.map(({ name, desc, url }) => (
-              <Text>
-                {desc}：<ExternalLink href={url}>{name}</ExternalLink>
-              </Text>
-            ))}
-          </Card>
-        ))}
-      </Grid>
-
       <Column>
-        <Column gap="gap-1">
-          <Heading1>v3 Beta 内测成员</Heading1>
-          <Text colorScheme="gray">排名不分先后</Text>
-        </Column>
-        <Column gap="gap-2">
+        <Heading1>v3 Beta 内测成员</Heading1>
+        <Row className="flex-wrap">
           {Object.entries(v3BetaPaticipants).map(([name, url]) => (
-            <ExternalLink href={url}>{name}</ExternalLink>
+            <ExternalLink className="inline" href={url}>
+              {name}
+            </ExternalLink>
           ))}
-        </Column>
+        </Row>
+
+        <Heading1>开源库</Heading1>
+        <Grid cols="grid-cols-1 sm:grid-cols-2">
+          {Object.entries(opensourcePackages).map(([partName, part]) => (
+            <Card className="flex flex-col gap-2" withPadding>
+              <Heading2>{partName}</Heading2>
+              {part.map(({ name, desc, url }) => (
+                <Text>
+                  {desc}：<ExternalLink href={url}>{name}</ExternalLink>
+                </Text>
+              ))}
+            </Card>
+          ))}
+        </Grid>
 
         <Column gap="gap-2">
           <LargeText className="text-center">

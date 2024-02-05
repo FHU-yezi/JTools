@@ -163,14 +163,9 @@
         "url": "https://github.com/apache/echarts"
       },
       {
-        "name": "React D3 Cloud",
+        "name": "Echarts WordCloud",
         "desc": "词云图",
-        "url": "https://github.com/Yoctol/react-d3-cloud"
-      },
-      {
-        "name": "React Error Boundary",
-        "desc": "React 错误边界封装",
-        "url": "https://github.com/bvaughn/react-error-boundary"
+        "url": "https://github.com/ecomfe/echarts-wordcloud"
       },
       {
         "name": "React Icons",
