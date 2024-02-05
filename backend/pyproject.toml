@@ -10,7 +10,7 @@ readme = "README.md"
 python = "^3.8"
 motor = "^3.3.0"
 sspeedup = {version = "^0.25.0", extras = ["logging", "config", "api-litestar"]}
-uvicorn = "^0.23.0"
+uvicorn = "^0.27.0"
 httptools = "^0.6.0"
 uvloop = "^0.19.0"
 jkit = "^3.0.0a6"
@@ -28,9 +28,7 @@ build-backend = "poetry.core.masonry.api"
 
 target-version = "py38"
 
-[tool.ruff.lint]
-
-select = [
+lint.select = [
     "A", "ANN", "ASYNC", "B", "BLE",
     "C4", "E", "F", "I", "ICN",
     "ISC", "N", "PIE", "Q", "RET",
@@ -38,4 +36,4 @@ select = [
     "TCH", "UP", "W"
 ]
 
-ignore = ["ANN101", "ANN401", "BLE001", "ISC001", "RUF001", "RUF002", "RUF003"]
+lint.ignore = ["ANN101", "ANN401", "BLE001", "ISC001", "RUF001", "RUF002", "RUF003"]
