@@ -83,6 +83,7 @@ function AutoCompleteUserNameOrUrl({ onEnter }: { onEnter: () => void }) {
       onEnter={onEnter}
       options={autocompleteOptions?.names ?? []}
       fullWidth
+      selectAllOnFocus
     />
   );
 }

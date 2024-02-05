@@ -158,7 +158,7 @@ function RecentWins() {
   );
 }
 
-function WinsTrend() {
+function WinsTrending() {
   const tiameRangeOptions = [
     { label: "1 天", value: "1d" },
     { label: "30 天", value: "30d" },
@@ -182,7 +182,7 @@ function WinsTrend() {
     <Column>
       <Heading1>中奖趋势</Heading1>
       <Select
-        id="reward-wins-history-time-range"
+        id="wins-trending-time-range"
         value={timeRange}
         options={tiameRangeOptions}
         fullWidth
@@ -223,7 +223,7 @@ export default function LotteryAnalyzer() {
 
       <Grid cols="grid-cols-1 lg:grid-cols-2" gap="gap-8">
         <RecentWins />
-        <WinsTrend />
+        <WinsTrending />
       </Grid>
     </Column>
   );

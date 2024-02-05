@@ -12,7 +12,6 @@ export interface RouteItem {
 
 export const routes: RouteItem[] = [
   {
-    // eslint-disable-next-line import/no-cycle
     component: lazy(() => import("./pages/ThanksPage")),
     path: "/thanks",
     pageName: "鸣谢",

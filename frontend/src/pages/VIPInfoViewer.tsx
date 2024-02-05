@@ -34,8 +34,8 @@ const VIPTypeToBadgeImageURL: Record<string, string> = {
 };
 
 function handleQuery(trigger: () => void) {
-  if (userUrl.value.length === 0) {
-    toastWarning({ message: "请输入用户个人主页链接" });
+  if (!userSlug.value) {
+    toastWarning({ message: "请输入有效的用户个人主页链接" });
     return;
   }
 
@@ -101,6 +101,7 @@ export default function VIPInfoViewer() {
         label="用户个人主页链接"
         value={userUrl}
         onEnter={() => handleQuery(trigger)}
+        errorMessage={userUrl.value && !userSlug.value ? "链接无效" : undefined}
         selectAllOnFocus
       />
       <SolidButton

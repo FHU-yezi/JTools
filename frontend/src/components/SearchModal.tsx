@@ -1,7 +1,6 @@
 import { useComputed, useSignal } from "@preact/signals";
 import { Column, LargeText, Modal, TextButton, TextInput } from "@sscreator/ui";
 import { MdSearch } from "react-icons/md";
-// eslint-disable-next-line import/no-cycle
 import { tools } from "../routes";
 import { removeSpace } from "../utils/textHelper";
 import umamiTrack from "../utils/umamiTrack";
@@ -42,7 +41,7 @@ export default function SearchModal() {
             placeholder="输入工具名称..."
           />
 
-          {inputContent.value === "" || matchRouteItems.value.length !== 0 ? (
+          {!inputContent.value || matchRouteItems.value.length ? (
             matchRouteItems.value.map((item) => (
               // 此处的 ToolCard 不展示小工具降级或不可用状态
               <ToolCard

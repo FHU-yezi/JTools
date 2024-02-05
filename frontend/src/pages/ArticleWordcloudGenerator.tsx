@@ -82,6 +82,7 @@ export default function ArticleWordcloudGenerator() {
         errorMessage={
           articleUrl.value && !articleSlug.value ? "链接无效" : undefined
         }
+        selectAllOnFocus
       />
       <SolidButton
         onClick={() => handleGenerate(trigger)}

@@ -7,7 +7,6 @@ import {
 } from "@sscreator/ui";
 import { MdKeyboardArrowLeft } from "react-icons/md";
 import { useLocation } from "wouter-preact";
-// eslint-disable-next-line import/no-cycle
 import SearchModal from "./SearchModal";
 import icon from "/favicon-64.png";
 

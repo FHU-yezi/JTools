@@ -25,8 +25,7 @@ function buildBodyString(originalBody: Record<string, any>) {
   // 剔除值为 undefined / null 的项
   const filteredBody = Object.fromEntries(
     Object.entries(originalBody).filter(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      ([_, value]) => value !== undefined && value !== null,
+      ([, value]) => value !== undefined && value !== null,
     ),
   );
 

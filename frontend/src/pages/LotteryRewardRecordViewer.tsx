@@ -157,6 +157,8 @@ export default function LotteryRewardRecordViewer() {
         label="用户个人主页链接"
         value={userUrl}
         onEnter={() => handleQuery(trigger)}
+        errorMessage={userUrl.value && !userSlug.value ? "链接无效" : undefined}
+        selectAllOnFocus
       />
       <RewardsFliter />
       <SmallText colorScheme="gray">
