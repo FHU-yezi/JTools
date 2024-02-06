@@ -2,7 +2,7 @@ import { computed, signal, useSignal } from "@preact/signals";
 import {
   CheckboxGroup,
   Column,
-  InfiniteScrollTable,
+  InfiniteScroll,
   LargeText,
   LoadingArea,
   SmallText,
@@ -32,7 +32,7 @@ const excludedAwards = signal<string[]>([]);
 
 function handleQuery(trigger: () => void) {
   if (!userSlug.value) {
-    toastWarning({ message: "请输入有效的用户个人主页链接" });
+    toastWarning("请输入有效的用户个人主页链接");
     return;
   }
 
@@ -104,7 +104,7 @@ function Result({
   const flattedRecords = lotteryWinRecords.map((page) => page.records).flat();
 
   return (
-    <InfiniteScrollTable onLoadMore={onLoadMore} hasMore isLoading={isLoading}>
+    <InfiniteScroll onLoadMore={onLoadMore} hasMore isLoading={isLoading}>
       <Table className="w-full whitespace-nowrap text-center">
         <TableHeader>
           <TableHead>时间</TableHead>
@@ -119,7 +119,7 @@ function Result({
           ))}
         </TableBody>
       </Table>
-    </InfiniteScrollTable>
+    </InfiniteScroll>
   );
 }
 

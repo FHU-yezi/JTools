@@ -11,12 +11,6 @@ import {
   SolidButton,
   Text,
 } from "@sscreator/ui";
-import {
-  MdOutlineAccessTime,
-  MdOutlineLink,
-  MdOutlineNumbers,
-  MdOutlineUpload,
-} from "react-icons/md";
 import { useLocation } from "wouter-preact";
 import { useData } from "../hooks/useData";
 import type { GetToolStatusResponse } from "../models/status";
@@ -43,10 +37,7 @@ export default function ToolMetaInfo() {
         <Grid cols="grid-cols-1 sm:grid-cols-2" gap="gap-2">
           {toolStatus.lastUpdateTime && (
             <Row gap="gap-1" itemsCenter>
-              <Icon
-                colorScheme="gray"
-                icon={<MdOutlineAccessTime size={18} />}
-              />
+              <Icon colorScheme="gray" icon="i-mdi-access-time" />
               <SmallText colorScheme="gray">
                 最后更新时间：
                 {getDateTimeWithoutSecond(parseTime(toolStatus.lastUpdateTime))}
@@ -55,7 +46,7 @@ export default function ToolMetaInfo() {
           )}
           {toolStatus.dataUpdateFreq && (
             <Row gap="gap-1" itemsCenter>
-              <Icon colorScheme="gray" icon={<MdOutlineUpload size={18} />} />
+              <Icon colorScheme="gray" icon="i-mdi-upload" />
               <SmallText colorScheme="gray" nowrap>
                 更新频率：{toolStatus.dataUpdateFreq}
               </SmallText>
@@ -63,7 +54,7 @@ export default function ToolMetaInfo() {
           )}
           {toolStatus.dataCount && (
             <Row gap="gap-1" itemsCenter>
-              <Icon colorScheme="gray" icon={<MdOutlineNumbers size={18} />} />
+              <Icon colorScheme="gray" icon="i-mdi-database-outline" />
               <SmallText colorScheme="gray">
                 数据量：{toolStatus.dataCount}
               </SmallText>
@@ -71,7 +62,7 @@ export default function ToolMetaInfo() {
           )}
           {toolStatus.dataSource && (
             <Row gap="gap-1" itemsCenter>
-              <Icon colorScheme="gray" icon={<MdOutlineLink size={18} />} />
+              <Icon colorScheme="gray" icon="i-mdi-link" />
               <SmallText colorScheme="gray">
                 数据来源：
                 {Object.entries(toolStatus.dataSource).map(([name, url]) => (

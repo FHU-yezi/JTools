@@ -1,6 +1,5 @@
 import { useComputed, useSignal } from "@preact/signals";
 import { Column, LargeText, Modal, TextButton, TextInput } from "@sscreator/ui";
-import { MdSearch } from "react-icons/md";
 import { tools } from "../routes";
 import { removeSpace } from "../utils/textHelper";
 import umamiTrack from "../utils/umamiTrack";
@@ -25,7 +24,7 @@ export default function SearchModal() {
     <>
       <TextButton
         colorScheme="secondary"
-        leftIcon={<MdSearch size={24} />}
+        leftIcon="i-mdi-search"
         onClick={() => {
           isSearchModalOpened.value = true;
           umamiTrack("click-search-button");

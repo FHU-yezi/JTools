@@ -4,7 +4,7 @@ import {
   AutoCompleteInput,
   Column,
   ExternalLink,
-  InfiniteScrollTable,
+  InfiniteScroll,
   LargeText,
   Notice,
   Row,
@@ -48,7 +48,7 @@ const orderBy = signal<{
 
 function handleQuery(triggers: Array<() => void>) {
   if (!userUrlOrName.value) {
-    toastWarning({ message: "请输入有效的昵称或用户个人主页链接" });
+    toastWarning("请输入有效的昵称或用户个人主页链接");
     return;
   }
 
@@ -200,7 +200,7 @@ function OnRankRecordsTable({
   const flattedRecords = onRankRecords.map((page) => page.records).flat();
 
   return (
-    <InfiniteScrollTable onLoadMore={onLoadMore} hasMore isLoading={isLoading}>
+    <InfiniteScroll onLoadMore={onLoadMore} hasMore isLoading={isLoading}>
       <Table className="w-full whitespace-nowrap text-center">
         <TableHeader>
           <TableRow>
@@ -228,7 +228,7 @@ function OnRankRecordsTable({
           ))}
         </TableBody>
       </Table>
-    </InfiniteScrollTable>
+    </InfiniteScroll>
   );
 }
 

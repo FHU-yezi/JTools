@@ -35,7 +35,7 @@ const VIPTypeToBadgeImageURL: Record<string, string> = {
 
 function handleQuery(trigger: () => void) {
   if (!userSlug.value) {
-    toastWarning({ message: "请输入有效的用户个人主页链接" });
+    toastWarning("请输入有效的用户个人主页链接");
     return;
   }
 

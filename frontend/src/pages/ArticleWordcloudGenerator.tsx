@@ -18,7 +18,7 @@ const articleSlug = computed(() => articleUrlToSlug(articleUrl.value));
 
 function handleGenerate(trigger: () => void) {
   if (!articleSlug.value) {
-    toastWarning({ message: "请输入有效的文章链接" });
+    toastWarning("请输入有效的文章链接");
     return;
   }
 

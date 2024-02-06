@@ -1,5 +1,4 @@
 import { Badge, Card, Column, Icon, LargeText, Row, Text } from "@sscreator/ui";
-import { MdKeyboardArrowRight } from "react-icons/md";
 import { useLocation } from "wouter-preact";
 
 interface Props {
@@ -35,7 +34,9 @@ export default function ToolCard({
             {description}
           </Text>
         </Column>
-        {!unavaliable && <Icon icon={<MdKeyboardArrowRight size={36} />} />}
+        {!unavaliable && (
+          <Icon className="text-2xl" icon="i-mdi-keyboard-arrow-right" />
+        )}
       </Card>
     </button>
   );

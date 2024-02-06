@@ -168,9 +168,9 @@
         "url": "https://github.com/ecomfe/echarts-wordcloud"
       },
       {
-        "name": "React Icons",
+        "name": "Iconify",
         "desc": "图标",
-        "url": "https://github.com/react-icons/react-icons"
+        "url": "https://github.com/iconify/iconify"
       },
       {
         "name": "React QR Code",

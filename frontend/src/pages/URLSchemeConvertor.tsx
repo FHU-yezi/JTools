@@ -5,13 +5,12 @@ import {
   Column,
   Row,
   SmallText,
-  toastWarning,
   SolidButton,
   Text,
   TextButton,
   TextInput,
+  toastWarning,
 } from "@sscreator/ui";
-import { MdContentCopy, MdDone, MdOutlineArrowForward } from "react-icons/md";
 import QRCode from "react-qr-code";
 
 interface UrlMappingItem {
@@ -52,7 +51,7 @@ function isJianshuUrl(url: string) {
 
 function handleConvert() {
   if (!isJianshuUrl(inputUrl.value)) {
-    toastWarning({ message: "请输入有效的简书链接" });
+    toastWarning("请输入有效的简书链接");
     return;
   }
 
@@ -70,7 +69,7 @@ function handleConvert() {
   }
 
   // 无匹配项
-  toastWarning({ message: "请输入有效的简书链接" });
+  toastWarning("请输入有效的简书链接");
 }
 
 function Result() {
@@ -84,14 +83,14 @@ function Result() {
         <Text>{urlScheme.value}</Text>
         <Row itemsCenter>
           <TextButton
-            rightIcon={<MdOutlineArrowForward />}
+            rightIcon="i-mdi-keyboard-arrow-right"
             onClick={() => window.open(urlScheme.value!)}
           >
             访问
           </TextButton>
           <TextButton
             colorScheme={clipboard.copied ? "success" : undefined}
-            rightIcon={clipboard.copied ? <MdDone /> : <MdContentCopy />}
+            rightIcon={clipboard.copied ? "i-mdi-tick" : "i-mdi-content-copy"}
             onClick={() => clipboard.copy(urlScheme.value)}
           >
             {clipboard.copied ? "已复制" : "复制"}

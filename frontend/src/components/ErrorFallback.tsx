@@ -4,6 +4,7 @@ import {
   Column,
   Heading1,
   Icon,
+  Row,
   SmallText,
   SolidButton,
   Text,
@@ -11,7 +12,6 @@ import {
 } from "@sscreator/ui";
 import type { ComponentChildren, VNode } from "preact";
 import { useErrorBoundary } from "preact/hooks";
-import { VscBracketError } from "react-icons/vsc";
 import { useLocation } from "wouter-preact";
 
 interface Props {
@@ -29,10 +29,10 @@ export default function ErrorFallback({ children }: Props) {
   return (
     <Center className="mx-auto h-screen">
       <Column className="max-w-2xl w-[80vw]">
-        <Column gap="gap-2">
-          <Icon icon={<VscBracketError className="font-bold" size={48} />} />
+        <Row gap="gap-2" itemsCenter>
+          <Icon className="text-3xl" icon="i-mdi-warning-octagon" />
           <Heading1>啊呀，出错了...</Heading1>
-        </Column>
+        </Row>
 
         <Column gap="gap-2">
           <SmallText bold>时间</SmallText>
