@@ -35,7 +35,7 @@ export default function ToolCard({
           </Text>
         </Column>
         {!unavaliable && (
-          <Icon className="text-2xl" icon="i-mdi-keyboard-arrow-right" />
+          <Icon className="text-3xl" icon="i-mdi-keyboard-arrow-right" />
         )}
       </Card>
     </button>
