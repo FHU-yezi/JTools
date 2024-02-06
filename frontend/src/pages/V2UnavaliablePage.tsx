@@ -1,26 +1,28 @@
-import { Center, Column, Icon, PrimaryButton, Text } from "@sscreator/ui";
-import { MdSettingsApplications } from "react-icons/md";
-import { useLocation } from "wouter-preact";
+import {
+  Center,
+  Column,
+  Heading1,
+  Icon,
+  Row,
+  SolidButton,
+  Text,
+} from "@sscreator/ui";
 
 export default function V2UnavaliablePage() {
-  const [, setLocation] = useLocation();
-
   return (
-    <Center className="h-screen">
-      <Column className="mx-8 max-w-4xl">
-        <Column gap="gap-2">
-          <Icon>
-            <MdSettingsApplications size={48} />
-          </Icon>
-          <Text large bold>
-            已下线
-          </Text>
-        </Column>
+    <Center className="mx-auto h-screen">
+      <Column className="max-w-2xl w-[80vw]">
+        <Row gap="gap-2" itemsCenter>
+          <Icon className="text-3xl" icon="i-mdi-arrow-down-circle-outline" />
+          <Heading1>小工具已下线</Heading1>
+        </Row>
+
         <Text>您正在访问的小工具已在简书小工具集 v3 中下线。</Text>
         <Text>如有疑问，请联系开发者。</Text>
-        <PrimaryButton onClick={() => setLocation("/")} fullWidth>
+
+        <SolidButton onClick={() => window.location.replace("/")} fullWidth>
           返回首页
-        </PrimaryButton>
+        </SolidButton>
       </Column>
     </Center>
   );

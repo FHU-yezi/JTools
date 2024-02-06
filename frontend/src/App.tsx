@@ -1,50 +1,71 @@
 import { LoadingPage } from "@sscreator/ui";
-import type { VNode } from "preact";
-import { Suspense, lazy } from "preact/compat";
-import type { RouteProps } from "wouter-preact";
+import { render, type VNode } from "preact";
+import { lazy, Suspense } from "preact/compat";
+import { Toaster } from "react-hot-toast";
+import { install } from "resize-observer";
+import { SWRConfig } from "swr";
+import { registerSW } from "virtual:pwa-register";
 import { Route, Switch } from "wouter-preact";
-import ToolWrapper from "./components/ToolWrapper";
+import ErrorFallback from "./components/ErrorFallback";
+import PageWrapper from "./components/PageWrapper";
 import MainPage from "./pages/MainPage";
-import ThanksPage from "./pages/ThanksPage";
-import V2UnavaliablePage from "./pages/V2UnavaliablePage";
-import V2UnimplementedPage from "./pages/V2UnimplementedPage";
 import { routes } from "./routes";
+import { onError } from "./utils/errorHandler";
+import { fetcher } from "./utils/fetcher";
+
+import "@unocss/reset/tailwind.css";
+import "@sscreator/ui/sscreator-ui.css";
+import "uno.css";
+
+// 处理 Safari 浏览器上的 ResizeObserver 兼容性问题
+if (!window.ResizeObserver) {
+  install();
+}
+
+// 注册 PWA
+registerSW({ immediate: true });
 
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 
 export default function App() {
   return (
-    <Switch>
-      <Route path="/">
-        <MainPage />
-      </Route>
-      {
-        routes.map((item) => (
-          <Route key={item.path} path={item.path}>
-            <ToolWrapper toolName={item.toolName} Component={item.component} />
+    <ErrorFallback>
+      <SWRConfig
+        value={{
+          fetcher,
+          shouldRetryOnError: false,
+          onError,
+        }}
+      >
+        <Switch>
+          <Route path="/">
+            <PageWrapper Component={MainPage} disableToolMetaInfo isMainPage />
           </Route>
-        )) as unknown as VNode<RouteProps<undefined, string>>
-      }
-      <Route path="/thanks">
-        <Suspense fallback={<LoadingPage />}>
-          <ThanksPage />
-        </Suspense>
-      </Route>
-      <Route path="/v2-unimplemented">
-        <Suspense fallback={<LoadingPage />}>
-          <V2UnimplementedPage />
-        </Suspense>
-      </Route>
-      <Route path="/v2-unavaliable">
-        <Suspense fallback={<LoadingPage />}>
-          <V2UnavaliablePage />
-        </Suspense>
-      </Route>
-      <Route>
-        <Suspense fallback={<LoadingPage />}>
-          <NotFoundPage />
-        </Suspense>
-      </Route>
-    </Switch>
+          {
+            routes.map((item) => (
+              <Route key={item.path} path={item.path}>
+                <PageWrapper
+                  pageName={item.pageName}
+                  Component={item.component}
+                  disableToolMetaInfo={
+                    item.isTool !== undefined ? !item.isTool : false
+                  }
+                  hideDecorations={item.hideDecorations}
+                />
+              </Route>
+            )) as unknown as VNode
+          }
+          <Route>
+            <Suspense fallback={<LoadingPage />}>
+              <NotFoundPage />
+            </Suspense>
+          </Route>
+        </Switch>
+      </SWRConfig>
+
+      <Toaster />
+    </ErrorFallback>
   );
 }
+
+render(<App />, document.body);

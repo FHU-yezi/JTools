@@ -1,18 +1,16 @@
-FROM node:20.3.0-alpine3.18 AS build
+FROM oven/bun:1-alpine AS build
 
 WORKDIR /app
 
-RUN npm install -g pnpm
+COPY frontend/package.json frontend/bun.lockb /app
 
-COPY frontend/package.json /app
-
-RUN pnpm install --prod
+RUN bun install --prod --frozen-lockfile
 
 COPY frontend /app
 
-RUN pnpm build
+RUN bun run build
 
-FROM caddy:2.6.4-alpine
+FROM caddy:2.7.4-alpine
 
 WORKDIR /app
 

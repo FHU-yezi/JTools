@@ -21,7 +21,7 @@ from utils.db import ARTICLE_FP_RANK_COLLECTION, LOTTERY_COLLECTION
 class GetVipInfoResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     user_name: str
     is_vip: bool = field(name="isVIP")
-    type: Optional[Literal["铜牌", "银牌", "金牌", "白金"]]  # noqa: A003
+    type: Optional[Literal["铜牌", "银牌", "金牌", "白金"]]
     expire_date: Optional[datetime]
 
 

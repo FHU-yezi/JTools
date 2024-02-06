@@ -2,76 +2,97 @@ import { computed, signal } from "@preact/signals";
 import {
   Column,
   ExternalLink,
-  PrimaryButton,
+  SolidButton,
   Text,
   TextInput,
+  toastWarning,
 } from "@sscreator/ui";
-import SSWordcloud from "../components/charts/SSWordcloud";
+import { useEffect } from "preact/hooks";
+import WordCloud from "../components/charts/Wordcloud";
+import { useDataTrigger } from "../hooks/useData";
 import type { GetWordFreqResponse } from "../models/articles";
-import { sendRequest } from "../utils/sendRequest";
-import { toastWarning } from "../utils/toastHelper";
+import { articleUrlToSlug } from "../utils/jianshuHelper";
 
 const articleUrl = signal("");
-const articleSlug = computed(() => {
-  const matchResult = articleUrl.value!.match(
-    "https://www.jianshu.com/p/(\\w{12})",
-  );
-  if (matchResult !== null && matchResult[1] !== undefined) {
-    return matchResult[1];
-  }
-  return undefined;
-});
-const isLoading = signal(false);
-const result = signal<GetWordFreqResponse | undefined>(undefined);
+const articleSlug = computed(() => articleUrlToSlug(articleUrl.value));
 
-function handleGenerate() {
-  if (articleSlug.value === undefined) {
-    toastWarning({ message: "请输入有效的文章链接" });
+function handleGenerate(trigger: () => void) {
+  if (!articleSlug.value) {
+    toastWarning("请输入有效的文章链接");
     return;
   }
 
-  sendRequest<Record<string, never>, GetWordFreqResponse>({
-    method: "GET",
-    endpoint: `/v1/articles/${articleSlug.value}/word-freq`,
-    onSuccess: ({ data }) => (result.value = data),
-    isLoading,
-  });
+  trigger();
 }
 
-function Wordcloud() {
+function ArticleWordCloud({ wordFreq }: { wordFreq?: GetWordFreqResponse }) {
+  if (!wordFreq) return null;
+
   return (
-    <SSWordcloud
-      data={Object.entries(result.value!.wordFreq).map(([text, value]) => ({
-        text,
-        value,
-      }))}
-    />
+    <>
+      <Text>
+        文章标题：
+        <ExternalLink href={articleUrl.value}>{wordFreq.title}</ExternalLink>
+      </Text>
+      <WordCloud
+        className="aspect-video h-72 max-w-2xl"
+        options={{
+          series: [
+            {
+              type: "wordCloud",
+              data: Object.entries(wordFreq.wordFreq).map(([word, freq]) => ({
+                name: word,
+                value: freq,
+              })),
+              textStyle: {
+                color: "#EA6F5A",
+              },
+              width: "100%",
+              height: "100%",
+            },
+          ],
+        }}
+      />
+    </>
   );
 }
 
 export default function ArticleWordcloudGenerator() {
+  const {
+    data: wordFreq,
+    isLoading,
+    trigger,
+    reset,
+  } = useDataTrigger<Record<string, never>, GetWordFreqResponse>({
+    method: "GET",
+    endpoint: `/v1/articles/${articleSlug.value}/word-freq`,
+  });
+
+  useEffect(() => {
+    reset();
+  }, [articleUrl.value]);
+
   return (
     <Column>
-      <TextInput label="文章链接" value={articleUrl} onEnter={handleGenerate} />
-      <PrimaryButton
-        onClick={handleGenerate}
-        loading={isLoading.value}
+      <TextInput
+        id="article-url"
+        label="文章链接"
+        value={articleUrl}
+        onEnter={() => handleGenerate(trigger)}
+        errorMessage={
+          articleUrl.value && !articleSlug.value ? "链接无效" : undefined
+        }
+        selectAllOnFocus
+      />
+      <SolidButton
+        onClick={() => handleGenerate(trigger)}
+        loading={isLoading}
         fullWidth
       >
-        查询
-      </PrimaryButton>
+        生成
+      </SolidButton>
 
-      {result.value !== undefined && (
-        <>
-          <Text truncate>
-            文章标题：
-            <ExternalLink href={articleUrl.value}>
-              {result.value.title}
-            </ExternalLink>
-          </Text>
-          <Wordcloud />
-        </>
-      )}
+      <ArticleWordCloud wordFreq={wordFreq} />
     </Column>
   );
 }

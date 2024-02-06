@@ -6,7 +6,7 @@ export interface GetResponse {
 
 export enum ToolStatusEnum {
   NORMAL = "NORMAL",
-  UNAVALIABLE = "UNAVALIABLE",
+  UNAVALIABLE = "UNAVAILABLE",
   DOWNGRADED = "DOWNGRADED",
 }
 

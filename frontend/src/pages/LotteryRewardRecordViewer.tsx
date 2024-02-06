@@ -1,173 +1,182 @@
-import type { Signal } from "@preact/signals";
-import { batch, computed, effect, signal, useSignal } from "@preact/signals";
+import { computed, signal, useSignal } from "@preact/signals";
 import {
-  Checkbox,
+  CheckboxGroup,
   Column,
-  Grid,
+  InfiniteScroll,
+  LargeText,
   LoadingArea,
-  NoResultNotice,
-  PrimaryButton,
-  Text,
+  SmallText,
+  SolidButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
   TextInput,
-  Tooltip,
+  toastWarning,
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
-import SSLazyLoadTable from "../components/SSLazyLoadTable";
+import { useData, useDataTriggerInfinite } from "../hooks/useData";
 import type { GetRewardsResponse } from "../models/lottery";
 import type {
-  GetLotteryWinRecordItem,
   GetLotteryWinRecordsRequest,
   GetLotteryWinRecordsResponse,
 } from "../models/users";
-import { sendRequest } from "../utils/sendRequest";
+import { userUrlToSlug } from "../utils/jianshuHelper";
 import { getDatetime, parseTime } from "../utils/timeHelper";
-import { toastWarning } from "../utils/toastHelper";
 
 const userUrl = signal("");
-const userSlug = computed(() => {
-  const matchResult = userUrl.value.match(
-    "https://www.jianshu.com/u/(\\w{6,12})",
-  );
-  if (matchResult !== null && matchResult[1] !== undefined) {
-    return matchResult[1];
-  }
-  return undefined;
-});
-const rewards = signal<string[] | undefined>(undefined);
+const userSlug = computed(() => userUrlToSlug(userUrl.value));
 const excludedAwards = signal<string[]>([]);
-const isLoading = signal(false);
-const hasMore = signal(true);
-const result = signal<GetLotteryWinRecordItem[] | undefined>(undefined);
 
-function handleQuery() {
-  if (userSlug.value === undefined) {
-    toastWarning({ message: "请输入有效的用户个人主页链接" });
+function handleQuery(trigger: () => void) {
+  if (!userSlug.value) {
+    toastWarning("请输入有效的用户个人主页链接");
     return;
   }
 
-  sendRequest<GetLotteryWinRecordsRequest, GetLotteryWinRecordsResponse>({
-    method: "GET",
-    endpoint: `/v1/users/${userSlug.value}/lottery-win-records`,
-    queryArgs: {
-      excluded_awards: excludedAwards.value,
-    },
-    onSuccess: ({ data }) =>
-      batch(() => {
-        result.value = data.records;
-        if (data.records.length === 0) {
-          hasMore.value = false;
-        }
-      }),
-    isLoading,
-  });
-}
-
-function handleLoadMore() {
-  if (userSlug.value === undefined) {
-    toastWarning({ message: "请输入有效的用户个人主页链接" });
-    return;
-  }
-
-  sendRequest<GetLotteryWinRecordsRequest, GetLotteryWinRecordsResponse>({
-    method: "GET",
-    endpoint: `/v1/users/${userSlug.value}/lottery-win-records`,
-    queryArgs: {
-      excluded_awards: excludedAwards.value,
-      offset: result.value!.length,
-    },
-    onSuccess: ({ data }) =>
-      batch(() => {
-        result.value = result.value!.concat(data.records);
-        if (data.records.length === 0) {
-          hasMore.value = false;
-        }
-      }),
-    isLoading,
-  });
+  trigger();
 }
 
 function RewardsFliter() {
-  const rewardSelectedSignals = useSignal<Record<string, Signal<boolean>>>({});
-  const dataReady = useSignal(false);
+  const { data: rewards, isLoading: isRewardsLoading } = useData<
+    Record<string, never>,
+    GetRewardsResponse
+  >({
+    method: "GET",
+    endpoint: "/v1/lottery/rewards",
+  });
+  const selectedRewards = useSignal<Array<string>>([]);
 
   useEffect(() => {
-    sendRequest<Record<string, never>, GetRewardsResponse>({
-      method: "GET",
-      endpoint: "/v1/lottery/rewards",
-      onSuccess: ({ data }) =>
-        batch(() => {
-          rewards.value = data.rewards;
-          rewards.value.forEach(
-            (name) => (rewardSelectedSignals.value[name] = signal(true)),
-          );
-          dataReady.value = true;
-        }),
-    });
-  }, []);
+    if (!isRewardsLoading) {
+      selectedRewards.value = rewards!.rewards;
+    }
+  }, [isRewardsLoading]);
 
-  effect(
-    () =>
-      (excludedAwards.value = Object.keys(rewardSelectedSignals.value).filter(
-        (name) => rewardSelectedSignals.value[name].value === false,
-      )),
-  );
+  useEffect(() => {
+    if (!rewards) {
+      excludedAwards.value = [];
+      return;
+    }
+
+    excludedAwards.value = rewards.rewards.filter(
+      (item) => !selectedRewards.value.includes(item),
+    );
+  }, [selectedRewards.value]);
 
   return (
-    <div>
-      <Text className="mb-1.5" bold>
-        奖项筛选
-      </Text>
-      <LoadingArea className="h-36 w-full sm:h-16" loading={!dataReady.value}>
-        {dataReady.value && (
-          <Grid cols="grid-cols-1 sm:grid-cols-2">
-            {Object.entries(rewardSelectedSignals.value).map(
-              ([name, value]) => (
-                <Checkbox label={name} value={value} />
-              ),
-            )}
-          </Grid>
-        )}
-      </LoadingArea>
-    </div>
+    <LoadingArea className="h-[56px]" loading={!rewards}>
+      <CheckboxGroup
+        id="rewards"
+        className="flex flex-wrap gap-x-4 gap-y-2"
+        label="奖项筛选"
+        value={selectedRewards}
+        options={
+          !rewards
+            ? []
+            : rewards.rewards.map((item) => ({
+                label: item,
+                value: item,
+              }))
+        }
+      />
+    </LoadingArea>
   );
 }
 
-function ResultTable() {
+function Result({
+  lotteryWinRecords,
+  isLoading,
+  onLoadMore,
+}: {
+  lotteryWinRecords?: GetLotteryWinRecordsResponse[];
+  isLoading: boolean;
+  onLoadMore: () => void;
+}) {
+  if (!lotteryWinRecords || !lotteryWinRecords.length) return null;
+
+  if (!lotteryWinRecords[0].records.length) {
+    return <LargeText className="text-center">无中奖记录</LargeText>;
+  }
+
+  const flattedRecords = lotteryWinRecords.map((page) => page.records).flat();
+
   return (
-    <SSLazyLoadTable
-      data={result.value!.map((item) => ({
-        时间: <Text center>{getDatetime(parseTime(item.time))}</Text>,
-        奖项: <Text center>{item.rewardName}</Text>,
-      }))}
-      onLoadMore={handleLoadMore}
-      hasMore={hasMore}
-      isLoading={isLoading}
-    />
+    <InfiniteScroll onLoadMore={onLoadMore} hasMore isLoading={isLoading}>
+      <Table className="w-full whitespace-nowrap text-center">
+        <TableHeader>
+          <TableHead>时间</TableHead>
+          <TableHead>奖项</TableHead>
+        </TableHeader>
+        <TableBody>
+          {flattedRecords.map((item) => (
+            <TableRow key={item.time}>
+              <TableCell>{getDatetime(parseTime(item.time))}</TableCell>
+              <TableCell>{item.rewardName}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </InfiniteScroll>
   );
 }
 
 export default function LotteryRewardRecordViewer() {
+  const {
+    data: lotteryWinRecords,
+    isLoading,
+    nextPage,
+    trigger,
+    reset,
+  } = useDataTriggerInfinite<
+    GetLotteryWinRecordsRequest,
+    GetLotteryWinRecordsResponse
+  >(({ currentPage, previousPageData }) =>
+    previousPageData && !previousPageData.records.length
+      ? null
+      : {
+          method: "GET",
+          endpoint: `/v1/users/${userSlug.value}/lottery-win-records`,
+          queryArgs: {
+            excluded_awards: excludedAwards.value,
+            offset: currentPage * 20,
+          },
+        },
+  );
+
+  useEffect(() => {
+    reset();
+  }, [userUrl.value, excludedAwards.value]);
+
   return (
     <Column>
       <TextInput
+        id="user-url"
         label="用户个人主页链接"
         value={userUrl}
-        onEnter={handleQuery}
+        onEnter={() => handleQuery(trigger)}
+        errorMessage={userUrl.value && !userSlug.value ? "链接无效" : undefined}
+        selectAllOnFocus
       />
       <RewardsFliter />
-      <Tooltip tooltip="受简书接口限制，我们无法获取这两种奖品的中奖情况，故无法进行查询">
-        <Text>关于免费开 1 次连载 / 锦鲤头像框</Text>
-      </Tooltip>
-      <PrimaryButton onClick={handleQuery} loading={isLoading.value} fullWidth>
+      <SmallText colorScheme="gray">
+        受简书接口限制，本工具数据不包括免费开 1 次连载与锦鲤头像框
+      </SmallText>
+      <SolidButton
+        onClick={() => handleQuery(trigger)}
+        loading={isLoading}
+        fullWidth
+      >
         查询
-      </PrimaryButton>
+      </SolidButton>
 
-      {result.value !== undefined &&
-        (result.value.length !== 0 ? (
-          <ResultTable />
-        ) : (
-          <NoResultNotice message="无中奖记录" />
-        ))}
+      <Result
+        lotteryWinRecords={lotteryWinRecords}
+        isLoading={isLoading}
+        onLoadMore={nextPage}
+      />
     </Column>
   );
 }

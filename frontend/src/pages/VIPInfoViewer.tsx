@@ -1,38 +1,30 @@
 import { computed, signal } from "@preact/signals";
 import {
-  Badge,
   Column,
   ExternalLink,
-  PrimaryButton,
+  LargeText,
   Row,
+  SolidButton,
   Text,
   TextInput,
+  toastWarning,
 } from "@sscreator/ui";
+import { useEffect } from "preact/hooks";
+import { useDataTrigger } from "../hooks/useData";
 import type { GetVIPInfoResponse } from "../models/users";
-import { sendRequest } from "../utils/sendRequest";
+import { userUrlToSlug } from "../utils/jianshuHelper";
 import {
   getDate,
   getHumanReadableTimeDelta,
   parseTime,
 } from "../utils/timeHelper";
-import { toastWarning } from "../utils/toastHelper";
 import VIPBadgeBronzeURL from "/vip_badges/vip_badge_bronze.png";
 import VIPBadgeGoldURL from "/vip_badges/vip_badge_gold.png";
 import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";
 import VIPBadgeSilverURL from "/vip_badges/vip_badge_silver.png";
 
 const userUrl = signal("");
-const userSlug = computed(() => {
-  const matchResult = userUrl.value.match(
-    "https://www.jianshu.com/u/(\\w{6,12})",
-  );
-  if (matchResult !== null && matchResult[1] !== undefined) {
-    return matchResult[1];
-  }
-  return undefined;
-});
-const isLoading = signal(false);
-const result = signal<GetVIPInfoResponse | undefined>(undefined);
+const userSlug = computed(() => userUrlToSlug(userUrl.value));
 
 const VIPTypeToBadgeImageURL: Record<string, string> = {
   铜牌: VIPBadgeBronzeURL,
@@ -41,76 +33,86 @@ const VIPTypeToBadgeImageURL: Record<string, string> = {
   白金: VIPBadgePlatinaURL,
 };
 
-function handleQuery() {
-  if (isLoading.value) {
+function handleQuery(trigger: () => void) {
+  if (!userSlug.value) {
+    toastWarning("请输入有效的用户个人主页链接");
     return;
   }
 
-  if (userUrl.value.length === 0) {
-    toastWarning({ message: "请输入用户个人主页链接" });
-    return;
-  }
+  trigger();
+}
 
-  sendRequest<Record<string, never>, GetVIPInfoResponse>({
-    method: "GET",
-    endpoint: `/v1/users/${userSlug.value}/vip-info`,
-    onSuccess: ({ data }) => (result.value = data),
-    isLoading,
-  });
+function Result({ VIPInfo }: { VIPInfo?: GetVIPInfoResponse }) {
+  if (!VIPInfo) return null;
+
+  const expireDate = VIPInfo.expireDate ? parseTime(VIPInfo.expireDate) : null;
+
+  return (
+    <Row className="flex-wrap justify-around">
+      <Column gap="gap-1">
+        <Text colorScheme="gray">用户</Text>
+        <ExternalLink className="text-lg" href={userUrl.value}>
+          {VIPInfo.userName}
+        </ExternalLink>
+      </Column>
+      <Column gap="gap-1">
+        <Text colorScheme="gray">会员等级</Text>
+        <Row gap="gap-1" itemsCenter>
+          <img
+            className="h-5 w-5"
+            src={VIPTypeToBadgeImageURL[VIPInfo.type]}
+            alt={`${VIPInfo.type}会员图标`}
+          />
+          <LargeText>{VIPInfo.isVIP ? VIPInfo.type : "无会员"}</LargeText>
+        </Row>
+      </Column>
+      {VIPInfo.isVIP && (
+        <Column gap="gap-1">
+          <Text colorScheme="gray">会员到期时间</Text>
+          <LargeText>{getDate(expireDate!)}</LargeText>
+          <Text colorScheme="gray">
+            {getHumanReadableTimeDelta(expireDate!)}
+          </Text>
+        </Column>
+      )}
+    </Row>
+  );
 }
 
 export default function VIPInfoViewer() {
+  const {
+    data: VIPInfo,
+    isLoading,
+    trigger,
+    reset,
+  } = useDataTrigger<Record<string, never>, GetVIPInfoResponse>({
+    method: "GET",
+    endpoint: `/v1/users/${userSlug.value}/vip-info`,
+  });
+
+  useEffect(() => {
+    reset();
+  }, [userUrl.value]);
+
   return (
     <Column>
       <TextInput
+        id="user-url"
         label="用户个人主页链接"
         value={userUrl}
-        onEnter={handleQuery}
+        onEnter={() => handleQuery(trigger)}
+        errorMessage={userUrl.value && !userSlug.value ? "链接无效" : undefined}
+        selectAllOnFocus
       />
-      <PrimaryButton onClick={handleQuery} loading={isLoading.value} fullWidth>
+      <SolidButton
+        onClick={() => handleQuery(trigger)}
+        loading={isLoading}
+        fullWidth
+      >
         查询
-      </PrimaryButton>
+      </SolidButton>
 
-      {result.value !== undefined && (
-        <>
-          <Text>
-            昵称：
-            <ExternalLink href={userUrl.value}>
-              {result.value.userName}
-            </ExternalLink>
-          </Text>
-
-          <Text>
-            会员等级：
-            {result.value.isVIP ? (
-              <Badge
-                textColor="text-zinc-500 dark:text-zinc-400"
-                backgroundColor="bg-zinc-100 dark:bg-zinc-800"
-              >
-                <Row className="!flex-inline" gap="gap-1" verticalCenter>
-                  <img
-                    className="inline h-4 w-4 rounded-full"
-                    src={VIPTypeToBadgeImageURL[result.value.type]}
-                    alt={`${result.value.type} 徽章图标`}
-                  />
-                  <Text inline>{result.value.type}</Text>
-                </Row>
-              </Badge>
-            ) : (
-              <Text bold inline>
-                无会员
-              </Text>
-            )}
-          </Text>
-          {result.value.isVIP && (
-            <Text>
-              到期时间：
-              {getDate(parseTime(result.value.expireDate))}（
-              {getHumanReadableTimeDelta(parseTime(result.value.expireDate))}）
-            </Text>
-          )}
-        </>
-      )}
+      <Result VIPInfo={VIPInfo} />
     </Column>
   );
 }

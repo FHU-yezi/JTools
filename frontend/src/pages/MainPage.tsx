@@ -1,40 +1,34 @@
-import { useDocumentTitle } from "@mantine/hooks";
-import { batch, signal } from "@preact/signals";
-import { Column, Text, Tooltip } from "@sscreator/ui";
+import { Column } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
 import { useLocation } from "wouter-preact";
-import {
-  V2RedirectRoutes,
-  V2UnavaliableRoutes,
-  V2UnimplementedRoutes,
-} from "../V2RedirectRoutes";
-import Header from "../components/Header";
 import ToolCard from "../components/ToolCard";
+import { useData } from "../hooks/useData";
 import type { GetResponse } from "../models/status";
-import { routes } from "../routes";
-import { sendRequest } from "../utils/sendRequest";
+import { tools } from "../routes";
 import umamiTrack from "../utils/umamiTrack";
-
-const downgradedTools = signal<string[]>([]);
-const unavaliableTools = signal<string[]>([]);
+import {
+  v2RedirectRoutes,
+  v2UnavaliableRoutes,
+  v2UnimplementedRoutes,
+} from "../v2RedirectRoutes";
 
 function handleV2Redirect(
   appName: string,
   setLocation: (location: string) => void,
 ) {
-  if (appName in V2RedirectRoutes) {
-    umamiTrack("v2-redirect", { from: appName, to: V2RedirectRoutes[appName] });
-    setLocation(V2RedirectRoutes[appName]);
+  if (appName in v2RedirectRoutes) {
+    umamiTrack("v2-redirect", { from: appName, to: v2RedirectRoutes[appName] });
+    setLocation(v2RedirectRoutes[appName]);
     return;
   }
 
-  if (V2UnimplementedRoutes.includes(appName)) {
+  if (v2UnimplementedRoutes.includes(appName)) {
     umamiTrack("v2-redirect", { from: appName, to: "/v2-unimplemented" });
     setLocation("/v2-unimplemented");
     return;
   }
 
-  if (V2UnavaliableRoutes.includes(appName)) {
+  if (v2UnavaliableRoutes.includes(appName)) {
     umamiTrack("v2-redirect", { from: appName, to: "/v2-unavaliable" });
     setLocation("/v2-unavaliable");
   }
@@ -42,9 +36,10 @@ function handleV2Redirect(
 
 export default function MainPage() {
   const [, setLocation] = useLocation();
-
-  // 设置页面标题
-  useDocumentTitle("简书小工具集");
+  const { data: toolStatus } = useData<Record<string, never>, GetResponse>({
+    method: "GET",
+    endpoint: "/v1/status",
+  });
 
   useEffect(() => {
     const queryArguments = new URLSearchParams(window.location.search);
@@ -54,42 +49,22 @@ export default function MainPage() {
     }
   }, []);
 
-  useEffect(() => {
-    sendRequest<Record<string, never>, GetResponse>({
-      method: "GET",
-      endpoint: "/v1/status",
-      onSuccess: ({ data }) =>
-        batch(() => {
-          downgradedTools.value = data.downgradedTools;
-          unavaliableTools.value = data.unavaliableTools;
-        }),
-    });
-  }, []);
-
   return (
-    <>
-      <Header toolName="简书小工具集" hideBackArrow showIcon />
-      <Column>
-        {routes.map((item) => (
-          <ToolCard
-            key={item.toolName}
-            toolName={item.toolName}
-            path={item.path}
-            description={item.description}
-            downgraded={downgradedTools.value.includes(item.path.slice(1))}
-            unavaliable={unavaliableTools.value.includes(item.path.slice(1))}
-          />
-        ))}
-
-        <Column gap="gap-2">
-          <Tooltip tooltip="消零派辅助工具已在小工具集 v3 中下线，我们即将发布更强大的工具，敬请期待">
-            <Text>关于消零派辅助工具</Text>
-          </Tooltip>
-          <Tooltip tooltip="简书 App 中滑动到文章最后，网页端将鼠标悬浮在发布时间上即可查看文章更新时间，小工具集 v3 不再提供此工具">
-            <Text>关于文章发布时间查询工具</Text>
-          </Tooltip>
-        </Column>
-      </Column>
-    </>
+    <Column>
+      {tools.map((item) => (
+        <ToolCard
+          key={item.pageName}
+          toolName={item.pageName}
+          path={item.path}
+          description={item.description}
+          downgraded={
+            toolStatus?.downgradedTools.includes(item.path.slice(1)) ?? false
+          }
+          unavaliable={
+            toolStatus?.unavaliableTools.includes(item.path.slice(1)) ?? false
+          }
+        />
+      ))}
+    </Column>
   );
 }
