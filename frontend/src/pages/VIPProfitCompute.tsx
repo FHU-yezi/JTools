@@ -195,21 +195,33 @@ function VIPLevelSelect() {
       label: "铜牌",
       value: "bronze",
       leftIcon: (
-        <img className="mr-6 pr-1" src={VIPBadgeBronzeURL} alt="铜牌会员图标" />
+        <img
+          className="mr-1 h-6 w-6"
+          src={VIPBadgeBronzeURL}
+          alt="铜牌会员图标"
+        />
       ),
     },
     {
       label: "银牌",
       value: "silver",
       leftIcon: (
-        <img className="mr-6 pr-1" src={VIPBadgeSilverURL} alt="银牌会员图标" />
+        <img
+          className="mr-1 h-6 w-6"
+          src={VIPBadgeSilverURL}
+          alt="银牌会员图标"
+        />
       ),
     },
     {
       label: "金牌",
       value: "gold",
       leftIcon: (
-        <img className="mr-6 pr-1" src={VIPBadgeGoldURL} alt="金牌会员图标" />
+        <img
+          className="mr-1 h-6 w-6"
+          src={VIPBadgeGoldURL}
+          alt="金牌会员图标"
+        />
       ),
     },
     {
@@ -217,7 +229,7 @@ function VIPLevelSelect() {
       value: "platina",
       leftIcon: (
         <img
-          className="mr-6 pr-1"
+          className="mr-1 h-6 w-6"
           src={VIPBadgePlatinaURL}
           alt="白金会员图标"
         />
