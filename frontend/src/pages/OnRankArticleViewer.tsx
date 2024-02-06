@@ -217,7 +217,7 @@ function OnRankRecordsTable({
               <TableCell>{item.ranking}</TableCell>
               <TableCell className="text-left">
                 <ExternalLink
-                  className="block max-w-[60vw] overflow-hidden text-ellipsis"
+                  className="block max-w-[50vw] overflow-hidden text-ellipsis"
                   href={item.articleUrl}
                 >
                   {item.articleTitle}
