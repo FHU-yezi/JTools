@@ -63,7 +63,7 @@ function Result({
           <LargeText
             colorScheme={shouldFPRewardHighlight ? "danger" : undefined}
           >
-            {checkResult.FPReward}
+            {checkResult.FPReward.toFixed(2)}
           </LargeText>
         </Column>
         <Column gap="gap-1">
