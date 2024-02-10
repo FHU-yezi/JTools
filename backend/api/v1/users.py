@@ -121,14 +121,13 @@ async def get_lottery_win_records(
         .limit(limit)
     )
 
-    records: List[GetLotteryWinRecordItem] = []
-    async for item in result:
-        records.append(
-            GetLotteryWinRecordItem(
-                time=item["time"],
-                reward_name=item["reward_name"],
-            )
+    records: List[GetLotteryWinRecordItem] = [
+        GetLotteryWinRecordItem(
+            time=item["time"],
+            reward_name=item["reward_name"],
         )
+        async for item in result
+    ]
 
     return success(
         data=GetLotteryWinRecordsResponse(
@@ -186,17 +185,16 @@ async def get_on_article_rank_records_handler(
         .limit(limit)
     )
 
-    records: List[GetOnArticleRankRecordItem] = []
-    async for item in result:
-        records.append(
-            GetOnArticleRankRecordItem(
-                date=item["date"],
-                ranking=item["ranking"],
-                article_title=item["article"]["title"],
-                article_url=item["article"]["url"],
-                FP_reward=item["reward"]["to_author"],
-            )
+    records: List[GetOnArticleRankRecordItem] = [
+        GetOnArticleRankRecordItem(
+            date=item["date"],
+            ranking=item["ranking"],
+            article_title=item["article"]["title"],
+            article_url=item["article"]["url"],
+            FP_reward=item["reward"]["to_author"],
         )
+        async for item in result
+    ]
 
     return success(
         data=GetOnArticleRankRecordsResponse(
@@ -231,17 +229,16 @@ async def get_on_article_rank_records_by_user_name_handler(
         .limit(limit)
     )
 
-    records: List[GetOnArticleRankRecordItem] = []
-    async for item in result:
-        records.append(
-            GetOnArticleRankRecordItem(
-                date=item["date"],
-                ranking=item["ranking"],
-                article_title=item["article"]["title"],
-                article_url=item["article"]["url"],
-                FP_reward=item["reward"]["to_author"],
-            )
+    records: List[GetOnArticleRankRecordItem] = [
+        GetOnArticleRankRecordItem(
+            date=item["date"],
+            ranking=item["ranking"],
+            article_title=item["article"]["title"],
+            article_url=item["article"]["url"],
+            FP_reward=item["reward"]["to_author"],
         )
+        async for item in result
+    ]
 
     return success(
         data=GetOnArticleRankRecordsResponse(
