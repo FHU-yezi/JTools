@@ -39,7 +39,7 @@ function handleQuery(trigger: () => void) {
   trigger();
 }
 
-function RewardsFliter() {
+function RewardsFilter() {
   const { data: rewards, isLoading: isRewardsLoading } = useData<
     Record<string, never>,
     GetRewardsResponse
@@ -160,7 +160,7 @@ export default function LotteryRewardRecordViewer() {
         errorMessage={userUrl.value && !userSlug.value ? "链接无效" : undefined}
         selectAllOnFocus
       />
-      <RewardsFliter />
+      <RewardsFilter />
       <SmallText colorScheme="gray">
         受简书接口限制，本工具数据不包括免费开 1 次连载与锦鲤头像框
       </SmallText>
