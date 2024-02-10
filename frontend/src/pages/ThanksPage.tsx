@@ -24,9 +24,9 @@ export default function ThanksPage() {
   // 设置页面标题
   useDocumentTitle("鸣谢 - 简书小工具集");
 
-  const allContributorsName = Array.from(
-    new Set(debugProjectRecords.map((item) => item.user_name)),
-  );
+  const allContributorsName = [
+    ...new Set(debugProjectRecords.map((item) => item.user_name)),
+  ];
 
   return (
     <Column>
@@ -36,9 +36,8 @@ export default function ThanksPage() {
         {allContributorsName.map((item) => (
           <ExternalLink
             href={
-              debugProjectRecords.filter(
-                (record) => record.user_name === item,
-              )[0].user_url
+              debugProjectRecords.find((record) => record.user_name === item)!
+                .user_url
             }
           >
             {item}
