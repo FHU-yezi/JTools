@@ -7,9 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "check:eslint": "eslint .",
-    "check:prettier": "prettier --check .",
-    "check:prettier-fix": "prettier --write ."
+    "lint": "biome lint .",
+    "lint-fix": "biome lint --apply .",
+    "format": "biome format .",
+    "format-fix": "biome format --write .",
+    "biome-ci": "biome ci ."
   },
   "dependencies": {
     "@mantine/hooks": "^7.3.2",
@@ -35,15 +37,7 @@
     "wouter-preact": "^2.12.2"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.16.0",
-    "@typescript-eslint/parser": "^6.16.0",
-    "@unocss/eslint-config": "^0.58.2",
-    "eslint": "^8.56.0",
-    "eslint-config-airbnb": "^19.0.4",
-    "eslint-config-airbnb-typescript": "^17.1.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-prettier": "^5.1.2",
-    "prettier": "^3.1.1",
+    "@biomejs/biome": "^1.5.3",
     "rollup-plugin-visualizer": "^5.12.0"
   }
 }

@@ -10,6 +10,10 @@ import {
   toastWarning,
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
+import VIPBadgeBronzeURL from "/vip_badges/vip_badge_bronze.png";
+import VIPBadgeGoldURL from "/vip_badges/vip_badge_gold.png";
+import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";
+import VIPBadgeSilverURL from "/vip_badges/vip_badge_silver.png";
 import { useDataTrigger } from "../hooks/useData";
 import type { GetVIPInfoResponse } from "../models/users";
 import { userUrlToSlug } from "../utils/jianshuHelper";
@@ -18,10 +22,6 @@ import {
   getHumanReadableTimeDelta,
   parseTime,
 } from "../utils/timeHelper";
-import VIPBadgeBronzeURL from "/vip_badges/vip_badge_bronze.png";
-import VIPBadgeGoldURL from "/vip_badges/vip_badge_gold.png";
-import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";
-import VIPBadgeSilverURL from "/vip_badges/vip_badge_silver.png";
 
 const userUrl = signal("");
 const userSlug = computed(() => userUrlToSlug(userUrl.value));

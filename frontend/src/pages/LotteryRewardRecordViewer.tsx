@@ -101,7 +101,7 @@ function Result({
     return <LargeText className="text-center">无中奖记录</LargeText>;
   }
 
-  const flattedRecords = lotteryWinRecords.map((page) => page.records).flat();
+  const flattedRecords = lotteryWinRecords.flatMap((page) => page.records);
 
   return (
     <InfiniteScroll onLoadMore={onLoadMore} hasMore isLoading={isLoading}>

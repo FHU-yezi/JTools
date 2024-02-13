@@ -17,9 +17,9 @@ import { use as echartsUse } from "echarts/core";
 import { SVGRenderer } from "echarts/renderers";
 import { useRef } from "preact/hooks";
 import {
-  useDynamicColorScheme,
   useAutoResize,
   useAutoUpdate,
+  useDynamicColorScheme,
   useLoading,
 } from "../../hooks/charts";
 

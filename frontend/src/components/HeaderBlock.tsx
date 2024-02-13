@@ -6,8 +6,8 @@ import {
   TextButton,
 } from "@sscreator/ui";
 import { useLocation } from "wouter-preact";
-import SearchModal from "./SearchModal";
 import icon from "/favicon-64.png";
+import SearchModal from "./SearchModal";
 
 interface Props {
   pageName?: string;

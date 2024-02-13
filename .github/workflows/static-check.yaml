@@ -31,10 +31,9 @@ jobs:
         working-directory: ./frontend
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v1
-      - name: Install Dependencies
-        run: bun install --frozen-lockfile
-      - name: Lint with Eslint
-        run: bun run check:eslint
-      - name: Style check with Prettier
-        run: bun run check:prettier
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v2
+        with:
+            version: latest
+      - name: Run Biome
+        run: biome ci .

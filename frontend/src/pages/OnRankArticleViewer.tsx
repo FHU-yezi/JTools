@@ -197,7 +197,7 @@ function OnRankRecordsTable({
     return <LargeText className="text-center">无上榜记录</LargeText>;
   }
 
-  const flattedRecords = onRankRecords.map((page) => page.records).flat();
+  const flattedRecords = onRankRecords.flatMap((page) => page.records);
 
   return (
     <InfiniteScroll onLoadMore={onLoadMore} hasMore isLoading={isLoading}>
