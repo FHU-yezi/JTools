@@ -16,6 +16,9 @@
   "formatter": {
     "indentStyle": "space"
   },
+  "organizeImports": {
+    "enabled": false
+  },
   "vcs": {
     "enabled": true,
     "clientKind": "git",

@@ -5,6 +5,7 @@ import { Suspense, lazy } from "preact/compat";
 import { Toaster } from "react-hot-toast";
 import { install } from "resize-observer";
 import { SWRConfig } from "swr";
+import { registerSW } from "virtual:pwa-register";
 import { Route, Switch } from "wouter-preact";
 import ErrorFallback from "./components/ErrorFallback";
 import PageWrapper from "./components/PageWrapper";
@@ -12,10 +13,9 @@ import MainPage from "./pages/MainPage";
 import { routes } from "./routes";
 import { onError } from "./utils/errorHandler";
 import { fetcher } from "./utils/fetcher";
-import { registerSW } from "virtual:pwa-register";
 
-import "@sscreator/ui/sscreator-ui.css";
 import "@unocss/reset/tailwind.css";
+import "@sscreator/ui/sscreator-ui.css";
 import "uno.css";
 
 // 处理 Safari 浏览器上的 ResizeObserver 兼容性问题
