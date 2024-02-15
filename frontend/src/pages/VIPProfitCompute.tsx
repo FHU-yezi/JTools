@@ -413,7 +413,7 @@ function ReferralRewards() {
 }
 export default function VIPProfitCompute() {
   return (
-    <Column>
+    <>
       <ParamsInput />
 
       <Summary />
@@ -424,6 +424,6 @@ export default function VIPProfitCompute() {
       <Text className="text-right" bold>
         本工具不构成任何投资建议
       </Text>
-    </Column>
+    </>
   );
 }

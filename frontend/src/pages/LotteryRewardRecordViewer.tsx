@@ -151,7 +151,7 @@ export default function LotteryRewardRecordViewer() {
   }, [userUrl.value, excludedAwards.value]);
 
   return (
-    <Column>
+    <>
       <TextInput
         id="user-url"
         label="用户个人主页链接"
@@ -177,6 +177,6 @@ export default function LotteryRewardRecordViewer() {
         isLoading={isLoading}
         onLoadMore={nextPage}
       />
-    </Column>
+    </>
   );
 }

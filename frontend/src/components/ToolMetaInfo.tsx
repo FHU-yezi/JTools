@@ -32,7 +32,7 @@ export default function ToolMetaInfo() {
   );
 
   return (
-    <Column className="mb-4">
+    <>
       {toolStatus && (
         <Grid cols="grid-cols-1 sm:grid-cols-2" gap="gap-2">
           {toolStatus.lastUpdateTime && (
@@ -94,6 +94,6 @@ export default function ToolMetaInfo() {
           </SolidButton>
         </Column>
       </Modal>
-    </Column>
+    </>
   );
 }

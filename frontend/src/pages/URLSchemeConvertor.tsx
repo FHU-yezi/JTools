@@ -78,7 +78,7 @@ function Result() {
   if (!urlScheme.value) return null;
 
   return (
-    <Center>
+    <>
       <Column className="mt-12" gap="gap-2" itemsCenter>
         <Text>{urlScheme.value}</Text>
         <Row itemsCenter>
@@ -104,7 +104,7 @@ function Result() {
           请使用简书 App 扫描二维码
         </SmallText>
       </Column>
-    </Center>
+    </>
   );
 }
 

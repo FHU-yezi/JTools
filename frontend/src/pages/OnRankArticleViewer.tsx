@@ -294,7 +294,7 @@ export default function OnRankArticleViewer() {
   ];
 
   return (
-    <Column>
+    <>
       <AutoCompleteUserNameOrUrl onEnter={() => handleQuery(triggers)} />
       <OrderBy />
       <SolidButton
@@ -325,6 +325,6 @@ export default function OnRankArticleViewer() {
         isLoading={isOnRankRecordsLoading}
         onLoadMore={nextPage}
       />
-    </Column>
+    </>
   );
 }

@@ -29,7 +29,7 @@ export default function ThanksPage() {
   ];
 
   return (
-    <Column>
+    <>
       <Heading2>「捉虫计划」反馈</Heading2>
       <Heading3>贡献者</Heading3>
       <Row className="flex-wrap">
@@ -97,6 +97,6 @@ export default function ThanksPage() {
           </SmallText>
         </Column>
       </Column>
-    </Column>
+    </>
   );
 }

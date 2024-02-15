@@ -29,19 +29,17 @@ export default function PageWrapper({
 
   return (
     <>
-      {!hideDecorations && (
-        <HeaderBlock pageName={pageName} isMainPage={isMainPage} />
-      )}
-      <Column className="my-4">
-        <Suspense fallback={<LoadingPage />}>
-          <main className="mx-auto max-w-4xl min-h-screen w-[90vw]">
-            {!disableToolMetaInfo && <ToolMetaInfo />}
+      <Column className="mx-auto max-w-4xl min-h-screen w-[90vw]">
+        {!hideDecorations && (
+          <HeaderBlock pageName={pageName} isMainPage={isMainPage} />
+        )}
 
-            <Component />
-          </main>
+        <Suspense fallback={<LoadingPage />}>
+          {!disableToolMetaInfo && <ToolMetaInfo />}
+
+          <Component />
         </Suspense>
       </Column>
-
       {!hideDecorations && <FooterBlock />}
     </>
   );

@@ -218,13 +218,13 @@ function WinsTrending() {
 
 export default function LotteryAnalyzer() {
   return (
-    <Column gap="gap-8">
+    <>
       <Summary />
 
       <Grid cols="grid-cols-1 lg:grid-cols-2" gap="gap-8">
         <RecentWins />
         <WinsTrending />
       </Grid>
-    </Column>
+    </>
   );
 }

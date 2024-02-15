@@ -11,7 +11,7 @@ export default function FooterBlock() {
   });
 
   return (
-    <Footer className="mx-auto max-w-4xl w-[90vw]">
+    <Footer className="mx-auto max-w-4xl w-[90vw] mt-8">
       <ExternalLink href="https://status.sscreator.com/status/jtools">
         服务状态
       </ExternalLink>

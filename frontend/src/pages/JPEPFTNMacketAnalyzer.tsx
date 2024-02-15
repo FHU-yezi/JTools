@@ -452,7 +452,7 @@ function AmountHistory() {
 
 export default function JPEPFTNMarketAnalyzer() {
   return (
-    <Column gap="gap-8">
+    <>
       <PlatformInfo />
       <RealtimeData />
 
@@ -460,6 +460,6 @@ export default function JPEPFTNMarketAnalyzer() {
         <PriceHistory />
         <AmountHistory />
       </Grid>
-    </Column>
+    </>
   );
 }

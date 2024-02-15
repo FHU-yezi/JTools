@@ -10,10 +10,6 @@ import {
   toastWarning,
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
-import VIPBadgeBronzeURL from "/vip_badges/vip_badge_bronze.png";
-import VIPBadgeGoldURL from "/vip_badges/vip_badge_gold.png";
-import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";
-import VIPBadgeSilverURL from "/vip_badges/vip_badge_silver.png";
 import { useDataTrigger } from "../hooks/useData";
 import type { GetVIPInfoResponse } from "../models/users";
 import { userUrlToSlug } from "../utils/jianshuHelper";
@@ -22,6 +18,10 @@ import {
   getHumanReadableTimeDelta,
   parseTime,
 } from "../utils/timeHelper";
+import VIPBadgeBronzeURL from "/vip_badges/vip_badge_bronze.png";
+import VIPBadgeGoldURL from "/vip_badges/vip_badge_gold.png";
+import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";
+import VIPBadgeSilverURL from "/vip_badges/vip_badge_silver.png";
 
 const userUrl = signal("");
 const userSlug = computed(() => userUrlToSlug(userUrl.value));
@@ -95,7 +95,7 @@ export default function VIPInfoViewer() {
   }, [userUrl.value]);
 
   return (
-    <Column>
+    <>
       <TextInput
         id="user-url"
         label="用户个人主页链接"
@@ -113,6 +113,6 @@ export default function VIPInfoViewer() {
       </SolidButton>
 
       <Result VIPInfo={VIPInfo} />
-    </Column>
+    </>
   );
 }

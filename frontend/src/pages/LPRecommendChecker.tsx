@@ -97,7 +97,7 @@ export default function LPRecommendChecker() {
   }, [articleUrl.value]);
 
   return (
-    <Column>
+    <>
       <SmallText color="gray">
         本工具仅依据 LP 理事会公开推文规则进行检测，具体事宜请以实际为准。
       </SmallText>
@@ -120,6 +120,6 @@ export default function LPRecommendChecker() {
       </SolidButton>
 
       <Result checkResult={checkResult} />
-    </Column>
+    </>
   );
 }
