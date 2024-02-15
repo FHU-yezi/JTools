@@ -364,9 +364,7 @@ function VIPRewards() {
         <Column gap="gap-1">
           <Text color="gray">基础收益率</Text>
           <LargeText>{(baseEarningRate.value * 100).toFixed(2)}%</LargeText>
-          <SmallText color="gray">
-            {VIPData[VIPLevel.value].name}
-          </SmallText>
+          <SmallText color="gray">{VIPData[VIPLevel.value].name}</SmallText>
         </Column>
         <Column gap="gap-1">
           <Text color="gray">持钻量加成</Text>

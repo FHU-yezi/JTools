@@ -70,9 +70,7 @@ function Result({ VIPInfo }: { VIPInfo?: GetVIPInfoResponse }) {
         <Column gap="gap-1">
           <Text color="gray">会员到期时间</Text>
           <LargeText>{getDate(expireDate!)}</LargeText>
-          <Text color="gray">
-            {getHumanReadableTimeDelta(expireDate!)}
-          </Text>
+          <Text color="gray">{getHumanReadableTimeDelta(expireDate!)}</Text>
         </Column>
       )}
     </Row>

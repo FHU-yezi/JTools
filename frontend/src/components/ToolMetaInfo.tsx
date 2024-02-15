@@ -55,9 +55,7 @@ export default function ToolMetaInfo() {
           {toolStatus.dataCount && (
             <Row gap="gap-1" itemsCenter>
               <Icon color="gray" icon="i-mdi-database-outline" />
-              <SmallText color="gray">
-                数据量：{toolStatus.dataCount}
-              </SmallText>
+              <SmallText color="gray">数据量：{toolStatus.dataCount}</SmallText>
             </Row>
           )}
           {toolStatus.dataSource && (
