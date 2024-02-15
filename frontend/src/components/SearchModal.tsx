@@ -23,7 +23,7 @@ export default function SearchModal() {
   return (
     <>
       <TextButton
-        colorScheme="secondary"
+        color="black"
         leftIcon="i-mdi-search"
         onClick={() => {
           isSearchModalOpened.value = true;

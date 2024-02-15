@@ -161,7 +161,7 @@ export default function LotteryRewardRecordViewer() {
         selectAllOnFocus
       />
       <RewardsFilter />
-      <SmallText colorScheme="gray">
+      <SmallText color="gray">
         受简书接口限制，本工具数据不包括免费开 1 次连载与锦鲤头像框
       </SmallText>
       <SolidButton

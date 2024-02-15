@@ -1,10 +1,10 @@
-import { useDebouncedValue } from "@mantine/hooks";
 import { computed, signal } from "@preact/signals";
 import {
   AutoCompleteInput,
   Column,
   ExternalLink,
   InfiniteScroll,
+  useDebouncedSignal,
   LargeText,
   Notice,
   Row,
@@ -56,7 +56,7 @@ function handleQuery(triggers: Array<() => void>) {
 }
 
 function AutoCompleteUserNameOrUrl({ onEnter }: { onEnter: () => void }) {
-  const [debouncedUserName] = useDebouncedValue(userUrlOrName.value, 100);
+  const debouncedUserName = useDebouncedSignal(userUrlOrName, 100);
   const { data: autocompleteOptions, trigger } = useDataTrigger<
     GetNameAutocompleteRequest,
     GetNameAutocompleteResponse
@@ -64,13 +64,13 @@ function AutoCompleteUserNameOrUrl({ onEnter }: { onEnter: () => void }) {
     method: "GET",
     endpoint: "/v1/users/name-autocomplete",
     queryArgs: {
-      name_part: debouncedUserName ?? "",
+      name_part: debouncedUserName.value ?? "",
     },
   });
 
   useEffect(() => {
     if (!debouncedUserName) return;
-    if (debouncedUserName.length >= 15) return;
+    if (debouncedUserName.value.length >= 15) return;
 
     setTimeout(trigger);
   }, [debouncedUserName]);
@@ -132,7 +132,7 @@ function HistoryNamesFoundNotice({
   if (!Object.keys(historyNames.historyNamesOnrankSummary).length) return null;
 
   return (
-    <Notice className="flex flex-col gap-4" colorScheme="info" title="曾用昵称">
+    <Notice className="flex flex-col gap-4" color="info" title="曾用昵称">
       <Text>找到您曾用昵称的上榜记录：</Text>
       <Column gap="gap-2">
         {Object.entries(historyNames.historyNamesOnrankSummary).map(

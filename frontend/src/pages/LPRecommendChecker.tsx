@@ -44,40 +44,32 @@ function Result({
   return (
     <>
       <LargeText
-        colorScheme={checkResult.canRecommendNow ? "success" : "danger"}
+        color={checkResult.canRecommendNow ? "success" : "danger"}
         bold
       >
         {checkResult.canRecommendNow ? "可推荐" : "不可推荐"}
       </LargeText>
       <Row className="flex-wrap justify-around">
         <Column gap="gap-1">
-          <Text colorScheme="gray">文章</Text>
+          <Text color="gray">文章</Text>
           <ExternalLink className="text-lg" href={articleUrl.value}>
             {checkResult.articleTitle}
           </ExternalLink>
         </Column>
         <Column gap="gap-1">
-          <Text colorScheme={shouldFPRewardHighlight ? "danger" : "gray"}>
+          <Text color={shouldFPRewardHighlight ? "danger" : "gray"}>
             获钻量
           </Text>
-          <LargeText
-            colorScheme={shouldFPRewardHighlight ? "danger" : undefined}
-          >
+          <LargeText color={shouldFPRewardHighlight ? "danger" : undefined}>
             {checkResult.FPReward.toFixed(2)}
           </LargeText>
         </Column>
         <Column gap="gap-1">
-          <Text
-            colorScheme={
-              shouldnextCanRecommendDateHighlight ? "danger" : "gray"
-            }
-          >
+          <Text color={shouldnextCanRecommendDateHighlight ? "danger" : "gray"}>
             作者下次可推时间
           </Text>
           <LargeText
-            colorScheme={
-              shouldnextCanRecommendDateHighlight ? "danger" : undefined
-            }
+            color={shouldnextCanRecommendDateHighlight ? "danger" : undefined}
           >
             {checkResult.nextCanRecommendDate
               ? getDate(parseTime(checkResult.nextCanRecommendDate))
@@ -106,7 +98,7 @@ export default function LPRecommendChecker() {
 
   return (
     <Column>
-      <SmallText colorScheme="gray">
+      <SmallText color="gray">
         本工具仅依据 LP 理事会公开推文规则进行检测，具体事宜请以实际为准。
       </SmallText>
       <TextInput

@@ -27,10 +27,10 @@ export default function ToolCard({
         <Column gap="gap-2">
           <Row gap="gap-2">
             <LargeText bold>{toolName}</LargeText>
-            {downgraded && <Badge colorScheme="warning">降级</Badge>}
-            {unavaliable && <Badge colorScheme="danger">不可用</Badge>}
+            {downgraded && <Badge color="warning">降级</Badge>}
+            {unavaliable && <Badge color="danger">不可用</Badge>}
           </Row>
-          <Text colorScheme="gray" className="text-left">
+          <Text color="gray" className="text-left">
             {description}
           </Text>
         </Column>

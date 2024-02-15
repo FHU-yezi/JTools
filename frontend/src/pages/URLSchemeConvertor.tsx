@@ -89,7 +89,7 @@ function Result() {
             访问
           </TextButton>
           <TextButton
-            colorScheme={clipboard.copied ? "success" : undefined}
+            color={clipboard.copied ? "success" : undefined}
             rightIcon={clipboard.copied ? "i-mdi-tick" : "i-mdi-content-copy"}
             onClick={() => clipboard.copy(urlScheme.value)}
           >
@@ -100,7 +100,7 @@ function Result() {
         <Center className="rounded p-2 dark:bg-zinc-50">
           <QRCode value={urlScheme.value} />
         </Center>
-        <SmallText className="text-center" colorScheme="gray">
+        <SmallText className="text-center" color="gray">
           请使用简书 App 扫描二维码
         </SmallText>
       </Column>

@@ -2,8 +2,8 @@ import { computed, useSignal } from "@preact/signals";
 import {
   Column,
   Grid,
-  Heading1,
   Heading2,
+  Heading3,
   LargeText,
   Notice,
   Row,
@@ -45,30 +45,30 @@ function PlatformInfo() {
 
   return (
     <Column>
-      <Heading1>平台信息</Heading1>
+      <Heading2>平台信息</Heading2>
       {platformRules && !platformRules.isOpen && (
-        <Notice colorScheme="warning" title="平台休市中" />
+        <Notice color="warning" title="平台休市中" />
       )}
       <Row className="justify-around">
         <Column gap="gap-1">
-          <Text colorScheme="gray">贝交易手续费</Text>
+          <Text color="gray">贝交易手续费</Text>
           {platformRules ? (
             <LargeText bold>{platformRules.FTNOrderFee * 100}%</LargeText>
           ) : (
             <Row gap="gap-2" itemsCenter>
               <LoaderIcon />
-              <LargeText colorScheme="gray">获取中</LargeText>
+              <LargeText color="gray">获取中</LargeText>
             </Row>
           )}
         </Column>
         <Column gap="gap-1">
-          <Text colorScheme="gray">商品交易手续费</Text>
+          <Text color="gray">商品交易手续费</Text>
           {platformRules ? (
             <LargeText bold>{platformRules.goodsOrderFee * 100}%</LargeText>
           ) : (
             <Row gap="gap-2" itemsCenter>
               <LoaderIcon />
-              <LargeText colorScheme="gray">获取中</LargeText>
+              <LargeText color="gray">获取中</LargeText>
             </Row>
           )}
         </Column>
@@ -95,47 +95,47 @@ function RealtimePrice() {
 
   return (
     <Column gap="gap-2">
-      <Heading2>价格</Heading2>
+      <Heading3>价格</Heading3>
       <Row className="justify-around">
         <Column gap="gap-1">
-          <Text colorScheme="gray">买贝</Text>
+          <Text color="gray">买贝</Text>
           {currentPrice ? (
             <LargeText bold>{currentPrice.buyPrice}</LargeText>
           ) : (
             <Row gap="gap-2" itemsCenter>
               <LoaderIcon />
-              <LargeText colorScheme="gray">获取中</LargeText>
+              <LargeText color="gray">获取中</LargeText>
             </Row>
           )}
           {platformRules ? (
-            <SmallText colorScheme="gray">
+            <SmallText color="gray">
               限价：{platformRules.buyOrderMinimumPrice}
             </SmallText>
           ) : (
             <Row gap="gap-2" itemsCenter>
               <LoaderIcon />
-              <SmallText colorScheme="gray">获取中</SmallText>
+              <SmallText color="gray">获取中</SmallText>
             </Row>
           )}
         </Column>
         <Column gap="gap-1">
-          <Text colorScheme="gray">卖贝</Text>
+          <Text color="gray">卖贝</Text>
           {currentPrice ? (
             <LargeText bold>{currentPrice.sellPrice}</LargeText>
           ) : (
             <Row gap="gap-2" itemsCenter>
               <LoaderIcon />
-              <LargeText colorScheme="gray">获取中</LargeText>
+              <LargeText color="gray">获取中</LargeText>
             </Row>
           )}
           {platformRules ? (
-            <SmallText colorScheme="gray">
+            <SmallText color="gray">
               限价：{platformRules.sellOrderMinimumPrice}
             </SmallText>
           ) : (
             <Row gap="gap-2" itemsCenter>
               <LoaderIcon />
-              <SmallText colorScheme="gray">获取中</SmallText>
+              <SmallText color="gray">获取中</SmallText>
             </Row>
           )}
         </Column>
@@ -161,20 +161,20 @@ function RealtimeAmount() {
 
   return (
     <Column gap="gap-2">
-      <Heading2>挂单量</Heading2>
+      <Heading3>挂单量</Heading3>
       <Row className="justify-around">
         <Column gap="gap-1">
-          <Text colorScheme="gray">买贝</Text>
+          <Text color="gray">买贝</Text>
           {currentAmount ? (
             <LargeText bold>{currentAmount.buyAmount}</LargeText>
           ) : (
             <Row gap="gap-2" itemsCenter>
               <LoaderIcon />
-              <LargeText colorScheme="gray">获取中</LargeText>
+              <LargeText color="gray">获取中</LargeText>
             </Row>
           )}
           {currentAmount && totalPoolAmount.value ? (
-            <SmallText colorScheme="gray">
+            <SmallText color="gray">
               占比：
               {(
                 (currentAmount.buyAmount / totalPoolAmount.value) *
@@ -185,22 +185,22 @@ function RealtimeAmount() {
           ) : (
             <Row gap="gap-2" itemsCenter>
               <LoaderIcon />
-              <SmallText colorScheme="gray">获取中</SmallText>
+              <SmallText color="gray">获取中</SmallText>
             </Row>
           )}
         </Column>
         <Column gap="gap-1">
-          <Text colorScheme="gray">卖贝</Text>
+          <Text color="gray">卖贝</Text>
           {currentAmount ? (
             <LargeText bold>{currentAmount.sellAmount}</LargeText>
           ) : (
             <Row gap="gap-2" itemsCenter>
               <LoaderIcon />
-              <LargeText colorScheme="gray">获取中</LargeText>
+              <LargeText color="gray">获取中</LargeText>
             </Row>
           )}
           {currentAmount && totalPoolAmount.value ? (
-            <SmallText colorScheme="gray">
+            <SmallText color="gray">
               占比：
               {(
                 (currentAmount.sellAmount / totalPoolAmount.value) *
@@ -211,7 +211,7 @@ function RealtimeAmount() {
           ) : (
             <Row gap="gap-2" itemsCenter>
               <LoaderIcon />
-              <SmallText colorScheme="gray">获取中</SmallText>
+              <SmallText color="gray">获取中</SmallText>
             </Row>
           )}
         </Column>
@@ -240,7 +240,7 @@ function RealtimeAmountDistribution() {
 
   return (
     <Column gap="gap-2">
-      <Heading2>挂单价格分布</Heading2>
+      <Heading3>挂单价格分布</Heading3>
       <Select
         id="amount-distribution-trade-type"
         value={tradeType}
@@ -278,7 +278,7 @@ function RealtimeAmountDistribution() {
 function RealtimeData() {
   return (
     <Column>
-      <Heading1>实时数据</Heading1>
+      <Heading2>实时数据</Heading2>
 
       <Grid cols="grid-cols-1 sm:grid-cols-2">
         <RealtimePrice />
@@ -319,7 +319,7 @@ function PriceHistory() {
 
   return (
     <Column gap="gap-2">
-      <Heading1>贝价趋势</Heading1>
+      <Heading2>贝价趋势</Heading2>
       <Select
         id="price-trending-time-range"
         value={timeRange}
@@ -400,7 +400,7 @@ function AmountHistory() {
 
   return (
     <Column gap="gap-2">
-      <Heading1>挂单量趋势</Heading1>
+      <Heading2>挂单量趋势</Heading2>
       <Select
         id="amount-trending-time-range"
         value={timeRange}

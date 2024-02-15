@@ -1,5 +1,4 @@
-import { useDocumentTitle } from "@mantine/hooks";
-import { Column, LoadingPage } from "@sscreator/ui";
+import { Column, LoadingPage, useDocumentTitle } from "@sscreator/ui";
 import type { JSX } from "preact";
 import { Suspense } from "preact/compat";
 import { useEffect } from "preact/hooks";

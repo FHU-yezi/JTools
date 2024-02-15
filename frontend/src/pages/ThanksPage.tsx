@@ -1,16 +1,16 @@
-import { useDocumentTitle } from "@mantine/hooks";
 import {
   Badge,
   Card,
   Column,
   ExternalLink,
   Grid,
-  Heading1,
   Heading2,
+  Heading3,
   LargeText,
   Row,
   SmallText,
   Text,
+  useDocumentTitle,
 } from "@sscreator/ui";
 import dayjs from "dayjs";
 import {
@@ -30,8 +30,8 @@ export default function ThanksPage() {
 
   return (
     <Column>
-      <Heading1>「捉虫计划」反馈</Heading1>
-      <Heading2>贡献者</Heading2>
+      <Heading2>「捉虫计划」反馈</Heading2>
+      <Heading3>贡献者</Heading3>
       <Row className="flex-wrap">
         {allContributorsName.map((item) => (
           <ExternalLink
@@ -44,7 +44,7 @@ export default function ThanksPage() {
           </ExternalLink>
         ))}
       </Row>
-      <Heading2>捉虫记录</Heading2>
+      <Heading3>捉虫记录</Heading3>
       <Grid cols="grid-cols-1 md:grid-cols-2">
         {debugProjectRecords.reverse().map((item) => (
           <Card className="flex flex-col gap-3" withPadding>
@@ -54,7 +54,7 @@ export default function ThanksPage() {
             </Row>
             <Text>{item.desc}</Text>
             <Text>{`奖励：${item.reward} 简书贝`}</Text>
-            <Text colorScheme="gray">
+            <Text color="gray">
               By{" "}
               <ExternalLink href={item.user_url}>{item.user_name}</ExternalLink>{" "}
               @ {item.time}
@@ -64,7 +64,7 @@ export default function ThanksPage() {
       </Grid>
 
       <Column>
-        <Heading1>v3 Beta 内测成员</Heading1>
+        <Heading2>v3 Beta 内测成员</Heading2>
         <Row className="flex-wrap">
           {Object.entries(v3BetaPaticipants).map(([name, url]) => (
             <ExternalLink className="inline" href={url}>
@@ -73,7 +73,7 @@ export default function ThanksPage() {
           ))}
         </Row>
 
-        <Heading1>开源库</Heading1>
+        <Heading2>开源库</Heading2>
         <Grid cols="grid-cols-1 sm:grid-cols-2">
           {Object.entries(opensourcePackages).map(([partName, part]) => (
             <Card className="flex flex-col gap-2" withPadding>

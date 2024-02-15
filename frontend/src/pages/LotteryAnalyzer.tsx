@@ -3,7 +3,7 @@ import {
   Column,
   ExternalLink,
   Grid,
-  Heading1,
+  Heading2,
   LargeText,
   LoadingArea,
   Row,
@@ -98,7 +98,7 @@ function Summary() {
 
   return (
     <Column>
-      <Heading1>综合统计</Heading1>
+      <Heading2>综合统计</Heading2>
       <Select
         id="summary-time-range"
         value={timeRange}
@@ -108,7 +108,7 @@ function Summary() {
       <LoadingArea className="h-[198px]" loading={!summaryData}>
         {summaryData && <SummaryTable data={summaryData} />}
       </LoadingArea>
-      <SmallText colorScheme="gray">
+      <SmallText color="gray">
         受简书接口限制，免费开 1 次连载与锦鲤头像框未予统计
       </SmallText>
     </Column>
@@ -130,7 +130,7 @@ function RecentWins() {
 
   return (
     <Column>
-      <Heading1>近期大奖</Heading1>
+      <Heading2>近期大奖</Heading2>
       <LoadingArea className="h-[320px]" loading={!recentRecords}>
         {recentRecords && (
           <Column gap="gap-0">
@@ -144,7 +144,7 @@ function RecentWins() {
                   <ExternalLink href={item.userUrl}>
                     {item.userName}
                   </ExternalLink>
-                  <SmallText colorScheme="gray">
+                  <SmallText color="gray">
                     {getHumanReadableTimeDelta(parseTime(item.time))}
                   </SmallText>
                 </Column>
@@ -180,7 +180,7 @@ function WinsTrending() {
 
   return (
     <Column>
-      <Heading1>中奖趋势</Heading1>
+      <Heading2>中奖趋势</Heading2>
       <Select
         id="wins-trending-time-range"
         value={timeRange}

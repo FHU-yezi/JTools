@@ -28,7 +28,7 @@ export default function HeaderBlock({ pageName, isMainPage = false }: Props) {
           />
         ) : (
           <TextButton
-            colorScheme="secondary"
+            color="black"
             leftIcon="i-mdi-keyboard-arrow-left"
             onClick={() => setLocation("/")}
           />
