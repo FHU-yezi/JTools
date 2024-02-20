@@ -141,7 +141,7 @@ async def get_word_freq_handler(
     article_slug: Annotated[
         str,
         Parameter(
-            description="文章 slug",
+            description="文章 Slug",
             min_length=12,
             max_length=12,
             examples=[
@@ -160,7 +160,7 @@ async def get_word_freq_handler(
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
             api_code=Code.BAD_ARGUMENTS,
-            msg="文章 slug 无效",
+            msg="文章 Slug 无效",
         )
     except ResourceUnavailableError:
         return fail(
@@ -202,7 +202,7 @@ async def get_LP_recommend_check_handler(  # noqa: N802
     article_slug: Annotated[
         str,
         Parameter(
-            description="文章 slug",
+            description="文章 Slug",
             min_length=12,
             max_length=12,
             examples=[
@@ -221,7 +221,7 @@ async def get_LP_recommend_check_handler(  # noqa: N802
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
             api_code=Code.BAD_ARGUMENTS,
-            msg="文章 slug 无效",
+            msg="文章 Slug 无效",
         )
     except ResourceUnavailableError:
         return fail(

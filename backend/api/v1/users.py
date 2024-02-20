@@ -35,7 +35,7 @@ class GetVipInfoResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 )
 async def get_vip_info_handler(
     user_slug: Annotated[
-        str, Parameter(description="用户 slug", min_length=6, max_length=12)
+        str, Parameter(description="用户 Slug", min_length=6, max_length=12)
     ],
 ) -> Response:
     try:
@@ -45,7 +45,7 @@ async def get_vip_info_handler(
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
             api_code=Code.BAD_ARGUMENTS,
-            msg="用户 slug 无效",
+            msg="用户 Slug 无效",
         )
     except ResourceUnavailableError:
         return fail(
@@ -91,7 +91,7 @@ class GetLotteryWinRecordsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 )
 async def get_lottery_win_records(
     user_slug: Annotated[
-        str, Parameter(description="用户 slug", min_length=6, max_length=12)
+        str, Parameter(description="用户 Slug", min_length=6, max_length=12)
     ],
     offset: Annotated[int, Parameter(description="分页偏移", ge=0)] = 0,
     limit: Annotated[int, Parameter(description="结果数量", gt=0, lt=100)] = 20,
@@ -105,7 +105,7 @@ async def get_lottery_win_records(
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
             api_code=Code.BAD_ARGUMENTS,
-            msg="用户 slug 无效",
+            msg="用户 Slug 无效",
         )
 
     result = (
@@ -158,7 +158,7 @@ class GetOnArticleRankRecordsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 )
 async def get_on_article_rank_records_handler(
     user_slug: Annotated[
-        str, Parameter(description="用户 slug", min_length=6, max_length=12)
+        str, Parameter(description="用户 Slug", min_length=6, max_length=12)
     ],
     order_by: Annotated[
         Literal["date", "ranking"], Parameter(description="排序依据")
@@ -175,7 +175,7 @@ async def get_on_article_rank_records_handler(
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
             api_code=Code.BAD_ARGUMENTS,
-            msg="用户 slug 无效",
+            msg="用户 Slug 无效",
         )
 
     result = (
@@ -264,7 +264,7 @@ class GetOnArticleRankSummaryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 )
 async def get_on_article_rank_summary_handler(
     user_slug: Annotated[
-        str, Parameter(description="用户 slug", min_length=6, max_length=12)
+        str, Parameter(description="用户 Slug", min_length=6, max_length=12)
     ],
 ) -> Response:
     try:
@@ -273,7 +273,7 @@ async def get_on_article_rank_summary_handler(
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
             api_code=Code.BAD_ARGUMENTS,
-            msg="用户 slug 无效",
+            msg="用户 Slug 无效",
         )
 
     records = ARTICLE_FP_RANK_COLLECTION.find(
