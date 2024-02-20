@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Annotated, Dict, List, Literal, Optional
 
+from jkit.constants import USER_SLUG_REGEX
 from jkit.exceptions import ResourceUnavailableError
 from jkit.user import MembershipEnum, User
 from litestar import Response, Router, get
@@ -35,7 +36,7 @@ class GetVipInfoResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 )
 async def get_vip_info_handler(
     user_slug: Annotated[
-        str, Parameter(description="用户 Slug", min_length=6, max_length=12)
+        str, Parameter(description="用户 Slug", pattern=USER_SLUG_REGEX.pattern)
     ],
 ) -> Response:
     try:
@@ -91,7 +92,7 @@ class GetLotteryWinRecordsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 )
 async def get_lottery_win_records(
     user_slug: Annotated[
-        str, Parameter(description="用户 Slug", min_length=6, max_length=12)
+        str, Parameter(description="用户 Slug", pattern=USER_SLUG_REGEX.pattern)
     ],
     offset: Annotated[int, Parameter(description="分页偏移", ge=0)] = 0,
     limit: Annotated[int, Parameter(description="结果数量", gt=0, lt=100)] = 20,
@@ -158,7 +159,7 @@ class GetOnArticleRankRecordsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 )
 async def get_on_article_rank_records_handler(
     user_slug: Annotated[
-        str, Parameter(description="用户 Slug", min_length=6, max_length=12)
+        str, Parameter(description="用户 Slug", pattern=USER_SLUG_REGEX.pattern)
     ],
     order_by: Annotated[
         Literal["date", "ranking"], Parameter(description="排序依据")
@@ -264,7 +265,7 @@ class GetOnArticleRankSummaryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 )
 async def get_on_article_rank_summary_handler(
     user_slug: Annotated[
-        str, Parameter(description="用户 Slug", min_length=6, max_length=12)
+        str, Parameter(description="用户 Slug", pattern=USER_SLUG_REGEX.pattern)
     ],
 ) -> Response:
     try:

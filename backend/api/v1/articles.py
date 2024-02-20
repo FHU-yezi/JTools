@@ -3,6 +3,7 @@ from typing import Annotated, Any, Dict, Optional, cast
 
 from bson import ObjectId
 from jkit.article import Article
+from jkit.constants import ARTICLE_SLUG_REGEX
 from jkit.exceptions import ResourceUnavailableError
 from litestar import Response, Router, get
 from litestar.openapi.spec.example import Example
@@ -142,8 +143,7 @@ async def get_word_freq_handler(
         str,
         Parameter(
             description="文章 Slug",
-            min_length=12,
-            max_length=12,
+            pattern=ARTICLE_SLUG_REGEX.pattern,
             examples=[
                 Example(
                     summary="简书导航 一文助你玩转简书 - LP 理事会",
@@ -203,8 +203,7 @@ async def get_LP_recommend_check_handler(  # noqa: N802
         str,
         Parameter(
             description="文章 Slug",
-            min_length=12,
-            max_length=12,
+            pattern=ARTICLE_SLUG_REGEX.pattern,
             examples=[
                 Example(
                     summary="简书导航 一文助你玩转简书 - LP 理事会",
