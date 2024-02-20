@@ -1,9 +1,7 @@
-from asyncio import gather
 from datetime import datetime, timedelta
 from typing import Annotated, Any, Dict, Optional, cast
 
 from bson import ObjectId
-from httpx import AsyncClient
 from jkit.article import Article
 from jkit.exceptions import ResourceUnavailableError
 from litestar import Response, Router, get
@@ -22,8 +20,6 @@ from sspeedup.api.litestar import (
 
 from utils.config import config
 from utils.db import ARTICLE_FP_RANK_COLLECTION
-
-CLIENT = AsyncClient(http2=True)
 
 # fmt: off
 splitter = AbilityJiebaPossegSplitterV1(
@@ -173,7 +169,9 @@ async def get_word_freq_handler(
             msg="文章不存在或已被锁定 / 私密 / 删除",
         )
 
-    title, text = await gather(article.title, article.text_content)
+    article_info = await article.info
+    title = article_info.title
+    text = article_info.text_content
 
     word_freq = dict((await splitter.get_word_freq(text)).most_common(100))
 
