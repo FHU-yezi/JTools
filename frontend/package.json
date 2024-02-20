@@ -17,7 +17,7 @@
     "@mantine/hooks": "^7.3.2",
     "@preact/preset-vite": "^2.7.0",
     "@preact/signals": "^1.2.2",
-    "@sscreator/ui": "^0.25.0",
+    "@sscreator/ui": "^0.26.0",
     "@unocss/preset-rem-to-px": "^0.58.2",
     "@unocss/reset": "^0.58.2",
     "clsx": "^2.0.0",
