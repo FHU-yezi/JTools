@@ -1,5 +1,4 @@
-import { useDocumentTitle } from "@mantine/hooks";
-import { Column, LoadingPage } from "@sscreator/ui";
+import { Column, LoadingPage, useDocumentTitle } from "@sscreator/ui";
 import type { JSX } from "preact";
 import { Suspense } from "preact/compat";
 import { useEffect } from "preact/hooks";
@@ -30,19 +29,17 @@ export default function PageWrapper({
 
   return (
     <>
-      {!hideDecorations && (
-        <HeaderBlock pageName={pageName} isMainPage={isMainPage} />
-      )}
-      <Column className="my-4">
-        <Suspense fallback={<LoadingPage />}>
-          <main className="mx-auto max-w-4xl min-h-screen w-[90vw]">
-            {!disableToolMetaInfo && <ToolMetaInfo />}
+      <Column className="mx-auto max-w-4xl min-h-screen w-[90vw]">
+        {!hideDecorations && (
+          <HeaderBlock pageName={pageName} isMainPage={isMainPage} />
+        )}
 
-            <Component />
-          </main>
+        <Suspense fallback={<LoadingPage />}>
+          {!disableToolMetaInfo && <ToolMetaInfo />}
+
+          <Component />
         </Suspense>
       </Column>
-
       {!hideDecorations && <FooterBlock />}
     </>
   );

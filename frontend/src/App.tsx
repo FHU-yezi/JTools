@@ -1,6 +1,7 @@
 import { LoadingPage } from "@sscreator/ui";
-import { render, type VNode } from "preact";
-import { lazy, Suspense } from "preact/compat";
+import type { VNode } from "preact";
+import { render } from "preact";
+import { Suspense, lazy } from "preact/compat";
 import { Toaster } from "react-hot-toast";
 import { install } from "resize-observer";
 import { SWRConfig } from "swr";

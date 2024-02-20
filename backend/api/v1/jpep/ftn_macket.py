@@ -2,7 +2,7 @@ from asyncio import gather
 from datetime import datetime, timedelta
 from typing import Annotated, Any, Dict, Literal, Optional
 
-from httpx import AsyncClient
+from jkit.jpep.platform_settings import PlatformSettings
 from litestar import Response, Router, get
 from litestar.params import Parameter
 from msgspec import Struct, field
@@ -28,19 +28,7 @@ RESOLUTION_TO_TIME_UNIT: Dict[str, str] = {
     "1d": "day",
 }
 
-HTTP_CLIENT = AsyncClient(http2=True)
-
-
-async def get_rules() -> Dict[str, Any]:
-    response = await HTTP_CLIENT.post(
-        "https://20221023.jianshubei.com/api/getList/furnish.setting/1/",
-        json={
-            "fields": "isClose,fee,shop_fee,minimum_price,buy_minimum_price",
-        },
-    )
-
-    response.raise_for_status()
-    return response.json()["data"]
+PLATFORM_SETTINGS = PlatformSettings()
 
 
 async def get_data_update_time() -> datetime:
@@ -254,23 +242,15 @@ class GetRulesResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     },
 )
 async def get_rules_handler() -> Response:
-    rules = await get_rules()
-
-    is_open = not bool(rules["isClose"])
-
-    buy_order_minimum_price = rules["buy_minimum_price"]
-    sell_order_minimum_price = rules["minimum_price"]
-
-    FTN_order_fee = rules["fee"]  # noqa: N806
-    goods_order_fee = rules["shop_fee"]
+    settings = await PLATFORM_SETTINGS.get_data()
 
     return success(
         data=GetRulesResponse(
-            is_open=is_open,
-            buy_order_minimum_price=buy_order_minimum_price,
-            sell_order_minimum_price=sell_order_minimum_price,
-            FTN_order_fee=FTN_order_fee,
-            goods_order_fee=goods_order_fee,
+            is_open=settings.opening,
+            buy_order_minimum_price=settings.ftn_buy_trade_minimum_price,
+            sell_order_minimum_price=settings.ftn_sell_trade_minimum_price,
+            FTN_order_fee=settings.ftn_trade_fee,
+            goods_order_fee=settings.goods_trade_fee,
         )
     )
 

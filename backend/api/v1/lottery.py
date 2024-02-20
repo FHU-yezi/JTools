@@ -213,16 +213,15 @@ async def get_records_handler(
         .limit(limit)
     )
 
-    records: List[GetRecordItem] = []
-    async for item in result:
-        records.append(
-            GetRecordItem(
-                time=item["time"],
-                reward_name=item["reward_name"],
-                user_name=item["user"]["name"],
-                user_url=item["user"]["url"],
-            )
+    records: List[GetRecordItem] = [
+        GetRecordItem(
+            time=item["time"],
+            reward_name=item["reward_name"],
+            user_name=item["user"]["name"],
+            user_url=item["user"]["url"],
         )
+        async for item in result
+    ]
 
     return success(
         data=GetRecordsResponse(
@@ -269,20 +268,17 @@ async def get_summary_handler(
     winning_rate = get_summary_winning_rate(wins_count)
     rarity = get_summary_rarity(wins_count)
 
-    rewards: List[GetSummaryRewardItem] = []
-    for reward_name in REWARD_NAMES:
-        rewards.append(
-            GetSummaryRewardItem(
-                reward_name=reward_name,
-                wins_count=wins_count[reward_name],
-                winners_count=winners_count[reward_name],
-                average_wins_count_per_winner=average_wins_count_per_winner[
-                    reward_name
-                ],
-                winning_rate=winning_rate[reward_name],
-                rarity=rarity[reward_name],
-            )
+    rewards: List[GetSummaryRewardItem] = [
+        GetSummaryRewardItem(
+            reward_name=reward_name,
+            wins_count=wins_count[reward_name],
+            winners_count=winners_count[reward_name],
+            average_wins_count_per_winner=average_wins_count_per_winner[reward_name],
+            winning_rate=winning_rate[reward_name],
+            rarity=rarity[reward_name],
         )
+        for reward_name in REWARD_NAMES
+    ]
 
     return success(
         data=GetSummaryResponse(

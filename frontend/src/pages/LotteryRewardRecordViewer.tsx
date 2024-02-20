@@ -39,7 +39,7 @@ function handleQuery(trigger: () => void) {
   trigger();
 }
 
-function RewardsFliter() {
+function RewardsFilter() {
   const { data: rewards, isLoading: isRewardsLoading } = useData<
     Record<string, never>,
     GetRewardsResponse
@@ -101,7 +101,7 @@ function Result({
     return <LargeText className="text-center">无中奖记录</LargeText>;
   }
 
-  const flattedRecords = lotteryWinRecords.map((page) => page.records).flat();
+  const flattedRecords = lotteryWinRecords.flatMap((page) => page.records);
 
   return (
     <InfiniteScroll onLoadMore={onLoadMore} hasMore isLoading={isLoading}>
@@ -151,7 +151,7 @@ export default function LotteryRewardRecordViewer() {
   }, [userUrl.value, excludedAwards.value]);
 
   return (
-    <Column>
+    <>
       <TextInput
         id="user-url"
         label="用户个人主页链接"
@@ -160,8 +160,8 @@ export default function LotteryRewardRecordViewer() {
         errorMessage={userUrl.value && !userSlug.value ? "链接无效" : undefined}
         selectAllOnFocus
       />
-      <RewardsFliter />
-      <SmallText colorScheme="gray">
+      <RewardsFilter />
+      <SmallText color="gray">
         受简书接口限制，本工具数据不包括免费开 1 次连载与锦鲤头像框
       </SmallText>
       <SolidButton
@@ -177,6 +177,6 @@ export default function LotteryRewardRecordViewer() {
         isLoading={isLoading}
         onLoadMore={nextPage}
       />
-    </Column>
+    </>
   );
 }

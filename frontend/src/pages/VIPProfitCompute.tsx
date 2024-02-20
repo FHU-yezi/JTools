@@ -301,28 +301,28 @@ function Summary() {
   return (
     <Card className="flex flex-wrap justify-around gap-4" shadow withPadding>
       <Column gap="gap-1">
-        <Text colorScheme="gray">年回报率</Text>
+        <Text color="gray">年回报率</Text>
         <Text
           className="text-2xl"
-          colorScheme={canGetMoneyBack.value ? "success" : "danger"}
+          color={canGetMoneyBack.value ? "success" : "danger"}
           bold
         >
           {(returnRate.value * 100).toFixed(2)}%
         </Text>
       </Column>
       <Column gap="gap-1">
-        <Text colorScheme="gray">净利润</Text>
+        <Text color="gray">净利润</Text>
         <Text className="text-2xl" bold>
           {annualNetProfit.value.toFixed(2)}
         </Text>
-        <SmallText colorScheme="gray">简书贝 / 年</SmallText>
+        <SmallText color="gray">简书贝 / 年</SmallText>
       </Column>
       <Column gap="gap-1">
-        <Text colorScheme="gray">成本</Text>
+        <Text color="gray">成本</Text>
         <Text className="text-2xl" bold>
           {cost.value.toFixed(2)}
         </Text>
-        <SmallText colorScheme="gray">简书贝 / 年</SmallText>
+        <SmallText color="gray">简书贝 / 年</SmallText>
       </Column>
       <Column gap="gap-2">
         <Row gap="gap-1">
@@ -330,18 +330,18 @@ function Summary() {
           <Column className="items-end" gap="gap-2">
             <Row gap="gap-1">
               <Text bold>{annualGrossProfit.value.toFixed(2)}</Text>
-              <Text colorScheme="gray">/ 年</Text>
+              <Text color="gray">/ 年</Text>
             </Row>
             <Row gap="gap-1">
               <Text bold>{monthlyGrossProfit.value.toFixed(2)}</Text>
-              <Text colorScheme="gray">/ 月</Text>
+              <Text color="gray">/ 月</Text>
             </Row>
           </Column>
         </Row>
         <Row className="justify-between" gap="gap-1">
           <Text>净利润：</Text>
           <Text bold>{monthlyNetProfit.value.toFixed(2)}</Text>
-          <Text colorScheme="gray">/ 月</Text>
+          <Text color="gray">/ 月</Text>
         </Row>
       </Column>
     </Card>
@@ -353,7 +353,7 @@ function VIPRewards() {
     <Card className="flex flex-col gap-4" shadow withPadding>
       <LargeText bold>会员收益</LargeText>
       <Column gap="gap-1">
-        <Text colorScheme="gray">总收益率（年化）</Text>
+        <Text color="gray">总收益率（年化）</Text>
         <Row gap="gap-1">
           <Text className="text-2xl" bold>
             {(earningRate.value * 100).toFixed(2)}%
@@ -362,22 +362,20 @@ function VIPRewards() {
       </Column>
       <Row className="justify-between" gap="gap-1">
         <Column gap="gap-1">
-          <Text colorScheme="gray">基础收益率</Text>
+          <Text color="gray">基础收益率</Text>
           <LargeText>{(baseEarningRate.value * 100).toFixed(2)}%</LargeText>
-          <SmallText colorScheme="gray">
-            {VIPData[VIPLevel.value].name}
-          </SmallText>
+          <SmallText color="gray">{VIPData[VIPLevel.value].name}</SmallText>
         </Column>
         <Column gap="gap-1">
-          <Text colorScheme="gray">持钻量加成</Text>
+          <Text color="gray">持钻量加成</Text>
           <LargeText>x{FPCountEarningRateFactor.value.toFixed(2)}</LargeText>
         </Column>
         <Column gap="gap-1">
-          <Text colorScheme="gray">推广大使加成</Text>
+          <Text color="gray">推广大使加成</Text>
           <LargeText>
             x{promoterLevelEarningRateFactor.value.toFixed(2)}
           </LargeText>
-          <SmallText colorScheme="gray">
+          <SmallText color="gray">
             {promoterData[promoterLevel.value].name}
           </SmallText>
         </Column>
@@ -391,21 +389,21 @@ function ReferralRewards() {
     <Card className="flex flex-col gap-4" shadow withPadding>
       <LargeText bold>推广奖励</LargeText>
       <Column gap="gap-1">
-        <Text colorScheme="gray">总分红</Text>
+        <Text color="gray">总分红</Text>
         <Text className="text-2xl" bold>
           {totalReferralRewards.value.toFixed(2)}
         </Text>
       </Column>
       <Row className="justify-around">
         <Column gap="gap-1">
-          <Text colorScheme="gray">一级会员</Text>
+          <Text color="gray">一级会员</Text>
           <LargeText>{level2MembersReferralRewards.value.toFixed(2)}</LargeText>
-          <SmallText colorScheme="gray">简书贝 / 年</SmallText>
+          <SmallText color="gray">简书贝 / 年</SmallText>
         </Column>
         <Column gap="gap-1">
-          <Text colorScheme="gray">二级会员</Text>
+          <Text color="gray">二级会员</Text>
           <LargeText>{level1MembersReferralRewards.value.toFixed(2)}</LargeText>
-          <SmallText colorScheme="gray">简书贝 / 年</SmallText>
+          <SmallText color="gray">简书贝 / 年</SmallText>
         </Column>
       </Row>
     </Card>
@@ -413,7 +411,7 @@ function ReferralRewards() {
 }
 export default function VIPProfitCompute() {
   return (
-    <Column>
+    <>
       <ParamsInput />
 
       <Summary />
@@ -424,6 +422,6 @@ export default function VIPProfitCompute() {
       <Text className="text-right" bold>
         本工具不构成任何投资建议
       </Text>
-    </Column>
+    </>
   );
 }

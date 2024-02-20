@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "jtools"
-version = "3.9.0"
+version = "3.10.0"
 description = "探索未知"
 authors = ["yezi <yehaowei20060411@qq.com>"]
 license = "MIT"
@@ -13,7 +13,7 @@ sspeedup = {version = "^0.25.0", extras = ["logging", "config", "api-litestar"]}
 uvicorn = "^0.27.0"
 httptools = "^0.6.0"
 uvloop = "^0.19.0"
-jkit = "^3.0.0a6"
+jkit = "^3.0.0a9"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.2.0"
@@ -29,11 +29,11 @@ build-backend = "poetry.core.masonry.api"
 target-version = "py38"
 
 lint.select = [
-    "A", "ANN", "ASYNC", "B", "BLE",
-    "C4", "E", "F", "I", "ICN",
-    "ISC", "N", "PIE", "Q", "RET",
-    "RSE", "RUF", "S", "SIM", "SLF",
-    "TCH", "UP", "W"
+    "A", "ANN", "ARG", "ASYNC", "B",
+    "BLE", "C4", "E", "F", "I",
+    "ICN", "ISC", "N", "PERF", "PIE",
+    "PT", "Q", "RET", "RSE", "RUF",
+    "S", "SIM", "SLOT", "TCH", "UP",
+    "W"
 ]
-
-lint.ignore = ["ANN101", "ANN401", "BLE001", "ISC001", "RUF001", "RUF002", "RUF003"]
+lint.ignore = ["ANN101", "ANN102", "ISC001", "RUF001", "RUF002", "RUF003"]

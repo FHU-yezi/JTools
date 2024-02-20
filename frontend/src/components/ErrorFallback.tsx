@@ -36,22 +36,22 @@ export default function ErrorFallback({ children }: Props) {
 
         <Column gap="gap-2">
           <SmallText bold>时间</SmallText>
-          <Text colorScheme="gray">
+          <Text color="gray">
             {new Date().toISOString().replace("T", " ").replace(/\..*Z/, "")}
           </Text>
         </Column>
 
         <Column gap="gap-2">
           <SmallText bold>页面路径</SmallText>
-          <Text colorScheme="gray">{location}</Text>
+          <Text color="gray">{location}</Text>
         </Column>
 
         <Column gap="gap-2">
           <SmallText bold>错误信息</SmallText>
-          <Badge className="mr-2" colorScheme="danger">
+          <Badge className="mr-2" color="danger">
             {error.name}
           </Badge>
-          <Text colorScheme="gray">{error.message}</Text>
+          <Text color="gray">{error.message}</Text>
         </Column>
 
         <SolidButton onClick={() => window.location.reload()} fullWidth>

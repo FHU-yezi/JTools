@@ -73,7 +73,7 @@ export default function ArticleWordcloudGenerator() {
   }, [articleUrl.value]);
 
   return (
-    <Column>
+    <>
       <TextInput
         id="article-url"
         label="文章链接"
@@ -93,6 +93,6 @@ export default function ArticleWordcloudGenerator() {
       </SolidButton>
 
       <ArticleWordCloud wordFreq={wordFreq} />
-    </Column>
+    </>
   );
 }

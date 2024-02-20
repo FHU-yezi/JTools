@@ -1,10 +1,9 @@
-from asyncio import gather
 from datetime import datetime, timedelta
 from typing import Annotated, Any, Dict, Optional, cast
 
 from bson import ObjectId
-from httpx import AsyncClient
 from jkit.article import Article
+from jkit.constants import ARTICLE_SLUG_REGEX
 from jkit.exceptions import ResourceUnavailableError
 from litestar import Response, Router, get
 from litestar.openapi.spec.example import Example
@@ -22,8 +21,6 @@ from sspeedup.api.litestar import (
 
 from utils.config import config
 from utils.db import ARTICLE_FP_RANK_COLLECTION
-
-CLIENT = AsyncClient(http2=True)
 
 # fmt: off
 splitter = AbilityJiebaPossegSplitterV1(
@@ -145,9 +142,8 @@ async def get_word_freq_handler(
     article_slug: Annotated[
         str,
         Parameter(
-            description="文章 slug",
-            min_length=12,
-            max_length=12,
+            description="文章 Slug",
+            pattern=ARTICLE_SLUG_REGEX.pattern,
             examples=[
                 Example(
                     summary="简书导航 一文助你玩转简书 - LP 理事会",
@@ -164,7 +160,7 @@ async def get_word_freq_handler(
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
             api_code=Code.BAD_ARGUMENTS,
-            msg="文章 slug 无效",
+            msg="文章 Slug 无效",
         )
     except ResourceUnavailableError:
         return fail(
@@ -173,7 +169,9 @@ async def get_word_freq_handler(
             msg="文章不存在或已被锁定 / 私密 / 删除",
         )
 
-    title, text = await gather(article.title, article.text_content)
+    article_info = await article.info
+    title = article_info.title
+    text = article_info.text_content
 
     word_freq = dict((await splitter.get_word_freq(text)).most_common(100))
 
@@ -204,9 +202,8 @@ async def get_LP_recommend_check_handler(  # noqa: N802
     article_slug: Annotated[
         str,
         Parameter(
-            description="文章 slug",
-            min_length=12,
-            max_length=12,
+            description="文章 Slug",
+            pattern=ARTICLE_SLUG_REGEX.pattern,
             examples=[
                 Example(
                     summary="简书导航 一文助你玩转简书 - LP 理事会",
@@ -223,7 +220,7 @@ async def get_LP_recommend_check_handler(  # noqa: N802
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
             api_code=Code.BAD_ARGUMENTS,
-            msg="文章 slug 无效",
+            msg="文章 Slug 无效",
         )
     except ResourceUnavailableError:
         return fail(

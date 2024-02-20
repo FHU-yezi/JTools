@@ -50,13 +50,13 @@ function Result({ VIPInfo }: { VIPInfo?: GetVIPInfoResponse }) {
   return (
     <Row className="flex-wrap justify-around">
       <Column gap="gap-1">
-        <Text colorScheme="gray">用户</Text>
+        <Text color="gray">用户</Text>
         <ExternalLink className="text-lg" href={userUrl.value}>
           {VIPInfo.userName}
         </ExternalLink>
       </Column>
       <Column gap="gap-1">
-        <Text colorScheme="gray">会员等级</Text>
+        <Text color="gray">会员等级</Text>
         <Row gap="gap-1" itemsCenter>
           <img
             className="h-5 w-5"
@@ -68,11 +68,9 @@ function Result({ VIPInfo }: { VIPInfo?: GetVIPInfoResponse }) {
       </Column>
       {VIPInfo.isVIP && (
         <Column gap="gap-1">
-          <Text colorScheme="gray">会员到期时间</Text>
+          <Text color="gray">会员到期时间</Text>
           <LargeText>{getDate(expireDate!)}</LargeText>
-          <Text colorScheme="gray">
-            {getHumanReadableTimeDelta(expireDate!)}
-          </Text>
+          <Text color="gray">{getHumanReadableTimeDelta(expireDate!)}</Text>
         </Column>
       )}
     </Row>
@@ -95,7 +93,7 @@ export default function VIPInfoViewer() {
   }, [userUrl.value]);
 
   return (
-    <Column>
+    <>
       <TextInput
         id="user-url"
         label="用户个人主页链接"
@@ -113,6 +111,6 @@ export default function VIPInfoViewer() {
       </SolidButton>
 
       <Result VIPInfo={VIPInfo} />
-    </Column>
+    </>
   );
 }

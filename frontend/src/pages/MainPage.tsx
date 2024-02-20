@@ -50,7 +50,7 @@ export default function MainPage() {
   }, []);
 
   return (
-    <Column>
+    <>
       {tools.map((item) => (
         <ToolCard
           key={item.pageName}
@@ -65,6 +65,6 @@ export default function MainPage() {
           }
         />
       ))}
-    </Column>
+    </>
   );
 }
