@@ -143,6 +143,15 @@
       "user_name": "花花点点",
       "user_url": "https://www.jianshu.com/u/20b53892b0b2",
       "reward": 50
+    },
+    {
+      "time": "2024-02-22",
+      "type": "功能异常",
+      "module": "上榜文章查询工具",
+      "desc": "自动补全功能异常",
+      "user_name": "非村",
+      "user_url": "https://www.jianshu.com/u/df68a42402fc",
+      "reward": 50
     }
   ],
   "opensourcePackages": {

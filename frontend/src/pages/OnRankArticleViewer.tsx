@@ -4,7 +4,6 @@ import {
   Column,
   ExternalLink,
   InfiniteScroll,
-  useDebouncedSignal,
   LargeText,
   Notice,
   Row,
@@ -18,6 +17,7 @@ import {
   TableRow,
   Text,
   toastWarning,
+  useDebouncedSignal,
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
 import { useDataTrigger, useDataTriggerInfinite } from "../hooks/useData";
@@ -69,11 +69,11 @@ function AutoCompleteUserNameOrUrl({ onEnter }: { onEnter: () => void }) {
   });
 
   useEffect(() => {
-    if (!debouncedUserName) return;
+    if (!debouncedUserName.value) return;
     if (debouncedUserName.value.length >= 15) return;
 
-    setTimeout(trigger);
-  }, [debouncedUserName]);
+    trigger();
+  }, [debouncedUserName.value]);
 
   return (
     <AutoCompleteInput
