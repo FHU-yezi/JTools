@@ -10,13 +10,13 @@ readme = "README.md"
 python = "^3.8"
 motor = "^3.3.0"
 sspeedup = {version = "^0.25.0", extras = ["logging", "config", "api-litestar"]}
-uvicorn = "^0.27.0"
+uvicorn = "^0.28.0"
 httptools = "^0.6.0"
 uvloop = "^0.19.0"
-jkit = "^3.0.0a9"
+jkit = "^3.0.0a15"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.2.0"
+ruff = "^0.3.0"
 pyright = "^1.1.0"
 watchfiles = "^0.21.0"
 
