@@ -9,7 +9,7 @@ networks:
 
 services:
   web:
-    image: jtools-web:3.10.1
+    image: jtools-web:3.10.2
     build:
       dockerfile: Dockerfile.web
     ports:
@@ -29,7 +29,7 @@ services:
         max_attempts: 3
     stop_grace_period: 5s
   api:
-    image: jtools-api:3.10.1
+    image: jtools-api:3.10.2
     build:
       dockerfile: Dockerfile.api
     volumes:
