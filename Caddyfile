@@ -23,6 +23,6 @@
 
     handle /api/* {
         uri strip_prefix /api
-        reverse_proxy api:8902
+        reverse_proxy backend:8902
     }
 }
