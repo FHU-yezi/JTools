@@ -56,8 +56,8 @@ export default function ThanksPage() {
             <Text>{`奖励：${item.reward} 简书贝`}</Text>
             <Text color="gray">
               By{" "}
-              <ExternalLink href={item.user_url}>{item.user_name}</ExternalLink>
-              ·{item.time}
+              <ExternalLink href={item.user_url}>{item.user_name}</ExternalLink>{" "}
+              · {item.time}
             </Text>
           </Card>
         ))}
@@ -93,7 +93,7 @@ export default function ThanksPage() {
           </LargeText>
           <LargeText className="text-center">探索未知。</LargeText>
           <SmallText className="text-center">
-            简书小工具集·{getDate(dayjs())}
+            简书小工具集 · {getDate(dayjs())}
           </SmallText>
         </Column>
       </Column>
