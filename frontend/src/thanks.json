@@ -152,6 +152,15 @@
       "user_name": "非村",
       "user_url": "https://www.jianshu.com/u/df68a42402fc",
       "reward": 50
+    },
+    {
+      "time": "2024-04-19",
+      "type": "数据异常",
+      "module": "LP 理事会推文检测工具",
+      "desc": "特定情况下间隔期数据异常",
+      "user_name": "平原雪",
+      "user_url": "https://www.jianshu.com/u/754f9b7b7417",
+      "reward": 50
     }
   ],
   "opensourcePackages": {
