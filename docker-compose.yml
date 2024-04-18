@@ -9,7 +9,7 @@ networks:
 
 services:
   frontend:
-    image: jtools-frontend:3.10.2
+    image: jtools-frontend:3.11.0
     container_name: jtools-frontend
     build:
       dockerfile: Dockerfile.frontend
@@ -30,7 +30,7 @@ services:
         max_attempts: 3
     stop_grace_period: 5s
   backend:
-    image: jtools-backend:3.10.2
+    image: jtools-backend:3.11.0
     container_name: jtools-backend
     build:
       dockerfile: Dockerfile.backend
