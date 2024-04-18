@@ -110,10 +110,10 @@ async def caculate_next_can_recommend_date(author_url: str) -> Optional[datetime
 
         if (
             now_record["ranking"] <= 30
-            and (now_record["date"] - pervious_record["date"]).days > 10
+            and (now_record["date"] - pervious_record["date"]).days + 1 >= 10
         ) or (
             now_record["ranking"] > 30
-            and (now_record["date"] - pervious_record["date"]).days > 7
+            and (now_record["date"] - pervious_record["date"]).days + 1 >= 7
         ):
             return cast(datetime, now_record["date"]) + timedelta(days=interval_days)
 
