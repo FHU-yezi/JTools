@@ -8,10 +8,11 @@ networks:
     external: true
 
 services:
-  web:
-    image: jtools-web:3.10.1
+  frontend:
+    image: jtools-frontend:3.11.0
+    container_name: jtools-frontend
     build:
-      dockerfile: Dockerfile.web
+      dockerfile: Dockerfile.frontend
     ports:
       - 8602:8602
     volumes:
@@ -28,10 +29,11 @@ services:
         delay: 5s
         max_attempts: 3
     stop_grace_period: 5s
-  api:
-    image: jtools-api:3.10.1
+  backend:
+    image: jtools-backend:3.11.0
+    container_name: jtools-backend
     build:
-      dockerfile: Dockerfile.api
+      dockerfile: Dockerfile.backend
     volumes:
       - ./backend/config.yaml:/app/config.yaml:ro
     networks:
