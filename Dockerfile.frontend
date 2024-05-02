@@ -2,16 +2,15 @@ FROM oven/bun:1-alpine AS build
 
 WORKDIR /app
 
-COPY frontend/package.json frontend/bun.lockb /app
-
+COPY frontend/package.json frontend/bun.lockb .
 RUN bun install --prod --frozen-lockfile
 
-COPY frontend /app
-
+COPY frontend .
 RUN bun run build
 
-FROM caddy:2.7.4-alpine
+FROM caddy:2.7-alpine
 
 WORKDIR /app
 
-COPY --from=build /app/dist ./static
+COPY Caddyfile /etc/caddy/Caddyfile
+COPY --from=build /app/dist .
