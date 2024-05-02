@@ -12,9 +12,7 @@ export default function FooterBlock() {
 
   return (
     <Footer className="mx-auto max-w-4xl w-[90vw] mt-8">
-      <ExternalLink href="https://status.sscreator.com/status/jtools">
-        服务状态
-      </ExternalLink>
+      <ExternalLink href="https://status.sscreator.com">服务状态</ExternalLink>
       <InternalLink onClick={() => setLocation("/thanks")} path="/thanks">
         鸣谢
       </InternalLink>
