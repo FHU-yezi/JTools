@@ -35,6 +35,7 @@ export default function ThanksPage() {
       <Row className="flex-wrap">
         {allContributorsName.map((item) => (
           <ExternalLink
+            key={item}
             href={
               debugProjectRecords.find((record) => record.user_name === item)!
                 .user_url
@@ -47,7 +48,11 @@ export default function ThanksPage() {
       <Heading3>捉虫记录</Heading3>
       <Grid cols="grid-cols-1 md:grid-cols-2">
         {debugProjectRecords.reverse().map((item) => (
-          <Card className="flex flex-col gap-3" withPadding>
+          <Card
+            key={`${item.time}-${item.user_url}`}
+            className="flex flex-col gap-3"
+            withPadding
+          >
             <Row gap="gap-2" itemsCenter>
               <Badge>{item.type}</Badge>
               <LargeText bold>{item.module}</LargeText>
@@ -67,7 +72,7 @@ export default function ThanksPage() {
         <Heading2>v3 Beta 内测成员</Heading2>
         <Row className="flex-wrap">
           {Object.entries(v3BetaPaticipants).map(([name, url]) => (
-            <ExternalLink className="inline" href={url}>
+            <ExternalLink key={name} className="inline" href={url}>
               {name}
             </ExternalLink>
           ))}
@@ -76,10 +81,10 @@ export default function ThanksPage() {
         <Heading2>开源库</Heading2>
         <Grid cols="grid-cols-1 sm:grid-cols-2">
           {Object.entries(opensourcePackages).map(([partName, part]) => (
-            <Card className="flex flex-col gap-2" withPadding>
+            <Card key={partName} className="flex flex-col gap-2" withPadding>
               <Heading2>{partName}</Heading2>
               {part.map(({ name, desc, url }) => (
-                <Text>
+                <Text key={name}>
                   {desc}：<ExternalLink href={url}>{name}</ExternalLink>
                 </Text>
               ))}

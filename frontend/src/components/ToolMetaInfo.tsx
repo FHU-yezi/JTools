@@ -64,7 +64,9 @@ export default function ToolMetaInfo() {
               <SmallText color="gray">
                 数据来源：
                 {Object.entries(toolStatus.dataSource).map(([name, url]) => (
-                  <ExternalLink href={url}>{name}</ExternalLink>
+                  <ExternalLink key={name} href={url}>
+                    {name}
+                  </ExternalLink>
                 ))}
               </SmallText>
             </Row>

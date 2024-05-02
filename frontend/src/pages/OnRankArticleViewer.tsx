@@ -137,7 +137,7 @@ function HistoryNamesFoundNotice({
       <Column gap="gap-2">
         {Object.entries(historyNames.historyNamesOnrankSummary).map(
           ([name, dataCount]) => (
-            <Text>
+            <Text key={name}>
               {name}：{dataCount} 条
             </Text>
           ),

@@ -48,7 +48,7 @@ function SummaryTable({ data }: { data: GetSummaryResponse }) {
       </TableHeader>
       <TableBody>
         {data.rewards.map((item) => (
-          <TableRow>
+          <TableRow key={item.rewardName}>
             <TableCell>{item.rewardName}</TableCell>
             <TableCell>{item.winsCount}</TableCell>
             <TableCell>{item.winnersCount}</TableCell>
@@ -136,6 +136,7 @@ function RecentWins() {
           <Column gap="gap-0">
             {recentRecords.records.map((item) => (
               <Row
+                key={item.time}
                 className="justify-between border-zinc-300 p-2 not-last:border-b dark:border-zinc-700"
                 gap="gap-0"
                 itemsCenter
