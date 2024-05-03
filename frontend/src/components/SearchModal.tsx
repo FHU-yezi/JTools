@@ -44,6 +44,7 @@ export default function SearchModal() {
             matchRouteItems.value.map((item) => (
               // 此处的 ToolCard 不展示小工具降级或不可用状态
               <ToolCard
+                key={item.path}
                 toolName={item.pageName}
                 description={item.description}
                 path={item.path}

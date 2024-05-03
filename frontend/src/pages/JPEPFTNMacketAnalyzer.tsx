@@ -14,16 +14,14 @@ import {
 import { LoaderIcon } from "react-hot-toast";
 import BarChart from "../components/charts/BarChart";
 import LineChart from "../components/charts/LineChart";
-import { useData } from "../hooks/useData";
-import type {
-  GetCurrentAmountDistributionRequest,
-  GetCurrentAmountDistributionResponse,
-  GetCurrentAmountResponse,
-  GetCurrentPriceResponse,
-  GetPriceHistoryRequest,
-  GetPriceHistoryResponse,
-  GetRulesResponse,
-} from "../models/JPEPFTNMacket";
+import {
+  useAmountHistory,
+  useCurrentAmount,
+  useCurrentAmountDistribution,
+  useCurrentPrice,
+  usePriceHistory,
+  useRules,
+} from "../api/JPEPFTNMacket";
 
 const timeRangeOptions = [
   { label: "24 小时", value: "24h" },
@@ -35,13 +33,7 @@ const timeRangeOptions = [
 type TimeRangeType = "24h" | "7d" | "15d" | "30d";
 
 function PlatformInfo() {
-  const { data: platformRules } = useData<
-    Record<string, never>,
-    GetRulesResponse
-  >({
-    method: "GET",
-    endpoint: "/v1/jpep/ftn-macket/rules",
-  });
+  const { data: platformRules } = useRules();
 
   return (
     <Column>
@@ -78,20 +70,8 @@ function PlatformInfo() {
 }
 
 function RealtimePrice() {
-  const { data: platformRules } = useData<
-    Record<string, never>,
-    GetRulesResponse
-  >({
-    method: "GET",
-    endpoint: "/v1/jpep/ftn-macket/rules",
-  });
-  const { data: currentPrice } = useData<
-    Record<string, never>,
-    GetCurrentPriceResponse
-  >({
-    method: "GET",
-    endpoint: "/v1/jpep/ftn-macket/current-price",
-  });
+  const { data: platformRules } = useRules();
+  const { data: currentPrice } = useCurrentPrice();
 
   return (
     <Column gap="gap-2">
@@ -145,14 +125,7 @@ function RealtimePrice() {
 }
 
 function RealtimeAmount() {
-  const { data: currentAmount } = useData<
-    Record<string, never>,
-    GetCurrentAmountResponse
-  >({
-    method: "GET",
-    endpoint: "/v1/jpep/ftn-macket/current-amount",
-  });
-
+  const { data: currentAmount } = useCurrentAmount();
   const totalPoolAmount = computed(() =>
     currentAmount
       ? currentAmount.buyAmount + currentAmount.sellAmount
@@ -227,15 +200,8 @@ function RealtimeAmountDistribution() {
   ];
 
   const tradeType = useSignal<"buy" | "sell">("buy");
-  const { data: amountDistribution } = useData<
-    GetCurrentAmountDistributionRequest,
-    GetCurrentAmountDistributionResponse
-  >({
-    method: "GET",
-    endpoint: "/v1/jpep/ftn-macket/current-amount-distribution",
-    queryArgs: {
-      type: tradeType.value,
-    },
+  const { data: amountDistribution } = useCurrentAmountDistribution({
+    type: tradeType.value,
   });
 
   return (
@@ -292,29 +258,15 @@ function RealtimeData() {
 
 function PriceHistory() {
   const timeRange = useSignal<TimeRangeType>("24h");
-  const { data: buyPriceTrending } = useData<
-    GetPriceHistoryRequest,
-    GetPriceHistoryResponse
-  >({
-    method: "GET",
-    endpoint: "/v1/jpep/ftn-macket/price-history",
-    queryArgs: {
-      type: "buy",
-      range: timeRange.value,
-      resolution: timeRange.value === "24h" ? "5m" : "1d",
-    },
+  const { data: buyPriceTrending } = usePriceHistory({
+    type: "buy",
+    range: timeRange.value,
+    resolution: timeRange.value === "24h" ? "5m" : "1d",
   });
-  const { data: sellPriceTrending } = useData<
-    GetPriceHistoryRequest,
-    GetPriceHistoryResponse
-  >({
-    method: "GET",
-    endpoint: "/v1/jpep/ftn-macket/price-history",
-    queryArgs: {
-      type: "sell",
-      range: timeRange.value,
-      resolution: timeRange.value === "24h" ? "5m" : "1d",
-    },
+  const { data: sellPriceTrending } = usePriceHistory({
+    type: "sell",
+    range: timeRange.value,
+    resolution: timeRange.value === "24h" ? "5m" : "1d",
   });
 
   return (
@@ -373,29 +325,15 @@ function PriceHistory() {
 
 function AmountHistory() {
   const timeRange = useSignal<TimeRangeType>("24h");
-  const { data: buyAmountTrending } = useData<
-    GetPriceHistoryRequest,
-    GetPriceHistoryResponse
-  >({
-    method: "GET",
-    endpoint: "/v1/jpep/ftn-macket/amount-history",
-    queryArgs: {
-      type: "buy",
-      range: timeRange.value,
-      resolution: timeRange.value === "24h" ? "5m" : "1d",
-    },
+  const { data: buyAmountTrending } = useAmountHistory({
+    type: "buy",
+    range: timeRange.value,
+    resolution: timeRange.value === "24h" ? "5m" : "1d",
   });
-  const { data: sellAmountTrending } = useData<
-    GetPriceHistoryRequest,
-    GetPriceHistoryResponse
-  >({
-    method: "GET",
-    endpoint: "/v1/jpep/ftn-macket/amount-history",
-    queryArgs: {
-      type: "sell",
-      range: timeRange.value,
-      resolution: timeRange.value === "24h" ? "5m" : "1d",
-    },
+  const { data: sellAmountTrending } = useAmountHistory({
+    type: "sell",
+    range: timeRange.value,
+    resolution: timeRange.value === "24h" ? "5m" : "1d",
   });
 
   return (

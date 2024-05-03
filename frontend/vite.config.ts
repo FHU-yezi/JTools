@@ -55,14 +55,12 @@ export default defineConfig({
         navigateFallbackDenylist: [/^\/api.*/],
       },
     }),
-    // GZip
-    compression({ threshold: 4096 }),
-    // Brotli
-    compression({
-      algorithm: "brotliCompress",
-      threshold: 4096,
-      ext: ".br",
-    }),
+    compression({ algorithm: "gzip" }),
+    // TODO: 由于 Bun 标准库实现问题，暂时禁用 Brotli 压缩
+    // compression({
+    //   algorithm: "brotliCompress",
+    //   ext: ".br",
+    // }),
   ],
   server: {
     proxy: {

@@ -1,9 +1,7 @@
-import { Column } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
 import { useLocation } from "wouter-preact";
 import ToolCard from "../components/ToolCard";
-import { useData } from "../hooks/useData";
-import type { GetResponse } from "../models/status";
+import { useStatus } from "../api/status";
 import { tools } from "../routes";
 import umamiTrack from "../utils/umamiTrack";
 import {
@@ -36,10 +34,7 @@ function handleV2Redirect(
 
 export default function MainPage() {
   const [, setLocation] = useLocation();
-  const { data: toolStatus } = useData<Record<string, never>, GetResponse>({
-    method: "GET",
-    endpoint: "/v1/status",
-  });
+  const { data: toolStatus } = useStatus();
 
   useEffect(() => {
     const queryArguments = new URLSearchParams(window.location.search);

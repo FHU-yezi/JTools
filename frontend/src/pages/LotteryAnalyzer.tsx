@@ -18,15 +18,12 @@ import {
   TableRow,
 } from "@sscreator/ui";
 import LineChart from "../components/charts/LineChart";
-import { useData } from "../hooks/useData";
-import type {
-  GetRecordsRequest,
-  GetRecordsResponse,
-  GetRewardWinsHistoryRequest,
-  GetRewardWinsHistoryResponse,
-  GetSummaryRequest,
-  GetSummaryResponse,
-} from "../models/lottery";
+import {
+  useRecords,
+  useRewardWinsHistory,
+  useSummary,
+  type GetSummaryResponse,
+} from "../api/lottery";
 import { getHumanReadableTimeDelta, parseTime } from "../utils/timeHelper";
 
 function SummaryTable({ data }: { data: GetSummaryResponse }) {
@@ -48,7 +45,7 @@ function SummaryTable({ data }: { data: GetSummaryResponse }) {
       </TableHeader>
       <TableBody>
         {data.rewards.map((item) => (
-          <TableRow>
+          <TableRow key={item.rewardName}>
             <TableCell>{item.rewardName}</TableCell>
             <TableCell>{item.winsCount}</TableCell>
             <TableCell>{item.winnersCount}</TableCell>
@@ -88,12 +85,8 @@ function Summary() {
   ];
 
   const timeRange = useSignal<"1d" | "7d" | "30d" | "all">("1d");
-  const { data: summaryData } = useData<GetSummaryRequest, GetSummaryResponse>({
-    method: "GET",
-    endpoint: "/v1/lottery/summary",
-    queryArgs: {
-      range: timeRange.value,
-    },
+  const { data: summaryData } = useSummary({
+    range: timeRange.value,
   });
 
   return (
@@ -116,16 +109,9 @@ function Summary() {
 }
 
 function RecentWins() {
-  const { data: recentRecords } = useData<
-    GetRecordsRequest,
-    GetRecordsResponse
-  >({
-    method: "GET",
-    endpoint: "/v1/lottery/records",
-    queryArgs: {
-      limit: 5,
-      excluded_awards: ["收益加成卡100"],
-    },
+  const { data: recentRecords } = useRecords({
+    limit: 5,
+    excluded_awards: ["收益加成卡100"],
   });
 
   return (
@@ -136,6 +122,7 @@ function RecentWins() {
           <Column gap="gap-0">
             {recentRecords.records.map((item) => (
               <Row
+                key={item.time}
                 className="justify-between border-zinc-300 p-2 not-last:border-b dark:border-zinc-700"
                 gap="gap-0"
                 itemsCenter
@@ -166,16 +153,9 @@ function WinsTrending() {
   ];
 
   const timeRange = useSignal<"1d" | "30d" | "60d">("1d");
-  const { data: rewardWinsHistory } = useData<
-    GetRewardWinsHistoryRequest,
-    GetRewardWinsHistoryResponse
-  >({
-    method: "GET",
-    endpoint: "/v1/lottery/reward-wins-history",
-    queryArgs: {
-      range: timeRange.value,
-      resolution: timeRange.value === "1d" ? "1h" : "1d",
-    },
+  const { data: rewardWinsHistory } = useRewardWinsHistory({
+    range: timeRange.value,
+    resolution: timeRange.value === "1d" ? "1h" : "1d",
   });
 
   return (

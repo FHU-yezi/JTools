@@ -1,6 +1,10 @@
-**/node_modules
-**/dist
-**/__pycache__
-**/.ruff_cache
-poetry.lock
-config.yaml
+**/.git/
+**/.github/
+**/.ruff_cache/
+**/__pycache__/
+**/dist/
+**/node_modules/
+**/pyproject.toml
+**/poetry.lock
+**/requirements-dev.txt
+**/config.yaml

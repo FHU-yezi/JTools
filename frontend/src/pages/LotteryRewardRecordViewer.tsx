@@ -1,7 +1,6 @@
 import { computed, signal, useSignal } from "@preact/signals";
 import {
   CheckboxGroup,
-  Column,
   InfiniteScroll,
   LargeText,
   LoadingArea,
@@ -17,12 +16,11 @@ import {
   toastWarning,
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
-import { useData, useDataTriggerInfinite } from "../hooks/useData";
-import type { GetRewardsResponse } from "../models/lottery";
-import type {
-  GetLotteryWinRecordsRequest,
-  GetLotteryWinRecordsResponse,
-} from "../models/users";
+import { useRewards } from "../api/lottery";
+import {
+  useLotteryWinRecords,
+  type GetLotteryWinRecordsResponse,
+} from "../api/users";
 import { userUrlToSlug } from "../utils/jianshuHelper";
 import { getDatetime, parseTime } from "../utils/timeHelper";
 
@@ -40,13 +38,7 @@ function handleQuery(trigger: () => void) {
 }
 
 function RewardsFilter() {
-  const { data: rewards, isLoading: isRewardsLoading } = useData<
-    Record<string, never>,
-    GetRewardsResponse
-  >({
-    method: "GET",
-    endpoint: "/v1/lottery/rewards",
-  });
+  const { data: rewards, isLoading: isRewardsLoading } = useRewards();
   const selectedRewards = useSignal<Array<string>>([]);
 
   useEffect(() => {
@@ -130,21 +122,10 @@ export default function LotteryRewardRecordViewer() {
     nextPage,
     trigger,
     reset,
-  } = useDataTriggerInfinite<
-    GetLotteryWinRecordsRequest,
-    GetLotteryWinRecordsResponse
-  >(({ currentPage, previousPageData }) =>
-    previousPageData && !previousPageData.records.length
-      ? null
-      : {
-          method: "GET",
-          endpoint: `/v1/users/${userSlug.value}/lottery-win-records`,
-          queryArgs: {
-            excluded_awards: excludedAwards.value,
-            offset: currentPage * 20,
-          },
-        },
-  );
+  } = useLotteryWinRecords({
+    userSlug: userSlug.value!,
+    excluded_awards: excludedAwards.value,
+  });
 
   useEffect(() => {
     reset();

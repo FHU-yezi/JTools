@@ -1,4 +1,3 @@
-import presetRemToPx from "@unocss/preset-rem-to-px";
 import {
   defineConfig,
   presetIcons,
@@ -8,6 +7,6 @@ import {
 } from "unocss";
 
 export default defineConfig({
-  presets: [presetRemToPx(), presetWind(), presetIcons()],
+  presets: [presetWind(), presetIcons()],
   transformers: [transformerDirectives(), transformerVariantGroup()],
 });

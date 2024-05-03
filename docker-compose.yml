@@ -7,28 +7,24 @@ networks:
 
 services:
   frontend:
-    image: jtools-frontend:3.12.0
+    image: jtools-frontend:3.13.0
     container_name: jtools-frontend
     build:
       dockerfile: Dockerfile.frontend
     ports:
       - 8602:8602
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
     networks:
       - internal
     deploy:
       resources:
         limits:
-          cpus: "0.50"
-          memory: 48M
+          memory: 32M
       restart_policy:
         condition: on-failure
         delay: 5s
         max_attempts: 3
-    stop_grace_period: 5s
   backend:
-    image: jtools-backend:3.12.0
+    image: jtools-backend:3.13.0
     container_name: jtools-backend
     build:
       dockerfile: Dockerfile.backend
@@ -43,10 +39,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "1.00"
-          memory: 96M
+          memory: 128M
       restart_policy:
         condition: on-failure
         delay: 5s
         max_attempts: 3
-    stop_grace_period: 5s

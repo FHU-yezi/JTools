@@ -12,23 +12,15 @@ import {
   Text,
 } from "@sscreator/ui";
 import { useLocation } from "wouter-preact";
-import { useData } from "../hooks/useData";
-import type { GetToolStatusResponse } from "../models/status";
-import { ToolStatusEnum } from "../models/status";
+import { useToolStatus } from "../api/status";
 import { getToolSlug } from "../utils/URLHelper";
 import { getDateTimeWithoutSecond, parseTime } from "../utils/timeHelper";
 
 export default function ToolMetaInfo() {
   const [, setLocation] = useLocation();
-  const { data: toolStatus } = useData<
-    Record<string, never>,
-    GetToolStatusResponse
-  >({
-    method: "GET",
-    endpoint: `/v1/status/${getToolSlug()}`,
-  });
+  const { data: toolStatus } = useToolStatus({ toolSlug: getToolSlug() });
   const showUnavaliableModal = useComputed(() =>
-    toolStatus ? toolStatus.status === ToolStatusEnum.UNAVALIABLE : false,
+    toolStatus ? toolStatus.status === "UNAVAILABLE" : false,
   );
 
   return (
@@ -64,7 +56,9 @@ export default function ToolMetaInfo() {
               <SmallText color="gray">
                 数据来源：
                 {Object.entries(toolStatus.dataSource).map(([name, url]) => (
-                  <ExternalLink href={url}>{name}</ExternalLink>
+                  <ExternalLink key={name} href={url}>
+                    {name}
+                  </ExternalLink>
                 ))}
               </SmallText>
             </Row>
@@ -72,7 +66,7 @@ export default function ToolMetaInfo() {
         </Grid>
       )}
 
-      {toolStatus?.status === ToolStatusEnum.DOWNGRADED && (
+      {toolStatus?.status === "DOWNGRADED" && (
         <Notice color="warning" title="服务降级">
           <Text>
             {toolStatus?.reason ??
