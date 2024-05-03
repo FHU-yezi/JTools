@@ -20,21 +20,23 @@ import {
   useDebouncedSignal,
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
-import { useDataTrigger, useDataTriggerInfinite } from "../hooks/useData";
-import type {
-  GetHistoryNamesOnArticleRankSummaryResponse,
-  GetNameAutocompleteRequest,
-  GetNameAutocompleteResponse,
-  GetOnArticleRankRecordsRequest,
-  GetOnArticleRankRecordsResponse,
-  GetOnArticleRankSummaryResponse,
+import {
+  useHistoryNamesOnArticleRankSummary,
+  useNameAutocomplete,
+  useOnArticleRankRecords,
+  useOnArticleRankSummary,
+  type GetHistoryNamesOnArticleRankSummaryResponse,
+  type GetOnArticleRankRecordsResponse,
+  type GetOnArticleRankSummaryResponse,
 } from "../models/users";
 import { userUrlToSlug } from "../utils/jianshuHelper";
 import { replaceAll } from "../utils/textHelper";
 import { getDate, parseTime } from "../utils/timeHelper";
 
 const userUrlOrName = signal("");
-const userSlug = computed(() => userUrlToSlug(userUrlOrName.value));
+const userSlug = computed(
+  () => userUrlToSlug(userUrlOrName.value) ?? undefined,
+);
 const userName = computed(() =>
   userUrlOrName.value && !userSlug.value
     ? // 名称中含有 / 会导致 404 报错
@@ -57,15 +59,8 @@ function handleQuery(triggers: Array<() => void>) {
 
 function AutoCompleteUserNameOrUrl({ onEnter }: { onEnter: () => void }) {
   const debouncedUserName = useDebouncedSignal(userUrlOrName, 100);
-  const { data: autocompleteOptions, trigger } = useDataTrigger<
-    GetNameAutocompleteRequest,
-    GetNameAutocompleteResponse
-  >({
-    method: "GET",
-    endpoint: "/v1/users/name-autocomplete",
-    queryArgs: {
-      name_part: debouncedUserName.value ?? "",
-    },
+  const { data: autocompleteOptions, trigger } = useNameAutocomplete({
+    name_part: debouncedUserName.value ?? "",
   });
 
   useEffect(() => {
@@ -238,23 +233,17 @@ export default function OnRankArticleViewer() {
     isLoading: isHistoryNamesLoading,
     trigger: triggerHistoryNames,
     reset: resetHistoryNames,
-  } = useDataTrigger<
-    Record<string, never>,
-    GetHistoryNamesOnArticleRankSummaryResponse
-  >({
-    method: "GET",
-    endpoint: `/v1/users/name/${userName.value}/history-names-on-article-rank-summary`,
+  } = useHistoryNamesOnArticleRankSummary({
+    userName: userName.value!,
   });
   const {
     data: rankSummary,
     isLoading: isRankSummaryLoading,
     trigger: triggerRankSummary,
     reset: resetRankSummary,
-  } = useDataTrigger<Record<string, never>, GetOnArticleRankSummaryResponse>({
-    method: "GET",
-    endpoint: userSlug.value
-      ? `/v1/users/${userSlug.value}/on-article-rank-summary`
-      : `/v1/users/name/${userName.value}/on-article-rank-summary`,
+  } = useOnArticleRankSummary({
+    userSlug: userSlug.value,
+    userName: userName.value,
   });
   const {
     data: onRankRecords,
@@ -262,24 +251,12 @@ export default function OnRankArticleViewer() {
     nextPage,
     trigger: triggerOnRankRecords,
     reset: resetOnRankRecords,
-  } = useDataTriggerInfinite<
-    GetOnArticleRankRecordsRequest,
-    GetOnArticleRankRecordsResponse
-  >(({ currentPage, previousPageData }) =>
-    previousPageData && !previousPageData.records.length
-      ? null
-      : {
-          method: "GET",
-          endpoint: userSlug.value
-            ? `/v1/users/${userSlug.value}/on-article-rank-records`
-            : `/v1/users/name/${userName.value}/on-article-rank-records`,
-          queryArgs: {
-            order_by: orderBy.value.orderBy,
-            order_direction: orderBy.value.orderDirection,
-            offset: currentPage * 20,
-          },
-        },
-  );
+  } = useOnArticleRankRecords({
+    userSlug: userSlug.value,
+    userName: userName.value,
+    order_by: orderBy.value.orderBy,
+    order_direction: orderBy.value.orderDirection,
+  });
 
   useEffect(() => {
     resetHistoryNames();

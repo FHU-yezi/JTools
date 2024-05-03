@@ -1,14 +1,10 @@
 import { ExternalLink, Footer, InternalLink, Text } from "@sscreator/ui";
 import { useLocation } from "wouter-preact";
-import { useData } from "../hooks/useData";
-import type { GetResponse } from "../models/status";
+import { useStatus } from "../models/status";
 
 export default function FooterBlock() {
   const [, setLocation] = useLocation();
-  const { data: toolStatus } = useData<Record<string, never>, GetResponse>({
-    method: "GET",
-    endpoint: "/v1/status",
-  });
+  const { data: toolStatus } = useStatus();
 
   return (
     <Footer className="mx-auto max-w-4xl w-[90vw] mt-8">

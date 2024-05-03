@@ -12,8 +12,10 @@ import {
 } from "@sscreator/ui";
 import dayjs from "dayjs";
 import { useEffect } from "preact/hooks";
-import { useDataTrigger } from "../hooks/useData";
-import type { GetLPRecommendCheckResponse } from "../models/articles";
+import {
+  useLPRecommendCheck,
+  type GetLPRecommendCheckResponse,
+} from "../models/articles";
 import { articleUrlToSlug } from "../utils/jianshuHelper";
 import { getDate, parseTime } from "../utils/timeHelper";
 
@@ -87,10 +89,7 @@ export default function LPRecommendChecker() {
     isLoading,
     trigger,
     reset,
-  } = useDataTrigger<Record<string, never>, GetLPRecommendCheckResponse>({
-    method: "GET",
-    endpoint: `/v1/articles/${articleSlug.value}/lp-recommend-check`,
-  });
+  } = useLPRecommendCheck({ articleSlug: articleSlug.value! });
 
   useEffect(() => {
     reset();

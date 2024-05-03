@@ -1,6 +1,14 @@
+import { useDataTrigger } from "../hooks/useData";
+
 export interface GetWordFreqResponse {
   title: string;
   wordFreq: Record<string, number>;
+}
+export function useWordFreq({ articleSlug }: { articleSlug: string }) {
+  return useDataTrigger<Record<string, never>, GetWordFreqResponse>({
+    method: "GET",
+    endpoint: `/v1/articles/${articleSlug}/word-freq`,
+  });
 }
 
 export interface GetLPRecommendCheckResponse {
@@ -8,4 +16,10 @@ export interface GetLPRecommendCheckResponse {
   canRecommendNow: boolean;
   FPReward: number;
   nextCanRecommendDate: number;
+}
+export function useLPRecommendCheck({ articleSlug }: { articleSlug: string }) {
+  return useDataTrigger<Record<string, never>, GetLPRecommendCheckResponse>({
+    method: "GET",
+    endpoint: `/v1/articles/${articleSlug}/lp-recommend-check`,
+  });
 }

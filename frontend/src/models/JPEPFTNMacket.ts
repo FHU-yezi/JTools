@@ -1,45 +1,109 @@
-export interface GetRulesResponse {
+import { useData } from "../hooks/useData";
+
+interface GetRulesResponse {
   isOpen: boolean;
   buyOrderMinimumPrice: number;
   sellOrderMinimumPrice: number;
   FTNOrderFee: number;
   goodsOrderFee: number;
 }
+export function useRules() {
+  return useData<Record<string, never>, GetRulesResponse>({
+    method: "GET",
+    endpoint: "/v1/jpep/ftn-macket/rules",
+  });
+}
 
-export interface GetCurrentPriceResponse {
+interface GetCurrentPriceResponse {
   buyPrice: number;
   sellPrice: number;
 }
-export interface GetCurrentAmountResponse {
+export function useCurrentPrice() {
+  return useData<Record<string, never>, GetCurrentPriceResponse>({
+    method: "GET",
+    endpoint: "/v1/jpep/ftn-macket/current-price",
+  });
+}
+
+interface GetCurrentAmountResponse {
   buyAmount: number;
   sellAmount: number;
 }
-
-export interface GetPriceHistoryRequest {
-  type: "buy" | "sell";
-  range: "24h" | "7d" | "15d" | "30d";
-  resolution: "5m" | "1h" | "1d";
+export function useCurrentAmount() {
+  return useData<Record<string, never>, GetCurrentAmountResponse>({
+    method: "GET",
+    endpoint: "/v1/jpep/ftn-macket/current-amount",
+  });
 }
 
-export interface GetPriceHistoryResponse {
-  history: Record<number, number>;
-}
-
-export interface GetAmountHistoryRequest {
-  type: "buy" | "sell";
-  range: "24h" | "7d" | "15d" | "30d";
-  resolution: "5m" | "1h" | "1d";
-}
-
-export interface GetAmountHistoryResponse {
-  history: Record<number, number>;
-}
-
-export interface GetCurrentAmountDistributionRequest {
+interface GetCurrentAmountDistributionRequest {
   type: "buy" | "sell";
   limit?: number;
 }
-
-export interface GetCurrentAmountDistributionResponse {
+interface GetCurrentAmountDistributionResponse {
   amountDistribution: Record<number, number>;
+}
+export function useCurrentAmountDistribution({
+  type,
+  limit,
+}: GetCurrentAmountDistributionRequest) {
+  return useData<
+    GetCurrentAmountDistributionRequest,
+    GetCurrentAmountDistributionResponse
+  >({
+    method: "GET",
+    endpoint: "/v1/jpep/ftn-macket/current-amount-distribution",
+    queryArgs: {
+      type,
+      limit,
+    },
+  });
+}
+
+interface GetPriceHistoryRequest {
+  type: "buy" | "sell";
+  range: "24h" | "7d" | "15d" | "30d";
+  resolution: "5m" | "1h" | "1d";
+}
+interface GetPriceHistoryResponse {
+  history: Record<number, number>;
+}
+export function usePriceHistory({
+  type,
+  range,
+  resolution,
+}: GetPriceHistoryRequest) {
+  return useData<GetPriceHistoryRequest, GetPriceHistoryResponse>({
+    method: "GET",
+    endpoint: "/v1/jpep/ftn-macket/price-history",
+    queryArgs: {
+      type,
+      range,
+      resolution,
+    },
+  });
+}
+
+interface GetAmountHistoryRequest {
+  type: "buy" | "sell";
+  range: "24h" | "7d" | "15d" | "30d";
+  resolution: "5m" | "1h" | "1d";
+}
+interface GetAmountHistoryResponse {
+  history: Record<number, number>;
+}
+export function useAmountHistory({
+  type,
+  range,
+  resolution,
+}: GetAmountHistoryRequest) {
+  return useData<GetAmountHistoryRequest, GetAmountHistoryResponse>({
+    method: "GET",
+    endpoint: "/v1/jpep/ftn-macket/amount-history",
+    queryArgs: {
+      type,
+      range,
+      resolution,
+    },
+  });
 }

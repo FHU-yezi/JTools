@@ -1,6 +1,5 @@
 import { computed, signal } from "@preact/signals";
 import {
-  Column,
   ExternalLink,
   SolidButton,
   Text,
@@ -9,8 +8,7 @@ import {
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
 import WordCloud from "../components/charts/Wordcloud";
-import { useDataTrigger } from "../hooks/useData";
-import type { GetWordFreqResponse } from "../models/articles";
+import { useWordFreq, type GetWordFreqResponse } from "../models/articles";
 import { articleUrlToSlug } from "../utils/jianshuHelper";
 
 const articleUrl = signal("");
@@ -63,10 +61,7 @@ export default function ArticleWordcloudGenerator() {
     isLoading,
     trigger,
     reset,
-  } = useDataTrigger<Record<string, never>, GetWordFreqResponse>({
-    method: "GET",
-    endpoint: `/v1/articles/${articleSlug.value}/word-freq`,
-  });
+  } = useWordFreq({ articleSlug: articleSlug.value! });
 
   useEffect(() => {
     reset();
