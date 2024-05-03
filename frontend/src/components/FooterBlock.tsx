@@ -1,6 +1,6 @@
 import { ExternalLink, Footer, InternalLink, Text } from "@sscreator/ui";
 import { useLocation } from "wouter-preact";
-import { useStatus } from "../models/status";
+import { useStatus } from "../api/status";
 
 export default function FooterBlock() {
   const [, setLocation] = useLocation();

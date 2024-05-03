@@ -10,7 +10,7 @@ import {
   toastWarning,
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
-import { useVIPInfo, type GetVIPInfoResponse } from "../models/users";
+import { useVIPInfo, type GetVIPInfoResponse } from "../api/users";
 import { userUrlToSlug } from "../utils/jianshuHelper";
 import {
   getDate,

@@ -1,4 +1,4 @@
-import type { ResponseStruct } from "../models/responseStruct";
+import type { ResponseStruct } from "../api/responseStruct";
 import { getBaseURL } from "./URLHelper";
 
 const BASE_URL = `${getBaseURL()}/api`;

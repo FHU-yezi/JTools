@@ -21,7 +21,7 @@ import {
   useCurrentPrice,
   usePriceHistory,
   useRules,
-} from "../models/JPEPFTNMacket";
+} from "../api/JPEPFTNMacket";
 
 const timeRangeOptions = [
   { label: "24 小时", value: "24h" },

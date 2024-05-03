@@ -8,7 +8,7 @@ import {
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
 import WordCloud from "../components/charts/Wordcloud";
-import { useWordFreq, type GetWordFreqResponse } from "../models/articles";
+import { useWordFreq, type GetWordFreqResponse } from "../api/articles";
 import { articleUrlToSlug } from "../utils/jianshuHelper";
 
 const articleUrl = signal("");

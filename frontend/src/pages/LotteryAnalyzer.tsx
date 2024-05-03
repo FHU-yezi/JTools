@@ -23,7 +23,7 @@ import {
   useRewardWinsHistory,
   useSummary,
   type GetSummaryResponse,
-} from "../models/lottery";
+} from "../api/lottery";
 import { getHumanReadableTimeDelta, parseTime } from "../utils/timeHelper";
 
 function SummaryTable({ data }: { data: GetSummaryResponse }) {

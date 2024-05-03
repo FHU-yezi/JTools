@@ -28,7 +28,7 @@ import {
   type GetHistoryNamesOnArticleRankSummaryResponse,
   type GetOnArticleRankRecordsResponse,
   type GetOnArticleRankSummaryResponse,
-} from "../models/users";
+} from "../api/users";
 import { userUrlToSlug } from "../utils/jianshuHelper";
 import { replaceAll } from "../utils/textHelper";
 import { getDate, parseTime } from "../utils/timeHelper";

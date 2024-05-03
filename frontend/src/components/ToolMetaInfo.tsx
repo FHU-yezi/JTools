@@ -12,7 +12,7 @@ import {
   Text,
 } from "@sscreator/ui";
 import { useLocation } from "wouter-preact";
-import { useToolStatus } from "../models/status";
+import { useToolStatus } from "../api/status";
 import { getToolSlug } from "../utils/URLHelper";
 import { getDateTimeWithoutSecond, parseTime } from "../utils/timeHelper";
 

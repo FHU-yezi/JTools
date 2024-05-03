@@ -15,7 +15,7 @@ import { useEffect } from "preact/hooks";
 import {
   useLPRecommendCheck,
   type GetLPRecommendCheckResponse,
-} from "../models/articles";
+} from "../api/articles";
 import { articleUrlToSlug } from "../utils/jianshuHelper";
 import { getDate, parseTime } from "../utils/timeHelper";
 

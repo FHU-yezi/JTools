@@ -16,11 +16,11 @@ import {
   toastWarning,
 } from "@sscreator/ui";
 import { useEffect } from "preact/hooks";
-import { useRewards } from "../models/lottery";
+import { useRewards } from "../api/lottery";
 import {
   useLotteryWinRecords,
   type GetLotteryWinRecordsResponse,
-} from "../models/users";
+} from "../api/users";
 import { userUrlToSlug } from "../utils/jianshuHelper";
 import { getDatetime, parseTime } from "../utils/timeHelper";
 
