@@ -6,6 +6,7 @@ from utils.config import config
 
 _CLIENT = AsyncIOMotorClient(config.db.host, config.db.port)
 MAIN_DB = _CLIENT[config.db.database]
+JIANSHU_DB = _CLIENT.jianshu
 _JFETCHER_DB = _CLIENT["JFetcherData"]
 
 RUN_LOG_COLLECTION = MAIN_DB["run_log"]

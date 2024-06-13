@@ -9,7 +9,7 @@ uvicorn = "^0.30.0"
 httptools = "^0.6.0"
 uvloop = "^0.19.0"
 jkit = "^3.0.0a16"
-sshared = "^0.5.0"
+sshared = "^0.6.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.4.0"
@@ -28,4 +28,7 @@ lint.select = [
     "S", "SIM", "SLOT", "TCH", "UP",
     "W"
 ]
-lint.ignore = ["ANN101", "ANN102", "ISC001", "RUF001", "RUF002", "RUF003"]
+lint.ignore = [
+    "ANN101", "ANN102", "ISC001", "PERF401",
+    "RUF001", "RUF002", "RUF003"
+]

@@ -31,7 +31,7 @@ def on_reload_success(new_config: _Config) -> None:
 def on_reload_failed(e: Exception) -> None:
     from utils.log import logger
 
-    logger.error(f"配置文件重载失败：{e}", exception=e)
+    logger.error(f"配置文件重载失败：{e}", exc=e)
 
 
 set_reload_on_sighup(

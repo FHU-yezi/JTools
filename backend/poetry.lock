@@ -880,13 +880,13 @@ files = [
 
 [[package]]
 name = "sshared"
-version = "0.5.1"
+version = "0.6.0"
 description = "后端共享组件"
 optional = false
 python-versions = "<4.0,>=3.8"
 files = [
-    {file = "sshared-0.5.1-py3-none-any.whl", hash = "sha256:e8c90d8d84ecbdf255d6e8c576efea1fc1e8fa09c4a13016645e8f22feb88494"},
-    {file = "sshared-0.5.1.tar.gz", hash = "sha256:3fa688e70721e48456c4ac3ba01ecdd09a6a1273682455d31ae3a282e76218f4"},
+    {file = "sshared-0.6.0-py3-none-any.whl", hash = "sha256:59ce6511c209583b272e29a8677737ad7dbe74d32b660c588f18bd6468cf3e57"},
+    {file = "sshared-0.6.0.tar.gz", hash = "sha256:02056c995eb26b92da9e907291ca5c56bfe57374a340e87b9af01a7a187a2ad1"},
 ]
 
 [package.dependencies]
@@ -1104,4 +1104,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "488c7807917f90d17f562c56463171cd76428e74c568b780899c7a8a7cb7479f"
+content-hash = "41042a7edb029d8d732c9c3e1959902e47e3a680a00821ef28d8e8d70d923632"

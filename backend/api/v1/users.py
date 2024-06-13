@@ -3,6 +3,7 @@ from typing import Annotated, Dict, List, Literal, Optional
 
 from jkit.constants import USER_SLUG_REGEX
 from jkit.exceptions import ResourceUnavailableError
+from jkit.identifier_convert import article_slug_to_url, user_slug_to_url
 from jkit.user import MembershipEnum, User
 from litestar import Response, Router, get
 from litestar.params import Parameter
@@ -16,7 +17,11 @@ from sspeedup.api.litestar import (
     success,
 )
 
-from utils.db import ARTICLE_FP_RANK_COLLECTION, LOTTERY_COLLECTION
+from models.jianshu.article_earning_ranking_record import (
+    ArticleEarningRankingRecordDocument,
+)
+from models.jianshu.lottery_win_record import LotteryWinRecordDocument
+from models.jianshu.user import UserDocument
 
 
 class GetVipInfoResponse(Struct, **RESPONSE_STRUCT_CONFIG):
@@ -109,26 +114,23 @@ async def get_lottery_win_records(
             msg="用户 Slug 无效",
         )
 
-    result = (
-        LOTTERY_COLLECTION.find(
-            {
-                "user.url": user.url,
-                "reward_name": {
-                    "$nin": excluded_awards if excluded_awards else [],
-                },
-            }
+    records: List[GetLotteryWinRecordItem] = []
+    async for item in LotteryWinRecordDocument.find_many(
+        {
+            "userSlug": user.slug,
+            "awardName": {
+                "$nin": excluded_awards if excluded_awards else [],
+            },
+        },
+        skip=offset,
+        limit=limit,
+    ):
+        records.append(
+            GetLotteryWinRecordItem(
+                time=item.time,
+                reward_name=item.award_name,
+            )
         )
-        .skip(offset)
-        .limit(limit)
-    )
-
-    records: List[GetLotteryWinRecordItem] = [
-        GetLotteryWinRecordItem(
-            time=item["time"],
-            reward_name=item["reward_name"],
-        )
-        async for item in result
-    ]
 
     return success(
         data=GetLotteryWinRecordsResponse(
@@ -179,23 +181,26 @@ async def get_on_article_rank_records_handler(
             msg="用户 Slug 无效",
         )
 
-    result = (
-        ARTICLE_FP_RANK_COLLECTION.find({"author.url": user.url})
-        .sort(order_by, 1 if order_direction == "asc" else -1)
-        .skip(offset)
-        .limit(limit)
-    )
-
-    records: List[GetOnArticleRankRecordItem] = [
-        GetOnArticleRankRecordItem(
-            date=item["date"],
-            ranking=item["ranking"],
-            article_title=item["article"]["title"],
-            article_url=item["article"]["url"],
-            FP_reward=item["reward"]["to_author"],
+    records: List[GetOnArticleRankRecordItem] = []
+    async for item in ArticleEarningRankingRecordDocument.find_many(
+        {
+            "authorSlug": user.slug,
+        },
+        sort={order_by: "ASC" if order_direction == "asc" else "DESC"},
+        skip=offset,
+        limit=limit,
+    ):
+        records.append(
+            GetOnArticleRankRecordItem(
+                date=item.date,
+                ranking=item.ranking,
+                # TODO
+                article_title=item.article.title,  # type: ignore
+                # TODO
+                article_url=article_slug_to_url(item.article.slug),  # type: ignore
+                FP_reward=item.earning.to_author,
+            )
         )
-        async for item in result
-    ]
 
     return success(
         data=GetOnArticleRankRecordsResponse(
@@ -223,23 +228,30 @@ async def get_on_article_rank_records_by_user_name_handler(
     offset: Annotated[int, Parameter(description="分页偏移", ge=0)] = 0,
     limit: Annotated[int, Parameter(description="结果数量", gt=0, lt=100)] = 20,
 ) -> Response:
-    result = (
-        ARTICLE_FP_RANK_COLLECTION.find({"author.name": user_name})
-        .sort(order_by, 1 if order_direction == "asc" else -1)
-        .skip(offset)
-        .limit(limit)
-    )
+    user = await UserDocument.find_one({"name": user_name})
+    if not user:  # 没有找到对应昵称的用户
+        return success(data=GetOnArticleRankRecordsResponse(records=[]))
 
-    records: List[GetOnArticleRankRecordItem] = [
-        GetOnArticleRankRecordItem(
-            date=item["date"],
-            ranking=item["ranking"],
-            article_title=item["article"]["title"],
-            article_url=item["article"]["url"],
-            FP_reward=item["reward"]["to_author"],
+    records: List[GetOnArticleRankRecordItem] = []
+    async for item in ArticleEarningRankingRecordDocument.find_many(
+        {
+            "authorSlug": user.slug,
+        },
+        sort={order_by: "ASC" if order_direction == "asc" else "DESC"},
+        skip=offset,
+        limit=limit,
+    ):
+        records.append(
+            GetOnArticleRankRecordItem(
+                date=item.date,
+                ranking=item.ranking,
+                # TODO
+                article_title=item.article.title,  # type: ignore
+                # TODO
+                article_url=article_slug_to_url(item.article.slug),  # type: ignore
+                FP_reward=item.earning.to_author,
+            )
         )
-        async for item in result
-    ]
 
     return success(
         data=GetOnArticleRankRecordsResponse(
@@ -277,25 +289,20 @@ async def get_on_article_rank_summary_handler(
             msg="用户 Slug 无效",
         )
 
-    records = ARTICLE_FP_RANK_COLLECTION.find(
-        {"author.url": user.url},
-        {"_id": False, "ranking": True},
-    )
-
     top10 = 0
     top30 = 0
     top50 = 0
     total = 0
-    async for item in records:
-        ranking = item["ranking"]
-        if ranking <= 10:
-            top10 += 1
-        if ranking <= 30:
-            top30 += 1
-        if ranking <= 50:
-            top50 += 1
-
+    async for item in ArticleEarningRankingRecordDocument.find_many(
+        {"authorSlug": user.slug}
+    ):
         total += 1
+        if item.ranking <= 10:
+            top10 += 1
+        if item.ranking <= 30:
+            top30 += 1
+        if item.ranking <= 50:
+            top50 += 1
 
     return success(
         data=GetOnArticleRankSummaryResponse(
@@ -318,25 +325,26 @@ async def get_on_article_rank_summary_handler(
 async def get_on_article_rank_summary_by_user_name_handler(
     user_name: Annotated[str, Parameter(description="用户昵称", max_length=50)],
 ) -> Response:
-    records = ARTICLE_FP_RANK_COLLECTION.find(
-        {"author.name": user_name},
-        {"_id": False, "ranking": True},
-    )
+    user = await UserDocument.find_one({"name": user_name})
+    if not user:  # 没有找到对应昵称的用户
+        return success(
+            data=GetOnArticleRankSummaryResponse(top10=0, top30=0, top50=0, total=0)
+        )
 
     top10 = 0
     top30 = 0
     top50 = 0
     total = 0
-    async for item in records:
-        ranking = item["ranking"]
-        if ranking <= 10:
-            top10 += 1
-        if ranking <= 30:
-            top30 += 1
-        if ranking <= 50:
-            top50 += 1
-
+    async for item in ArticleEarningRankingRecordDocument.find_many(
+        {"authorSlug": user.slug}
+    ):
         total += 1
+        if item.ranking <= 10:
+            top10 += 1
+        if item.ranking <= 30:
+            top30 += 1
+        if item.ranking <= 50:
+            top50 += 1
 
     return success(
         data=GetOnArticleRankSummaryResponse(
@@ -363,10 +371,10 @@ async def get_name_autocomplete_handler(
     name_part: Annotated[str, Parameter(description="用户昵称片段", max_length=50)],
     limit: Annotated[int, Parameter(description="结果数量", gt=0, le=100)] = 5,
 ) -> Response:
-    result = await ARTICLE_FP_RANK_COLLECTION.distinct(
-        "author.name",
+    result = await UserDocument.get_collection().distinct(
+        "name",
         {
-            "author.name": {
+            "name": {
                 "$regex": f"^{name_part}",
             },
         },
@@ -395,48 +403,21 @@ class GetHistoryNamesOnArticleRankSummaryResponse(Struct, **RESPONSE_STRUCT_CONF
 async def get_history_names_on_article_rank_summary_handler(
     user_name: Annotated[str, Parameter(description="用户昵称", max_length=50)],
 ) -> Response:
-    url_query = await ARTICLE_FP_RANK_COLLECTION.find_one({"author.name": user_name})
-    if not url_query:
+    user = await UserDocument.find_one({"name": user_name})
+    if not user:  # 没有找到对应昵称的用户
         return success(
             data=GetHistoryNamesOnArticleRankSummaryResponse(
                 history_names_onrank_summary={},
             )
         )
 
-    user_url = url_query["author"]["url"]
-
-    result = ARTICLE_FP_RANK_COLLECTION.aggregate(
-        [
-            {
-                "$match": {
-                    "author.url": user_url,
-                },
-            },
-            {
-                "$group": {
-                    "_id": "$author.name",
-                    "count": {"$sum": 1},
-                }
-            },
-            # 排除当前昵称
-            {
-                "$match": {
-                    "_id": {
-                        "$ne": user_name,
-                    },
-                },
-            },
-        ]
-    )
-
-    history_names_onrank_summary: Dict[str, int] = {}
-    async for item in result:
-        history_names_onrank_summary[item["_id"]] = item["count"]
+    history_names = user.history_names
 
     return success(
         data=GetHistoryNamesOnArticleRankSummaryResponse(
-            user_url=user_url,
-            history_names_onrank_summary=history_names_onrank_summary,
+            user_url=user_slug_to_url(user.slug),
+            # TODO: 全部曾上榜昵称均显示为 1 条记录
+            history_names_onrank_summary={x: 1 for x in history_names},
         )
     )
 

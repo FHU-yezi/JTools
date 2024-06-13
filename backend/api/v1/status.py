@@ -14,9 +14,11 @@ from sspeedup.api.litestar import (
     success,
 )
 
+from models.jianshu.article_earning_ranking_record import (
+    ArticleEarningRankingRecordDocument,
+)
 from utils.config import config
 from utils.db import (
-    ARTICLE_FP_RANK_COLLECTION,
     JPEP_FTN_MACKET_COLLECTION,
     LOTTERY_COLLECTION,
     LP_COLLECTIONS_COLLECTION,
@@ -24,7 +26,9 @@ from utils.db import (
 from utils.tools_config import TOOLS_CONFIG, ToolStatus
 
 COLLECTION_STRING_TO_OBJ: Dict[str, AgnosticCollection] = {
-    "article_FP_rank": ARTICLE_FP_RANK_COLLECTION,
+    "article_earning_ranking_records": (
+        ArticleEarningRankingRecordDocument.get_collection()
+    ),
     "lottery": LOTTERY_COLLECTION,
     "LP_collections": LP_COLLECTIONS_COLLECTION,
     "JPEP_FTN_market": JPEP_FTN_MACKET_COLLECTION,
