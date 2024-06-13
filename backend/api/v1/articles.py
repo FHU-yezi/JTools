@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
-from typing import Annotated, Any, Dict, Optional, cast
+from typing import Annotated, Dict, Optional
 
-from bson import ObjectId
 from jkit.article import Article
 from jkit.constants import ARTICLE_SLUG_REGEX
 from jkit.exceptions import ResourceUnavailableError
@@ -19,8 +18,10 @@ from sspeedup.api.litestar import (
     success,
 )
 
+from models.jianshu.article_earning_ranking_record import (
+    ArticleEarningRankingRecordDocument,
+)
 from utils.config import config
-from utils.db import ARTICLE_FP_RANK_COLLECTION
 
 # fmt: off
 splitter = AbilityJiebaPossegSplitterV1(
@@ -36,62 +37,47 @@ splitter = AbilityJiebaPossegSplitterV1(
 
 
 async def get_latest_onrank_record(
-    author_url: str, *, minimum_ranking: Optional[int] = None
-) -> Optional[Dict[str, Any]]:
-    cursor = (
-        ARTICLE_FP_RANK_COLLECTION.find(
-            {
-                "author.url": author_url,
-                "ranking": {
-                    "$lte": minimum_ranking if minimum_ranking else 100,
-                },
-            }
-        )
-        .sort("date", -1)
-        .limit(1)
+    author_slug: str, *, minimum_ranking: Optional[int] = None
+) -> Optional[ArticleEarningRankingRecordDocument]:
+    # TODO
+    return await ArticleEarningRankingRecordDocument.find_one(
+        {
+            "authorSlug": author_slug,
+            "ranking": {  # type: ignore
+                "$lte": minimum_ranking if minimum_ranking else 100,
+            },
+        },
+        sort={"date": "DESC"},
     )
-
-    try:
-        return await cursor.next()
-    except StopAsyncIteration:
-        return None
 
 
 async def get_pervious_onrank_record(
-    onrank_record: Dict[str, Any], minimum_ranking: Optional[int] = None
-) -> Optional[Dict[str, Any]]:
-    cursor = (
-        ARTICLE_FP_RANK_COLLECTION.find(
-            {
-                "_id": {"$lt": ObjectId(onrank_record["_id"])},
-                "author.url": onrank_record["author"]["url"],
-                "ranking": {
-                    "$lte": minimum_ranking if minimum_ranking else 100,
-                },
-            }
-        )
-        .sort("_id", -1)
-        .limit(1)
+    onrank_record: ArticleEarningRankingRecordDocument,
+    minimum_ranking: Optional[int] = None,
+) -> Optional[ArticleEarningRankingRecordDocument]:
+    return await ArticleEarningRankingRecordDocument.find_one(
+        {
+            "_id": {"$lt": onrank_record._id},
+            "authorSlug": onrank_record.author_slug,
+            "ranking": {  # type: ignore
+                "$lte": minimum_ranking if minimum_ranking else 100,
+            },
+        },
+        sort={"_id": "DESC"},
     )
 
-    try:
-        return await cursor.next()
-    except StopAsyncIteration:
-        return None
 
-
-async def caculate_next_can_recommend_date(author_url: str) -> Optional[datetime]:
-    counted_article_urls = set()
+async def get_earliest_can_recommend_date(author_slug: str) -> Optional[datetime]:
+    counted_article_slugs = set()
 
     latest_onrank_record = await get_latest_onrank_record(
-        author_url, minimum_ranking=85
+        author_slug, minimum_ranking=85
     )
     if not latest_onrank_record:
-        # 作者没有上榜文章，或全部上榜文章均低于 85 名
         return None
 
-    interval_days = 10 if latest_onrank_record["ranking"] <= 30 else 7
-    counted_article_urls.add(latest_onrank_record["article"]["url"])
+    interval_days = 10 if latest_onrank_record.ranking <= 30 else 7
+    counted_article_slugs.add(latest_onrank_record.article.slug)
 
     now_record = latest_onrank_record
     while True:
@@ -99,25 +85,23 @@ async def caculate_next_can_recommend_date(author_url: str) -> Optional[datetime
             now_record, minimum_ranking=85
         )
         if not pervious_record:
-            # 没有更多文章
-            return cast(datetime, now_record["date"]) + timedelta(days=interval_days)
-        if pervious_record["article"]["url"] in counted_article_urls:
-            # 该文章之前计算过间隔
+            return latest_onrank_record.date + timedelta(days=interval_days)
+        if pervious_record.article.slug in counted_article_slugs:
             now_record = pervious_record
             continue
 
-        counted_article_urls.add(pervious_record["article"]["url"])
+        counted_article_slugs.add(pervious_record.article.slug)
 
         if (
-            now_record["ranking"] <= 30
-            and (now_record["date"] - pervious_record["date"]).days + 1 >= 10
+            now_record.ranking <= 30
+            and (now_record.date - pervious_record.date).days + 1 >= 10
         ) or (
-            now_record["ranking"] > 30
-            and (now_record["date"] - pervious_record["date"]).days + 1 >= 7
+            now_record.ranking > 30
+            and (now_record.date - pervious_record.date).days + 1 >= 7
         ):
-            return cast(datetime, now_record["date"]) + timedelta(days=interval_days)
+            return latest_onrank_record.date + timedelta(days=interval_days)
 
-        if pervious_record["ranking"] <= 30:
+        if pervious_record.ranking <= 30:
             interval_days += 10
         else:
             interval_days += 7
@@ -231,10 +215,10 @@ async def get_LP_recommend_check_handler(  # noqa: N802
 
     article_info = await article.info
 
-    author_url = article_info.author_info.to_user_obj().url
+    author_slug = article_info.author_info.to_user_obj().slug
     article_title = article_info.title
     article_fp_reward = article_info.earned_fp_amount
-    article_next_can_recommend_date = await caculate_next_can_recommend_date(author_url)
+    article_next_can_recommend_date = await get_earliest_can_recommend_date(author_slug)
 
     can_recommend_now = article_fp_reward < 35 and (
         not article_next_can_recommend_date
