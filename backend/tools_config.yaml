@@ -9,12 +9,12 @@ JPEP-FTN-market-analyzer:
     status: NORMAL
     reason: null
     last_update_time:
-        collection: JPEP_FTN_market
-        sort_key: fetch_time
+        collection: FTN_trade_orders
+        sort_key: fetchTime
         sort_direction: desc
     data_update_freq: 十分钟一次
     data_count:
-      collection: JPEP_FTN_market
+      collection: FTN_trade_orders
       mode: estimated
     data_source:
         简书积分兑换平台 - 贝市: https://www.jianshubei.com/bei
@@ -22,12 +22,12 @@ lottery-analyzer:
     status: NORMAL
     reason: null
     last_update_time:
-      collection: lottery
+      collection: lottery_win_records
       sort_key: time
       sort_direction: desc
     data_update_freq: 每天 2:00、9:00、14:00、21:00
     data_count:
-      collection: lottery
+      collection: lottery_win_records
       mode: estimated
     data_source:
         简书 - 天天抽奖: https://www.jianshu.com/mobile/lottery
@@ -35,12 +35,12 @@ lottery-reward-record-viewer:
     status: NORMAL
     reason: null
     last_update_time:
-      collection: lottery
+      collection: lottery_win_records
       sort_key: time
       sort_direction: desc
     data_update_freq: 每天 2:00、9:00、14:00、21:00
     data_count:
-      collection: lottery
+      collection: lottery_win_records
       mode: estimated
     data_source:
         简书 - 天天抽奖: https://www.jianshu.com/mobile/lottery
@@ -56,12 +56,12 @@ on-rank-article-viewer:
     status: NORMAL
     reason: null
     last_update_time:
-      collection: article_FP_rank
+      collection: article_earning_ranking_records
       sort_key: date
       sort_direction: desc
     data_update_freq: 每天凌晨 1:00
     data_count:
-      collection: article_FP_rank
+      collection: article_earning_ranking_records
       mode: estimated
     data_source:
         简书 - 简书钻每日发放总榜: https://www.jianshu.com/fp/notice/now

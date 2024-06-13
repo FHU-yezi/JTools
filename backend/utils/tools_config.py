@@ -4,10 +4,11 @@ from typing import Any, Dict, Literal, Optional
 from msgspec import Struct
 from msgspec.yaml import decode
 
-_TOOLS_CONFIG_STRUCT_CONFIG: Dict[str, Any] = {
+_TOOLS_CONFIG_STRUCT_META: Dict[str, Any] = {
     "frozen": True,
     "kw_only": True,
     "forbid_unknown_fields": True,
+    "gc": False,
 }
 
 
@@ -17,18 +18,18 @@ class ToolStatus(Enum):
     DOWNGRADED = "DOWNGRADED"
 
 
-class _DataUpdateTimeItem(Struct, **_TOOLS_CONFIG_STRUCT_CONFIG):
+class _DataUpdateTimeItem(Struct, **_TOOLS_CONFIG_STRUCT_META):
     collection: str
     sort_key: str
     sort_direction: Literal["asc", "desc"]
 
 
-class _DataCountItem(Struct, **_TOOLS_CONFIG_STRUCT_CONFIG):
+class _DataCountItem(Struct, **_TOOLS_CONFIG_STRUCT_META):
     collection: str
     mode: Literal["accurate", "estimated"]
 
 
-class _ToolConfig(Struct, **_TOOLS_CONFIG_STRUCT_CONFIG):
+class _ToolConfig(Struct, **_TOOLS_CONFIG_STRUCT_META):
     status: ToolStatus
     reason: Optional[str]
     last_update_time: Optional[_DataUpdateTimeItem]

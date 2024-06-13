@@ -1,6 +1,6 @@
 from asyncio import gather
 from datetime import datetime, timedelta
-from typing import Annotated, Any, Dict, Literal, Optional
+from typing import Annotated, Dict, Literal, Optional
 
 from jkit.jpep.platform_settings import PlatformSettings
 from litestar import Response, Router, get
@@ -13,7 +13,7 @@ from sspeedup.api.litestar import (
 )
 from sspeedup.time_helper import get_start_time
 
-from utils.db import JPEP_FTN_MACKET_COLLECTION
+from models.jpep.ftn_trade_order import FTNTradeOrderDocument
 
 RANGE_TO_TIMEDELTA: Dict[str, timedelta] = {
     "24h": timedelta(hours=24),
@@ -32,78 +32,58 @@ PLATFORM_SETTINGS = PlatformSettings()
 
 
 async def get_data_update_time() -> datetime:
-    result = (
-        await JPEP_FTN_MACKET_COLLECTION.find(
-            {},
-            {
-                "_id": 0,
-                "fetch_time": 1,
-            },
-        )
-        .sort("fetch_time", -1)
-        .limit(1)
-        .next()
-    )
-    return result["fetch_time"]
+    latest_record = await FTNTradeOrderDocument.find_one(sort={"fetchTime": "DESC"})
+
+    return latest_record.fetch_time  # type: ignore
 
 
-async def get_latest_order(type_: Literal["buy", "sell"]) -> Optional[Dict[str, Any]]:
+async def get_latest_order(
+    type_: Literal["buy", "sell"],
+) -> Optional[FTNTradeOrderDocument]:
     time = await get_data_update_time()
-    try:
-        return (
-            await JPEP_FTN_MACKET_COLLECTION.find(
-                {
-                    "fetch_time": time,
-                    "trade_type": type_,
-                    "amount.tradable": {"$ne": 0},
-                }
-            )
-            .sort("price", 1 if type_ == "buy" else -1)
-            .limit(1)
-            .next()
-        )
-    except StopAsyncIteration:  # 该侧没有挂单
-        return None
+
+    return await FTNTradeOrderDocument.find_one(
+        {"fetchTime": time, "type": type_, "amount.tradable": {"$ne": 0}},
+        sort={"price": "ASC" if type_ == "buy" else "DESC"},
+    )
 
 
 async def get_current_amount(type_: Literal["buy", "sell"]) -> Optional[int]:
     time = await get_data_update_time()
 
-    try:
-        result = await JPEP_FTN_MACKET_COLLECTION.aggregate(
-            [
-                {
-                    "$match": {
-                        "fetch_time": time,
-                        "trade_type": type_,
-                    }
-                },
-                {
-                    "$group": {
-                        "_id": None,
-                        "sum": {
-                            "$sum": "$amount.tradable",
-                        },
+    result = await FTNTradeOrderDocument.aggregate_one(
+        [
+            {
+                "$match": {
+                    "fetchTime": time,
+                    "type": type_,
+                }
+            },
+            {
+                "$group": {
+                    "_id": None,
+                    "sum": {
+                        "$sum": "$amount.tradable",
                     },
                 },
-            ]
-        ).next()
-        return result["sum"]
-    except StopIteration:  # 该侧没有挂单
-        return None
+            },
+        ]
+    )
+
+    return result["sum"] if result else None
 
 
 async def get_price_history(
     type_: Literal["buy", "sell"], td: timedelta, time_unit: str
 ) -> Dict[datetime, float]:
-    result = JPEP_FTN_MACKET_COLLECTION.aggregate(
+    result = FTNTradeOrderDocument.aggregate_many(
         [
             {
                 "$match": {
-                    "trade_type": type_,
-                    "fetch_time": {
+                    "fetchTime": {
                         "$gte": get_start_time(td),
                     },
+                    "type": type_,
                 },
             },
             {
@@ -111,13 +91,13 @@ async def get_price_history(
                     "_id": (
                         {
                             "$dateTrunc": {
-                                "date": "$fetch_time",
+                                "date": "$fetchTime",
                                 "unit": time_unit,
                             },
                         }
                     )
                     if time_unit != "minute"
-                    else "$fetch_time",
+                    else "$fetchTime",
                     "price": {
                         "$min" if type_ == "buy" else "$max": "$price",
                     },
@@ -137,19 +117,19 @@ async def get_price_history(
 async def get_amount_history(
     type_: Literal["buy", "sell"], td: timedelta, time_unit: str
 ) -> Dict[datetime, float]:
-    result = JPEP_FTN_MACKET_COLLECTION.aggregate(
+    result = FTNTradeOrderDocument.aggregate_many(
         [
             {
                 "$match": {
-                    "trade_type": type_,
-                    "fetch_time": {
+                    "fetchTime": {
                         "$gte": get_start_time(td),
                     },
+                    "type": type_,
                 },
             },
             {
                 "$group": {
-                    "_id": "$fetch_time",
+                    "_id": "$fetchTime",
                     "amount": {
                         "$sum": "$amount.tradable",
                     },
@@ -189,12 +169,12 @@ async def get_current_amount_distribution(
 ) -> Dict[float, int]:
     time = await get_data_update_time()
 
-    result = JPEP_FTN_MACKET_COLLECTION.aggregate(
+    result = FTNTradeOrderDocument.aggregate_many(
         [
             {
                 "$match": {
-                    "fetch_time": time,
-                    "trade_type": type_,
+                    "fetchTime": time,
+                    "type": type_,
                 },
             },
             {
@@ -272,8 +252,8 @@ async def get_current_price_handler() -> Response:
         get_latest_order("buy"), get_latest_order("sell")
     )
 
-    buy_price = buy_order["price"] if buy_order else None
-    sell_price = sell_order["price"] if sell_order else None
+    buy_price = buy_order.price if buy_order else None
+    sell_price = sell_order.price if sell_order else None
 
     return success(
         data=GetCurrentPriceResponse(
