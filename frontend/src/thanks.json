@@ -161,6 +161,24 @@
       "user_name": "平原雪",
       "user_url": "https://www.jianshu.com/u/754f9b7b7417",
       "reward": 50
+    },
+    {
+      "time": "2024-06-03",
+      "type": "数据异常",
+      "module": "上榜文章查询工具",
+      "desc": "部分上榜数据缺失",
+      "user_name": "睿希颖瑶",
+      "user_url": "https://www.jianshu.com/u/4b86da352f87",
+      "reward": 80
+    },
+    {
+      "time": "2024-06-08",
+      "type": "数据异常",
+      "module": "上榜文章查询工具",
+      "desc": "部分上榜数据缺失",
+      "user_name": "非村",
+      "user_url": "https://www.jianshu.com/u/df68a42402fc",
+      "reward": 80
     }
   ],
   "opensourcePackages": {
