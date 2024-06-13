@@ -2,17 +2,22 @@ from asyncio import gather
 from datetime import datetime, timedelta
 from typing import Annotated, Dict, List, Literal, Optional
 
+from jkit.identifier_convert import user_slug_to_url
 from litestar import Response, Router, get
 from litestar.params import Parameter
+from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from msgspec import Struct
 from sspeedup.api.litestar import (
     RESPONSE_STRUCT_CONFIG,
+    Code,
+    fail,
     generate_response_spec,
     success,
 )
 from sspeedup.time_helper import get_start_time
 
-from utils.db import LOTTERY_COLLECTION
+from models.jianshu.lottery_win_record import LotteryWinRecordDocument
+from models.jianshu.user import UserDocument
 
 REWARD_NAMES: List[str] = [
     "收益加成卡100",
@@ -36,7 +41,7 @@ RESOLUTION_TO_TIME_UNIT: Dict[str, str] = {
 
 
 async def get_summary_wins_count(td: Optional[timedelta]) -> Dict[str, int]:
-    db_result = LOTTERY_COLLECTION.aggregate(
+    db_result = LotteryWinRecordDocument.aggregate_many(
         [
             {
                 "$match": {
@@ -47,7 +52,7 @@ async def get_summary_wins_count(td: Optional[timedelta]) -> Dict[str, int]:
             },
             {
                 "$group": {
-                    "_id": "$reward_name",
+                    "_id": "$awardName",
                     "count": {
                         "$sum": 1,
                     },
@@ -66,10 +71,10 @@ async def get_summary_winners_count(td: Optional[timedelta]) -> Dict[str, int]:
 
     for reward_name in REWARD_NAMES:
         result[reward_name] = len(
-            await LOTTERY_COLLECTION.distinct(
-                "user.id",
+            await LotteryWinRecordDocument.get_collection().distinct(
+                "userSlug",
                 {
-                    "reward_name": reward_name,
+                    "awardName": reward_name,
                     "time": {
                         "$gte": get_start_time(td),
                     },
@@ -77,6 +82,7 @@ async def get_summary_winners_count(td: Optional[timedelta]) -> Dict[str, int]:
             )
         )
 
+    print(result)
     return result
 
 
@@ -123,7 +129,7 @@ def get_summary_rarity(wins_count: Dict[str, int]) -> Dict[str, float]:
 async def get_rewards_wins_history(
     td: timedelta, time_unit: str
 ) -> Dict[datetime, int]:
-    result = LOTTERY_COLLECTION.aggregate(
+    result = LotteryWinRecordDocument.aggregate_many(
         [
             {
                 "$match": {
@@ -175,7 +181,7 @@ async def get_rewards_handler() -> Response:
     )
 
 
-class GetRecordItem(Struct, **RESPONSE_STRUCT_CONFIG):
+class GetRecordsItem(Struct, **RESPONSE_STRUCT_CONFIG):
     time: datetime
     reward_name: str
     user_name: str
@@ -183,7 +189,7 @@ class GetRecordItem(Struct, **RESPONSE_STRUCT_CONFIG):
 
 
 class GetRecordsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
-    records: List[GetRecordItem]
+    records: List[GetRecordsItem]
 
 
 @get(
@@ -200,28 +206,32 @@ async def get_records_handler(
         Optional[List[str]], Parameter(description="排除奖项列表", max_items=10)
     ] = None,
 ) -> Response:
-    result = (
-        LOTTERY_COLLECTION.find(
-            {
-                "reward_name": {
-                    "$nin": excluded_awards if excluded_awards else [],
-                },
-            }
-        )
-        .sort("time", -1)
-        .skip(offset)
-        .limit(limit)
-    )
+    records: List[GetRecordsItem] = []
+    async for item in LotteryWinRecordDocument.find_many(
+        {
+            "award_name": {
+                "$nin": excluded_awards if excluded_awards else [],
+            },
+        },
+        sort={"time": "DESC"},
+        skip=offset,
+        limit=limit,
+    ):
+        user = await UserDocument.find_one({"slug": item.user_slug})
+        if not user:
+            return fail(
+                http_code=HTTP_500_INTERNAL_SERVER_ERROR,
+                api_code=Code.UNKNOWN_SERVER_ERROR,
+            )
 
-    records: List[GetRecordItem] = [
-        GetRecordItem(
-            time=item["time"],
-            reward_name=item["reward_name"],
-            user_name=item["user"]["name"],
-            user_url=item["user"]["url"],
+        records.append(
+            GetRecordsItem(
+                time=item.time,
+                reward_name=item.award_name,
+                user_name=user.name or item.user_slug,
+                user_url=user_slug_to_url(item.user_slug),
+            )
         )
-        async for item in result
-    ]
 
     return success(
         data=GetRecordsResponse(
