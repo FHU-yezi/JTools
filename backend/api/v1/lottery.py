@@ -82,7 +82,6 @@ async def get_summary_winners_count(td: Optional[timedelta]) -> Dict[str, int]:
             )
         )
 
-    print(result)
     return result
 
 

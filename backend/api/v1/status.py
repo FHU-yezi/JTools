@@ -4,8 +4,8 @@ from typing import Annotated, Dict, List, Literal, Optional
 from litestar import Response, Router, get
 from litestar.params import Parameter
 from litestar.status_codes import HTTP_400_BAD_REQUEST
-from motor.core import AgnosticCollection
 from msgspec import Struct
+from sshared.mongo import Document
 from sspeedup.api.code import Code
 from sspeedup.api.litestar import (
     RESPONSE_STRUCT_CONFIG,
@@ -17,48 +17,36 @@ from sspeedup.api.litestar import (
 from models.jianshu.article_earning_ranking_record import (
     ArticleEarningRankingRecordDocument,
 )
+from models.jianshu.lottery_win_record import LotteryWinRecordDocument
+from models.jpep.ftn_trade_order import FTNTradeOrderDocument
 from utils.config import config
-from utils.db import (
-    JPEP_FTN_MACKET_COLLECTION,
-    LOTTERY_COLLECTION,
-    LP_COLLECTIONS_COLLECTION,
-)
 from utils.tools_config import TOOLS_CONFIG, ToolStatus
 
-COLLECTION_STRING_TO_OBJ: Dict[str, AgnosticCollection] = {
-    "article_earning_ranking_records": (
-        ArticleEarningRankingRecordDocument.get_collection()
-    ),
-    "lottery": LOTTERY_COLLECTION,
-    "LP_collections": LP_COLLECTIONS_COLLECTION,
-    "JPEP_FTN_market": JPEP_FTN_MACKET_COLLECTION,
+COLLECTION_STRING_TO_OBJ: Dict[str, type[Document]] = {
+    "article_earning_ranking_records": ArticleEarningRankingRecordDocument,
+    "lottery_win_records": LotteryWinRecordDocument,
+    "FTN_trade_orders": FTNTradeOrderDocument,
 }
 
 
 async def get_last_update_time(
-    collection: AgnosticCollection,
+    collection: type[Document],
     sort_key: str,
     sort_direction: Literal["asc", "desc"],
 ) -> Optional[datetime]:
-    try:
-        db_result = (
-            await collection.find()
-            .sort(sort_key, 1 if sort_direction == "asc" else -1)
-            .limit(1)
-            .next()
-        )
-        return db_result[sort_key]
-    except StopAsyncIteration:
-        return None
+    latest_record = await collection.find_one(
+        sort={sort_key: "ASC" if sort_direction == "asc" else "DESC"}
+    )
+
+    # 获取到的是数据记录对象，将其转换为字典
+    # 然后通过驼峰样式的 sort_key 获取到数据更新时间
+    return latest_record.to_dict()[sort_key] if latest_record else None
 
 
 async def get_data_count(
-    collection: AgnosticCollection, mode: Literal["accurate", "estimated"]
+    collection: type[Document], mode: Literal["accurate", "estimated"]
 ) -> int:
-    if mode == "accurate":
-        return await collection.count_documents({})
-
-    return await collection.estimated_document_count()
+    return await collection.count(fast=mode == "estimated")
 
 
 class GetResponse(Struct, **RESPONSE_STRUCT_CONFIG):
