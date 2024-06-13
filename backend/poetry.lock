@@ -701,13 +701,13 @@ zstd = ["zstandard"]
 
 [[package]]
 name = "pyright"
-version = "1.1.366"
+version = "1.1.367"
 description = "Command line wrapper for pyright"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "pyright-1.1.366-py3-none-any.whl", hash = "sha256:c09e73ccc894976bcd6d6a5784aa84d724dbd9ceb7b873b39d475ca61c2de071"},
-    {file = "pyright-1.1.366.tar.gz", hash = "sha256:10e4d60be411f6d960cd39b0b58bf2ff76f2c83b9aeb102ffa9d9fda2e1303cb"},
+    {file = "pyright-1.1.367-py3-none-any.whl", hash = "sha256:89de6502ae02f1552d0c4df4b46867887a419849f379db617695ef9308cf01eb"},
+    {file = "pyright-1.1.367.tar.gz", hash = "sha256:b1e5522ceb246ee6bc293a43d6d0162719d6467c1f1e9b81cee741aa11cdacbd"},
 ]
 
 [package.dependencies]
@@ -812,13 +812,13 @@ jupyter = ["ipywidgets (>=7.5.1,<9)"]
 
 [[package]]
 name = "rich-click"
-version = "1.8.2"
+version = "1.8.3"
 description = "Format click help output nicely with rich"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "rich_click-1.8.2-py3-none-any.whl", hash = "sha256:b57856f304e4fe0394b82d7ce0784450758f8c8b4e201ccc4320501cc201806b"},
-    {file = "rich_click-1.8.2.tar.gz", hash = "sha256:8e29bdede858b59aa2859a1ab1c4ccbd39ed7ed5870262dae756fba6b5dc72e8"},
+    {file = "rich_click-1.8.3-py3-none-any.whl", hash = "sha256:636d9c040d31c5eee242201b5bf4f2d358bfae4db14bb22ec1cafa717cfd02cd"},
+    {file = "rich_click-1.8.3.tar.gz", hash = "sha256:6d75bdfa7aa9ed2c467789a0688bc6da23fbe3a143e19aa6ad3f8bac113d2ab3"},
 ]
 
 [package.dependencies]
@@ -877,6 +877,25 @@ files = [
     {file = "sniffio-1.3.1-py3-none-any.whl", hash = "sha256:2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2"},
     {file = "sniffio-1.3.1.tar.gz", hash = "sha256:f4324edc670a0f49750a81b895f35c3adb843cca46f0530f79fc1babb23789dc"},
 ]
+
+[[package]]
+name = "sshared"
+version = "0.5.1"
+description = "后端共享组件"
+optional = false
+python-versions = "<4.0,>=3.8"
+files = [
+    {file = "sshared-0.5.1-py3-none-any.whl", hash = "sha256:e8c90d8d84ecbdf255d6e8c576efea1fc1e8fa09c4a13016645e8f22feb88494"},
+    {file = "sshared-0.5.1.tar.gz", hash = "sha256:3fa688e70721e48456c4ac3ba01ecdd09a6a1273682455d31ae3a282e76218f4"},
+]
+
+[package.dependencies]
+msgspec = ">=0.18.0,<0.19.0"
+typing-extensions = ">=4.12.0,<5.0.0"
+
+[package.extras]
+api = ["litestar (>=2.9.0,<3.0.0)"]
+mongo = ["motor (>=3.3.0,<4.0.0)"]
 
 [[package]]
 name = "sspeedup"
@@ -1085,4 +1104,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "12d1fe22d542da2e1a41c276f034890e7adf1fe886baa56d07ef7a6fb06d5e9b"
+content-hash = "488c7807917f90d17f562c56463171cd76428e74c568b780899c7a8a7cb7479f"

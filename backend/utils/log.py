@@ -1,10 +1,13 @@
-from sspeedup.logging.run_logger import RunLogger
+from pymongo import MongoClient
+from sshared.logging import Logger
 
 from utils.config import config
-from utils.db import RUN_LOG_COLLECTION
 
-logger = RunLogger(
-    save_level=config.log.save_level,
-    print_level=config.log.print_level,
-    mongo_collection=RUN_LOG_COLLECTION,
+_client = MongoClient()
+
+logger = Logger(
+    # TODO
+    save_level=config.log.save_level.value, # type: ignore
+    display_level=config.log.print_level.value, # type: ignore
+    save_collection=_client[config.db.database].log,
 )
