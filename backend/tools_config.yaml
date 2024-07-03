@@ -45,8 +45,8 @@ lottery-reward-record-viewer:
     data_source:
         简书 - 天天抽奖: https://www.jianshu.com/mobile/lottery
 LP-recommend-checker:
-    status: NORMAL
-    reason: null
+    status: DOWNGRADED
+    reason: 受简书运营调整影响，LP 理事会超级权重不再发放，故取消相关推文限制。
     last_update_time: null
     data_update_freq: null
     data_count: null
