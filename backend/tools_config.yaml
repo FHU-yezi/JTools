@@ -53,8 +53,8 @@ LP-recommend-checker:
     data_source:
         简书 - 专题 - 理事会点赞汇总: https://www.jianshu.com/c/f61832508891
 on-rank-article-viewer:
-    status: DOWNGRADED
-    reason: 受简书运营调整影响，文章收益排行榜已于 2024.6.21 下线。
+    status: NORMAL
+    reason: null
     last_update_time:
       collection: article_earning_ranking_records
       sort_key: date
