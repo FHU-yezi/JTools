@@ -236,10 +236,9 @@ source = { virtual = "." }
 dependencies = [
     { name = "httptools" },
     { name = "jkit" },
-    { name = "motor" },
     { name = "psycopg", extra = ["binary"] },
-    { name = "sshared" },
-    { name = "sspeedup", extra = ["api-litestar", "config"] },
+    { name = "sshared", extra = ["config", "mongo", "postgres"] },
+    { name = "sspeedup", extra = ["api-litestar"] },
     { name = "uvicorn" },
     { name = "uvloop" },
 ]
@@ -254,10 +253,9 @@ dev = [
 requires-dist = [
     { name = "httptools", specifier = ">=0.6.0" },
     { name = "jkit", specifier = ">=3.0.0a16" },
-    { name = "motor", specifier = ">=3.6.0" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.2.0" },
-    { name = "sshared", specifier = ">=0.15.0" },
-    { name = "sspeedup", extras = ["api-litestar", "config", "logging"], specifier = ">=0.25.0" },
+    { name = "sshared", extras = ["config", "mongo", "postgres"], specifier = ">=0.15.0" },
+    { name = "sspeedup", extras = ["api-litestar"], specifier = ">=0.25.0" },
     { name = "uvicorn", specifier = ">=0.32.0" },
     { name = "uvloop", specifier = ">=0.21.0" },
 ]
@@ -776,6 +774,17 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/73/c9/a3bdcc4c536020952ec54d194b7dec1b43e573857042376ecd839865a3c7/sshared-0.15.0-py3-none-any.whl", hash = "sha256:eece5d948b2a04d936ff898aa48409413e6595805bc74387c5c0b07d06199f9f", size = 23630 },
 ]
 
+[package.optional-dependencies]
+config = [
+    { name = "tomli" },
+]
+mongo = [
+    { name = "motor" },
+]
+postgres = [
+    { name = "psycopg" },
+]
+
 [[package]]
 name = "sspeedup"
 version = "0.25.1"
@@ -794,8 +803,14 @@ api-litestar = [
     { name = "litestar" },
     { name = "msgspec" },
 ]
-config = [
-    { name = "msgspec" },
+
+[[package]]
+name = "tomli"
+version = "2.0.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/35/b9/de2a5c0144d7d75a57ff355c0c24054f965b2dc3036456ae03a51ea6264b/tomli-2.0.2.tar.gz", hash = "sha256:d46d457a85337051c36524bc5349dd91b1877838e2979ac5ced3e710ed8a60ed", size = 16096 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/cf/db/ce8eda256fa131af12e0a76d481711abe4681b6923c27efb9a255c9e4594/tomli-2.0.2-py3-none-any.whl", hash = "sha256:2ebe24485c53d303f690b0ec092806a085f07af5a5aa1464f3931eec36caaa38", size = 13237 },
 ]
 
 [[package]]

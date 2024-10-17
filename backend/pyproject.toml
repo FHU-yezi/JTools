@@ -10,10 +10,9 @@ requires-python = ">=3.9"
 dependencies = [
     "httptools>=0.6.0",
     "jkit>=3.0.0a16",
-    "motor>=3.6.0",
     "psycopg[binary]>=3.2.0",
-    "sshared>=0.15.0",
-    "sspeedup[api-litestar,config,logging]>=0.25.0",
+    "sshared[config, mongo, postgres]>=0.15.0",
+    "sspeedup[api-litestar]>=0.25.0",
     "uvicorn>=0.32.0",
     "uvloop>=0.21.0",
 ]
