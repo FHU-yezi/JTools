@@ -4,8 +4,11 @@ on:
   push:
 
 jobs:
-  static-check:
+  static-check-backend:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
     steps:
     - uses: actions/checkout@v4
     - name: Install uv
@@ -18,3 +21,16 @@ jobs:
       run: uv run ruff check --output-format=github .
     - name: Type checking with Pyright
       run: uv run pyright --warnings .
+  static-check-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v2
+        with:
+            version: latest
+      - name: Run Biome
+        run: biome ci .
