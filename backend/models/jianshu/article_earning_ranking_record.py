@@ -9,22 +9,22 @@ from jkit.msgspec_constraints import (
     PositiveInt,
     UserSlug,
 )
-from sshared.mongo import MODEL_META, Document, Field, Index
+from sshared.mongo import Document, Field, Index
 
 from utils.db import JIANSHU_DB
 
 
-class ArticleField(Field, **MODEL_META):
+class ArticleField(Field, frozen=True):
     slug: Optional[ArticleSlug]
     title: Optional[NonEmptyStr]
 
 
-class EarningField(Field, **MODEL_META):
+class EarningField(Field, frozen=True):
     to_author: PositiveFloat
     to_voter: PositiveFloat
 
 
-class ArticleEarningRankingRecordDocument(Document, **MODEL_META):
+class ArticleEarningRankingRecordDocument(Document, frozen=True):
     _id: ObjectId
     date: datetime
     ranking: PositiveInt

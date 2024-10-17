@@ -21,12 +21,12 @@ from sspeedup.api.litestar import (
 from models.jianshu.article_earning_ranking_record import (
     ArticleEarningRankingRecordDocument,
 )
-from utils.config import config
+from utils.config import CONFIG
 
 # fmt: off
 splitter = AbilityJiebaPossegSplitterV1(
-    host=config.ability_word_split.host,
-    port=config.ability_word_split.port,
+    host=CONFIG.ability_word_split.host,
+    port=CONFIG.ability_word_split.port,
     allowed_word_types={
         "Ag", "a", "ad", "an", "dg", "g", "i",
         "j", "l", "Ng", "n", "nr", "ns", "nt",

@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Optional
 
 from jkit.msgspec_constraints import PositiveInt, UserName, UserSlug, UserUploadedUrl
-from sshared.mongo import MODEL_META, Document, Index
+from sshared.mongo import Document, Index
 
 from utils.db import JIANSHU_DB
 
@@ -13,7 +13,7 @@ class JianshuUserStatus(Enum):
     INACCESSABLE = "INACCESSIBLE"
 
 
-class UserDocument(Document, **MODEL_META):
+class UserDocument(Document, frozen=True):
     slug: UserSlug
     status: JianshuUserStatus
     updated_at: datetime

@@ -29,7 +29,7 @@ services:
     build:
       dockerfile: Dockerfile.backend
     volumes:
-      - ./backend/config.yaml:/app/config.yaml:ro
+      - ./backend/config.toml:/app/config.toml:ro
     networks:
       - internal
       - mongodb

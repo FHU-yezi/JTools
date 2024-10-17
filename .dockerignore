@@ -4,7 +4,5 @@
 **/__pycache__/
 **/dist/
 **/node_modules/
-**/pyproject.toml
-**/poetry.lock
-**/requirements-dev.txt
-**/config.yaml
+**/config.example.toml
+**/config.toml

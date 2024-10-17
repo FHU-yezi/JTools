@@ -19,8 +19,8 @@ from models.jianshu.article_earning_ranking_record import (
 )
 from models.jianshu.lottery_win_record import LotteryWinRecordDocument
 from models.jpep.ftn_trade_order import FTNTradeOrderDocument
-from utils.config import config
 from utils.tools_config import TOOLS_CONFIG, ToolStatus
+from version import VERSION
 
 COLLECTION_STRING_TO_OBJ: dict[str, type[Document]] = {
     "article_earning_ranking_records": ArticleEarningRankingRecordDocument,
@@ -63,8 +63,6 @@ class GetResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     },
 )
 async def get_handler() -> Response:
-    version = config.deploy.version
-
     downgraded_tools = [
         name
         for name, config in TOOLS_CONFIG.items()
@@ -78,7 +76,7 @@ async def get_handler() -> Response:
 
     return success(
         data=GetResponse(
-            version=version,
+            version=VERSION,
             downgraded_tools=downgraded_tools,
             unavaliable_tools=unavaliable_tools,
         )

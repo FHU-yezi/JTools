@@ -5,12 +5,12 @@ from jkit.msgspec_constraints import (
     PositiveInt,
     UserSlug,
 )
-from sshared.mongo import MODEL_META, Document, Index
+from sshared.mongo import Document, Index
 
 from utils.db import JIANSHU_DB
 
 
-class LotteryWinRecordDocument(Document, **MODEL_META):
+class LotteryWinRecordDocument(Document, frozen=True):
     id: PositiveInt
     time: datetime
     award_name: NonEmptyStr

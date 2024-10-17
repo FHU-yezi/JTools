@@ -1,0 +1,28 @@
+[mongo]
+    host = "localhost"
+    port = 27017
+    database = "jtools"
+
+[postgres]
+    host = "localhost"
+    port = 5432
+    user = "postgres"
+    password = "postgres"
+    database = "jtools"
+
+[logging]
+    display_level = "DEBUG"
+    save_level = "DEBUG"
+    table = "jtools"
+
+[uvicorn]
+    host = "localhost"
+    port = 8902
+    log_level = "warning"
+    workers = 1
+    reload = false
+    access_log = false
+
+[word_split_access_key]
+    access_key_id = ""
+    access_key_secret = ""
