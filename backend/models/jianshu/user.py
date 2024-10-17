@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+from typing import Optional
 
 from jkit.msgspec_constraints import PositiveInt, UserName, UserSlug, UserUploadedUrl
 from sshared.mongo import MODEL_META, Document, Index
@@ -19,7 +19,7 @@ class UserDocument(Document, **MODEL_META):
     updated_at: datetime
     id: Optional[PositiveInt]
     name: Optional[UserName]
-    history_names: List[UserName]
+    history_names: list[UserName]
     avatar_url: Optional[UserUploadedUrl]
 
     class Meta:  # type: ignore

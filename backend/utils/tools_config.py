@@ -1,10 +1,10 @@
 from enum import Enum
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Literal, Optional
 
 from msgspec import Struct
 from msgspec.yaml import decode
 
-_TOOLS_CONFIG_STRUCT_META: Dict[str, Any] = {
+_TOOLS_CONFIG_STRUCT_META: dict[str, Any] = {
     "frozen": True,
     "kw_only": True,
     "forbid_unknown_fields": True,
@@ -35,8 +35,8 @@ class _ToolConfig(Struct, **_TOOLS_CONFIG_STRUCT_META):
     last_update_time: Optional[_DataUpdateTimeItem]
     data_update_freq: Optional[str]
     data_count: Optional[_DataCountItem]
-    data_source: Optional[Dict[str, str]]
+    data_source: Optional[dict[str, str]]
 
 
 with open("tools_config.yaml", "rb") as f:
-    TOOLS_CONFIG = decode(f.read(), type=Dict[str, _ToolConfig])
+    TOOLS_CONFIG = decode(f.read(), type=dict[str, _ToolConfig])

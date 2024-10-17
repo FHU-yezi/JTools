@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Annotated, Dict, List, Literal, Optional
+from typing import Annotated, Literal, Optional
 
 from litestar import Response, Router, get
 from litestar.params import Parameter
@@ -22,7 +22,7 @@ from models.jpep.ftn_trade_order import FTNTradeOrderDocument
 from utils.config import config
 from utils.tools_config import TOOLS_CONFIG, ToolStatus
 
-COLLECTION_STRING_TO_OBJ: Dict[str, type[Document]] = {
+COLLECTION_STRING_TO_OBJ: dict[str, type[Document]] = {
     "article_earning_ranking_records": ArticleEarningRankingRecordDocument,
     "lottery_win_records": LotteryWinRecordDocument,
     "FTN_trade_orders": FTNTradeOrderDocument,
@@ -51,8 +51,8 @@ async def get_data_count(
 
 class GetResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     version: str
-    downgraded_tools: List[str]
-    unavaliable_tools: List[str]
+    downgraded_tools: list[str]
+    unavaliable_tools: list[str]
 
 
 @get(
@@ -91,7 +91,7 @@ class GetToolStatusResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     last_update_time: Optional[datetime]
     data_update_freq: Optional[str]
     data_count: Optional[int]
-    data_source: Optional[Dict[str, str]]
+    data_source: Optional[dict[str, str]]
 
 
 @get(

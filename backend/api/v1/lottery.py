@@ -1,6 +1,6 @@
 from asyncio import gather
 from datetime import datetime, timedelta
-from typing import Annotated, Dict, List, Literal, Optional
+from typing import Annotated, Literal, Optional
 
 from jkit.identifier_convert import user_slug_to_url
 from litestar import Response, Router, get
@@ -19,14 +19,14 @@ from sspeedup.time_helper import get_start_time
 from models.jianshu.lottery_win_record import LotteryWinRecordDocument
 from models.jianshu.user import UserDocument
 
-REWARD_NAMES: List[str] = [
+REWARD_NAMES: list[str] = [
     "收益加成卡100",
     "收益加成卡1万",
     "四叶草徽章",
     "锦鲤头像框1年",
 ]
 
-RANGE_TO_TIMEDELTA: Dict[str, Optional[timedelta]] = {
+RANGE_TO_TIMEDELTA: dict[str, Optional[timedelta]] = {
     "1d": timedelta(days=1),
     "7d": timedelta(days=7),
     "30d": timedelta(days=30),
@@ -34,13 +34,13 @@ RANGE_TO_TIMEDELTA: Dict[str, Optional[timedelta]] = {
     "all": None,
 }
 
-RESOLUTION_TO_TIME_UNIT: Dict[str, str] = {
+RESOLUTION_TO_TIME_UNIT: dict[str, str] = {
     "1h": "hour",
     "1d": "day",
 }
 
 
-async def get_summary_wins_count(td: Optional[timedelta]) -> Dict[str, int]:
+async def get_summary_wins_count(td: Optional[timedelta]) -> dict[str, int]:
     db_result = LotteryWinRecordDocument.aggregate_many(
         [
             {
@@ -66,8 +66,8 @@ async def get_summary_wins_count(td: Optional[timedelta]) -> Dict[str, int]:
     return result
 
 
-async def get_summary_winners_count(td: Optional[timedelta]) -> Dict[str, int]:
-    result: Dict[str, int] = {}
+async def get_summary_winners_count(td: Optional[timedelta]) -> dict[str, int]:
+    result: dict[str, int] = {}
 
     for reward_name in REWARD_NAMES:
         result[reward_name] = len(
@@ -86,9 +86,9 @@ async def get_summary_winners_count(td: Optional[timedelta]) -> Dict[str, int]:
 
 
 def get_summary_average_wins_count_per_winner(
-    wins_count: Dict[str, int], winners_count: Dict[str, int]
-) -> Dict[str, float]:
-    result: Dict[str, float] = {}
+    wins_count: dict[str, int], winners_count: dict[str, int]
+) -> dict[str, float]:
+    result: dict[str, float] = {}
 
     for reward_name in wins_count:
         # 该奖项无人中奖
@@ -103,7 +103,7 @@ def get_summary_average_wins_count_per_winner(
     return result
 
 
-def get_summary_winning_rate(wins_count: Dict[str, int]) -> Dict[str, float]:
+def get_summary_winning_rate(wins_count: dict[str, int]) -> dict[str, float]:
     total_wins_count = sum(wins_count.values())
     if not total_wins_count:  # 所有奖项均无人中奖
         return {key: 0 for key in wins_count}
@@ -113,7 +113,7 @@ def get_summary_winning_rate(wins_count: Dict[str, int]) -> Dict[str, float]:
     }
 
 
-def get_summary_rarity(wins_count: Dict[str, int]) -> Dict[str, float]:
+def get_summary_rarity(wins_count: dict[str, int]) -> dict[str, float]:
     result = {
         key: (1 / value if value != 0 else 0.0)
         for key, value in get_summary_winning_rate(wins_count).items()
@@ -127,7 +127,7 @@ def get_summary_rarity(wins_count: Dict[str, int]) -> Dict[str, float]:
 
 async def get_rewards_wins_history(
     td: timedelta, time_unit: str
-) -> Dict[datetime, int]:
+) -> dict[datetime, int]:
     result = LotteryWinRecordDocument.aggregate_many(
         [
             {
@@ -162,7 +162,7 @@ async def get_rewards_wins_history(
 
 
 class GetRewardsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
-    rewards: List[str]
+    rewards: list[str]
 
 
 @get(
@@ -188,7 +188,7 @@ class GetRecordsItem(Struct, **RESPONSE_STRUCT_CONFIG):
 
 
 class GetRecordsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
-    records: List[GetRecordsItem]
+    records: list[GetRecordsItem]
 
 
 @get(
@@ -202,10 +202,10 @@ async def get_records_handler(
     offset: Annotated[int, Parameter(description="分页偏移", ge=0)] = 0,
     limit: Annotated[int, Parameter(description="结果数量", gt=0, lt=100)] = 20,
     excluded_awards: Annotated[
-        Optional[List[str]], Parameter(description="排除奖项列表", max_items=10)
+        Optional[list[str]], Parameter(description="排除奖项列表", max_items=10)
     ] = None,
 ) -> Response:
-    records: List[GetRecordsItem] = []
+    records: list[GetRecordsItem] = []
     async for item in LotteryWinRecordDocument.find_many(
         {
             "award_name": {
@@ -249,7 +249,7 @@ class GetSummaryRewardItem(Struct, **RESPONSE_STRUCT_CONFIG):
 
 
 class GetSummaryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
-    rewards: List[GetSummaryRewardItem]
+    rewards: list[GetSummaryRewardItem]
 
 
 @get(
@@ -277,7 +277,7 @@ async def get_summary_handler(
     winning_rate = get_summary_winning_rate(wins_count)
     rarity = get_summary_rarity(wins_count)
 
-    rewards: List[GetSummaryRewardItem] = [
+    rewards: list[GetSummaryRewardItem] = [
         GetSummaryRewardItem(
             reward_name=reward_name,
             wins_count=wins_count[reward_name],
@@ -297,7 +297,7 @@ async def get_summary_handler(
 
 
 class GetRewardWinsHistoryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
-    history: Dict[datetime, int]
+    history: dict[datetime, int]
 
 
 @get(

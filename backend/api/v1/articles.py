@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Annotated, Dict, Optional
+from typing import Annotated, Optional
 
 from jkit.article import Article
 from jkit.constants import ARTICLE_SLUG_REGEX
@@ -111,7 +111,7 @@ async def get_earliest_can_recommend_date(author_slug: str) -> Optional[datetime
 
 class GetWordFreqResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     title: str
-    word_freq: Dict[str, int]
+    word_freq: dict[str, int]
 
 
 @get(
