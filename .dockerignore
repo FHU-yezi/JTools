@@ -1,5 +1,6 @@
 **/.git/
 **/.github/
+**/.venv/
 **/.ruff_cache/
 **/__pycache__/
 **/dist/
