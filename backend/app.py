@@ -8,14 +8,14 @@ from api import API_ROUTER
 
 class CustomOpenAPIController(OpenAPIController):
     path = "/docs"
-    swagger_ui_version = "5.10.3"
+    swagger_ui_version = "5.17.14"
     swagger_css_url = (
-        "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.10.3/swagger-ui.css"
+        "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.17.14/swagger-ui.css"
     )
     swagger_ui_bundle_js_url = (
-        "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.10.3/swagger-ui-bundle.js"
+        "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.17.14/swagger-ui-bundle.js"
     )
-    swagger_ui_standalone_preset_js_url = "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.10.3/swagger-ui-standalone-preset.js"
+    swagger_ui_standalone_preset_js_url = "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.17.14/swagger-ui-standalone-preset.js"
     favicon_url = "https://tools.sscreator.com/favicon-vector.svg"
 
 
