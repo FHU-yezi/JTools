@@ -2,7 +2,7 @@ networks:
   internal:
   mongodb:
     external: true
-  cutup:
+  postgres:
     external: true
 
 services:
@@ -33,7 +33,7 @@ services:
     networks:
       - internal
       - mongodb
-      - cutup
+      - postgres
     environment:
       - PYTHONUNBUFFERED=1
     deploy:
