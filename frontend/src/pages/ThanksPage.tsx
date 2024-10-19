@@ -16,6 +16,7 @@ import {
 import { opensourcePackages, v3BetaPaticipants } from "../thanks.json";
 import { Datetime } from "../utils/timeHelper";
 import { useDebugProjectRecords } from "../api/thanks";
+import { userSlugToUrl } from "../utils/jianshuHelper";
 
 export default function ThanksPage() {
   // 设置页面标题
@@ -36,11 +37,11 @@ export default function ThanksPage() {
           {allContributorsName.map((name) => (
             <ExternalLink
               key={name}
-              href={`https://www.jianshu.com/u/${
+              href={userSlugToUrl(
                 debugProjectRecords!.records.find(
                   (record) => record.userName === name,
-                )!.userSlug
-              }`}
+                )!.userSlug,
+              )}
             >
               {name}
             </ExternalLink>
@@ -60,9 +61,7 @@ export default function ThanksPage() {
               <Text>{`奖励：${item.reward} 简书贝`}</Text>
               <Text color="gray">
                 By{" "}
-                <ExternalLink
-                  href={`https://www.jianshu.com/u/${item.userSlug}`}
-                >
+                <ExternalLink href={userSlugToUrl(item.userSlug)}>
                   {item.userName}
                 </ExternalLink>{" "}
                 · {new Datetime(item.date).date}
