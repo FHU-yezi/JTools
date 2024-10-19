@@ -15,7 +15,7 @@ export interface GetLPRecommendCheckResponse {
   articleTitle: string;
   canRecommendNow: boolean;
   FPReward: number;
-  nextCanRecommendDate: number;
+  nextCanRecommendDate: string;
 }
 export function useLPRecommendCheck({ articleSlug }: { articleSlug: string }) {
   return useDataTrigger<Record<string, never>, GetLPRecommendCheckResponse>({

@@ -4,7 +4,7 @@ export interface GetVIPInfoResponse {
   userName: string;
   isVIP: boolean;
   type: "铜牌" | "银牌" | "金牌" | "白金";
-  expireDate: number;
+  expireDate: string;
 }
 export function useVIPInfo({ userSlug }: { userSlug: string }) {
   return useDataTrigger<Record<string, never>, GetVIPInfoResponse>({
@@ -19,7 +19,7 @@ interface GetLotteryWinRecordsRequest {
   excluded_awards?: string[];
 }
 interface GetLotteryWinRecordItem {
-  time: number;
+  time: string;
   rewardName: string;
 }
 export interface GetLotteryWinRecordsResponse {
@@ -55,7 +55,7 @@ interface GetOnArticleRankRecordsRequest {
   limit?: number;
 }
 interface GetOnArticleRankRecordItem {
-  date: number;
+  date: string;
   ranking: number;
   articleTitle: string;
   articleUrl: string;

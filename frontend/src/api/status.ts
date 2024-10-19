@@ -15,7 +15,7 @@ export function useStatus() {
 interface GetToolStatusResponse {
   status: "NORMAL" | "UNAVAILABLE" | "DOWNGRADED";
   reason: string | null;
-  lastUpdateTime: number | null;
+  lastUpdateTime: string | null;
   dataUpdateFreq: string | null;
   dataCount: number | null;
   dataSource: Record<string, string> | null;
