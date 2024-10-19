@@ -76,7 +76,7 @@ class Tool(Table, frozen=True):
                 self.last_update_time_order_by,
                 self.last_update_time_target_field,
                 self.data_count_table,
-                Jsonb(self.data_source),
+                Jsonb(self.data_source) if self.data_source else None,
             ),
         )
 
