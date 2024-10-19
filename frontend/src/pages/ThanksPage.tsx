@@ -13,16 +13,27 @@ import {
   Text,
   useDocumentTitle,
 } from "@sscreator/ui";
-import { opensourcePackages, v3BetaPaticipants } from "../thanks.json";
 import { Datetime } from "../utils/timeHelper";
-import { useDebugProjectRecords } from "../api/thanks";
+import { useDebugProjectRecords, useTechStacks } from "../api/thanks";
 import { userSlugToUrl } from "../utils/jianshuHelper";
+
+const v3BetaPaticipants: Record<string, string> = {
+  "6g 选手": "https://www.jianshu.com/u/43c3a5c5aca3",
+  海泩: "https://www.jianshu.com/u/22784ff6c0aa",
+  睿希颖瑶: "https://www.jianshu.com/u/4b86da352f87",
+  晨曦载曜: "https://www.jianshu.com/u/da53b65bacb8",
+  晴源: "https://www.jianshu.com/u/362ee17accd1",
+  白首卧松云: "https://www.jianshu.com/u/2350b4ff48ed",
+  侏罗纪的天空: "https://www.jianshu.com/u/7a6bf1236c8c",
+  幽夜蛙: "https://www.jianshu.com/u/e3d9895f67a7",
+};
 
 export default function ThanksPage() {
   // 设置页面标题
   useDocumentTitle("鸣谢 - 简书小工具集");
 
   const { data: debugProjectRecords } = useDebugProjectRecords();
+  const { data: techStacks } = useTechStacks();
 
   const allContributorsName = debugProjectRecords
     ? [...new Set(debugProjectRecords.records.map((item) => item.userName))]
@@ -81,19 +92,18 @@ export default function ThanksPage() {
           ))}
         </Row>
 
-        <Heading2>开源库</Heading2>
-        <Grid cols="grid-cols-1 sm:grid-cols-2">
-          {Object.entries(opensourcePackages).map(([partName, part]) => (
-            <Card key={partName} className="flex flex-col gap-2" withPadding>
-              <Heading2>{partName}</Heading2>
-              {part.map(({ name, desc, url }) => (
-                <Text key={name}>
-                  {desc}：<ExternalLink href={url}>{name}</ExternalLink>
-                </Text>
-              ))}
-            </Card>
-          ))}
-        </Grid>
+        <Heading2>技术栈</Heading2>
+        <LoadingArea className="h-72" loading={!techStacks}>
+          <Grid cols="grid-cols-1 sm:grid-cols-2">
+            {techStacks?.records.map((item) => (
+              <Row key={item.name} gap="gap-2" itemsCenter>
+                {item.isSelfDeveloped && <Badge color="success">自研</Badge>}
+                <Text>{item.description}</Text>
+                <ExternalLink href={item.url}>{item.name}</ExternalLink>
+              </Row>
+            ))}
+          </Grid>
+        </LoadingArea>
 
         <Column gap="gap-2">
           <LargeText className="text-center">
