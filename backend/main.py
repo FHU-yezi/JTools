@@ -3,6 +3,7 @@ from asyncio import run as asyncio_run
 
 from uvicorn import run as uvicorn_run
 
+from models.debug_project_record import DebugProjectRecord
 from models.tool import Tool
 from utils.config import CONFIG
 from utils.log import logger
@@ -11,8 +12,13 @@ logging.getLogger("httpx").setLevel(logging.CRITICAL)
 logging.getLogger("httpcore").setLevel(logging.CRITICAL)
 
 
+async def init_db() -> None:
+    await DebugProjectRecord.init()
+    await Tool.init()
+
+
 if __name__ == "__main__":
-    asyncio_run(Tool.init())
+    asyncio_run(init_db())
     logger.debug("初始化数据库成功")
 
     logger.info("启动 API 服务")

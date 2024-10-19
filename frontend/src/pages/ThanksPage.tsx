@@ -5,6 +5,7 @@ import {
   ExternalLink,
   Grid,
   Heading2,
+  LoadingArea,
   Heading3,
   LargeText,
   Row,
@@ -13,60 +14,65 @@ import {
   useDocumentTitle,
 } from "@sscreator/ui";
 import dayjs from "dayjs";
-import {
-  debugProjectRecords,
-  opensourcePackages,
-  v3BetaPaticipants,
-} from "../thanks.json";
+import { opensourcePackages, v3BetaPaticipants } from "../thanks.json";
+import { parseTime } from "../utils/timeHelper";
 import { getDate } from "../utils/timeHelper";
+import { useDebugProjectRecords } from "../api/thanks";
 
 export default function ThanksPage() {
   // 设置页面标题
   useDocumentTitle("鸣谢 - 简书小工具集");
 
-  const allContributorsName = [
-    ...new Set(debugProjectRecords.map((item) => item.user_name)),
-  ];
+  const { data: debugProjectRecords } = useDebugProjectRecords();
+
+  const allContributorsName = debugProjectRecords
+    ? [...new Set(debugProjectRecords.records.map((item) => item.userName))]
+    : [];
 
   return (
     <>
       <Heading2>「捉虫计划」反馈</Heading2>
       <Heading3>贡献者</Heading3>
-      <Row className="flex-wrap">
-        {allContributorsName.map((item) => (
-          <ExternalLink
-            key={item}
-            href={
-              debugProjectRecords.find((record) => record.user_name === item)!
-                .user_url
-            }
-          >
-            {item}
-          </ExternalLink>
-        ))}
-      </Row>
+      <LoadingArea className="h-8" loading={!debugProjectRecords}>
+        <Row className="flex-wrap">
+          {allContributorsName.map((name) => (
+            <ExternalLink
+              key={name}
+              href={`https://www.jianshu.com/u/${
+                debugProjectRecords!.records.find(
+                  (record) => record.userName === name,
+                )!.userSlug
+              }`}
+            >
+              {name}
+            </ExternalLink>
+          ))}
+        </Row>
+      </LoadingArea>
       <Heading3>捉虫记录</Heading3>
-      <Grid cols="grid-cols-1 md:grid-cols-2">
-        {debugProjectRecords.reverse().map((item) => (
-          <Card
-            key={`${item.time}-${item.user_url}`}
-            className="flex flex-col gap-3"
-            withPadding
-          >
-            <Row gap="gap-2" itemsCenter>
-              <Badge>{item.type}</Badge>
-              <LargeText bold>{item.module}</LargeText>
-            </Row>
-            <Text>{item.desc}</Text>
-            <Text>{`奖励：${item.reward} 简书贝`}</Text>
-            <Text color="gray">
-              By{" "}
-              <ExternalLink href={item.user_url}>{item.user_name}</ExternalLink>{" "}
-              · {item.time}
-            </Text>
-          </Card>
-        ))}
-      </Grid>
+      <LoadingArea className="h-72" loading={!debugProjectRecords}>
+        <Grid cols="grid-cols-1 md:grid-cols-2">
+          {debugProjectRecords?.records.map((item) => (
+            <Card key={item.id} className="flex flex-col gap-3" withPadding>
+              <Row gap="gap-2" itemsCenter>
+                <Badge>{item.type}</Badge>
+                <LargeText bold>{item.module}</LargeText>
+              </Row>
+              <Text>{item.description}</Text>
+              <Text>{`奖励：${item.reward} 简书贝`}</Text>
+              <Text color="gray">
+                By{" "}
+                <ExternalLink
+                  href={`https://www.jianshu.com/u/${item.userSlug}`}
+                >
+                  {item.userName}
+                </ExternalLink>{" "}
+                · {getDate(parseTime(item.date))}
+              </Text>
+            </Card>
+          ))}
+        </Grid>
+      </LoadingArea>
 
       <Column>
         <Heading2>v3 Beta 内测成员</Heading2>
