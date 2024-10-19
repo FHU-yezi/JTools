@@ -38,7 +38,7 @@ class DebugProjectRecord(Table, frozen=True):
     async def iter(cls) -> AsyncGenerator["DebugProjectRecord", None]:
         cursor = await conn.execute(
             "SELECT id, date, type, module, description, user_name, "
-            "user_slug, reward FROM debug_project_records ORDER BY date;"
+            "user_slug, reward FROM debug_project_records ORDER BY date DESC;"
         )
 
         async for item in cursor:
