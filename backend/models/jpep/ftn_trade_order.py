@@ -8,7 +8,7 @@ from jkit.msgspec_constraints import (
 )
 from sshared.mongo import Document, Field, Index
 
-from utils.db import JPEP_DB
+from utils.mongo import JPEP_DB
 
 
 class AmountField(Field, frozen=True):
