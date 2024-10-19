@@ -55,8 +55,18 @@ class Tool(Table, frozen=True):
         cursor = await conn.execute("SELECT COUNT(*) FROM tools;")
         if (await cursor.fetchone())[0] == 0:  # type: ignore
             # 表为空，填充默认数据
-            for tool in DEFAULT_TOOLS:
-                await tool.create()
+            for tool_slug in TOOL_SLUGS:
+                await cls(
+                    slug=tool_slug,
+                    status=StatusEnum.NORMAL,
+                    status_description=None,
+                    data_update_freq="未知",
+                    last_update_time_table=None,
+                    last_update_time_order_by=None,
+                    last_update_time_target_field=None,
+                    data_count_table=None,
+                    data_source=None,
+                ).create()
 
             logger.warn("tools 表为空，已填充默认数据")
 
@@ -113,112 +123,14 @@ class Tool(Table, frozen=True):
         return tuple(x[0] for x in await cursor.fetchall())
 
 
-DEFAULT_TOOLS: tuple[Tool, ...] = (
-    Tool(
-        slug="article-wordcloud-generator",
-        status=StatusEnum.NORMAL,
-        status_description=None,
-        data_update_freq="实时",
-        last_update_time_table=None,
-        last_update_time_order_by=None,
-        last_update_time_target_field=None,
-        data_count_table=None,
-        data_source=None,
-    ),
-    Tool(
-        slug="JPEP-FTN-market-analyzer",
-        status=StatusEnum.NORMAL,
-        status_description=None,
-        data_update_freq="十分钟一次",
-        last_update_time_table="FTN_trade_orders",
-        last_update_time_order_by="fetchTime",
-        last_update_time_target_field="fetchTime",
-        data_count_table="FTN_trade_orders",
-        data_source={"简书积分兑换平台 - 贝市": "https://www.jianshubei.com/bei"},
-    ),
-    Tool(
-        slug="lottery-analyzer",
-        status=StatusEnum.DOWNGRADED,
-        status_description="受简书运营调整影响，大转盘抽奖已于 2024.4.28 13:20 下线。",
-        data_update_freq="十分钟一次",
-        last_update_time_table="lottery_win_records",
-        last_update_time_order_by="time",
-        last_update_time_target_field="time",
-        data_count_table="lottery_win_records",
-        data_source={"简书 - 天天抽奖": "https://www.jianshu.com/mobile/lottery"},
-    ),
-    Tool(
-        slug="lottery-reward-record-viewer",
-        status=StatusEnum.DOWNGRADED,
-        status_description="受简书运营调整影响，大转盘抽奖已于 2024.4.28 13:20 下线。",
-        data_update_freq="十分钟一次",
-        last_update_time_table="lottery_win_records",
-        last_update_time_order_by="time",
-        last_update_time_target_field="time",
-        data_count_table="lottery_win_records",
-        data_source={"简书 - 天天抽奖": "https://www.jianshu.com/mobile/lottery"},
-    ),
-    Tool(
-        slug="LP-recommend-checker",
-        status=StatusEnum.DOWNGRADED,
-        status_description=(
-            "受简书运营调整影响，LP 理事会超级权重不再发放，故取消相关推文限制。"
-        ),
-        data_update_freq="实时",
-        last_update_time_table=None,
-        last_update_time_order_by=None,
-        last_update_time_target_field=None,
-        data_count_table=None,
-        data_source={
-            "简书 - 专题 - 理事会点赞汇总": "https://www.jianshu.com/c/f61832508891"
-        },
-    ),
-    Tool(
-        slug="on-rank-article-viewer",
-        status=StatusEnum.NORMAL,
-        status_description=None,
-        data_update_freq="每天凌晨 1:00",
-        last_update_time_table="article_earning_ranking_records",
-        last_update_time_order_by="date",
-        last_update_time_target_field="date",
-        data_count_table="article_earning_ranking_records",
-        data_source={
-            "简书 - 简书钻每日发放总榜": "https://www.jianshu.com/fp/notice/now"
-        },
-    ),
-    Tool(
-        slug="URL-scheme-convertor",
-        status=StatusEnum.NORMAL,
-        status_description=None,
-        data_update_freq="实时",
-        last_update_time_table=None,
-        last_update_time_order_by=None,
-        last_update_time_target_field=None,
-        data_count_table=None,
-        data_source=None,
-    ),
-    Tool(
-        slug="VIP-info-viewer",
-        status=StatusEnum.NORMAL,
-        status_description=None,
-        data_update_freq="实时",
-        last_update_time_table=None,
-        last_update_time_order_by=None,
-        last_update_time_target_field=None,
-        data_count_table=None,
-        data_source=None,
-    ),
-    Tool(
-        slug="VIP-profit-compute",
-        status=StatusEnum.NORMAL,
-        status_description=None,
-        data_update_freq="实时",
-        last_update_time_table=None,
-        last_update_time_order_by=None,
-        last_update_time_target_field=None,
-        data_count_table=None,
-        data_source={
-            "简书 - 简书会员大使": "https://www.jianshu.com/mobile/club/ambassador"
-        },
-    ),
+TOOL_SLUGS: tuple[str, ...] = (
+    "article-wordcloud-generator",
+    "JPEP-FTN-market-analyzer",
+    "lottery-analyzer",
+    "lottery-reward-record-viewer",
+    "LP-recommend-checker",
+    "on-rank-article-viewer",
+    "URL-scheme-convertor",
+    "VIP-info-viewer",
+    "VIP-profit-compute",
 )
