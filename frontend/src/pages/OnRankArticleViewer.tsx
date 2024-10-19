@@ -31,7 +31,7 @@ import {
 } from "../api/users";
 import { userUrlToSlug } from "../utils/jianshuHelper";
 import { replaceAll } from "../utils/textHelper";
-import { getDate, parseTime } from "../utils/timeHelper";
+import { Datetime } from "../utils/timeHelper";
 
 const userUrlOrName = signal("");
 const userSlug = computed(
@@ -208,7 +208,7 @@ function OnRankRecordsTable({
         <TableBody>
           {flattedRecords.map((item) => (
             <TableRow key={`${item.date}-${item.articleUrl}`}>
-              <TableCell>{getDate(parseTime(item.date))}</TableCell>
+              <TableCell>{new Datetime(item.date).date}</TableCell>
               <TableCell>{item.ranking}</TableCell>
               <TableCell className="text-left">
                 <ExternalLink

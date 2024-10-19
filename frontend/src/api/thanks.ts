@@ -16,6 +16,6 @@ interface GetDebugProjectRecordsResponse {
 export function useDebugProjectRecords() {
   return useData<Record<string, never>, GetDebugProjectRecordsResponse>({
     method: "GET",
-    endpoint: "/v1/thanks/debug-project-records"
+    endpoint: "/v1/thanks/debug-project-records",
   });
 }

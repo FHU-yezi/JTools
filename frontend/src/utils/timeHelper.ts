@@ -29,27 +29,34 @@ dayjs.updateLocale("zh-cn", {
   },
 });
 
-export function parseTime(timeString: string): Dayjs {
-  // 时间加八小时，处理时区问题
-  return dayjs(timeString);
-}
+export class Datetime {
+  dayjsObject: Dayjs;
 
-export function getDatetime(dateObj: Dayjs) {
-  return dateObj.format("YYYY-MM-DD HH:mm:ss");
-}
+  constructor(timeString?: string) {
+    if (timeString !== undefined) {
+      this.dayjsObject = dayjs(timeString);
+    } else {
+      this.dayjsObject = dayjs();
+    }
+  }
 
-export function getDateTimeWithoutSecond(dateObj: Dayjs) {
-  return dateObj.format("YYYY-MM-DD HH:mm");
-}
+  get date(): string {
+    return this.dayjsObject.format("YYYY-MM-DD");
+  }
 
-export function getDate(dateObj: Dayjs) {
-  return dateObj.format("YYYY-MM-DD");
-}
+  get time(): string {
+    return this.dayjsObject.format("HH:mm:ss");
+  }
 
-export function getTime(dateObj: Dayjs) {
-  return dateObj.format("HH:mm:ss");
-}
+  get datetime(): string {
+    return this.dayjsObject.format("YYYY-MM-DD HH:mm:ss");
+  }
 
-export function getHumanReadableTimeDelta(dateObj: Dayjs) {
-  return dateObj.fromNow();
+  get datetimeWithoutSecond(): string {
+    return this.dayjsObject.format("YYYY-MM-DD HH:mm");
+  }
+
+  get humanReadableTimedelta(): string {
+    return this.dayjsObject.fromNow();
+  }
 }

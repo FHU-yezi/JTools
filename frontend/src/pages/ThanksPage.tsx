@@ -13,10 +13,8 @@ import {
   Text,
   useDocumentTitle,
 } from "@sscreator/ui";
-import dayjs from "dayjs";
 import { opensourcePackages, v3BetaPaticipants } from "../thanks.json";
-import { parseTime } from "../utils/timeHelper";
-import { getDate } from "../utils/timeHelper";
+import { Datetime } from "../utils/timeHelper";
 import { useDebugProjectRecords } from "../api/thanks";
 
 export default function ThanksPage() {
@@ -67,7 +65,7 @@ export default function ThanksPage() {
                 >
                   {item.userName}
                 </ExternalLink>{" "}
-                · {getDate(parseTime(item.date))}
+                · {new Datetime(item.date).date}
               </Text>
             </Card>
           ))}
@@ -104,7 +102,7 @@ export default function ThanksPage() {
           </LargeText>
           <LargeText className="text-center">探索未知。</LargeText>
           <SmallText className="text-center">
-            简书小工具集 · {getDate(dayjs())}
+            简书小工具集 · {new Datetime().date}
           </SmallText>
         </Column>
       </Column>
