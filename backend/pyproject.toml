@@ -20,7 +20,8 @@ dependencies = [
 [tool.uv]
 dev-dependencies = [
     "pyright>=1.1.0",
-    "ruff>=0.6.0",
+    "ruff>=0.7.0",
+    "watchfiles>=0.24.0",
 ]
 
 [tool.ruff]

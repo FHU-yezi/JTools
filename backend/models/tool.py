@@ -53,7 +53,7 @@ class Tool(Table, frozen=True):
         await super().init()
 
         cursor = await conn.execute("SELECT COUNT(*) FROM tools;")
-        if (await cursor.fetchone())[0] == 0: # type: ignore
+        if (await cursor.fetchone())[0] == 0:  # type: ignore
             # 表为空，填充默认数据
             for tool in DEFAULT_TOOLS:
                 await tool.create()
