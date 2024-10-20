@@ -8,6 +8,7 @@ import {
   LoadingArea,
   Heading3,
   Select,
+  Icon,
   LargeText,
   Row,
   SmallText,
@@ -50,7 +51,7 @@ export default function ThanksPage() {
       <Heading2>「捉虫计划」反馈</Heading2>
       <Heading3>贡献者</Heading3>
       <LoadingArea className="h-8" loading={!debugProjectRecords}>
-        <Row className="flex-wrap">
+        <Row className="justify-around flex-wrap">
           {allContributorsName.map((name) => (
             <ExternalLink
               key={name}
@@ -75,14 +76,15 @@ export default function ThanksPage() {
                 <LargeText bold>{item.module}</LargeText>
               </Row>
               <Text>{item.description}</Text>
-              <Text>{`奖励：${item.reward} 简书贝`}</Text>
-              <Text color="gray">
-                By{" "}
+              <Row gap="gap-2" itemsCenter>
                 <ExternalLink href={userSlugToUrl(item.userSlug)}>
                   {item.userName}
-                </ExternalLink>{" "}
-                · {new Datetime(item.date).date}
-              </Text>
+                </ExternalLink>
+                <Text color="gray">·</Text>
+                <Text color="gray">{`${item.reward} 简书贝`}</Text>
+                <Text color="gray">·</Text>
+                <Text color="gray">{new Datetime(item.date).date}</Text>
+              </Row>
             </Card>
           ))}
         </Grid>
@@ -90,7 +92,7 @@ export default function ThanksPage() {
 
       <Column>
         <Heading2>v3 Beta 内测成员</Heading2>
-        <Row className="flex-wrap">
+        <Row className="justify-around flex-wrap">
           {Object.entries(v3BetaPaticipants).map(([name, url]) => (
             <ExternalLink key={name} className="inline" href={url}>
               {name}
@@ -111,13 +113,41 @@ export default function ThanksPage() {
           ]}
         />
         <LoadingArea className="h-72" loading={!techStacks}>
-          <Grid cols="grid-cols-1 sm:grid-cols-2">
+          <Grid cols="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" gap="gap-2">
             {techStacks?.records.map((item) => (
-              <Row key={item.name} gap="gap-2" itemsCenter>
-                {item.isSelfDeveloped && <Badge color="success">自研</Badge>}
+              <Card
+                key={item.name}
+                className="flex flex-col gap-2 items-center"
+                borderless
+                withPadding
+              >
+                <Row>
+                  <Badge>
+                    {
+                      {
+                        FRONTEND: "前端",
+                        BACKEND: "后端",
+                        TOOLCHAIN: "工具链",
+                      }[item.scope]
+                    }
+                  </Badge>
+                  <Badge>
+                    {
+                      { LIBRARY: "开源库", EXTERNAL_SERVICE: "外部服务" }[
+                        item.type
+                      ]
+                    }
+                  </Badge>
+                  {item.isSelfDeveloped && <Badge color="success">自研</Badge>}
+                </Row>
+                <Row gap="gap-2" itemsCenter>
+                  <LargeText bold>{item.name}</LargeText>
+                  <ExternalLink href={item.url}>
+                    <Icon className="!block size-6" icon="i-mdi-link" color="unset"/>
+                  </ExternalLink>
+                </Row>
                 <Text>{item.description}</Text>
-                <ExternalLink href={item.url}>{item.name}</ExternalLink>
-              </Row>
+              </Card>
             ))}
           </Grid>
         </LoadingArea>
