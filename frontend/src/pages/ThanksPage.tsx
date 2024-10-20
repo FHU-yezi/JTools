@@ -5,72 +5,94 @@ import {
   ExternalLink,
   Grid,
   Heading2,
+  LoadingArea,
   Heading3,
+  Select,
+  Icon,
   LargeText,
   Row,
   SmallText,
   Text,
   useDocumentTitle,
 } from "@sscreator/ui";
-import dayjs from "dayjs";
-import {
-  debugProjectRecords,
-  opensourcePackages,
-  v3BetaPaticipants,
-} from "../thanks.json";
-import { getDate } from "../utils/timeHelper";
+import { Datetime } from "../utils/timeHelper";
+import { useDebugProjectRecords, useTechStacks } from "../api/thanks";
+import { userSlugToUrl } from "../utils/jianshuHelper";
+import { signal } from "@preact/signals";
+
+const v3BetaPaticipants: Record<string, string> = {
+  "6g 选手": "https://www.jianshu.com/u/43c3a5c5aca3",
+  海泩: "https://www.jianshu.com/u/22784ff6c0aa",
+  睿希颖瑶: "https://www.jianshu.com/u/4b86da352f87",
+  晨曦载曜: "https://www.jianshu.com/u/da53b65bacb8",
+  晴源: "https://www.jianshu.com/u/362ee17accd1",
+  白首卧松云: "https://www.jianshu.com/u/2350b4ff48ed",
+  侏罗纪的天空: "https://www.jianshu.com/u/7a6bf1236c8c",
+  幽夜蛙: "https://www.jianshu.com/u/e3d9895f67a7",
+};
+
+const techstackScope = signal<"frontend" | "backend" | "toolchain" | undefined>(
+  undefined,
+);
 
 export default function ThanksPage() {
   // 设置页面标题
   useDocumentTitle("鸣谢 - 简书小工具集");
 
-  const allContributorsName = [
-    ...new Set(debugProjectRecords.map((item) => item.user_name)),
-  ];
+  const { data: debugProjectRecords } = useDebugProjectRecords();
+  const { data: techStacks } = useTechStacks({ scope: techstackScope.value });
+
+  const allContributorsName = debugProjectRecords
+    ? [...new Set(debugProjectRecords.records.map((item) => item.userName))]
+    : [];
 
   return (
     <>
       <Heading2>「捉虫计划」反馈</Heading2>
       <Heading3>贡献者</Heading3>
-      <Row className="flex-wrap">
-        {allContributorsName.map((item) => (
-          <ExternalLink
-            key={item}
-            href={
-              debugProjectRecords.find((record) => record.user_name === item)!
-                .user_url
-            }
-          >
-            {item}
-          </ExternalLink>
-        ))}
-      </Row>
+      <LoadingArea className="h-8" loading={!debugProjectRecords}>
+        <Row className="justify-around flex-wrap">
+          {allContributorsName.map((name) => (
+            <ExternalLink
+              key={name}
+              href={userSlugToUrl(
+                debugProjectRecords!.records.find(
+                  (record) => record.userName === name,
+                )!.userSlug,
+              )}
+            >
+              {name}
+            </ExternalLink>
+          ))}
+        </Row>
+      </LoadingArea>
       <Heading3>捉虫记录</Heading3>
-      <Grid cols="grid-cols-1 md:grid-cols-2">
-        {debugProjectRecords.reverse().map((item) => (
-          <Card
-            key={`${item.time}-${item.user_url}`}
-            className="flex flex-col gap-3"
-            withPadding
-          >
-            <Row gap="gap-2" itemsCenter>
-              <Badge>{item.type}</Badge>
-              <LargeText bold>{item.module}</LargeText>
-            </Row>
-            <Text>{item.desc}</Text>
-            <Text>{`奖励：${item.reward} 简书贝`}</Text>
-            <Text color="gray">
-              By{" "}
-              <ExternalLink href={item.user_url}>{item.user_name}</ExternalLink>{" "}
-              · {item.time}
-            </Text>
-          </Card>
-        ))}
-      </Grid>
+      <LoadingArea className="h-72" loading={!debugProjectRecords}>
+        <Grid cols="grid-cols-1 md:grid-cols-2">
+          {debugProjectRecords?.records.map((item) => (
+            <Card key={item.id} className="flex flex-col gap-3" withPadding>
+              <Row gap="gap-2" itemsCenter>
+                <Badge>{item.type}</Badge>
+                <LargeText bold>{item.module}</LargeText>
+              </Row>
+              <Text>{item.description}</Text>
+              <Row gap="gap-2" itemsCenter>
+                <ExternalLink href={userSlugToUrl(item.userSlug)}>
+                  {item.userName}
+                </ExternalLink>
+                <Text color="gray">·</Text>
+                <Text color="gray">{`${item.reward} 简书贝`}</Text>
+                <Text color="gray">·</Text>
+                <Text color="gray">{new Datetime(item.date).date}</Text>
+              </Row>
+            </Card>
+          ))}
+        </Grid>
+      </LoadingArea>
 
       <Column>
         <Heading2>v3 Beta 内测成员</Heading2>
-        <Row className="flex-wrap">
+        <Row className="justify-around flex-wrap">
           {Object.entries(v3BetaPaticipants).map(([name, url]) => (
             <ExternalLink key={name} className="inline" href={url}>
               {name}
@@ -78,19 +100,57 @@ export default function ThanksPage() {
           ))}
         </Row>
 
-        <Heading2>开源库</Heading2>
-        <Grid cols="grid-cols-1 sm:grid-cols-2">
-          {Object.entries(opensourcePackages).map(([partName, part]) => (
-            <Card key={partName} className="flex flex-col gap-2" withPadding>
-              <Heading2>{partName}</Heading2>
-              {part.map(({ name, desc, url }) => (
-                <Text key={name}>
-                  {desc}：<ExternalLink href={url}>{name}</ExternalLink>
-                </Text>
-              ))}
-            </Card>
-          ))}
-        </Grid>
+        <Heading2>技术栈</Heading2>
+        <Select
+          id="techstack-scope"
+          label="范围"
+          value={techstackScope}
+          options={[
+            { label: "全部", value: undefined },
+            { label: "前端", value: "frontend" },
+            { label: "后端", value: "backend" },
+            { label: "工具链", value: "toolchain" },
+          ]}
+        />
+        <LoadingArea className="h-72" loading={!techStacks}>
+          <Grid cols="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" gap="gap-2">
+            {techStacks?.records.map((item) => (
+              <Card
+                key={item.name}
+                className="flex flex-col gap-2 items-center"
+                borderless
+                withPadding
+              >
+                <Row>
+                  <Badge>
+                    {
+                      {
+                        FRONTEND: "前端",
+                        BACKEND: "后端",
+                        TOOLCHAIN: "工具链",
+                      }[item.scope]
+                    }
+                  </Badge>
+                  <Badge>
+                    {
+                      { LIBRARY: "开源库", EXTERNAL_SERVICE: "外部服务" }[
+                        item.type
+                      ]
+                    }
+                  </Badge>
+                  {item.isSelfDeveloped && <Badge color="success">自研</Badge>}
+                </Row>
+                <Row gap="gap-2" itemsCenter>
+                  <LargeText bold>{item.name}</LargeText>
+                  <ExternalLink href={item.url}>
+                    <Icon className="!block size-6" icon="i-mdi-link" color="unset"/>
+                  </ExternalLink>
+                </Row>
+                <Text>{item.description}</Text>
+              </Card>
+            ))}
+          </Grid>
+        </LoadingArea>
 
         <Column gap="gap-2">
           <LargeText className="text-center">
@@ -98,7 +158,7 @@ export default function ThanksPage() {
           </LargeText>
           <LargeText className="text-center">探索未知。</LargeText>
           <SmallText className="text-center">
-            简书小工具集 · {getDate(dayjs())}
+            简书小工具集 · {new Datetime().date}
           </SmallText>
         </Column>
       </Column>

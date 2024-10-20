@@ -1,25 +1,31 @@
-[tool.poetry]
-package-mode = false
+[project]
+name = "jtools"
+version = "3.15.0"
+description = "探索未知"
+license = {file = "LICENSE"}
+authors = [
+  {name = "FHU-yezi", email = "yehaowei20060411@qq.com"},
+]
+requires-python = ">=3.9"
+dependencies = [
+    "httptools>=0.6.0",
+    "jkit>=3.0.0a16",
+    "psycopg[binary]>=3.2.0",
+    "sshared[config, mongo, postgres]>=0.15.0",
+    "sspeedup[api-litestar]>=0.25.0",
+    "uvicorn>=0.32.0",
+    "uvloop>=0.21.0",
+]
 
-[tool.poetry.dependencies]
-python = "^3.8"
-motor = "^3.4.0"
-sspeedup = {version = "^0.25.0", extras = ["logging", "config", "api-litestar"]}
-uvicorn = "^0.30.0"
-httptools = "^0.6.0"
-uvloop = "^0.19.0"
-jkit = "^3.0.0a16"
-sshared = "^0.6.0"
-
-[tool.poetry.group.dev.dependencies]
-ruff = "^0.4.0"
-pyright = "^1.1.0"
-watchfiles = "^0.22.0"
+[tool.uv]
+dev-dependencies = [
+    "pyright>=1.1.0",
+    "ruff>=0.7.0",
+    "watchfiles>=0.24.0",
+]
 
 [tool.ruff]
-
-target-version = "py38"
-
+target-version = "py39"
 lint.select = [
     "A", "ANN", "ARG", "ASYNC", "B",
     "BLE", "C4", "E", "F", "I",
@@ -28,7 +34,4 @@ lint.select = [
     "S", "SIM", "SLOT", "TCH", "UP",
     "W"
 ]
-lint.ignore = [
-    "ANN101", "ANN102", "ISC001", "PERF401",
-    "RUF001", "RUF002", "RUF003"
-]
+lint.ignore = ["ANN101", "ANN102", "ISC001", "RUF001", "RUF002", "RUF003"]

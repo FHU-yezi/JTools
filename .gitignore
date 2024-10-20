@@ -2,4 +2,4 @@
 **/dist
 **/dev-dist
 **/__pycache__
-config.yaml
+config.toml

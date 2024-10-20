@@ -1,5 +1,6 @@
+from collections import Counter
 from datetime import datetime, timedelta
-from typing import Annotated, Dict, Optional
+from typing import Annotated, Optional
 
 from jkit.article import Article
 from jkit.constants import ARTICLE_SLUG_REGEX
@@ -9,7 +10,7 @@ from litestar.openapi.spec.example import Example
 from litestar.params import Parameter
 from litestar.status_codes import HTTP_400_BAD_REQUEST
 from msgspec import Struct, field
-from sspeedup.ability.word_split.jieba import AbilityJiebaPossegSplitterV1
+from sshared.word_split import WordSplitter
 from sspeedup.api.code import Code
 from sspeedup.api.litestar import (
     RESPONSE_STRUCT_CONFIG,
@@ -21,19 +22,12 @@ from sspeedup.api.litestar import (
 from models.jianshu.article_earning_ranking_record import (
     ArticleEarningRankingRecordDocument,
 )
-from utils.config import config
+from utils.config import CONFIG
 
-# fmt: off
-splitter = AbilityJiebaPossegSplitterV1(
-    host=config.ability_word_split.host,
-    port=config.ability_word_split.port,
-    allowed_word_types={
-        "Ag", "a", "ad", "an", "dg", "g", "i",
-        "j", "l", "Ng", "n", "nr", "ns", "nt",
-        "nz", "tg", "vg", "v", "vd", "vn", "un",
-    },
+splitter = WordSplitter(
+    access_key_id=CONFIG.word_split_access_key.access_key_id,
+    access_key_secret=CONFIG.word_split_access_key.access_key_secret,
 )
-# fmt: on
 
 
 async def get_latest_onrank_record(
@@ -111,7 +105,7 @@ async def get_earliest_can_recommend_date(author_slug: str) -> Optional[datetime
 
 class GetWordFreqResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     title: str
-    word_freq: Dict[str, int]
+    word_freq: dict[str, int]
 
 
 @get(
@@ -157,7 +151,7 @@ async def get_word_freq_handler(
     title = article_info.title
     text = article_info.text_content
 
-    word_freq = dict((await splitter.get_word_freq(text)).most_common(100))
+    word_freq = dict(Counter(await splitter.split(text)).most_common(100))
 
     return success(
         data=GetWordFreqResponse(

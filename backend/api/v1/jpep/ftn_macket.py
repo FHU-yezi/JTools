@@ -1,6 +1,6 @@
 from asyncio import gather
 from datetime import datetime, timedelta
-from typing import Annotated, Dict, Literal, Optional
+from typing import Annotated, Literal, Optional
 
 from jkit.jpep.platform_settings import PlatformSettings
 from litestar import Response, Router, get
@@ -15,14 +15,14 @@ from sspeedup.time_helper import get_start_time
 
 from models.jpep.ftn_trade_order import FTNTradeOrderDocument
 
-RANGE_TO_TIMEDELTA: Dict[str, timedelta] = {
+RANGE_TO_TIMEDELTA: dict[str, timedelta] = {
     "24h": timedelta(hours=24),
     "7d": timedelta(days=7),
     "15d": timedelta(days=15),
     "30d": timedelta(days=30),
 }
 
-RESOLUTION_TO_TIME_UNIT: Dict[str, str] = {
+RESOLUTION_TO_TIME_UNIT: dict[str, str] = {
     "5m": "minute",  # 目前未使用
     "1h": "hour",
     "1d": "day",
@@ -75,7 +75,7 @@ async def get_current_amount(type_: Literal["buy", "sell"]) -> Optional[int]:
 
 async def get_price_history(
     type_: Literal["buy", "sell"], td: timedelta, time_unit: str
-) -> Dict[datetime, float]:
+) -> dict[datetime, float]:
     result = FTNTradeOrderDocument.aggregate_many(
         [
             {
@@ -116,7 +116,7 @@ async def get_price_history(
 
 async def get_amount_history(
     type_: Literal["buy", "sell"], td: timedelta, time_unit: str
-) -> Dict[datetime, float]:
+) -> dict[datetime, float]:
     result = FTNTradeOrderDocument.aggregate_many(
         [
             {
@@ -166,7 +166,7 @@ async def get_amount_history(
 async def get_current_amount_distribution(
     type_: Literal["buy", "sell"],
     limit: int,
-) -> Dict[float, int]:
+) -> dict[float, int]:
     time = await get_data_update_time()
 
     result = FTNTradeOrderDocument.aggregate_many(
@@ -290,7 +290,7 @@ async def get_current_amount_handler() -> Response:
 
 
 class GetPriceHistoryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
-    history: Dict[datetime, float]
+    history: dict[datetime, float]
 
 
 @get(
@@ -323,7 +323,7 @@ async def get_price_history_handler(
 
 
 class GetAmountHistoryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
-    history: Dict[datetime, float]
+    history: dict[datetime, float]
 
 
 @get(
@@ -356,7 +356,7 @@ async def get_amount_history_handler(
 
 
 class GetCurrentAmountDistributionResponse(Struct, **RESPONSE_STRUCT_CONFIG):
-    amount_distribution: Dict[float, int]
+    amount_distribution: dict[float, int]
 
 
 @get(

@@ -1,13 +1,10 @@
-from pymongo import MongoClient
 from sshared.logging import Logger
 
-from utils.config import config
-
-_client = MongoClient()
+from utils.config import CONFIG
 
 logger = Logger(
-    # TODO
-    save_level=config.log.save_level.value,  # type: ignore
-    display_level=config.log.print_level.value,  # type: ignore
-    save_collection=_client[config.db.database].log,
+    display_level=CONFIG.logging.display_level,
+    save_level=CONFIG.logging.save_level,
+    connection_string=CONFIG.postgres.logging_connection_string,
+    table=CONFIG.logging.table,
 )

@@ -12,11 +12,7 @@ import {
 import { useEffect } from "preact/hooks";
 import { useVIPInfo, type GetVIPInfoResponse } from "../api/users";
 import { userUrlToSlug } from "../utils/jianshuHelper";
-import {
-  getDate,
-  getHumanReadableTimeDelta,
-  parseTime,
-} from "../utils/timeHelper";
+import { Datetime } from "../utils/timeHelper";
 import VIPBadgeBronzeURL from "/vip_badges/vip_badge_bronze.png";
 import VIPBadgeGoldURL from "/vip_badges/vip_badge_gold.png";
 import VIPBadgePlatinaURL from "/vip_badges/vip_badge_platina.png";
@@ -44,7 +40,9 @@ function handleQuery(trigger: () => void) {
 function Result({ VIPInfo }: { VIPInfo?: GetVIPInfoResponse }) {
   if (!VIPInfo) return null;
 
-  const expireDate = VIPInfo.expireDate ? parseTime(VIPInfo.expireDate) : null;
+  const expireDate = VIPInfo.expireDate
+    ? new Datetime(VIPInfo.expireDate)
+    : null;
 
   return (
     <Row className="flex-wrap justify-around">
@@ -68,8 +66,8 @@ function Result({ VIPInfo }: { VIPInfo?: GetVIPInfoResponse }) {
       {VIPInfo.isVIP && (
         <Column gap="gap-1">
           <Text color="gray">会员到期时间</Text>
-          <LargeText>{getDate(expireDate!)}</LargeText>
-          <Text color="gray">{getHumanReadableTimeDelta(expireDate!)}</Text>
+          <LargeText>{expireDate!.date}</LargeText>
+          <Text color="gray">{expireDate!.humanReadableTimedelta}</Text>
         </Column>
       )}
     </Row>

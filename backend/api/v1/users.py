@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Annotated, Dict, List, Literal, Optional
+from typing import Annotated, Literal, Optional
 
 from jkit.constants import USER_SLUG_REGEX
 from jkit.exceptions import ResourceUnavailableError
@@ -84,7 +84,7 @@ class GetLotteryWinRecordItem(Struct, **RESPONSE_STRUCT_CONFIG):
 
 
 class GetLotteryWinRecordsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
-    records: List[GetLotteryWinRecordItem]
+    records: list[GetLotteryWinRecordItem]
 
 
 @get(
@@ -102,7 +102,7 @@ async def get_lottery_win_records(
     offset: Annotated[int, Parameter(description="分页偏移", ge=0)] = 0,
     limit: Annotated[int, Parameter(description="结果数量", gt=0, lt=100)] = 20,
     excluded_awards: Annotated[
-        Optional[List[str]], Parameter(description="排除奖项列表", max_items=10)
+        Optional[list[str]], Parameter(description="排除奖项列表", max_items=10)
     ] = None,
 ) -> Response:
     try:
@@ -114,7 +114,7 @@ async def get_lottery_win_records(
             msg="用户 Slug 无效",
         )
 
-    records: List[GetLotteryWinRecordItem] = []
+    records: list[GetLotteryWinRecordItem] = []
     async for item in LotteryWinRecordDocument.find_many(
         {
             "userSlug": user.slug,
@@ -125,7 +125,7 @@ async def get_lottery_win_records(
         skip=offset,
         limit=limit,
     ):
-        records.append(
+        records.append(  # noqa: PERF401
             GetLotteryWinRecordItem(
                 time=item.time,
                 reward_name=item.award_name,
@@ -148,7 +148,7 @@ class GetOnArticleRankRecordItem(Struct, **RESPONSE_STRUCT_CONFIG):
 
 
 class GetOnArticleRankRecordsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
-    records: List[GetOnArticleRankRecordItem]
+    records: list[GetOnArticleRankRecordItem]
 
 
 @get(
@@ -181,7 +181,7 @@ async def get_on_article_rank_records_handler(
             msg="用户 Slug 无效",
         )
 
-    records: List[GetOnArticleRankRecordItem] = []
+    records: list[GetOnArticleRankRecordItem] = []
     async for item in ArticleEarningRankingRecordDocument.find_many(
         {
             "authorSlug": user.slug,
@@ -190,7 +190,7 @@ async def get_on_article_rank_records_handler(
         skip=offset,
         limit=limit,
     ):
-        records.append(
+        records.append(  # noqa: PERF401
             GetOnArticleRankRecordItem(
                 date=item.date,
                 ranking=item.ranking,
@@ -232,7 +232,7 @@ async def get_on_article_rank_records_by_user_name_handler(
     if not user:  # 没有找到对应昵称的用户
         return success(data=GetOnArticleRankRecordsResponse(records=[]))
 
-    records: List[GetOnArticleRankRecordItem] = []
+    records: list[GetOnArticleRankRecordItem] = []
     async for item in ArticleEarningRankingRecordDocument.find_many(
         {
             "authorSlug": user.slug,
@@ -241,7 +241,7 @@ async def get_on_article_rank_records_by_user_name_handler(
         skip=offset,
         limit=limit,
     ):
-        records.append(
+        records.append(  # noqa: PERF401
             GetOnArticleRankRecordItem(
                 date=item.date,
                 ranking=item.ranking,
@@ -357,7 +357,7 @@ async def get_on_article_rank_summary_by_user_name_handler(
 
 
 class GetNameAutocompleteResponse(Struct, **RESPONSE_STRUCT_CONFIG):
-    names: List[str]
+    names: list[str]
 
 
 @get(
@@ -389,7 +389,7 @@ async def get_name_autocomplete_handler(
 
 
 class GetHistoryNamesOnArticleRankSummaryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
-    history_names_onrank_summary: Dict[str, int]
+    history_names_onrank_summary: dict[str, int]
     user_url: Optional[str] = None
 
 

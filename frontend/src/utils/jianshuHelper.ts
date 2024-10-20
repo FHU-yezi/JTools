@@ -13,3 +13,7 @@ export function userUrlToSlug(userUrl: string) {
   }
   return null;
 }
+
+export function userSlugToUrl(userSlug: string) {
+  return `https://www.jianshu.com/u/${userSlug}`;
+}

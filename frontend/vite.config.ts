@@ -56,11 +56,10 @@ export default defineConfig({
       },
     }),
     compression({ algorithm: "gzip" }),
-    // TODO: 由于 Bun 标准库实现问题，暂时禁用 Brotli 压缩
-    // compression({
-    //   algorithm: "brotliCompress",
-    //   ext: ".br",
-    // }),
+    compression({
+      algorithm: "brotliCompress",
+      ext: ".br",
+    }),
   ],
   server: {
     proxy: {

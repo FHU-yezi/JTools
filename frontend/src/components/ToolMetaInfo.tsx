@@ -14,7 +14,7 @@ import {
 import { useLocation } from "wouter-preact";
 import { useToolStatus } from "../api/status";
 import { getToolSlug } from "../utils/URLHelper";
-import { getDateTimeWithoutSecond, parseTime } from "../utils/timeHelper";
+import { Datetime } from "../utils/timeHelper";
 
 export default function ToolMetaInfo() {
   const [, setLocation] = useLocation();
@@ -32,7 +32,7 @@ export default function ToolMetaInfo() {
               <Icon color="gray" icon="i-mdi-access-time" />
               <SmallText color="gray">
                 最后更新时间：
-                {getDateTimeWithoutSecond(parseTime(toolStatus.lastUpdateTime))}
+                {new Datetime(toolStatus.lastUpdateTime).datetimeWithoutSecond}
               </SmallText>
             </Row>
           )}

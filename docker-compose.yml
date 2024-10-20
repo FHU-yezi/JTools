@@ -2,12 +2,12 @@ networks:
   internal:
   mongodb:
     external: true
-  cutup:
+  postgres:
     external: true
 
 services:
   frontend:
-    image: jtools-frontend:3.14.0
+    image: jtools-frontend:3.15.0
     container_name: jtools-frontend
     build:
       dockerfile: Dockerfile.frontend
@@ -24,16 +24,16 @@ services:
         delay: 5s
         max_attempts: 3
   backend:
-    image: jtools-backend:3.14.0
+    image: jtools-backend:3.15.0
     container_name: jtools-backend
     build:
       dockerfile: Dockerfile.backend
     volumes:
-      - ./backend/config.yaml:/app/config.yaml:ro
+      - ./backend/config.toml:/app/config.toml:ro
     networks:
       - internal
       - mongodb
-      - cutup
+      - postgres
     environment:
       - PYTHONUNBUFFERED=1
     deploy:

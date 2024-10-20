@@ -21,14 +21,14 @@ function handleV2Redirect(
   }
 
   if (v2UnimplementedRoutes.includes(appName)) {
-    umamiTrack("v2-redirect", { from: appName, to: "/v2-unimplemented" });
-    setLocation("/v2-unimplemented");
+    umamiTrack("v2-redirect", { from: appName, to: "/under-development" });
+    setLocation("/under-development");
     return;
   }
 
   if (v2UnavaliableRoutes.includes(appName)) {
-    umamiTrack("v2-redirect", { from: appName, to: "/v2-unavaliable" });
-    setLocation("/v2-unavaliable");
+    umamiTrack("v2-redirect", { from: appName, to: "/no-longer-avaliable" });
+    setLocation("/no-longer-avaliable");
   }
 }
 

@@ -10,14 +10,13 @@ import {
   TextInput,
   toastWarning,
 } from "@sscreator/ui";
-import dayjs from "dayjs";
 import { useEffect } from "preact/hooks";
 import {
   useLPRecommendCheck,
   type GetLPRecommendCheckResponse,
 } from "../api/articles";
 import { articleUrlToSlug } from "../utils/jianshuHelper";
-import { getDate, parseTime } from "../utils/timeHelper";
+import { Datetime } from "../utils/timeHelper";
 
 const articleUrl = signal("");
 const articleSlug = computed(() => articleUrlToSlug(articleUrl.value));
@@ -40,7 +39,8 @@ function Result({
 
   const shouldFPRewardHighlight = checkResult.FPReward >= 35;
   const shouldnextCanRecommendDateHighlight = checkResult.nextCanRecommendDate
-    ? parseTime(checkResult.nextCanRecommendDate) >= dayjs()
+    ? new Datetime(checkResult.nextCanRecommendDate).dayjsObject >=
+      new Datetime().dayjsObject
     : false;
 
   return (
@@ -74,7 +74,7 @@ function Result({
             color={shouldnextCanRecommendDateHighlight ? "danger" : undefined}
           >
             {checkResult.nextCanRecommendDate
-              ? getDate(parseTime(checkResult.nextCanRecommendDate))
+              ? new Datetime(checkResult.nextCanRecommendDate).date
               : "作者未上过榜"}
           </LargeText>
         </Column>

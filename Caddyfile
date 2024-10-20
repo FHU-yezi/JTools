@@ -12,8 +12,7 @@
 
         try_files {path} /index.html
         file_server {
-            # TODO: 由于 Bun 标准库实现问题，暂时禁用 Brotli 压缩
-            precompressed gzip
+            precompressed br gzip
         }
     }
 

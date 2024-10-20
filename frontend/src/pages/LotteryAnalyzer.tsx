@@ -24,7 +24,7 @@ import {
   useSummary,
   type GetSummaryResponse,
 } from "../api/lottery";
-import { getHumanReadableTimeDelta, parseTime } from "../utils/timeHelper";
+import { Datetime } from "../utils/timeHelper";
 
 function SummaryTable({ data }: { data: GetSummaryResponse }) {
   const totalWins = data.rewards.reduce((a, b) => a + b.winsCount, 0);
@@ -132,7 +132,7 @@ function RecentWins() {
                     {item.userName}
                   </ExternalLink>
                   <SmallText color="gray">
-                    {getHumanReadableTimeDelta(parseTime(item.time))}
+                    {new Datetime(item.time).humanReadableTimedelta}
                   </SmallText>
                 </Column>
                 <LargeText bold>{item.rewardName}</LargeText>

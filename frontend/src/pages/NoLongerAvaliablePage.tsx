@@ -8,7 +8,7 @@ import {
   Text,
 } from "@sscreator/ui";
 
-export default function V2UnavaliablePage() {
+export default function NoLongerAvaliablePage() {
   return (
     <Center className="mx-auto h-screen">
       <Column className="max-w-2xl w-[80vw]">

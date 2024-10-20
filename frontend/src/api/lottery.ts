@@ -16,7 +16,7 @@ interface GetRecordsRequest {
   excluded_awards?: string[];
 }
 interface GetRecordsItem {
-  time: number;
+  time: string;
   rewardName: string;
   userName: string;
   userUrl: string;

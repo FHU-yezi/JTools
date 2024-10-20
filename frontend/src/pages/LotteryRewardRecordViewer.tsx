@@ -22,7 +22,7 @@ import {
   type GetLotteryWinRecordsResponse,
 } from "../api/users";
 import { userUrlToSlug } from "../utils/jianshuHelper";
-import { getDatetime, parseTime } from "../utils/timeHelper";
+import { Datetime } from "../utils/timeHelper";
 
 const userUrl = signal("");
 const userSlug = computed(() => userUrlToSlug(userUrl.value));
@@ -105,7 +105,7 @@ function Result({
         <TableBody>
           {flattedRecords.map((item) => (
             <TableRow key={item.time}>
-              <TableCell>{getDatetime(parseTime(item.time))}</TableCell>
+              <TableCell>{new Datetime(item.time).datetime}</TableCell>
               <TableCell>{item.rewardName}</TableCell>
             </TableRow>
           ))}
