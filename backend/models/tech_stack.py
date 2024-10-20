@@ -62,7 +62,7 @@ class TechStack(Table, frozen=True):
         else:
             cursor = await conn.execute(
                 "SELECT name, type, scope, is_self_developed, "
-                "description, url FROM tech_stacks;"
+                "description, url FROM tech_stacks ORDER BY name;"
             )
 
         async for item in cursor:
