@@ -31,9 +31,13 @@ interface GetTechStacksResponseRecordsItem {
 interface GetTechStacksResponse {
   records: GetTechStacksResponseRecordsItem[];
 }
-export function useTechStacks() {
+export function useTechStacks({
+  scope,
+}: { scope?: "frontend" | "backend" | "toolchain" }) {
   return useData<Record<string, never>, GetTechStacksResponse>({
     method: "GET",
-    endpoint: "/v1/thanks/tech-stacks",
+    endpoint: scope
+      ? `/v1/thanks/tech-stacks?scope_=${scope}`
+      : "/v1/thanks/tech-stacks",
   });
 }

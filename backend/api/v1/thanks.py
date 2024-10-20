@@ -1,6 +1,8 @@
 from datetime import datetime
+from typing import Annotated, Literal, Optional
 
 from litestar import Response, Router, get
+from litestar.params import Parameter
 from msgspec import Struct
 from sspeedup.api.litestar import (
     RESPONSE_STRUCT_CONFIG,
@@ -74,7 +76,12 @@ class GetTechStacksResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     summary="获取技术栈列表",
     responses={200: generate_response_spec(GetTechStacksResponse)},
 )
-async def get_tech_stacks_handler() -> Response:
+async def get_tech_stacks_handler(
+    scope_: Annotated[
+        Optional[Literal["frontend", "backend", "toolchain"]],
+        Parameter(description="技术栈范围"),
+    ] = None,
+) -> Response:
     return success(
         data=GetTechStacksResponse(
             records=[
@@ -86,7 +93,9 @@ async def get_tech_stacks_handler() -> Response:
                     description=item.description,
                     url=item.url,
                 )
-                async for item in TechStack.iter()
+                async for item in TechStack.iter(
+                    scope=ScopeEnum(scope_.upper()) if scope_ else None
+                )
             ]
         )
     )

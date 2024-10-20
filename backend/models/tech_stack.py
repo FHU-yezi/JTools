@@ -1,5 +1,6 @@
 from collections.abc import AsyncGenerator
 from enum import Enum
+from typing import Optional
 
 from sshared.postgres import Table, create_enum
 from sshared.strict_struct import NonEmptyStr
@@ -49,11 +50,20 @@ class TechStack(Table, frozen=True):
         )
 
     @classmethod
-    async def iter(cls) -> AsyncGenerator["TechStack", None]:
-        cursor = await conn.execute(
-            "SELECT name, type, scope, is_self_developed, "
-            "description, url FROM tech_stacks;"
-        )
+    async def iter(
+        cls, scope: Optional[ScopeEnum] = None
+    ) -> AsyncGenerator["TechStack", None]:
+        if scope:
+            cursor = await conn.execute(
+                "SELECT name, type, scope, is_self_developed, "
+                "description, url FROM tech_stacks WHERE scope = %s;",
+                (scope,),
+            )
+        else:
+            cursor = await conn.execute(
+                "SELECT name, type, scope, is_self_developed, "
+                "description, url FROM tech_stacks;"
+            )
 
         async for item in cursor:
             yield cls(

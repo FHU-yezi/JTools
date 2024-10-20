@@ -7,6 +7,7 @@ import {
   Heading2,
   LoadingArea,
   Heading3,
+  Select,
   LargeText,
   Row,
   SmallText,
@@ -16,6 +17,7 @@ import {
 import { Datetime } from "../utils/timeHelper";
 import { useDebugProjectRecords, useTechStacks } from "../api/thanks";
 import { userSlugToUrl } from "../utils/jianshuHelper";
+import { signal } from "@preact/signals";
 
 const v3BetaPaticipants: Record<string, string> = {
   "6g 选手": "https://www.jianshu.com/u/43c3a5c5aca3",
@@ -28,12 +30,16 @@ const v3BetaPaticipants: Record<string, string> = {
   幽夜蛙: "https://www.jianshu.com/u/e3d9895f67a7",
 };
 
+const techstackScope = signal<"frontend" | "backend" | "toolchain" | undefined>(
+  undefined,
+);
+
 export default function ThanksPage() {
   // 设置页面标题
   useDocumentTitle("鸣谢 - 简书小工具集");
 
   const { data: debugProjectRecords } = useDebugProjectRecords();
-  const { data: techStacks } = useTechStacks();
+  const { data: techStacks } = useTechStacks({ scope: techstackScope.value });
 
   const allContributorsName = debugProjectRecords
     ? [...new Set(debugProjectRecords.records.map((item) => item.userName))]
@@ -93,6 +99,17 @@ export default function ThanksPage() {
         </Row>
 
         <Heading2>技术栈</Heading2>
+        <Select
+          id="techstack-scope"
+          label="范围"
+          value={techstackScope}
+          options={[
+            { label: "全部", value: undefined },
+            { label: "前端", value: "frontend" },
+            { label: "后端", value: "backend" },
+            { label: "工具链", value: "toolchain" },
+          ]}
+        />
         <LoadingArea className="h-72" loading={!techStacks}>
           <Grid cols="grid-cols-1 sm:grid-cols-2">
             {techStacks?.records.map((item) => (
