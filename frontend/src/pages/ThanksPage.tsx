@@ -143,7 +143,11 @@ export default function ThanksPage() {
                 <Row gap="gap-2" itemsCenter>
                   <LargeText bold>{item.name}</LargeText>
                   <ExternalLink href={item.url}>
-                    <Icon className="!block size-6" icon="i-mdi-link" color="unset"/>
+                    <Icon
+                      className="!block size-6"
+                      icon="i-mdi-link"
+                      color="unset"
+                    />
                   </ExternalLink>
                 </Row>
                 <Text>{item.description}</Text>
