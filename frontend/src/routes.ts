@@ -18,8 +18,8 @@ export const routes: RouteItem[] = [
     isTool: false,
   },
   {
-    component: lazy(() => import("./pages/NoLongerAvaliablePage")),
-    path: "/no-longer-avaliable",
+    component: lazy(() => import("./pages/NoLongerAvailablePage")),
+    path: "/no-longer-available",
     pageName: "已下线",
     isTool: false,
     hideDecorations: true,

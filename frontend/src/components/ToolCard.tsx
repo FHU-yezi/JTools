@@ -6,7 +6,7 @@ interface Props {
   path: string;
   description?: string;
   downgraded: boolean;
-  unavaliable: boolean;
+  unavailable: boolean;
 }
 
 export default function ToolCard({
@@ -14,27 +14,27 @@ export default function ToolCard({
   path,
   description,
   downgraded,
-  unavaliable,
+  unavailable,
 }: Props) {
   const [, setLocation] = useLocation();
   return (
     <button
       type="button"
-      className={unavaliable ? "cursor-not-allowed" : undefined}
-      onClick={!unavaliable ? () => setLocation(path) : undefined}
+      className={unavailable ? "cursor-not-allowed" : undefined}
+      onClick={!unavailable ? () => setLocation(path) : undefined}
     >
       <Card className="flex items-center justify-between gap-2" withPadding>
         <Column gap="gap-2">
           <Row gap="gap-2">
             <LargeText bold>{toolName}</LargeText>
             {downgraded && <Badge color="warning">降级</Badge>}
-            {unavaliable && <Badge color="danger">不可用</Badge>}
+            {unavailable && <Badge color="danger">不可用</Badge>}
           </Row>
           <Text color="gray" className="text-left">
             {description}
           </Text>
         </Column>
-        {!unavaliable && (
+        {!unavailable && (
           <Icon className="text-3xl" icon="i-mdi-keyboard-arrow-right" />
         )}
       </Card>

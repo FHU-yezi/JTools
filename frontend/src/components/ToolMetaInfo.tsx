@@ -19,7 +19,7 @@ import { Datetime } from "../utils/timeHelper";
 export default function ToolMetaInfo() {
   const [, setLocation] = useLocation();
   const { data: toolStatus } = useToolStatus({ toolSlug: getToolSlug() });
-  const showUnavaliableModal = useComputed(() =>
+  const showUnavailableModal = useComputed(() =>
     toolStatus ? toolStatus.status === "UNAVAILABLE" : false,
   );
 
@@ -75,7 +75,7 @@ export default function ToolMetaInfo() {
         </Notice>
       )}
 
-      <Modal open={showUnavaliableModal} title="服务不可用" notCloseable>
+      <Modal open={showUnavailableModal} title="服务不可用" notCloseable>
         <Column>
           <Text>
             {toolStatus?.reason ??

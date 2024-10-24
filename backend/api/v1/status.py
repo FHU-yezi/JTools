@@ -25,7 +25,7 @@ from version import VERSION
 class GetResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     version: str
     downgraded_tools: list[str]
-    unavaliable_tools: list[str]
+    unavailable_tools: list[str]
 
 
 @get(
@@ -42,7 +42,7 @@ async def get_handler() -> Response:
             downgraded_tools=list(
                 await Tool.get_tools_slugs_by_status(StatusEnum.DOWNGRADED)
             ),
-            unavaliable_tools=list(
+            unavailable_tools=list(
                 await Tool.get_tools_slugs_by_status(StatusEnum.UNAVAILABLE)
             ),
         )
