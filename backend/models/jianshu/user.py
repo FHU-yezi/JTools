@@ -2,29 +2,114 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional
 
-from jkit.msgspec_constraints import PositiveInt, UserName, UserSlug, UserUploadedUrl
-from sshared.mongo import Document, Index
+from sshared.postgres import Table, create_enum
+from sshared.strict_struct import NonEmptyStr, PositiveInt
 
-from utils.mongo import JIANSHU_DB
+from utils.postgres import jianshu_conn
 
 
-class JianshuUserStatus(Enum):
+class StatusEnum(Enum):
     NORMAL = "NORMAL"
-    INACCESSABLE = "INACCESSIBLE"
+    INACCESSIBLE = "INACCESSIBLE"
 
 
-class UserDocument(Document, frozen=True):
-    slug: UserSlug
-    status: JianshuUserStatus
-    updated_at: datetime
+class User(Table, frozen=True):
+    slug: NonEmptyStr
+    status: StatusEnum
+    update_time: datetime
     id: Optional[PositiveInt]
-    name: Optional[UserName]
-    history_names: list[UserName]
-    avatar_url: Optional[UserUploadedUrl]
+    name: Optional[NonEmptyStr]
+    history_names: list[NonEmptyStr]
+    avatar_url: Optional[NonEmptyStr]
 
-    class Meta:  # type: ignore
-        collection = JIANSHU_DB.users
-        indexes = (
-            Index(keys=("slug",), unique=True).validate(),
-            Index(keys=("updatedAt",)).validate(),
+    @classmethod
+    async def _create_enum(cls) -> None:
+        await create_enum(
+            conn=jianshu_conn, name="enum_users_status", enum_class=StatusEnum
         )
+
+    @classmethod
+    async def _create_table(cls) -> None:
+        await jianshu_conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS users (
+                slug VARCHAR(12) CONSTRAINT pk_users_slug PRIMARY KEY,
+                status enum_users_status NOT NULL,
+                update_time TIMESTAMP NOT NULL,
+                id INTEGER,
+                name VARCHAR(15),
+                history_names VARCHAR(15)[] NOT NULL,
+                avatar_url TEXT
+            );
+            """
+        )
+
+    async def create(self) -> None:
+        self.validate()
+        await jianshu_conn.execute(
+            "INSERT INTO users (slug, status, update_time, id, name, "
+            "history_names, avatar_url) VALUES (%s, %s, %s, %s, %s, %s, %s);",
+            (
+                self.slug,
+                self.status,
+                self.update_time,
+                self.id,
+                self.name,
+                self.history_names,
+                self.avatar_url,
+            ),
+        )
+
+    @classmethod
+    async def get_by_slug(cls, slug: str) -> Optional["User"]:
+        cursor = await jianshu_conn.execute(
+            "SELECT status, update_time, id, name, history_names, "
+            "avatar_url FROM users WHERE slug = %s;",
+            (slug,),
+        )
+
+        data = await cursor.fetchone()
+        if not data:
+            return None
+
+        return cls(
+            slug=slug,
+            status=data[0],
+            update_time=data[1],
+            id=data[2],
+            name=data[3],
+            history_names=data[4],
+            avatar_url=data[5],
+        )
+
+    @classmethod
+    async def get_by_name(cls, name: str) -> Optional["User"]:
+        cursor = await jianshu_conn.execute(
+            "SELECT slug, status, update_time, id, history_names, "
+            "avatar_url FROM users WHERE name = %s;",
+            (name,),
+        )
+
+        data = await cursor.fetchone()
+        if not data:
+            return None
+
+        return cls(
+            slug=data[0],
+            status=data[1],
+            update_time=data[2],
+            id=data[3],
+            name=name,
+            history_names=data[4],
+            avatar_url=data[5],
+        )
+
+    @classmethod
+    async def get_similar_names(cls, name: str, limit: int) -> list[str]:
+        cursor = await jianshu_conn.execute(
+            "SELECT name FROM users WHERE name LIKE %s LIMIT %s;",
+            (f"{name}%", limit),
+        )
+
+        data = await cursor.fetchall()
+        return [x[0] for x in data]

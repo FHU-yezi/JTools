@@ -8,9 +8,16 @@ from utils.config import CONFIG
 enhance_json_process()
 
 
-conn = asyncio_run(
+jtools_conn = asyncio_run(
     AsyncConnection.connect(
         CONFIG.postgres.connection_string,
+        autocommit=True,
+    )
+)
+
+jianshu_conn = asyncio_run(
+    AsyncConnection.connect(
+        CONFIG.postgres.connection_string.rsplit("/", maxsplit=1)[0] + "/jianshu",
         autocommit=True,
     )
 )

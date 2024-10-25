@@ -5,7 +5,7 @@ from typing import Optional
 from sshared.postgres import Table, create_enum
 from sshared.strict_struct import NonEmptyStr
 
-from utils.postgres import conn
+from utils.postgres import jtools_conn
 
 
 class TypeEnum(Enum):
@@ -29,14 +29,14 @@ class TechStack(Table, frozen=True):
 
     @classmethod
     async def _create_enum(cls) -> None:
-        await create_enum(conn=conn, name="enum_tech_stacks_type", enum_class=TypeEnum)
+        await create_enum(conn=jtools_conn, name="enum_tech_stacks_type", enum_class=TypeEnum)
         await create_enum(
-            conn=conn, name="enum_tech_stacks_scope", enum_class=ScopeEnum
+            conn=jtools_conn, name="enum_tech_stacks_scope", enum_class=ScopeEnum
         )
 
     @classmethod
     async def _create_table(cls) -> None:
-        await conn.execute(
+        await jtools_conn.execute(
             """
             CREATE TABLE IF NOT EXISTS tech_stacks (
                 name TEXT NOT NULL CONSTRAINT pk_tech_stacks_name PRIMARY KEY,
@@ -54,13 +54,13 @@ class TechStack(Table, frozen=True):
         cls, scope: Optional[ScopeEnum] = None
     ) -> AsyncGenerator["TechStack", None]:
         if scope:
-            cursor = await conn.execute(
+            cursor = await jtools_conn.execute(
                 "SELECT name, type, scope, is_self_developed, "
                 "description, url FROM tech_stacks WHERE scope = %s;",
                 (scope,),
             )
         else:
-            cursor = await conn.execute(
+            cursor = await jtools_conn.execute(
                 "SELECT name, type, scope, is_self_developed, "
                 "description, url FROM tech_stacks ORDER BY name;"
             )

@@ -17,7 +17,7 @@ from sspeedup.api.litestar import (
 from sspeedup.time_helper import get_start_time
 
 from models.jianshu.lottery_win_record import LotteryWinRecordDocument
-from models.jianshu.user import UserDocument
+from models.jianshu.user import User
 
 REWARD_NAMES: list[str] = [
     "收益加成卡100",
@@ -216,7 +216,7 @@ async def get_records_handler(
         skip=offset,
         limit=limit,
     ):
-        user = await UserDocument.find_one({"slug": item.user_slug})
+        user = await User.get_by_slug(item.user_slug)
         if not user:
             return fail(
                 http_code=HTTP_500_INTERNAL_SERVER_ERROR,

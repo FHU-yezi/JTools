@@ -4,6 +4,7 @@ from asyncio import run as asyncio_run
 from uvicorn import run as uvicorn_run
 
 from models.debug_project_record import DebugProjectRecord
+from models.jianshu.user import User
 from models.tech_stack import TechStack
 from models.tool import Tool
 from utils.config import CONFIG
@@ -16,6 +17,7 @@ logging.getLogger("httpcore").setLevel(logging.CRITICAL)
 async def init_db() -> None:
     await DebugProjectRecord.init()
     await TechStack.init()
+    await User.init()
     await Tool.init()
 
 

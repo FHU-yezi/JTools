@@ -21,7 +21,7 @@ from models.jianshu.article_earning_ranking_record import (
     ArticleEarningRankingRecordDocument,
 )
 from models.jianshu.lottery_win_record import LotteryWinRecordDocument
-from models.jianshu.user import UserDocument
+from models.jianshu.user import User as DbUser
 
 
 class GetVipInfoResponse(Struct, **RESPONSE_STRUCT_CONFIG):
@@ -228,7 +228,7 @@ async def get_on_article_rank_records_by_user_name_handler(
     offset: Annotated[int, Parameter(description="分页偏移", ge=0)] = 0,
     limit: Annotated[int, Parameter(description="结果数量", gt=0, lt=100)] = 20,
 ) -> Response:
-    user = await UserDocument.find_one({"name": user_name})
+    user = await DbUser.get_by_name(user_name)
     if not user:  # 没有找到对应昵称的用户
         return success(data=GetOnArticleRankRecordsResponse(records=[]))
 
@@ -325,7 +325,7 @@ async def get_on_article_rank_summary_handler(
 async def get_on_article_rank_summary_by_user_name_handler(
     user_name: Annotated[str, Parameter(description="用户昵称", max_length=50)],
 ) -> Response:
-    user = await UserDocument.find_one({"name": user_name})
+    user = await DbUser.get_by_name(user_name)
     if not user:  # 没有找到对应昵称的用户
         return success(
             data=GetOnArticleRankSummaryResponse(top10=0, top30=0, top50=0, total=0)
@@ -371,14 +371,7 @@ async def get_name_autocomplete_handler(
     name_part: Annotated[str, Parameter(description="用户昵称片段", max_length=50)],
     limit: Annotated[int, Parameter(description="结果数量", gt=0, le=100)] = 5,
 ) -> Response:
-    result = await UserDocument.get_collection().distinct(
-        "name",
-        {
-            "name": {
-                "$regex": f"^{name_part}",
-            },
-        },
-    )
+    result = await DbUser.get_similar_names(name_part, limit=limit)
     result = result[:limit]
 
     return success(
@@ -403,7 +396,7 @@ class GetHistoryNamesOnArticleRankSummaryResponse(Struct, **RESPONSE_STRUCT_CONF
 async def get_history_names_on_article_rank_summary_handler(
     user_name: Annotated[str, Parameter(description="用户昵称", max_length=50)],
 ) -> Response:
-    user = await UserDocument.find_one({"name": user_name})
+    user = await DbUser.get_by_name(user_name)
     if not user:  # 没有找到对应昵称的用户
         return success(
             data=GetHistoryNamesOnArticleRankSummaryResponse(
