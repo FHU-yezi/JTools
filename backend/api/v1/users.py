@@ -3,6 +3,7 @@ from typing import Annotated, Literal, Optional
 
 from jkit.constants import USER_SLUG_REGEX
 from jkit.exceptions import ResourceUnavailableError
+from jkit.identifier_check import is_user_slug
 from jkit.identifier_convert import article_slug_to_url, user_slug_to_url
 from jkit.user import MembershipEnum, User
 from litestar import Response, Router, get
@@ -18,9 +19,9 @@ from sspeedup.api.litestar import (
 )
 
 from models.jianshu.article_earning_ranking_record import (
-    ArticleEarningRankingRecordDocument,
+    ArticleEarningRankingRecord,
 )
-from models.jianshu.lottery_win_record import LotteryWinRecordDocument
+from models.jianshu.lottery_win_record import LotteryWinRecord
 from models.jianshu.user import User as DbUser
 
 
@@ -105,32 +106,22 @@ async def get_lottery_win_records(
         Optional[list[str]], Parameter(description="排除奖项列表", max_items=10)
     ] = None,
 ) -> Response:
-    try:
-        user = User.from_slug(user_slug)
-    except ValueError:
+    if not is_user_slug(user_slug):
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
             api_code=Code.BAD_ARGUMENTS,
             msg="用户 Slug 无效",
         )
 
-    records: list[GetLotteryWinRecordItem] = []
-    async for item in LotteryWinRecordDocument.find_many(
-        {
-            "userSlug": user.slug,
-            "awardName": {
-                "$nin": excluded_awards if excluded_awards else [],
-            },
-        },
-        skip=offset,
-        limit=limit,
-    ):
-        records.append(  # noqa: PERF401
-            GetLotteryWinRecordItem(
-                time=item.time,
-                reward_name=item.award_name,
-            )
+    records: list[GetLotteryWinRecordItem] = [
+        GetLotteryWinRecordItem(time=item.time, reward_name=item.award_name)
+        for item in await LotteryWinRecord.get_by_slug_and_excluded_awards(
+            slug=user_slug,
+            excluded_awards=excluded_awards if excluded_awards else [],
+            offset=offset,
+            limit=limit,
         )
+    ]
 
     return success(
         data=GetLotteryWinRecordsResponse(
@@ -172,35 +163,33 @@ async def get_on_article_rank_records_handler(
     offset: Annotated[int, Parameter(description="分页偏移", ge=0)] = 0,
     limit: Annotated[int, Parameter(description="结果数量", gt=0, lt=100)] = 20,
 ) -> Response:
-    try:
-        user = User.from_slug(user_slug)
-    except ValueError:
+    if not is_user_slug(user_slug):
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
             api_code=Code.BAD_ARGUMENTS,
             msg="用户 Slug 无效",
         )
 
-    records: list[GetOnArticleRankRecordItem] = []
-    async for item in ArticleEarningRankingRecordDocument.find_many(
-        {
-            "authorSlug": user.slug,
-        },
-        sort={order_by: "ASC" if order_direction == "asc" else "DESC"},
-        skip=offset,
-        limit=limit,
-    ):
-        records.append(  # noqa: PERF401
-            GetOnArticleRankRecordItem(
-                date=item.date,
-                ranking=item.ranking,
-                # TODO
-                article_title=item.article.title,  # type: ignore
-                # TODO
-                article_url=article_slug_to_url(item.article.slug),  # type: ignore
-                FP_reward=item.earning.to_author,
-            )
+    records = [
+        GetOnArticleRankRecordItem(
+            date=datetime(
+                year=item.date.year, month=item.date.month, day=item.date.day
+            ),
+            ranking=item.ranking,
+            # TODO
+            article_title=item.title,  # type: ignore
+            # TODO
+            article_url=article_slug_to_url(item.slug),  # type: ignore
+            FP_reward=item.author_earning,
         )
+        for item in await ArticleEarningRankingRecord.get_by_author_slug(
+            author_slug=user_slug,
+            order_by=order_by,
+            order_direction=order_direction.upper(),  # type: ignore
+            offset=offset,
+            limit=limit,
+        )
+    ]
 
     return success(
         data=GetOnArticleRankRecordsResponse(
@@ -232,26 +221,26 @@ async def get_on_article_rank_records_by_user_name_handler(
     if not user:  # 没有找到对应昵称的用户
         return success(data=GetOnArticleRankRecordsResponse(records=[]))
 
-    records: list[GetOnArticleRankRecordItem] = []
-    async for item in ArticleEarningRankingRecordDocument.find_many(
-        {
-            "authorSlug": user.slug,
-        },
-        sort={order_by: "ASC" if order_direction == "asc" else "DESC"},
-        skip=offset,
-        limit=limit,
-    ):
-        records.append(  # noqa: PERF401
-            GetOnArticleRankRecordItem(
-                date=item.date,
-                ranking=item.ranking,
-                # TODO
-                article_title=item.article.title,  # type: ignore
-                # TODO
-                article_url=article_slug_to_url(item.article.slug),  # type: ignore
-                FP_reward=item.earning.to_author,
-            )
+    records = [
+        GetOnArticleRankRecordItem(
+            date=datetime(
+                year=item.date.year, month=item.date.month, day=item.date.day
+            ),
+            ranking=item.ranking,
+            # TODO
+            article_title=item.title,  # type: ignore
+            # TODO
+            article_url=article_slug_to_url(item.slug),  # type: ignore
+            FP_reward=item.author_earning,
         )
+        for item in await ArticleEarningRankingRecord.get_by_author_slug(
+            author_slug=user.slug,
+            order_by=order_by,
+            order_direction=order_direction.upper(),  # type: ignore
+            offset=offset,
+            limit=limit,
+        )
+    ]
 
     return success(
         data=GetOnArticleRankRecordsResponse(
@@ -280,9 +269,7 @@ async def get_on_article_rank_summary_handler(
         str, Parameter(description="用户 Slug", pattern=USER_SLUG_REGEX.pattern)
     ],
 ) -> Response:
-    try:
-        user = User.from_slug(user_slug)
-    except ValueError:
+    if not is_user_slug(user_slug):
         return fail(
             http_code=HTTP_400_BAD_REQUEST,
             api_code=Code.BAD_ARGUMENTS,
@@ -293,8 +280,12 @@ async def get_on_article_rank_summary_handler(
     top30 = 0
     top50 = 0
     total = 0
-    async for item in ArticleEarningRankingRecordDocument.find_many(
-        {"authorSlug": user.slug}
+    for item in await ArticleEarningRankingRecord.get_by_author_slug(
+        author_slug=user_slug,
+        order_by="date",
+        order_direction="ASC",
+        offset=0,
+        limit=100000,  # TODO
     ):
         total += 1
         if item.ranking <= 10:
@@ -335,8 +326,12 @@ async def get_on_article_rank_summary_by_user_name_handler(
     top30 = 0
     top50 = 0
     total = 0
-    async for item in ArticleEarningRankingRecordDocument.find_many(
-        {"authorSlug": user.slug}
+    for item in await ArticleEarningRankingRecord.get_by_author_slug(
+        author_slug=user.slug,
+        order_by="date",
+        order_direction="ASC",
+        offset=0,
+        limit=100000,  # TODO
     ):
         total += 1
         if item.ranking <= 10:

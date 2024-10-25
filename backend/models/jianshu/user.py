@@ -29,38 +29,6 @@ class User(Table, frozen=True):
         )
 
     @classmethod
-    async def _create_table(cls) -> None:
-        await jianshu_conn.execute(
-            """
-            CREATE TABLE IF NOT EXISTS users (
-                slug VARCHAR(12) CONSTRAINT pk_users_slug PRIMARY KEY,
-                status enum_users_status NOT NULL,
-                update_time TIMESTAMP NOT NULL,
-                id INTEGER,
-                name VARCHAR(15),
-                history_names VARCHAR(15)[] NOT NULL,
-                avatar_url TEXT
-            );
-            """
-        )
-
-    async def create(self) -> None:
-        self.validate()
-        await jianshu_conn.execute(
-            "INSERT INTO users (slug, status, update_time, id, name, "
-            "history_names, avatar_url) VALUES (%s, %s, %s, %s, %s, %s, %s);",
-            (
-                self.slug,
-                self.status,
-                self.update_time,
-                self.id,
-                self.name,
-                self.history_names,
-                self.avatar_url,
-            ),
-        )
-
-    @classmethod
     async def get_by_slug(cls, slug: str) -> Optional["User"]:
         cursor = await jianshu_conn.execute(
             "SELECT status, update_time, id, name, history_names, "

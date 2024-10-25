@@ -29,7 +29,9 @@ class TechStack(Table, frozen=True):
 
     @classmethod
     async def _create_enum(cls) -> None:
-        await create_enum(conn=jtools_conn, name="enum_tech_stacks_type", enum_class=TypeEnum)
+        await create_enum(
+            conn=jtools_conn, name="enum_tech_stacks_type", enum_class=TypeEnum
+        )
         await create_enum(
             conn=jtools_conn, name="enum_tech_stacks_scope", enum_class=ScopeEnum
         )

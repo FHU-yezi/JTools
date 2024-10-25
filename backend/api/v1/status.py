@@ -15,7 +15,6 @@ from sspeedup.api.litestar import (
 
 from models.tool import StatusEnum, Tool
 from utils.tools_status import (
-    COLLECTION_NAME_TO_OBJ,
     get_data_count,
     get_last_update_time,
 )
@@ -77,25 +76,9 @@ async def get_tool_status_handler(
             msg="小工具不存在",
         )
 
-    if (
-        tool.last_update_time_table
-        and tool.last_update_time_order_by
-        and tool.last_update_time_target_field
-    ):
-        last_update_time = await get_last_update_time(
-            collection=COLLECTION_NAME_TO_OBJ[tool.last_update_time_table],
-            order_by=tool.last_update_time_order_by,
-            target_field=tool.last_update_time_target_field,
-        )
-    else:
-        last_update_time = None
+    last_update_time = await get_last_update_time(tool_slug=tool_name)
 
-    if tool.data_count_table:
-        data_count = await get_data_count(
-            collection=COLLECTION_NAME_TO_OBJ[tool.data_count_table],
-        )
-    else:
-        data_count = None
+    data_count = await get_data_count(tool_slug=tool_name)
 
     return success(
         data=GetToolStatusResponse(

@@ -28,7 +28,9 @@ class Tool(Table, frozen=True):
 
     @classmethod
     async def _create_enum(cls) -> None:
-        await create_enum(conn=jtools_conn, name="enum_tools_status", enum_class=StatusEnum)
+        await create_enum(
+            conn=jtools_conn, name="enum_tools_status", enum_class=StatusEnum
+        )
 
     @classmethod
     async def _create_table(cls) -> None:
