@@ -12,7 +12,7 @@
 创建用户：
 
 ```sql
-CREATE ROLE jtools LOGIN PASSWORD 'my_password';
+CREATE ROLE jtools LOGIN PASSWORD 'jtools';
 ```
 
 创建数据库：
@@ -35,7 +35,7 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm;
 （`logs` 数据库）
 
 ```sql
-GRANT CREATE ON SCHEMA public TO jtools
+GRANT CREATE ON SCHEMA public TO jtools;
 ```
 
 （`jianshu` 数据库）
