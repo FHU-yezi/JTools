@@ -1,5 +1,3 @@
-简书小工具集 - 探索未知
-
 # 部署
 
 ## 环境
@@ -103,7 +101,7 @@ docker network create postgres
 docker compose up -d
 ```
 
-您可在 `http://localhost:8602` 端口上访问服务。
+您可在 <http://localhost:8602> 访问服务。
 
 ## 传统部署（不推荐）
 
@@ -151,4 +149,4 @@ cd frontend
 bun run dev
 ```
 
-您可在 `http://localhost:5173` 端口上访问服务。
+您可在 <http://localhost:5173> 访问服务。
