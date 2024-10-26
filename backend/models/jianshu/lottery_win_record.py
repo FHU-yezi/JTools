@@ -5,7 +5,7 @@ from sshared.postgres import Table
 from sshared.strict_struct import NonEmptyStr, PositiveInt
 from sspeedup.time_helper import get_start_time
 
-from utils.postgres import jianshu_conn
+from utils.postgres import get_jianshu_conn
 
 REWARD_NAMES: tuple[str, ...] = (
     "收益加成卡100",
@@ -25,7 +25,8 @@ class LotteryWinRecord(Table, frozen=True):
     async def get_by_excluded_awards(
         cls, excluded_awards: list[str], offset: int, limit: int
     ) -> list["LotteryWinRecord"]:
-        cursor = await jianshu_conn.execute(
+        conn = await get_jianshu_conn()
+        cursor = await conn.execute(
             "SELECT id, time, user_slug, award_name FROM lottery_win_records "
             "WHERE award_name != ALL(%s) ORDER BY time DESC OFFSET %s LIMIT %s;",
             (excluded_awards, offset, limit),
@@ -46,7 +47,8 @@ class LotteryWinRecord(Table, frozen=True):
     async def get_by_slug_and_excluded_awards(
         cls, slug: str, excluded_awards: list[str], offset: int, limit: int
     ) -> list["LotteryWinRecord"]:
-        cursor = await jianshu_conn.execute(
+        conn = await get_jianshu_conn()
+        cursor = await conn.execute(
             "SELECT id, time, award_name FROM lottery_win_records "
             "WHERE slug = %s AND award_name != ALL(%s) "
             "ORDER BY time DESC OFFSET %s LIMIT %s;",
@@ -66,14 +68,15 @@ class LotteryWinRecord(Table, frozen=True):
 
     @classmethod
     async def get_summary_wins_count(cls, td: Optional[timedelta]) -> dict[str, int]:
+        conn = await get_jianshu_conn()
         if td:
-            cursor = await jianshu_conn.execute(
+            cursor = await conn.execute(
                 "SELECT award_name, COUNT(*) FROM lottery_win_records "
                 "WHERE time >= %s GROUP BY award_name;",
                 (get_start_time(td),),
             )
         else:
-            cursor = await jianshu_conn.execute(
+            cursor = await conn.execute(
                 "SELECT award_name, COUNT(*) FROM lottery_win_records "
                 "GROUP BY award_name;"
             )
@@ -86,15 +89,16 @@ class LotteryWinRecord(Table, frozen=True):
 
     @classmethod
     async def get_summary_winners_count(cls, td: Optional[timedelta]) -> dict[str, int]:
+        conn = await get_jianshu_conn()
         if td:
-            cursor = await jianshu_conn.execute(
+            cursor = await conn.execute(
                 "SELECT award_name, COUNT(DISTINCT user_slug) "
                 "FROM lottery_win_records WHERE time >= %s "
                 "GROUP BY award_name;",
                 (get_start_time(td),),
             )
         else:
-            cursor = await jianshu_conn.execute(
+            cursor = await conn.execute(
                 "SELECT award_name, COUNT(DISTINCT user_slug) "
                 "FROM lottery_win_records GROUP BY award_name;",
             )
@@ -109,15 +113,16 @@ class LotteryWinRecord(Table, frozen=True):
     async def get_wins_history(
         cls, td: timedelta, resolution: str
     ) -> dict[datetime, int]:
+        conn = await get_jianshu_conn()
         if resolution == "1h":
-            cursor = await jianshu_conn.execute(
+            cursor = await conn.execute(
                 "SELECT DATE_TRUNC('hour', time) AS time, COUNT(*) "
                 "FROM lottery_win_records WHERE time >= %s "
                 "GROUP BY DATE_TRUNC('hour', time);",
                 (get_start_time(td),),
             )
         elif resolution == "1d":
-            cursor = await jianshu_conn.execute(
+            cursor = await conn.execute(
                 "SELECT DATE_TRUNC('day', time) AS time, COUNT(*) "
                 "FROM lottery_win_records WHERE time >= %s "
                 "GROUP BY DATE_TRUNC('day', time);",

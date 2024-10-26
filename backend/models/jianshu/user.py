@@ -5,7 +5,7 @@ from typing import Optional
 from sshared.postgres import Table, create_enum
 from sshared.strict_struct import NonEmptyStr, PositiveInt
 
-from utils.postgres import jianshu_conn
+from utils.postgres import get_jianshu_conn
 
 
 class StatusEnum(Enum):
@@ -24,13 +24,15 @@ class User(Table, frozen=True):
 
     @classmethod
     async def _create_enum(cls) -> None:
+        conn = await get_jianshu_conn()
         await create_enum(
-            conn=jianshu_conn, name="enum_users_status", enum_class=StatusEnum
+            conn=conn, name="enum_users_status", enum_class=StatusEnum
         )
 
     @classmethod
     async def get_by_slug(cls, slug: str) -> Optional["User"]:
-        cursor = await jianshu_conn.execute(
+        conn = await get_jianshu_conn()
+        cursor = await conn.execute(
             "SELECT status, update_time, id, name, history_names, "
             "avatar_url FROM users WHERE slug = %s;",
             (slug,),
@@ -52,7 +54,8 @@ class User(Table, frozen=True):
 
     @classmethod
     async def get_by_name(cls, name: str) -> Optional["User"]:
-        cursor = await jianshu_conn.execute(
+        conn = await get_jianshu_conn()
+        cursor = await conn.execute(
             "SELECT slug, status, update_time, id, history_names, "
             "avatar_url FROM users WHERE name = %s;",
             (name,),
@@ -74,7 +77,8 @@ class User(Table, frozen=True):
 
     @classmethod
     async def get_similar_names(cls, name: str, limit: int) -> list[str]:
-        cursor = await jianshu_conn.execute(
+        conn = await get_jianshu_conn()
+        cursor = await conn.execute(
             "SELECT name FROM users WHERE name LIKE %s LIMIT %s;",
             (f"{name}%", limit),
         )

@@ -4,7 +4,7 @@ from typing import Literal, Optional
 from sshared.postgres import Table
 from sshared.strict_struct import NonEmptyStr, PositiveFloat, PositiveInt
 
-from utils.postgres import jianshu_conn
+from utils.postgres import get_jianshu_conn
 
 
 class ArticleEarningRankingRecord(Table, frozen=True):
@@ -26,15 +26,16 @@ class ArticleEarningRankingRecord(Table, frozen=True):
         offset: int,
         limit: int,
     ) -> list["ArticleEarningRankingRecord"]:
+        conn = await get_jianshu_conn()
         if order_direction == "ASC":
-            cursor = await jianshu_conn.execute(
+            cursor = await conn.execute(
                 "SELECT date, ranking, slug, title, author_earning, voter_earning "
                 "FROM article_earning_ranking_records WHERE author_slug = %s "
                 "ORDER BY %s OFFSET %s LIMIT %s;",
                 (author_slug, order_by, offset, limit),
             )
         else:
-            cursor = await jianshu_conn.execute(
+            cursor = await conn.execute(
                 "SELECT date, ranking, slug, title, author_earning, voter_earning "
                 "FROM article_earning_ranking_records WHERE author_slug = %s "
                 "ORDER BY %s DESC OFFSET %s LIMIT %s;",
@@ -59,7 +60,8 @@ class ArticleEarningRankingRecord(Table, frozen=True):
     async def get_latest_record(
         cls, author_slug: str, minimum_ranking: Optional[int] = None
     ) -> Optional["ArticleEarningRankingRecord"]:
-        cursor = await jianshu_conn.execute(
+        conn = await get_jianshu_conn()
+        cursor = await conn.execute(
             "SELECT date, ranking, slug, title, author_earning, voter_earning "
             "FROM article_earning_ranking_records WHERE author_slug = %s AND "
             "ranking <= %s ORDER BY date DESC, ranking DESC LIMIT 1;",
@@ -86,7 +88,8 @@ class ArticleEarningRankingRecord(Table, frozen=True):
         base_record: "ArticleEarningRankingRecord",
         minimum_ranking: Optional[int] = None,
     ) -> Optional["ArticleEarningRankingRecord"]:
-        cursor = await jianshu_conn.execute(
+        conn = await get_jianshu_conn()
+        cursor = await conn.execute(
             "SELECT date, ranking, slug, title, author_earning, voter_earning "
             "FROM article_earning_ranking_records WHERE ( date < %s OR "
             "( date = %s AND ranking < %s ) ) AND author_slug = %s AND ranking <= %s "

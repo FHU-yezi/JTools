@@ -5,7 +5,7 @@ from psycopg import sql
 
 from models.jpep.ftn_trade_order import FTNTradeOrderDocument
 from models.tool import Tool
-from utils.postgres import jianshu_conn
+from utils.postgres import get_jianshu_conn
 
 
 async def get_last_update_time(tool_slug: str) -> Optional[datetime]:
@@ -19,7 +19,8 @@ async def get_last_update_time(tool_slug: str) -> Optional[datetime]:
         return None
 
     if tool_slug != "JPEP-FTN-market-analyzer":
-        cursor = await jianshu_conn.execute(
+        conn = await get_jianshu_conn()
+        cursor = await conn.execute(
             sql.SQL("SELECT {} FROM {} ORDER BY {} DESC LIMIT 1;").format(
                 sql.Identifier(tool.last_update_time_target_field),
                 sql.Identifier(tool.last_update_time_table),
@@ -53,7 +54,8 @@ async def get_data_count(tool_slug: str) -> Optional[int]:
         return None
 
     if tool_slug != "JPEP-FTN-market-analyzer":
-        cursor = await jianshu_conn.execute(
+        conn = await get_jianshu_conn()
+        cursor = await conn.execute(
             sql.SQL("SELECT COUNT(*) FROM {};").format(
                 sql.Identifier(tool.data_count_table)
             )

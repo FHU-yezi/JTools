@@ -4,7 +4,7 @@ from datetime import date
 from sshared.postgres import Table
 from sshared.strict_struct import NonEmptyStr, PositiveInt
 
-from utils.postgres import jtools_conn
+from utils.postgres import get_jtools_conn
 
 
 class DebugProjectRecord(Table, frozen=True):
@@ -19,7 +19,8 @@ class DebugProjectRecord(Table, frozen=True):
 
     @classmethod
     async def _create_table(cls) -> None:
-        await jtools_conn.execute(
+        conn = await get_jtools_conn()
+        await conn.execute(
             """
             CREATE TABLE IF NOT EXISTS debug_project_records (
                 id SMALLSERIAL CONSTRAINT pk_debug_project_records_id PRIMARY KEY,
@@ -36,7 +37,8 @@ class DebugProjectRecord(Table, frozen=True):
 
     @classmethod
     async def iter(cls) -> AsyncGenerator["DebugProjectRecord", None]:
-        cursor = await jtools_conn.execute(
+        conn = await get_jtools_conn()
+        cursor = await conn.execute(
             "SELECT id, date, type, module, description, user_name, "
             "user_slug, reward FROM debug_project_records ORDER BY date DESC;"
         )
