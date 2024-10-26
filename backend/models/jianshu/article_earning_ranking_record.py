@@ -1,6 +1,7 @@
 from datetime import date
 from typing import Literal, Optional
 
+from psycopg import sql
 from sshared.postgres import Table
 from sshared.strict_struct import NonEmptyStr, PositiveFloat, PositiveInt
 
@@ -29,17 +30,21 @@ class ArticleEarningRankingRecord(Table, frozen=True):
         conn = await get_jianshu_conn()
         if order_direction == "ASC":
             cursor = await conn.execute(
-                "SELECT date, ranking, slug, title, author_earning, voter_earning "
-                "FROM article_earning_ranking_records WHERE author_slug = %s "
-                "ORDER BY %s OFFSET %s LIMIT %s;",
-                (author_slug, order_by, offset, limit),
+                sql.SQL(
+                    "SELECT date, ranking, slug, title, author_earning, voter_earning "
+                    "FROM article_earning_ranking_records WHERE author_slug = %s "
+                    "ORDER BY {} OFFSET %s LIMIT %s;"
+                ).format(sql.Identifier(order_by)),
+                (author_slug, offset, limit),
             )
         else:
             cursor = await conn.execute(
-                "SELECT date, ranking, slug, title, author_earning, voter_earning "
-                "FROM article_earning_ranking_records WHERE author_slug = %s "
-                "ORDER BY %s DESC OFFSET %s LIMIT %s;",
-                (author_slug, order_by, offset, limit),
+                sql.SQL(
+                    "SELECT date, ranking, slug, title, author_earning, voter_earning "
+                    "FROM article_earning_ranking_records WHERE author_slug = %s "
+                    "ORDER BY {} DESC OFFSET %s LIMIT %s;"
+                ).format(sql.Identifier(order_by)),
+                (author_slug, offset, limit),
             )
 
         data = await cursor.fetchall()
