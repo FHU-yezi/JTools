@@ -14,6 +14,7 @@ from sspeedup.api.litestar import (
 )
 
 from models.tool import StatusEnum, Tool
+from utils.config import CONFIG
 from utils.tools_status import (
     get_data_count,
     get_last_update_time,
@@ -77,8 +78,27 @@ async def get_tool_status_handler(
         )
 
     last_update_time = await get_last_update_time(tool_slug=tool_name)
-
     data_count = await get_data_count(tool_slug=tool_name)
+
+    # 处理未填写 word_split_access_key 配置项的情况
+    if (
+        tool_name == "article-wordcloud-generator"
+        and tool.status == StatusEnum.NORMAL.value
+        and not (
+            CONFIG.word_split_access_key.access_key_id
+            and CONFIG.word_split_access_key.access_key_secret
+        )
+    ):
+        return success(
+            data=GetToolStatusResponse(
+                status=StatusEnum.UNAVAILABLE,
+                reason="后端未设置分词服务凭据",
+                last_update_time=last_update_time,
+                data_update_freq=tool.data_update_freq,
+                data_count=data_count,
+                data_source=tool.data_source,
+            )
+        )
 
     return success(
         data=GetToolStatusResponse(
