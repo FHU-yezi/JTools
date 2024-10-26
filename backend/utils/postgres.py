@@ -21,7 +21,9 @@ class _ConnectionManager:
 
         while True:
             try:
-                self._conn = await AsyncConnection.connect(self._connection_string)
+                self._conn = await AsyncConnection.connect(
+                    self._connection_string, autocommit=True
+                )
                 self._connecting = False
                 return
             except OperationalError:  # noqa: PERF203
@@ -53,7 +55,7 @@ class _ConnectionManager:
 
             # 否则，尝试连接并返回
             await self._blocking_connect()
-            return self._conn # type: ignore
+            return self._conn  # type: ignore
 
         # 已连接，检查状态
         ok = await self._check()
