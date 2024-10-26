@@ -118,14 +118,14 @@ class LotteryWinRecord(Table, frozen=True):
             cursor = await conn.execute(
                 "SELECT DATE_TRUNC('hour', time) AS time, COUNT(*) "
                 "FROM lottery_win_records WHERE time >= %s "
-                "GROUP BY DATE_TRUNC('hour', time);",
+                "GROUP BY DATE_TRUNC('hour', time) ORDER BY DATE_TRUNC('hour', time);",
                 (get_start_time(td),),
             )
         elif resolution == "1d":
             cursor = await conn.execute(
                 "SELECT DATE_TRUNC('day', time) AS time, COUNT(*) "
                 "FROM lottery_win_records WHERE time >= %s "
-                "GROUP BY DATE_TRUNC('day', time);",
+                "GROUP BY DATE_TRUNC('day', time) ORDER BY DATE_TRUNC('day', time);",
                 (get_start_time(td),),
             )
         else:

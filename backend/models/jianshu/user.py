@@ -25,9 +25,7 @@ class User(Table, frozen=True):
     @classmethod
     async def _create_enum(cls) -> None:
         conn = await get_jianshu_conn()
-        await create_enum(
-            conn=conn, name="enum_users_status", enum_class=StatusEnum
-        )
+        await create_enum(conn=conn, name="enum_users_status", enum_class=StatusEnum)
 
     @classmethod
     async def get_by_slug(cls, slug: str) -> Optional["User"]:
