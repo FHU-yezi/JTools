@@ -50,7 +50,7 @@ class LotteryWinRecord(Table, frozen=True):
         conn = await get_jianshu_conn()
         cursor = await conn.execute(
             "SELECT id, time, award_name FROM lottery_win_records "
-            "WHERE slug = %s AND award_name != ALL(%s) "
+            "WHERE user_slug = %s AND award_name != ALL(%s) "
             "ORDER BY time DESC OFFSET %s LIMIT %s;",
             (slug, excluded_awards, offset, limit),
         )
