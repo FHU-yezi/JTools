@@ -5,7 +5,7 @@ from typing import Optional
 from sshared.postgres import Table, create_enum
 from sshared.strict_struct import NonEmptyStr
 
-from utils.postgres import conn
+from utils.postgres import get_jtools_conn
 
 
 class TypeEnum(Enum):
@@ -29,6 +29,7 @@ class TechStack(Table, frozen=True):
 
     @classmethod
     async def _create_enum(cls) -> None:
+        conn = await get_jtools_conn()
         await create_enum(conn=conn, name="enum_tech_stacks_type", enum_class=TypeEnum)
         await create_enum(
             conn=conn, name="enum_tech_stacks_scope", enum_class=ScopeEnum
@@ -36,6 +37,7 @@ class TechStack(Table, frozen=True):
 
     @classmethod
     async def _create_table(cls) -> None:
+        conn = await get_jtools_conn()
         await conn.execute(
             """
             CREATE TABLE IF NOT EXISTS tech_stacks (
@@ -53,6 +55,7 @@ class TechStack(Table, frozen=True):
     async def iter(
         cls, scope: Optional[ScopeEnum] = None
     ) -> AsyncGenerator["TechStack", None]:
+        conn = await get_jtools_conn()
         if scope:
             cursor = await conn.execute(
                 "SELECT name, type, scope, is_self_developed, "

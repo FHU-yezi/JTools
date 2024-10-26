@@ -6,7 +6,7 @@ import { tools } from "../routes";
 import umamiTrack from "../utils/umamiTrack";
 import {
   v2RedirectRoutes,
-  v2UnavaliableRoutes,
+  v2UnavailableRoutes,
   v2UnimplementedRoutes,
 } from "../v2RedirectRoutes";
 
@@ -26,9 +26,9 @@ function handleV2Redirect(
     return;
   }
 
-  if (v2UnavaliableRoutes.includes(appName)) {
-    umamiTrack("v2-redirect", { from: appName, to: "/no-longer-avaliable" });
-    setLocation("/no-longer-avaliable");
+  if (v2UnavailableRoutes.includes(appName)) {
+    umamiTrack("v2-redirect", { from: appName, to: "/no-longer-available" });
+    setLocation("/no-longer-available");
   }
 }
 
@@ -55,8 +55,8 @@ export default function MainPage() {
           downgraded={
             toolStatus?.downgradedTools.includes(item.path.slice(1)) ?? false
           }
-          unavaliable={
-            toolStatus?.unavaliableTools.includes(item.path.slice(1)) ?? false
+          unavailable={
+            toolStatus?.unavailableTools.includes(item.path.slice(1)) ?? false
           }
         />
       ))}

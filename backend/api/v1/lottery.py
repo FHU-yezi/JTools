@@ -14,10 +14,9 @@ from sspeedup.api.litestar import (
     generate_response_spec,
     success,
 )
-from sspeedup.time_helper import get_start_time
 
-from models.jianshu.lottery_win_record import LotteryWinRecordDocument
-from models.jianshu.user import UserDocument
+from models.jianshu.lottery_win_record import LotteryWinRecord
+from models.jianshu.user import User
 
 REWARD_NAMES: list[str] = [
     "收益加成卡100",
@@ -33,56 +32,6 @@ RANGE_TO_TIMEDELTA: dict[str, Optional[timedelta]] = {
     "60d": timedelta(days=60),
     "all": None,
 }
-
-RESOLUTION_TO_TIME_UNIT: dict[str, str] = {
-    "1h": "hour",
-    "1d": "day",
-}
-
-
-async def get_summary_wins_count(td: Optional[timedelta]) -> dict[str, int]:
-    db_result = LotteryWinRecordDocument.aggregate_many(
-        [
-            {
-                "$match": {
-                    "time": {
-                        "$gte": get_start_time(td),
-                    },
-                },
-            },
-            {
-                "$group": {
-                    "_id": "$awardName",
-                    "count": {
-                        "$sum": 1,
-                    },
-                },
-            },
-        ]
-    )
-
-    result = {key: 0 for key in REWARD_NAMES}
-    result.update({item["_id"]: item["count"] async for item in db_result})
-    return result
-
-
-async def get_summary_winners_count(td: Optional[timedelta]) -> dict[str, int]:
-    result: dict[str, int] = {}
-
-    for reward_name in REWARD_NAMES:
-        result[reward_name] = len(
-            await LotteryWinRecordDocument.get_collection().distinct(
-                "userSlug",
-                {
-                    "awardName": reward_name,
-                    "time": {
-                        "$gte": get_start_time(td),
-                    },
-                },
-            )
-        )
-
-    return result
 
 
 def get_summary_average_wins_count_per_winner(
@@ -123,42 +72,6 @@ def get_summary_rarity(wins_count: dict[str, int]) -> dict[str, float]:
     scale: float = 1 / result.get("收益加成卡 100", 1.0)
 
     return {key: round(value * scale, 3) for key, value in result.items()}
-
-
-async def get_rewards_wins_history(
-    td: timedelta, time_unit: str
-) -> dict[datetime, int]:
-    result = LotteryWinRecordDocument.aggregate_many(
-        [
-            {
-                "$match": {
-                    "time": {
-                        "$gt": get_start_time(td),
-                    },
-                }
-            },
-            {
-                "$group": {
-                    "_id": {
-                        "$dateTrunc": {
-                            "date": "$time",
-                            "unit": time_unit,
-                        },
-                    },
-                    "count": {
-                        "$sum": 1,
-                    },
-                }
-            },
-            {
-                "$sort": {
-                    "_id": 1,
-                },
-            },
-        ]
-    )
-
-    return {item["_id"]: item["count"] async for item in result}
 
 
 class GetRewardsResponse(Struct, **RESPONSE_STRUCT_CONFIG):
@@ -206,17 +119,12 @@ async def get_records_handler(
     ] = None,
 ) -> Response:
     records: list[GetRecordsItem] = []
-    async for item in LotteryWinRecordDocument.find_many(
-        {
-            "award_name": {
-                "$nin": excluded_awards if excluded_awards else [],
-            },
-        },
-        sort={"time": "DESC"},
-        skip=offset,
+    for item in await LotteryWinRecord.get_by_excluded_awards(
+        excluded_awards=excluded_awards if excluded_awards else [],
+        offset=offset,
         limit=limit,
     ):
-        user = await UserDocument.find_one({"slug": item.user_slug})
+        user = await User.get_by_slug(item.user_slug)
         if not user:
             return fail(
                 http_code=HTTP_500_INTERNAL_SERVER_ERROR,
@@ -267,8 +175,8 @@ async def get_summary_handler(
     td = RANGE_TO_TIMEDELTA[range]
 
     wins_count, winners_count = await gather(
-        get_summary_wins_count(td),
-        get_summary_winners_count(td),
+        LotteryWinRecord.get_summary_wins_count(td),
+        LotteryWinRecord.get_summary_winners_count(td),
     )
 
     average_wins_count_per_winner = get_summary_average_wins_count_per_winner(
@@ -311,9 +219,9 @@ async def get_reward_wins_history_handler(
     range: Annotated[Literal["1d", "30d", "60d"], Parameter(description="时间范围")],  # noqa: A002
     resolution: Annotated[Literal["1h", "1d"], Parameter(description="统计粒度")],
 ) -> Response:
-    history = await get_rewards_wins_history(
+    history = await LotteryWinRecord.get_wins_history(
         td=RANGE_TO_TIMEDELTA[range],  # type: ignore
-        time_unit=RESOLUTION_TO_TIME_UNIT[resolution],
+        resolution=resolution,
     )
 
     return success(

@@ -1,5 +1,5 @@
 from collections import Counter
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from typing import Annotated, Optional
 
 from jkit.article import Article
@@ -20,7 +20,7 @@ from sspeedup.api.litestar import (
 )
 
 from models.jianshu.article_earning_ranking_record import (
-    ArticleEarningRankingRecordDocument,
+    ArticleEarningRankingRecord,
 )
 from utils.config import CONFIG
 
@@ -30,61 +30,30 @@ splitter = WordSplitter(
 )
 
 
-async def get_latest_onrank_record(
-    author_slug: str, *, minimum_ranking: Optional[int] = None
-) -> Optional[ArticleEarningRankingRecordDocument]:
-    # TODO
-    return await ArticleEarningRankingRecordDocument.find_one(
-        {
-            "authorSlug": author_slug,
-            "ranking": {  # type: ignore
-                "$lte": minimum_ranking if minimum_ranking else 100,
-            },
-        },
-        sort={"date": "DESC"},
-    )
-
-
-async def get_pervious_onrank_record(
-    onrank_record: ArticleEarningRankingRecordDocument,
-    minimum_ranking: Optional[int] = None,
-) -> Optional[ArticleEarningRankingRecordDocument]:
-    return await ArticleEarningRankingRecordDocument.find_one(
-        {
-            "_id": {"$lt": onrank_record._id},
-            "authorSlug": onrank_record.author_slug,
-            "ranking": {  # type: ignore
-                "$lte": minimum_ranking if minimum_ranking else 100,
-            },
-        },
-        sort={"_id": "DESC"},
-    )
-
-
-async def get_earliest_can_recommend_date(author_slug: str) -> Optional[datetime]:
+async def get_earliest_can_recommend_date(author_slug: str) -> Optional[date]:
     counted_article_slugs = set()
 
-    latest_onrank_record = await get_latest_onrank_record(
-        author_slug, minimum_ranking=85
+    latest_onrank_record = await ArticleEarningRankingRecord.get_latest_record(
+        author_slug=author_slug, minimum_ranking=85
     )
     if not latest_onrank_record:
         return None
 
     interval_days = 10 if latest_onrank_record.ranking <= 30 else 7
-    counted_article_slugs.add(latest_onrank_record.article.slug)
+    counted_article_slugs.add(latest_onrank_record.slug)
 
     now_record = latest_onrank_record
     while True:
-        pervious_record = await get_pervious_onrank_record(
-            now_record, minimum_ranking=85
+        pervious_record = await ArticleEarningRankingRecord.get_pervious_record(
+            base_record=now_record, minimum_ranking=85
         )
         if not pervious_record:
             return latest_onrank_record.date + timedelta(days=interval_days)
-        if pervious_record.article.slug in counted_article_slugs:
+        if pervious_record.slug in counted_article_slugs:
             now_record = pervious_record
             continue
 
-        counted_article_slugs.add(pervious_record.article.slug)
+        counted_article_slugs.add(pervious_record.slug)
 
         if (
             now_record.ranking <= 30
@@ -216,7 +185,7 @@ async def get_LP_recommend_check_handler(  # noqa: N802
 
     can_recommend_now = article_fp_reward < 35 and (
         not article_next_can_recommend_date
-        or article_next_can_recommend_date <= datetime.now()
+        or article_next_can_recommend_date <= datetime.now().date()
     )
 
     return success(
@@ -224,7 +193,14 @@ async def get_LP_recommend_check_handler(  # noqa: N802
             article_title=article_title,
             can_recommend_now=can_recommend_now,
             FP_reward=article_fp_reward,
-            next_can_recommend_date=article_next_can_recommend_date,
+            # TODO
+            next_can_recommend_date=datetime(
+                year=article_next_can_recommend_date.year,
+                month=article_next_can_recommend_date.month,
+                day=article_next_can_recommend_date.day,
+            )
+            if article_next_can_recommend_date
+            else None,
         )
     )
 

@@ -10,7 +10,7 @@ export const v2RedirectRoutes: { [orginal: string]: string } = {
   thanks: "/thanks",
 };
 
-export const v2UnavaliableRoutes: string[] = [
+export const v2UnavailableRoutes: string[] = [
   "diszeroer_helper",
   "article_publish_time_viewer",
 ];

@@ -3,7 +3,7 @@ import { useData } from "../hooks/useData";
 interface GetResponse {
   version: string;
   downgradedTools: string[];
-  unavaliableTools: string[];
+  unavailableTools: string[];
 }
 export function useStatus() {
   return useData<Record<string, never>, GetResponse>({

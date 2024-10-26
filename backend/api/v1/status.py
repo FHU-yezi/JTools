@@ -14,8 +14,8 @@ from sspeedup.api.litestar import (
 )
 
 from models.tool import StatusEnum, Tool
+from utils.config import CONFIG
 from utils.tools_status import (
-    COLLECTION_NAME_TO_OBJ,
     get_data_count,
     get_last_update_time,
 )
@@ -25,7 +25,7 @@ from version import VERSION
 class GetResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     version: str
     downgraded_tools: list[str]
-    unavaliable_tools: list[str]
+    unavailable_tools: list[str]
 
 
 @get(
@@ -42,7 +42,7 @@ async def get_handler() -> Response:
             downgraded_tools=list(
                 await Tool.get_tools_slugs_by_status(StatusEnum.DOWNGRADED)
             ),
-            unavaliable_tools=list(
+            unavailable_tools=list(
                 await Tool.get_tools_slugs_by_status(StatusEnum.UNAVAILABLE)
             ),
         )
@@ -77,25 +77,28 @@ async def get_tool_status_handler(
             msg="小工具不存在",
         )
 
-    if (
-        tool.last_update_time_table
-        and tool.last_update_time_order_by
-        and tool.last_update_time_target_field
-    ):
-        last_update_time = await get_last_update_time(
-            collection=COLLECTION_NAME_TO_OBJ[tool.last_update_time_table],
-            order_by=tool.last_update_time_order_by,
-            target_field=tool.last_update_time_target_field,
-        )
-    else:
-        last_update_time = None
+    last_update_time = await get_last_update_time(tool_slug=tool_name)
+    data_count = await get_data_count(tool_slug=tool_name)
 
-    if tool.data_count_table:
-        data_count = await get_data_count(
-            collection=COLLECTION_NAME_TO_OBJ[tool.data_count_table],
+    # 处理未填写 word_split_access_key 配置项的情况
+    if (
+        tool_name == "article-wordcloud-generator"
+        and tool.status == StatusEnum.NORMAL.value
+        and not (
+            CONFIG.word_split_access_key.access_key_id
+            and CONFIG.word_split_access_key.access_key_secret
         )
-    else:
-        data_count = None
+    ):
+        return success(
+            data=GetToolStatusResponse(
+                status=StatusEnum.UNAVAILABLE,
+                reason="后端未设置分词服务凭据",
+                last_update_time=last_update_time,
+                data_update_freq=tool.data_update_freq,
+                data_count=data_count,
+                data_source=tool.data_source,
+            )
+        )
 
     return success(
         data=GetToolStatusResponse(

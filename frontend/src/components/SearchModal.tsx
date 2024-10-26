@@ -49,7 +49,7 @@ export default function SearchModal() {
                 description={item.description}
                 path={item.path}
                 downgraded={false}
-                unavaliable={false}
+                unavailable={false}
               />
             ))
           ) : (

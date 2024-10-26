@@ -6,7 +6,7 @@ from sshared.postgres import Table, create_enum
 from sshared.strict_struct import NonEmptyStr
 
 from utils.log import logger
-from utils.postgres import conn
+from utils.postgres import get_jtools_conn
 
 
 class StatusEnum(Enum):
@@ -28,10 +28,12 @@ class Tool(Table, frozen=True):
 
     @classmethod
     async def _create_enum(cls) -> None:
+        conn = await get_jtools_conn()
         await create_enum(conn=conn, name="enum_tools_status", enum_class=StatusEnum)
 
     @classmethod
     async def _create_table(cls) -> None:
+        conn = await get_jtools_conn()
         await conn.execute(
             """
             CREATE TABLE IF NOT EXISTS tools (
@@ -52,6 +54,7 @@ class Tool(Table, frozen=True):
     async def init(cls) -> None:
         await super().init()
 
+        conn = await get_jtools_conn()
         cursor = await conn.execute("SELECT COUNT(*) FROM tools;")
         if (await cursor.fetchone())[0] == 0:  # type: ignore
             # 表为空，填充默认数据
@@ -72,6 +75,7 @@ class Tool(Table, frozen=True):
 
     async def create(self) -> None:
         self.validate()
+        conn = await get_jtools_conn()
         await conn.execute(
             "INSERT INTO tools (slug, status, status_description, "
             "data_update_freq, last_update_time_table, last_update_time_order_by, "
@@ -92,6 +96,7 @@ class Tool(Table, frozen=True):
 
     @classmethod
     async def get_by_slug(cls, slug: str) -> Optional["Tool"]:
+        conn = await get_jtools_conn()
         cursor = await conn.execute(
             "SELECT status, status_description, data_update_freq, "
             "last_update_time_table, last_update_time_order_by, "
@@ -117,6 +122,7 @@ class Tool(Table, frozen=True):
 
     @classmethod
     async def get_tools_slugs_by_status(cls, status: StatusEnum) -> tuple[str, ...]:
+        conn = await get_jtools_conn()
         cursor = await conn.execute(
             "SELECT slug FROM tools WHERE status = %s", (status,)
         )
