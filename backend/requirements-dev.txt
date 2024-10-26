@@ -4,7 +4,7 @@ click==8.1.7
 colorama==0.4.6 ; platform_system == 'Windows'
 dnspython==2.7.0
 exceptiongroup==1.2.2 ; python_full_version < '3.11'
-faker==30.8.0
+faker==30.8.1
 h11==0.14.0
 h2==4.1.0
 hpack==4.0.0
@@ -32,10 +32,10 @@ python-dateutil==2.9.0.post0
 pyyaml==6.0.2
 rich==13.9.3
 rich-click==1.8.3
-ruff==0.7.0
+ruff==0.7.1
 six==1.16.0
 sniffio==1.3.1
-sshared==0.15.0
+sshared==0.16.0
 sspeedup==0.25.1
 tomli==2.0.2
 typing-extensions==4.12.2

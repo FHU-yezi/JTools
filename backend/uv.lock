@@ -255,7 +255,7 @@ requires-dist = [
     { name = "httptools", specifier = ">=0.6.0" },
     { name = "jkit", specifier = ">=3.0.0a16" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.2.0" },
-    { name = "sshared", extras = ["config", "mongo", "postgres"], specifier = ">=0.15.0" },
+    { name = "sshared", extras = ["config", "mongo", "postgres"], specifier = ">=0.16.0" },
     { name = "sspeedup", extras = ["api-litestar"], specifier = ">=0.25.0" },
     { name = "uvicorn", specifier = ">=0.32.0" },
     { name = "uvloop", specifier = ">=0.21.0" },
@@ -766,14 +766,14 @@ wheels = [
 
 [[package]]
 name = "sshared"
-version = "0.15.0"
+version = "0.16.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "msgspec" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/45/95/53cec3483d7e4870c7a01080394c140724adb471e44a72db511c072055e7/sshared-0.15.0.tar.gz", hash = "sha256:87b3f998a8d88b6ee82d454ef19f831edddea273ee6bcdf35b72533bc582eab4", size = 15878 }
+sdist = { url = "https://files.pythonhosted.org/packages/61/c7/1bfe6cd0d7f9dc72ce3aaa44aedd7edecada9fabbc78ea41e2da344328b1/sshared-0.16.0.tar.gz", hash = "sha256:0e3a41687005c39031cd4fb6965a366cba1c4d50e528e954110294d1cfde0be0", size = 16406 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/73/c9/a3bdcc4c536020952ec54d194b7dec1b43e573857042376ecd839865a3c7/sshared-0.15.0-py3-none-any.whl", hash = "sha256:eece5d948b2a04d936ff898aa48409413e6595805bc74387c5c0b07d06199f9f", size = 23630 },
+    { url = "https://files.pythonhosted.org/packages/53/b9/c07621cddb457f45f24ca2b38b0e527963e4b46e7abe548f43468e5d23cf/sshared-0.16.0-py3-none-any.whl", hash = "sha256:aee540eb87d2cefbbf9877841da5dc80eed91b6c6060c05d5b2e42d97b2743d2", size = 24447 },
 ]
 
 [package.optional-dependencies]
