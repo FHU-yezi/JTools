@@ -52,8 +52,9 @@ async def get_rules_handler() -> Response:
     return success(
         data=GetRulesResponse(
             is_open=settings.opening,
-            buy_order_minimum_price=settings.ftn_buy_trade_minimum_price,
-            sell_order_minimum_price=settings.ftn_sell_trade_minimum_price,
+            # TODO
+            buy_order_minimum_price=settings.ftn_sell_trade_minimum_price,
+            sell_order_minimum_price=settings.ftn_buy_trade_minimum_price,
             FTN_order_fee=settings.ftn_trade_fee,
             goods_order_fee=settings.goods_trade_fee,
         )
@@ -196,7 +197,7 @@ async def get_current_amount_distribution_handler(
     limit: Annotated[int, Parameter(description="结果数量", gt=0, le=100)] = 10,
 ) -> Response:
     amount_distribution = await FTNMacketRecord.get_current_amount_distribution(
-        type=type_.upper(), # type: ignore
+        type=type_.upper(),  # type: ignore
         limit=limit,
     )
 
