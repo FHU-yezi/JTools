@@ -25,16 +25,14 @@ class FTNMacketRecord(Table, frozen=True):
                 "SELECT MIN(price) FROM ftn_macket_records "
                 "JOIN ftn_orders ON ftn_macket_records.id = ftn_orders.id "
                 "WHERE type = 'BUY' AND remaining_amount > 0 "
-                "AND fetch_time = (SELECT fetch_time FROM ftn_macket_records "
-                "ORDER BY fetch_time DESC LIMIT 1) LIMIT 10;",
+                "AND fetch_time = (SELECT MAX(fetch_time) FROM ftn_macket_records);"
             )
         else:
             cursor = await conn.execute(
                 "SELECT MAX(price) FROM ftn_macket_records "
                 "JOIN ftn_orders ON ftn_macket_records.id = ftn_orders.id "
                 "WHERE type = 'SELL' AND remaining_amount > 0 "
-                "AND fetch_time = (SELECT fetch_time FROM ftn_macket_records "
-                "ORDER BY fetch_time DESC LIMIT 1) LIMIT 10;",
+                "AND fetch_time = (SELECT MAX(fetch_time) FROM ftn_macket_records);"
             )
 
         return (await cursor.fetchone())[0]  # type: ignore
@@ -46,8 +44,7 @@ class FTNMacketRecord(Table, frozen=True):
             "SELECT SUM(remaining_amount) FROM ftn_macket_records "
             "JOIN ftn_orders ON ftn_macket_records.id = ftn_orders.id "
             "WHERE type = %s AND fetch_time = "
-            "(SELECT fetch_time FROM ftn_macket_records "
-            "ORDER BY fetch_time DESC LIMIT 1) LIMIT 10;",
+            "(SELECT MAX(fetch_time) FROM ftn_macket_records);",
             (type,),
         )
 
@@ -64,8 +61,8 @@ class FTNMacketRecord(Table, frozen=True):
             "SELECT price, SUM(remaining_amount) FROM ftn_macket_records "
             "JOIN ftn_orders ON ftn_macket_records.id = ftn_orders.id "
             "WHERE type = %s AND remaining_amount > 0 AND fetch_time = "
-            "(SELECT fetch_time FROM ftn_macket_records ORDER BY fetch_time "
-            "DESC LIMIT 1) GROUP BY price LIMIT %s;",
+            "(SELECT MAX(fetch_time) FROM ftn_macket_records) "
+            "GROUP BY price ORDER BY price LIMIT %s;",
             (type, limit),
         )
 
@@ -121,8 +118,8 @@ class FTNMacketRecord(Table, frozen=True):
     ) -> dict[datetime, int]:
         conn = await get_jpep_conn()
         cursor = await conn.execute(
-            "SELECT DATE_TRUNC(%s, fetch_time) AS time, AVG(sum)::INTEGER"
-            " FROM (SELECT fetch_time, SUM(remaining_amount) "
+            "SELECT DATE_TRUNC(%s, fetch_time) AS time, AVG(sum)::INTEGER "
+            "FROM (SELECT fetch_time, SUM(remaining_amount) "
             "FROM ftn_macket_records JOIN ftn_orders "
             "ON ftn_macket_records.id = ftn_orders.id WHERE type = %s "
             "AND fetch_time >= %s GROUP BY fetch_time) "
