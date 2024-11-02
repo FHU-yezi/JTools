@@ -2,14 +2,12 @@ from sshared.config import ConfigBase
 from sshared.config.blocks import (
     AliyunAccessKeyBlock,
     LoggingBlock,
-    MongoBlock,
     PostgresBlock,
     UvicornBlock,
 )
 
 
 class _Config(ConfigBase, frozen=True):
-    mongo: MongoBlock
     jtools_postgres: PostgresBlock
     jianshu_postgres: PostgresBlock
     jpep_postgres: PostgresBlock

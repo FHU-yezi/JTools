@@ -237,7 +237,7 @@ dependencies = [
     { name = "httptools" },
     { name = "jkit" },
     { name = "psycopg", extra = ["binary"] },
-    { name = "sshared", extra = ["config", "mongo", "postgres"] },
+    { name = "sshared", extra = ["config", "postgres"] },
     { name = "sspeedup", extra = ["api-litestar"] },
     { name = "uvicorn" },
     { name = "uvloop" },
@@ -255,7 +255,7 @@ requires-dist = [
     { name = "httptools", specifier = ">=0.6.0" },
     { name = "jkit", specifier = ">=3.0.0a16" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.2.0" },
-    { name = "sshared", extras = ["config", "mongo", "postgres"], specifier = ">=0.17.0" },
+    { name = "sshared", extras = ["config", "postgres"], specifier = ">=0.17.0" },
     { name = "sspeedup", extras = ["api-litestar"], specifier = ">=0.25.0" },
     { name = "uvicorn", specifier = ">=0.32.0" },
     { name = "uvloop", specifier = ">=0.21.0" },
@@ -779,9 +779,6 @@ wheels = [
 [package.optional-dependencies]
 config = [
     { name = "tomli" },
-]
-mongo = [
-    { name = "motor" },
 ]
 postgres = [
     { name = "psycopg" },

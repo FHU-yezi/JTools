@@ -1,8 +1,3 @@
-[mongo]
-    host = "localhost"
-    port = 27017
-    database = "jtools"
-
 [jtools_postgres]
     host = "localhost"
     port = 5432

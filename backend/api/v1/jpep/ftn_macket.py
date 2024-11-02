@@ -13,7 +13,7 @@ from sspeedup.api.litestar import (
 )
 from sspeedup.time_helper import get_start_time
 
-from models.jpep.ftn_trade_order import FTNTradeOrderDocument
+from models.jpep.ftn_macket_record import FTNMacketRecord
 
 RANGE_TO_TIMEDELTA: dict[str, timedelta] = {
     "24h": timedelta(hours=24),
@@ -22,188 +22,13 @@ RANGE_TO_TIMEDELTA: dict[str, timedelta] = {
     "30d": timedelta(days=30),
 }
 
-RESOLUTION_TO_TIME_UNIT: dict[str, str] = {
-    "5m": "minute",  # 目前未使用
+RESOLUTION_TO_TIME_UNIT: dict[str, Literal["hour", "day"]] = {
+    "5m": "hour",  # TODO
     "1h": "hour",
     "1d": "day",
 }
 
 PLATFORM_SETTINGS = PlatformSettings()
-
-
-async def get_data_update_time() -> datetime:
-    latest_record = await FTNTradeOrderDocument.find_one(sort={"fetchTime": "DESC"})
-
-    return latest_record.fetch_time  # type: ignore
-
-
-async def get_latest_order(
-    type_: Literal["buy", "sell"],
-) -> Optional[FTNTradeOrderDocument]:
-    time = await get_data_update_time()
-
-    return await FTNTradeOrderDocument.find_one(
-        {"fetchTime": time, "type": type_, "amount.tradable": {"$ne": 0}},
-        sort={"price": "ASC" if type_ == "buy" else "DESC"},
-    )
-
-
-async def get_current_amount(type_: Literal["buy", "sell"]) -> Optional[int]:
-    time = await get_data_update_time()
-
-    result = await FTNTradeOrderDocument.aggregate_one(
-        [
-            {
-                "$match": {
-                    "fetchTime": time,
-                    "type": type_,
-                }
-            },
-            {
-                "$group": {
-                    "_id": None,
-                    "sum": {
-                        "$sum": "$amount.tradable",
-                    },
-                },
-            },
-        ]
-    )
-
-    return result["sum"] if result else None
-
-
-async def get_price_history(
-    type_: Literal["buy", "sell"], td: timedelta, time_unit: str
-) -> dict[datetime, float]:
-    result = FTNTradeOrderDocument.aggregate_many(
-        [
-            {
-                "$match": {
-                    "fetchTime": {
-                        "$gte": get_start_time(td),
-                    },
-                    "type": type_,
-                },
-            },
-            {
-                "$group": {
-                    "_id": (
-                        {
-                            "$dateTrunc": {
-                                "date": "$fetchTime",
-                                "unit": time_unit,
-                            },
-                        }
-                    )
-                    if time_unit != "minute"
-                    else "$fetchTime",
-                    "price": {
-                        "$min" if type_ == "buy" else "$max": "$price",
-                    },
-                },
-            },
-            {
-                "$sort": {
-                    "_id": 1,
-                },
-            },
-        ]
-    )
-
-    return {item["_id"]: item["price"] async for item in result}
-
-
-async def get_amount_history(
-    type_: Literal["buy", "sell"], td: timedelta, time_unit: str
-) -> dict[datetime, float]:
-    result = FTNTradeOrderDocument.aggregate_many(
-        [
-            {
-                "$match": {
-                    "fetchTime": {
-                        "$gte": get_start_time(td),
-                    },
-                    "type": type_,
-                },
-            },
-            {
-                "$group": {
-                    "_id": "$fetchTime",
-                    "amount": {
-                        "$sum": "$amount.tradable",
-                    },
-                },
-            },
-            {
-                "$group": {
-                    "_id": (
-                        {
-                            "$dateTrunc": {
-                                "date": "$_id",
-                                "unit": time_unit,
-                            },
-                        }
-                    )
-                    if time_unit != "minute"
-                    else "$_id",
-                    "amount": {
-                        "$avg": "$amount",
-                    },
-                },
-            },
-            {
-                "$sort": {
-                    "_id": 1,
-                },
-            },
-        ]
-    )
-
-    return {item["_id"]: round(item["amount"]) async for item in result}
-
-
-async def get_current_amount_distribution(
-    type_: Literal["buy", "sell"],
-    limit: int,
-) -> dict[float, int]:
-    time = await get_data_update_time()
-
-    result = FTNTradeOrderDocument.aggregate_many(
-        [
-            {
-                "$match": {
-                    "fetchTime": time,
-                    "type": type_,
-                },
-            },
-            {
-                "$group": {
-                    "_id": "$price",
-                    "amount": {
-                        "$sum": "$amount.tradable",
-                    },
-                },
-            },
-            {
-                "$match": {
-                    "amount": {
-                        "$ne": 0,
-                    },
-                },
-            },
-            {
-                "$sort": {
-                    "_id": 1 if type_ == "buy" else -1,
-                },
-            },
-            {
-                "$limit": limit,
-            },
-        ]
-    )
-
-    return {item["_id"]: item["amount"] async for item in result}
 
 
 class GetRulesResponse(Struct, **RESPONSE_STRUCT_CONFIG):
@@ -248,12 +73,10 @@ class GetCurrentPriceResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     },
 )
 async def get_current_price_handler() -> Response:
-    buy_order, sell_order = await gather(
-        get_latest_order("buy"), get_latest_order("sell")
+    buy_price, sell_price = await gather(
+        FTNMacketRecord.get_current_price("BUY"),
+        FTNMacketRecord.get_current_price("SELL"),
     )
-
-    buy_price = buy_order.price if buy_order else None
-    sell_price = sell_order.price if sell_order else None
 
     return success(
         data=GetCurrentPriceResponse(
@@ -277,8 +100,8 @@ class GetCurrentAmountResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 )
 async def get_current_amount_handler() -> Response:
     buy_amount, sell_amount = await gather(
-        get_current_amount("buy"),
-        get_current_amount("sell"),
+        FTNMacketRecord.get_current_amount("BUY"),
+        FTNMacketRecord.get_current_amount("SELL"),
     )
 
     return success(
@@ -309,9 +132,9 @@ async def get_price_history_handler(
     ],
     resolution: Annotated[Literal["5m", "1h", "1d"], Parameter(description="统计粒度")],
 ) -> Response:
-    history = await get_price_history(
-        type_=type_,
-        td=RANGE_TO_TIMEDELTA[range],
+    history = await FTNMacketRecord.get_price_history(
+        type=type_.upper(),  # type: ignore
+        start_time=get_start_time(RANGE_TO_TIMEDELTA[range]),
         time_unit=RESOLUTION_TO_TIME_UNIT[resolution],
     )
 
@@ -323,7 +146,7 @@ async def get_price_history_handler(
 
 
 class GetAmountHistoryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
-    history: dict[datetime, float]
+    history: dict[datetime, int]
 
 
 @get(
@@ -342,9 +165,9 @@ async def get_amount_history_handler(
     ],
     resolution: Annotated[Literal["5m", "1h", "1d"], Parameter(description="统计粒度")],
 ) -> Response:
-    history = await get_amount_history(
-        type_=type_,
-        td=RANGE_TO_TIMEDELTA[range],
+    history = await FTNMacketRecord.get_amount_history(
+        type=type_.upper(),  # type: ignore
+        start_time=get_start_time(RANGE_TO_TIMEDELTA[range]),
         time_unit=RESOLUTION_TO_TIME_UNIT[resolution],
     )
 
@@ -372,8 +195,9 @@ async def get_current_amount_distribution_handler(
     ],
     limit: Annotated[int, Parameter(description="结果数量", gt=0, le=100)] = 10,
 ) -> Response:
-    amount_distribution = await get_current_amount_distribution(
-        type_=type_, limit=limit
+    amount_distribution = await FTNMacketRecord.get_current_amount_distribution(
+        type=type_.upper(), # type: ignore
+        limit=limit,
     )
 
     return success(
