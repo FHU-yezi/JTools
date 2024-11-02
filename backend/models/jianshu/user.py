@@ -1,3 +1,4 @@
+from collections.abc import AsyncGenerator
 from datetime import datetime
 from enum import Enum
 from typing import Optional
@@ -74,12 +75,12 @@ class User(Table, frozen=True):
         )
 
     @classmethod
-    async def get_similar_names(cls, name: str, limit: int) -> list[str]:
+    async def iter_similar_names(cls, name: str, limit: int) -> AsyncGenerator[str]:
         conn = await get_jianshu_conn()
         cursor = await conn.execute(
             "SELECT name FROM users WHERE name LIKE %s LIMIT %s;",
             (f"{name}%", limit),
         )
 
-        data = await cursor.fetchall()
-        return [x[0] for x in data]
+        async for item in cursor:
+            yield item[0]

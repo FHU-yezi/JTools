@@ -1,3 +1,4 @@
+from collections.abc import AsyncGenerator
 from datetime import datetime, timedelta
 from typing import Optional
 
@@ -22,9 +23,9 @@ class LotteryWinRecord(Table, frozen=True):
     award_name: NonEmptyStr
 
     @classmethod
-    async def get_by_excluded_awards(
+    async def iter_by_excluded_awards(
         cls, excluded_awards: list[str], offset: int, limit: int
-    ) -> list["LotteryWinRecord"]:
+    ) -> AsyncGenerator["LotteryWinRecord"]:
         conn = await get_jianshu_conn()
         cursor = await conn.execute(
             "SELECT id, time, user_slug, award_name FROM lottery_win_records "
@@ -32,21 +33,18 @@ class LotteryWinRecord(Table, frozen=True):
             (excluded_awards, offset, limit),
         )
 
-        data = await cursor.fetchall()
-        return [
-            cls(
+        async for item in cursor:
+            yield cls(
                 id=item[0],
                 time=item[1],
                 user_slug=item[2],
                 award_name=item[3],
             )
-            for item in data
-        ]
 
     @classmethod
-    async def get_by_slug_and_excluded_awards(
+    async def iter_by_slug_and_excluded_awards(
         cls, slug: str, excluded_awards: list[str], offset: int, limit: int
-    ) -> list["LotteryWinRecord"]:
+    ) -> AsyncGenerator["LotteryWinRecord"]:
         conn = await get_jianshu_conn()
         cursor = await conn.execute(
             "SELECT id, time, award_name FROM lottery_win_records "
@@ -55,16 +53,13 @@ class LotteryWinRecord(Table, frozen=True):
             (slug, excluded_awards, offset, limit),
         )
 
-        data = await cursor.fetchall()
-        return [
-            cls(
+        async for item in cursor:
+            yield cls(
                 id=item[0],
                 time=item[1],
                 user_slug=slug,
                 award_name=item[2],
             )
-            for item in data
-        ]
 
     @classmethod
     async def get_summary_wins_count(cls, td: Optional[timedelta]) -> dict[str, int]:
@@ -81,10 +76,8 @@ class LotteryWinRecord(Table, frozen=True):
                 "GROUP BY award_name;"
             )
 
-        data = await cursor.fetchall()
-
         result = {key: 0 for key in REWARD_NAMES}
-        result.update({item[0]: item[1] for item in data})
+        result.update({item[0]: item[1] async for item in cursor})
         return result
 
     @classmethod
@@ -103,10 +96,8 @@ class LotteryWinRecord(Table, frozen=True):
                 "FROM lottery_win_records GROUP BY award_name;",
             )
 
-        data = await cursor.fetchall()
-
         result = {key: 0 for key in REWARD_NAMES}
-        result.update({item[0]: item[1] for item in data})
+        result.update({item[0]: item[1] async for item in cursor})
         return result
 
     @classmethod
@@ -131,6 +122,4 @@ class LotteryWinRecord(Table, frozen=True):
         else:
             raise ValueError(f"错误的 resolution 取值：{resolution}")
 
-        data = await cursor.fetchall()
-
-        return {item[0]: item[1] for item in data}
+        return {item[0]: item[1] async for item in cursor}

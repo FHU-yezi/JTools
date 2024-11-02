@@ -7,12 +7,12 @@
 
 ## 数据库准备
 
-本服务的部分模块依赖外部数据源 `jianshu` 数据库，您需事先下载并进行导入。
+本服务的部分模块依赖外部数据源 `jianshu` 和 `jpep` 数据库，您需事先下载并进行导入。
 
 创建用户：
 
 ```sql
-CREATE ROLE jtools LOGIN PASSWORD 'my_password';
+CREATE ROLE jtools LOGIN PASSWORD 'jtools';
 ```
 
 创建数据库：
@@ -35,7 +35,7 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm;
 （`logs` 数据库）
 
 ```sql
-GRANT CREATE ON SCHEMA public TO jtools
+GRANT CREATE ON SCHEMA public TO jtools;
 ```
 
 （`jianshu` 数据库）
@@ -44,6 +44,13 @@ GRANT CREATE ON SCHEMA public TO jtools
 GRANT SELECT ON TABLE article_earning_ranking_records TO jtools;
 GRANT SELECT ON TABLE lottery_win_records TO jtools;
 GRANT SELECT ON TABLE users TO jtools;
+```
+
+（`jpep` 数据库）
+
+```sql
+GRANT SELECT ON TABLE ftn_macket_records TO jtools;
+GRANT SELECT ON TABLE ftn_orders TO jtools;
 ```
 
 创建索引：
@@ -70,8 +77,9 @@ cp config.example.toml config.toml
 
 如果您使用 Docker 进行部署：
 
-- mongo.host 填写 `mongodb`
-- postgres.host 填写 `postgres`
+- jtools_postgres.host 填写 `postgres`
+- jianshu_postgres.host 填写 `postgres`
+- jpep_postgres.host 填写 `postgres`
 - uvicorn.host 填写 `0.0.0.0`
 
 同时，您需要填写正确的 `postgres.user` 和 `postgres.password`。
@@ -85,11 +93,8 @@ cp config.example.toml config.toml
 创建 Docker 网络：
 
 ```shell
-docker network create mongodb
 docker network create postgres
 ```
-
-您需要在 `mongodb` 网络的 `27017` 端口上运行一个 MongoDB 服务，该服务不开启身份验证。
 
 您需要在 `postgres` 网络的 `5173` 端口上运行一个 PostgreSQL 服务，身份验证相关信息请参考 `部署 - 数据库准备` 一节。
 
@@ -128,8 +133,6 @@ curl -fsSL https://bun.sh/install | bash
 ```shell
 bun install
 ```
-
-您需要在 `27017` 端口上运行一个 MongoDB 服务，该服务不开启身份验证。
 
 您需要在 `5173` 端口上运行一个 PostgreSQL 服务，身份验证相关信息请参考 `部署 - 数据库准备` 一节。
 

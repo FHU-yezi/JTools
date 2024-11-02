@@ -119,7 +119,7 @@ async def get_records_handler(
     ] = None,
 ) -> Response:
     records: list[GetRecordsItem] = []
-    for item in await LotteryWinRecord.get_by_excluded_awards(
+    async for item in LotteryWinRecord.iter_by_excluded_awards(
         excluded_awards=excluded_awards if excluded_awards else [],
         offset=offset,
         limit=limit,

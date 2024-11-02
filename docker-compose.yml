@@ -1,13 +1,11 @@
 networks:
   internal:
-  mongodb:
-    external: true
   postgres:
     external: true
 
 services:
   frontend:
-    image: jtools-frontend:3.16.0
+    image: jtools-frontend:3.17.0
     container_name: jtools-frontend
     build:
       dockerfile: Dockerfile.frontend
@@ -24,7 +22,7 @@ services:
         delay: 5s
         max_attempts: 3
   backend:
-    image: jtools-backend:3.16.0
+    image: jtools-backend:3.17.0
     container_name: jtools-backend
     build:
       dockerfile: Dockerfile.backend
@@ -32,7 +30,6 @@ services:
       - ./backend/config.toml:/app/config.toml:ro
     networks:
       - internal
-      - mongodb
       - postgres
     environment:
       - PYTHONUNBUFFERED=1

@@ -115,7 +115,7 @@ async def get_lottery_win_records(
 
     records: list[GetLotteryWinRecordItem] = [
         GetLotteryWinRecordItem(time=item.time, reward_name=item.award_name)
-        for item in await LotteryWinRecord.get_by_slug_and_excluded_awards(
+        async for item in LotteryWinRecord.iter_by_slug_and_excluded_awards(
             slug=user_slug,
             excluded_awards=excluded_awards if excluded_awards else [],
             offset=offset,
@@ -182,7 +182,7 @@ async def get_on_article_rank_records_handler(
             article_url=article_slug_to_url(item.slug),  # type: ignore
             FP_reward=item.author_earning,
         )
-        for item in await ArticleEarningRankingRecord.get_by_author_slug(
+        async for item in ArticleEarningRankingRecord.iter_by_author_slug(
             author_slug=user_slug,
             order_by=order_by,
             order_direction=order_direction.upper(),  # type: ignore
@@ -233,7 +233,7 @@ async def get_on_article_rank_records_by_user_name_handler(
             article_url=article_slug_to_url(item.slug),  # type: ignore
             FP_reward=item.author_earning,
         )
-        for item in await ArticleEarningRankingRecord.get_by_author_slug(
+        async for item in ArticleEarningRankingRecord.iter_by_author_slug(
             author_slug=user.slug,
             order_by=order_by,
             order_direction=order_direction.upper(),  # type: ignore
@@ -280,7 +280,7 @@ async def get_on_article_rank_summary_handler(
     top30 = 0
     top50 = 0
     total = 0
-    for item in await ArticleEarningRankingRecord.get_by_author_slug(
+    async for item in ArticleEarningRankingRecord.iter_by_author_slug(
         author_slug=user_slug,
         order_by="date",
         order_direction="ASC",
@@ -326,7 +326,7 @@ async def get_on_article_rank_summary_by_user_name_handler(
     top30 = 0
     top50 = 0
     total = 0
-    for item in await ArticleEarningRankingRecord.get_by_author_slug(
+    async for item in ArticleEarningRankingRecord.iter_by_author_slug(
         author_slug=user.slug,
         order_by="date",
         order_direction="ASC",
@@ -366,8 +366,7 @@ async def get_name_autocomplete_handler(
     name_part: Annotated[str, Parameter(description="用户昵称片段", max_length=50)],
     limit: Annotated[int, Parameter(description="结果数量", gt=0, le=100)] = 5,
 ) -> Response:
-    result = await DbUser.get_similar_names(name_part, limit=limit)
-    result = result[:limit]
+    result = [item async for item in DbUser.iter_similar_names(name_part, limit=limit)]
 
     return success(
         data=GetNameAutocompleteResponse(

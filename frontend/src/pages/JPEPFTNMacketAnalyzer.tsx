@@ -195,8 +195,8 @@ function RealtimeAmount() {
 
 function RealtimeAmountDistribution() {
   const tradeTypeOptions = [
-    { label: "买单", value: "buy" },
-    { label: "卖单", value: "sell" },
+    { label: "买贝（左侧）", value: "buy" },
+    { label: "卖贝（右侧）", value: "sell" },
   ];
 
   const tradeType = useSignal<"buy" | "sell">("buy");
@@ -206,13 +206,14 @@ function RealtimeAmountDistribution() {
 
   return (
     <Column gap="gap-2">
-      <Heading3>挂单价格分布</Heading3>
-      <Select
-        id="amount-distribution-trade-type"
-        value={tradeType}
-        options={tradeTypeOptions}
-        fullWidth
-      />
+      <Row className="justify-between" itemsCenter>
+        <Heading3>挂单价格分布</Heading3>
+        <Select
+          id="amount-distribution-trade-type"
+          value={tradeType}
+          options={tradeTypeOptions}
+        />
+      </Row>
       <BarChart
         className="h-72 max-w-xl w-full"
         loading={!amountDistribution}
@@ -271,13 +272,14 @@ function PriceHistory() {
 
   return (
     <Column gap="gap-2">
-      <Heading2>贝价趋势</Heading2>
-      <Select
-        id="price-trending-time-range"
-        value={timeRange}
-        options={timeRangeOptions}
-        fullWidth
-      />
+      <Row className="justify-between" itemsCenter>
+        <Heading2>贝价趋势</Heading2>
+        <Select
+          id="price-trending-time-range"
+          value={timeRange}
+          options={timeRangeOptions}
+        />
+      </Row>
       <LineChart
         className="h-72 max-w-lg w-full"
         loading={!buyPriceTrending || !sellPriceTrending}
@@ -338,13 +340,14 @@ function AmountHistory() {
 
   return (
     <Column gap="gap-2">
-      <Heading2>挂单量趋势</Heading2>
-      <Select
-        id="amount-trending-time-range"
-        value={timeRange}
-        options={timeRangeOptions}
-        fullWidth
-      />
+      <Row className="justify-between" itemsCenter>
+        <Heading2>挂单量趋势</Heading2>
+        <Select
+          id="amount-trending-time-range"
+          value={timeRange}
+          options={timeRangeOptions}
+        />
+      </Row>
       <LineChart
         className="h-72 max-w-lg w-full"
         loading={!buyAmountTrending || !sellAmountTrending}
