@@ -1,7 +1,5 @@
 networks:
   internal:
-  mongodb:
-    external: true
   postgres:
     external: true
 
@@ -32,7 +30,6 @@ services:
       - ./backend/config.toml:/app/config.toml:ro
     networks:
       - internal
-      - mongodb
       - postgres
     environment:
       - PYTHONUNBUFFERED=1
