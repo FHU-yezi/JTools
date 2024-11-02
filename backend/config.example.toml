@@ -3,12 +3,26 @@
     port = 27017
     database = "jtools"
 
-[postgres]
+[jtools_postgres]
     host = "localhost"
     port = 5432
-    user = "postgres"
-    password = "postgres"
+    user = "jtools"
+    password = "jtools"
     database = "jtools"
+
+[jianshu_postgres]
+    host = "localhost"
+    port = 5432
+    user = "jtools"
+    password = "jtools"
+    database = "jianshu"
+
+[jpep_postgres]
+    host = "localhost"
+    port = 5432
+    user = "jtools"
+    password = "jtools"
+    database = "jpep"
 
 [logging]
     host = "localhost"
