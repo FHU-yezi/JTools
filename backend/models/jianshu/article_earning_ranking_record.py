@@ -1,3 +1,4 @@
+from collections.abc import AsyncGenerator
 from datetime import date
 from typing import Literal, Optional
 
@@ -19,14 +20,14 @@ class ArticleEarningRankingRecord(Table, frozen=True):
     voter_earning: PositiveFloat
 
     @classmethod
-    async def get_by_author_slug(
+    async def iter_by_author_slug(
         cls,
         author_slug: str,
         order_by: Literal["date", "ranking"],
         order_direction: Literal["ASC", "DESC"],
         offset: int,
         limit: int,
-    ) -> list["ArticleEarningRankingRecord"]:
+    ) -> AsyncGenerator["ArticleEarningRankingRecord"]:
         conn = await get_jianshu_conn()
         if order_direction == "ASC":
             cursor = await conn.execute(
@@ -47,9 +48,8 @@ class ArticleEarningRankingRecord(Table, frozen=True):
                 (author_slug, offset, limit),
             )
 
-        data = await cursor.fetchall()
-        return [
-            cls(
+        async for item in cursor:
+            yield cls(
                 date=item[0],
                 ranking=item[1],
                 slug=item[2],
@@ -58,8 +58,6 @@ class ArticleEarningRankingRecord(Table, frozen=True):
                 author_earning=item[4],
                 voter_earning=item[5],
             )
-            for item in data
-        ]
 
     @classmethod
     async def get_latest_record(
