@@ -147,7 +147,7 @@ function RecentWins() {
 
 function WinsTrending() {
   const tiameRangeOptions = [
-    { label: "1 天", value: "1d" },
+    { label: "24 小时", value: "1d" },
     { label: "30 天", value: "30d" },
     { label: "60 天", value: "60d" },
   ];
@@ -160,13 +160,15 @@ function WinsTrending() {
 
   return (
     <Column>
-      <Heading2>中奖趋势</Heading2>
-      <Select
-        id="wins-trending-time-range"
-        value={timeRange}
-        options={tiameRangeOptions}
-        fullWidth
-      />
+      <Row className="justify-between" itemsCenter>
+        <Heading2>中奖趋势</Heading2>
+        <Select
+          id="wins-trending-time-range"
+          value={timeRange}
+          options={tiameRangeOptions}
+          fullWidth
+        />
+      </Row>
       <LineChart
         className="h-72 max-w-lg w-full"
         loading={!rewardWinsHistory}
