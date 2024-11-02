@@ -3,6 +3,7 @@
 ## 环境
 
 - Python 3.9+
+- MongoDB
 - PostgreSQL
 
 ## 数据库准备

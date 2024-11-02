@@ -11,9 +11,13 @@
     database = "jtools"
 
 [logging]
+    host = "localhost"
+    port = 5432
+    user = "jtools"
+    password = "jtools"
+    table = "jtools"
     display_level = "DEBUG"
     save_level = "DEBUG"
-    table = "jtools"
 
 [uvicorn]
     host = "localhost"
