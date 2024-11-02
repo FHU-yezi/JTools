@@ -22,8 +22,8 @@ RANGE_TO_TIMEDELTA: dict[str, timedelta] = {
     "30d": timedelta(days=30),
 }
 
-RESOLUTION_TO_TIME_UNIT: dict[str, Literal["hour", "day"]] = {
-    "5m": "hour",  # TODO
+RESOLUTION_MAPPING: dict[str, Literal["max", "hour", "day"]] = {
+    "5m": "max",  # TODO
     "1h": "hour",
     "1d": "day",
 }
@@ -136,7 +136,7 @@ async def get_price_history_handler(
     history = await FTNMacketRecord.get_price_history(
         type=type_.upper(),  # type: ignore
         start_time=get_start_time(RANGE_TO_TIMEDELTA[range]),
-        time_unit=RESOLUTION_TO_TIME_UNIT[resolution],
+        resolution=RESOLUTION_MAPPING[resolution],
     )
 
     return success(
@@ -169,7 +169,7 @@ async def get_amount_history_handler(
     history = await FTNMacketRecord.get_amount_history(
         type=type_.upper(),  # type: ignore
         start_time=get_start_time(RANGE_TO_TIMEDELTA[range]),
-        time_unit=RESOLUTION_TO_TIME_UNIT[resolution],
+        resolution=RESOLUTION_MAPPING[resolution],
     )
 
     return success(

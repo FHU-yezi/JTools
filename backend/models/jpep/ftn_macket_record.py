@@ -77,31 +77,49 @@ class FTNMacketRecord(Table, frozen=True):
         cls,
         type: Literal["BUY", "SELL"],  # noqa: A002
         start_time: datetime,
-        time_unit: Literal["hour", "day"],
+        resolution: Literal["max", "hour", "day"],
     ) -> dict[datetime, float]:
         conn = await get_jpep_conn()
         if type == "BUY":
-            cursor = await conn.execute(
-                "SELECT DATE_TRUNC(%s, fetch_time) AS time, MIN(price) "
-                "FROM ftn_macket_records JOIN ftn_orders "
-                "ON ftn_macket_records.id = ftn_orders.id WHERE type = 'BUY' "
-                "AND fetch_time >= %s GROUP BY time ORDER BY time;",
-                (
-                    time_unit,
-                    start_time,
-                ),
-            )
+            if resolution == "max":
+                cursor = await conn.execute(
+                    "SELECT fetch_time, MIN(price) FROM ftn_macket_records "
+                    "JOIN ftn_orders ON ftn_macket_records.id = ftn_orders.id "
+                    "WHERE type = 'BUY' AND fetch_time >= %s "
+                    "GROUP BY fetch_time ORDER BY fetch_time;",
+                    (start_time,),
+                )
+            else:
+                cursor = await conn.execute(
+                    "SELECT DATE_TRUNC(%s, fetch_time) AS time, MIN(price) "
+                    "FROM ftn_macket_records JOIN ftn_orders "
+                    "ON ftn_macket_records.id = ftn_orders.id WHERE type = 'BUY' "
+                    "AND fetch_time >= %s GROUP BY time ORDER BY time;",
+                    (
+                        resolution,
+                        start_time,
+                    ),
+                )
         else:
-            cursor = await conn.execute(
-                "SELECT DATE_TRUNC(%s, fetch_time) AS time, MAX(price) "
-                "FROM ftn_macket_records JOIN ftn_orders "
-                "ON ftn_macket_records.id = ftn_orders.id WHERE type = 'SELL' "
-                "AND fetch_time >= %s GROUP BY time ORDER BY time;",
-                (
-                    time_unit,
-                    start_time,
-                ),
-            )
+            if resolution == "max":
+                cursor = await conn.execute(
+                    "SELECT fetch_time, MAX(price) FROM ftn_macket_records "
+                    "JOIN ftn_orders ON ftn_macket_records.id = ftn_orders.id "
+                    "WHERE type = 'SELL' AND fetch_time >= %s "
+                    "GROUP BY fetch_time ORDER BY fetch_time;",
+                    (start_time,),
+                )
+            else:
+                cursor = await conn.execute(
+                    "SELECT DATE_TRUNC(%s, fetch_time) AS time, MAX(price) "
+                    "FROM ftn_macket_records JOIN ftn_orders "
+                    "ON ftn_macket_records.id = ftn_orders.id WHERE type = 'SELL' "
+                    "AND fetch_time >= %s GROUP BY time ORDER BY time;",
+                    (
+                        resolution,
+                        start_time,
+                    ),
+                )
 
         result: dict[datetime, float] = {}
         async for item in cursor:
@@ -114,22 +132,31 @@ class FTNMacketRecord(Table, frozen=True):
         cls,
         type: Literal["BUY", "SELL"],  # noqa: A002
         start_time: datetime,
-        time_unit: Literal["hour", "day"],
+        resolution: Literal["max", "hour", "day"],
     ) -> dict[datetime, int]:
         conn = await get_jpep_conn()
-        cursor = await conn.execute(
-            "SELECT DATE_TRUNC(%s, fetch_time) AS time, AVG(sum)::INTEGER "
-            "FROM (SELECT fetch_time, SUM(remaining_amount) "
-            "FROM ftn_macket_records JOIN ftn_orders "
-            "ON ftn_macket_records.id = ftn_orders.id WHERE type = %s "
-            "AND fetch_time >= %s GROUP BY fetch_time) "
-            "GROUP BY time ORDER BY time;",
-            (
-                time_unit,
-                type,
-                start_time,
-            ),
-        )
+        if resolution == "max":
+            cursor = await conn.execute(
+                "SELECT fetch_time, SUM(remaining_amount) FROM ftn_macket_records"
+                " JOIN ftn_orders ON ftn_macket_records.id = ftn_orders.id "
+                "WHERE type = %s AND fetch_time >= %s GROUP BY fetch_time "
+                "ORDER BY fetch_time;",
+                (type, start_time),
+            )
+        else:
+            cursor = await conn.execute(
+                "SELECT DATE_TRUNC(%s, fetch_time) AS time, AVG(sum)::INTEGER "
+                "FROM (SELECT fetch_time, SUM(remaining_amount) "
+                "FROM ftn_macket_records JOIN ftn_orders "
+                "ON ftn_macket_records.id = ftn_orders.id WHERE type = %s "
+                "AND fetch_time >= %s GROUP BY fetch_time) "
+                "GROUP BY time ORDER BY time;",
+                (
+                    resolution,
+                    type,
+                    start_time,
+                ),
+            )
 
         result: dict[datetime, int] = {}
         async for item in cursor:
