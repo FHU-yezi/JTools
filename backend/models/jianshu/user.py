@@ -6,7 +6,7 @@ from typing import Optional
 from sshared.postgres import Table, create_enum
 from sshared.strict_struct import NonEmptyStr, PositiveInt
 
-from utils.postgres import get_jianshu_conn
+from utils.db import get_jianshu_conn
 
 
 class StatusEnum(Enum):

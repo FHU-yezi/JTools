@@ -5,7 +5,7 @@ from typing import Optional
 from sshared.postgres import Table, create_enum
 from sshared.strict_struct import NonEmptyStr
 
-from utils.postgres import get_jtools_conn
+from utils.db import get_jtools_conn
 
 
 class TypeEnum(Enum):

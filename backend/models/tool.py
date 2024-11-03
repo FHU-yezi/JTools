@@ -5,8 +5,8 @@ from psycopg.types.json import Jsonb
 from sshared.postgres import Table, create_enum
 from sshared.strict_struct import NonEmptyStr
 
+from utils.db import get_jtools_conn
 from utils.log import logger
-from utils.postgres import get_jtools_conn
 
 
 class StatusEnum(Enum):

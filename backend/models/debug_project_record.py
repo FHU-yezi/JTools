@@ -4,7 +4,7 @@ from datetime import date
 from sshared.postgres import Table
 from sshared.strict_struct import NonEmptyStr, PositiveInt
 
-from utils.postgres import get_jtools_conn
+from utils.db import get_jtools_conn
 
 
 class DebugProjectRecord(Table, frozen=True):

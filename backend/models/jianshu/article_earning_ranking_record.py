@@ -6,7 +6,7 @@ from psycopg import sql
 from sshared.postgres import Table
 from sshared.strict_struct import NonEmptyStr, PositiveFloat, PositiveInt
 
-from utils.postgres import get_jianshu_conn
+from utils.db import get_jianshu_conn
 
 
 class ArticleEarningRankingRecord(Table, frozen=True):

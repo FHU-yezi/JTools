@@ -6,7 +6,7 @@ from sshared.postgres import Table
 from sshared.strict_struct import NonEmptyStr, PositiveInt
 from sspeedup.time_helper import get_start_time
 
-from utils.postgres import get_jianshu_conn
+from utils.db import get_jianshu_conn
 
 REWARD_NAMES: tuple[str, ...] = (
     "收益加成卡100",

@@ -4,7 +4,7 @@ from typing import Optional
 from psycopg import sql
 
 from models.tool import Tool
-from utils.postgres import get_jianshu_conn, get_jpep_conn
+from utils.db import get_jianshu_conn, get_jpep_conn
 
 
 async def get_last_update_time(tool_slug: str) -> Optional[datetime]:

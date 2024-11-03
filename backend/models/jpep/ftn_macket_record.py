@@ -4,7 +4,7 @@ from typing import Literal
 from sshared.postgres import Table
 from sshared.strict_struct import NonNegativeInt, PositiveFloat, PositiveInt
 
-from utils.postgres import get_jpep_conn
+from utils.db import get_jpep_conn
 
 
 class FTNMacketRecord(Table, frozen=True):
