@@ -29,7 +29,7 @@ class DebugProjectRecord(Table, frozen=True):
                 module TEXT NOT NULL,
                 description TEXT NOT NULL,
                 user_name TEXT NOT NULL,
-                user_slug CHAR(12) NOT NULL,
+                user_slug VARCHAR(12) NOT NULL,
                 reward SMALLINT NOT NULL
             );
             """
