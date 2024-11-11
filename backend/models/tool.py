@@ -5,8 +5,8 @@ from psycopg.types.json import Jsonb
 from sshared.postgres import Table, create_enum
 from sshared.strict_struct import NonEmptyStr
 
+from utils.db import jtools_pool
 from utils.log import logger
-from utils.postgres import get_jtools_conn
 
 
 class StatusEnum(Enum):
@@ -28,83 +28,85 @@ class Tool(Table, frozen=True):
 
     @classmethod
     async def _create_enum(cls) -> None:
-        conn = await get_jtools_conn()
-        await create_enum(conn=conn, name="enum_tools_status", enum_class=StatusEnum)
+        async with jtools_pool.get_conn() as conn:
+            await create_enum(
+                conn=conn, name="enum_tools_status", enum_class=StatusEnum
+            )
 
     @classmethod
     async def _create_table(cls) -> None:
-        conn = await get_jtools_conn()
-        await conn.execute(
-            """
-            CREATE TABLE IF NOT EXISTS tools (
-                slug TEXT CONSTRAINT pk_tools_slug PRIMARY KEY,
-                status enum_tools_status NOT NULL,
-                status_description TEXT,
-                data_update_freq TEXT NOT NULL,
-                last_update_time_table TEXT,
-                last_update_time_order_by TEXT,
-                last_update_time_target_field TEXT,
-                data_count_table TEXT,
-                data_source JSONB
-            );
-            """
-        )
+        async with jtools_pool.get_conn() as conn:
+            await conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS tools (
+                    slug TEXT CONSTRAINT pk_tools_slug PRIMARY KEY,
+                    status enum_tools_status NOT NULL,
+                    status_description TEXT,
+                    data_update_freq TEXT NOT NULL,
+                    last_update_time_table TEXT,
+                    last_update_time_order_by TEXT,
+                    last_update_time_target_field TEXT,
+                    data_count_table TEXT,
+                    data_source JSONB
+                );
+                """
+            )
 
     @classmethod
     async def init(cls) -> None:
         await super().init()
 
-        conn = await get_jtools_conn()
-        cursor = await conn.execute("SELECT COUNT(*) FROM tools;")
-        if (await cursor.fetchone())[0] == 0:  # type: ignore
-            # 表为空，填充默认数据
-            for tool_slug in TOOL_SLUGS:
-                await cls(
-                    slug=tool_slug,
-                    status=StatusEnum.NORMAL,
-                    status_description=None,
-                    data_update_freq="未知",
-                    last_update_time_table=None,
-                    last_update_time_order_by=None,
-                    last_update_time_target_field=None,
-                    data_count_table=None,
-                    data_source=None,
-                ).create()
+        async with jtools_pool.get_conn() as conn:
+            cursor = await conn.execute("SELECT COUNT(*) FROM tools;")
+            if (await cursor.fetchone())[0] == 0:  # type: ignore
+                # 表为空，填充默认数据
+                for tool_slug in TOOL_SLUGS:
+                    await cls(
+                        slug=tool_slug,
+                        status=StatusEnum.NORMAL,
+                        status_description=None,
+                        data_update_freq="未知",
+                        last_update_time_table=None,
+                        last_update_time_order_by=None,
+                        last_update_time_target_field=None,
+                        data_count_table=None,
+                        data_source=None,
+                    ).create()
 
             logger.warn("tools 表为空，已填充默认数据")
 
     async def create(self) -> None:
         self.validate()
-        conn = await get_jtools_conn()
-        await conn.execute(
-            "INSERT INTO tools (slug, status, status_description, "
-            "data_update_freq, last_update_time_table, last_update_time_order_by, "
-            "last_update_time_target_field, data_count_table, data_source) "
-            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);",
-            (
-                self.slug,
-                self.status,
-                self.status_description,
-                self.data_update_freq,
-                self.last_update_time_table,
-                self.last_update_time_order_by,
-                self.last_update_time_target_field,
-                self.data_count_table,
-                Jsonb(self.data_source) if self.data_source else None,
-            ),
-        )
+        async with jtools_pool.get_conn() as conn:
+            await conn.execute(
+                "INSERT INTO tools (slug, status, status_description, "
+                "data_update_freq, last_update_time_table, last_update_time_order_by, "
+                "last_update_time_target_field, data_count_table, data_source) "
+                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);",
+                (
+                    self.slug,
+                    self.status,
+                    self.status_description,
+                    self.data_update_freq,
+                    self.last_update_time_table,
+                    self.last_update_time_order_by,
+                    self.last_update_time_target_field,
+                    self.data_count_table,
+                    Jsonb(self.data_source) if self.data_source else None,
+                ),
+            )
 
     @classmethod
     async def get_by_slug(cls, slug: str) -> Optional["Tool"]:
-        conn = await get_jtools_conn()
-        cursor = await conn.execute(
-            "SELECT status, status_description, data_update_freq, "
-            "last_update_time_table, last_update_time_order_by, "
-            "last_update_time_target_field, data_count_table, data_source "
-            "FROM tools WHERE slug = %s;",
-            (slug,),
-        )
-        data = await cursor.fetchone()
+        async with jtools_pool.get_conn() as conn:
+            cursor = await conn.execute(
+                "SELECT status, status_description, data_update_freq, "
+                "last_update_time_table, last_update_time_order_by, "
+                "last_update_time_target_field, data_count_table, data_source "
+                "FROM tools WHERE slug = %s;",
+                (slug,),
+            )
+            data = await cursor.fetchone()
         if not data:
             return None
 
@@ -122,11 +124,11 @@ class Tool(Table, frozen=True):
 
     @classmethod
     async def get_tools_slugs_by_status(cls, status: StatusEnum) -> tuple[str, ...]:
-        conn = await get_jtools_conn()
-        cursor = await conn.execute(
-            "SELECT slug FROM tools WHERE status = %s", (status,)
-        )
-        return tuple(x[0] for x in await cursor.fetchall())
+        async with jtools_pool.get_conn() as conn:
+            cursor = await conn.execute(
+                "SELECT slug FROM tools WHERE status = %s", (status,)
+            )
+            return tuple(x[0] for x in await cursor.fetchall())
 
 
 TOOL_SLUGS: tuple[str, ...] = (

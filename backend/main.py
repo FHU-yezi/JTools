@@ -9,6 +9,7 @@ from models.jianshu.user import User
 from models.tech_stack import TechStack
 from models.tool import Tool
 from utils.config import CONFIG
+from utils.db import jianshu_pool, jpep_pool, jtools_pool
 from utils.log import logger
 
 logging.getLogger("httpx").setLevel(logging.CRITICAL)
@@ -16,6 +17,10 @@ logging.getLogger("httpcore").setLevel(logging.CRITICAL)
 
 
 async def init_db() -> None:
+    await jianshu_pool.prepare()
+    await jpep_pool.prepare()
+    await jtools_pool.prepare()
+
     await DebugProjectRecord.init()
     await LotteryWinRecord.init()
     await TechStack.init()

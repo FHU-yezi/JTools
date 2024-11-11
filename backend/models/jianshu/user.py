@@ -6,7 +6,7 @@ from typing import Optional
 from sshared.postgres import Table, create_enum
 from sshared.strict_struct import NonEmptyStr, PositiveInt
 
-from utils.postgres import get_jianshu_conn
+from utils.db import jianshu_pool
 
 
 class StatusEnum(Enum):
@@ -25,19 +25,21 @@ class User(Table, frozen=True):
 
     @classmethod
     async def _create_enum(cls) -> None:
-        conn = await get_jianshu_conn()
-        await create_enum(conn=conn, name="enum_users_status", enum_class=StatusEnum)
+        async with jianshu_pool.get_conn() as conn:
+            await create_enum(
+                conn=conn, name="enum_users_status", enum_class=StatusEnum
+            )
 
     @classmethod
     async def get_by_slug(cls, slug: str) -> Optional["User"]:
-        conn = await get_jianshu_conn()
-        cursor = await conn.execute(
-            "SELECT status, update_time, id, name, history_names, "
-            "avatar_url FROM users WHERE slug = %s;",
-            (slug,),
-        )
+        async with jianshu_pool.get_conn() as conn:
+            cursor = await conn.execute(
+                "SELECT status, update_time, id, name, history_names, "
+                "avatar_url FROM users WHERE slug = %s;",
+                (slug,),
+            )
 
-        data = await cursor.fetchone()
+            data = await cursor.fetchone()
         if not data:
             return None
 
@@ -53,14 +55,14 @@ class User(Table, frozen=True):
 
     @classmethod
     async def get_by_name(cls, name: str) -> Optional["User"]:
-        conn = await get_jianshu_conn()
-        cursor = await conn.execute(
-            "SELECT slug, status, update_time, id, history_names, "
-            "avatar_url FROM users WHERE name = %s;",
-            (name,),
-        )
+        async with jianshu_pool.get_conn() as conn:
+            cursor = await conn.execute(
+                "SELECT slug, status, update_time, id, history_names, "
+                "avatar_url FROM users WHERE name = %s;",
+                (name,),
+            )
 
-        data = await cursor.fetchone()
+            data = await cursor.fetchone()
         if not data:
             return None
 
@@ -76,11 +78,11 @@ class User(Table, frozen=True):
 
     @classmethod
     async def iter_similar_names(cls, name: str, limit: int) -> AsyncGenerator[str]:
-        conn = await get_jianshu_conn()
-        cursor = await conn.execute(
-            "SELECT name FROM users WHERE name LIKE %s LIMIT %s;",
-            (f"{name}%", limit),
-        )
+        async with jianshu_pool.get_conn() as conn:
+            cursor = await conn.execute(
+                "SELECT name FROM users WHERE name LIKE %s LIMIT %s;",
+                (f"{name}%", limit),
+            )
 
-        async for item in cursor:
-            yield item[0]
+            async for item in cursor:
+                yield item[0]
