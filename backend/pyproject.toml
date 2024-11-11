@@ -1,6 +1,6 @@
 [project]
 name = "jtools"
-version = "3.17.0"
+version = "3.18.0"
 description = "探索未知"
 license = {file = "LICENSE"}
 authors = [
