@@ -194,32 +194,25 @@ function RealtimeAmount() {
 }
 
 function RealtimeAmountDistribution() {
-  const tradeTypeOptions = [
-    { label: "买贝（左侧）", value: "buy" },
-    { label: "卖贝（右侧）", value: "sell" },
-  ];
-
-  const tradeType = useSignal<"buy" | "sell">("buy");
-  const { data: amountDistribution } = useCurrentAmountDistribution({
-    type: tradeType.value,
+  const { data: buyAmountDistribution } = useCurrentAmountDistribution({
+    type: "buy",
+  });
+  const { data: sellAmountDistribution } = useCurrentAmountDistribution({
+    type: "sell",
   });
 
   return (
     <Column gap="gap-2">
-      <Row className="justify-between" itemsCenter>
-        <Heading3>挂单价格分布</Heading3>
-        <Select
-          id="amount-distribution-trade-type"
-          value={tradeType}
-          options={tradeTypeOptions}
-        />
-      </Row>
+      <Heading3>挂单价格分布</Heading3>
       <BarChart
         className="h-72 max-w-xl w-full"
-        loading={!amountDistribution}
+        loading={!buyAmountDistribution || !sellAmountDistribution}
         options={{
           xAxis: {
             type: "category",
+            axisPointer: {
+              type: "shadow",
+            },
           },
           yAxis: {
             type: "value",
@@ -227,9 +220,21 @@ function RealtimeAmountDistribution() {
           series: [
             {
               type: "bar",
-              data: !amountDistribution
+              name: "买贝（左侧）",
+              stack: "total",
+              data: !buyAmountDistribution
                 ? undefined
-                : Object.entries(amountDistribution.amountDistribution),
+                : Object.entries(buyAmountDistribution.amountDistribution),
+              color: "#3b82f6",
+            },
+            {
+              type: "bar",
+              name: "卖贝（右侧）",
+              stack: "total",
+              data: !sellAmountDistribution
+                ? undefined
+                : Object.entries(sellAmountDistribution.amountDistribution),
+              color: "#a855f7",
             },
           ],
           tooltip: {
