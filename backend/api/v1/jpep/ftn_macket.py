@@ -1,26 +1,19 @@
 from asyncio import gather
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Annotated, Literal, Optional
 
 from jkit.jpep.platform_settings import PlatformSettings
 from litestar import Response, Router, get
 from litestar.params import Parameter
 from msgspec import Struct, field
+from sshared.time import get_datetime_before_now, parse_td_str
 from sspeedup.api.litestar import (
     RESPONSE_STRUCT_CONFIG,
     generate_response_spec,
     success,
 )
-from sspeedup.time_helper import get_start_time
 
 from models.jpep.ftn_macket_record import FTNMacketRecord
-
-RANGE_TO_TIMEDELTA: dict[str, timedelta] = {
-    "24h": timedelta(hours=24),
-    "7d": timedelta(days=7),
-    "15d": timedelta(days=15),
-    "30d": timedelta(days=30),
-}
 
 RESOLUTION_MAPPING: dict[str, Literal["max", "hour", "day"]] = {
     "5m": "max",  # TODO
@@ -135,7 +128,7 @@ async def get_price_history_handler(
 ) -> Response:
     history = await FTNMacketRecord.get_price_history(
         type=type_.upper(),  # type: ignore
-        start_time=get_start_time(RANGE_TO_TIMEDELTA[range]),
+        start_time=get_datetime_before_now(parse_td_str(range)),
         resolution=RESOLUTION_MAPPING[resolution],
     )
 
@@ -168,7 +161,7 @@ async def get_amount_history_handler(
 ) -> Response:
     history = await FTNMacketRecord.get_amount_history(
         type=type_.upper(),  # type: ignore
-        start_time=get_start_time(RANGE_TO_TIMEDELTA[range]),
+        start_time=get_datetime_before_now(parse_td_str(range)),
         resolution=RESOLUTION_MAPPING[resolution],
     )
 

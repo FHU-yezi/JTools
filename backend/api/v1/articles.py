@@ -10,6 +10,7 @@ from litestar.openapi.spec.example import Example
 from litestar.params import Parameter
 from litestar.status_codes import HTTP_400_BAD_REQUEST
 from msgspec import Struct, field
+from sshared.time import to_datetime
 from sshared.word_split import WordSplitter
 from sspeedup.api.code import Code
 from sspeedup.api.litestar import (
@@ -193,12 +194,7 @@ async def get_LP_recommend_check_handler(  # noqa: N802
             article_title=article_title,
             can_recommend_now=can_recommend_now,
             FP_reward=article_fp_reward,
-            # TODO
-            next_can_recommend_date=datetime(
-                year=article_next_can_recommend_date.year,
-                month=article_next_can_recommend_date.month,
-                day=article_next_can_recommend_date.day,
-            )
+            next_can_recommend_date=to_datetime(article_next_can_recommend_date)
             if article_next_can_recommend_date
             else None,
         )
