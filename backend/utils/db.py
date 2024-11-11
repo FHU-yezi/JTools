@@ -1,16 +1,15 @@
-from sshared.postgres import ConnectionManager, enhance_json_process
+from sshared.postgres import Pool, enhance_json_process
 
 from utils.config import CONFIG
 
 enhance_json_process()
 
-
-_jtools_connection_manager = ConnectionManager(CONFIG.jtools_postgres.connection_string)
-_jianshu_connection_manager = ConnectionManager(
-    CONFIG.jianshu_postgres.connection_string
+jtools_pool = Pool(
+    CONFIG.jtools_postgres.connection_string, min_size=1, max_size=4, app_name="JTools"
 )
-_jpep_connection_manager = ConnectionManager(CONFIG.jpep_postgres.connection_string)
-
-get_jtools_conn = _jtools_connection_manager.get_conn
-get_jianshu_conn = _jianshu_connection_manager.get_conn
-get_jpep_conn = _jpep_connection_manager.get_conn
+jianshu_pool = Pool(
+    CONFIG.jianshu_postgres.connection_string, min_size=2, max_size=8, app_name="JTools"
+)
+jpep_pool = Pool(
+    CONFIG.jpep_postgres.connection_string, min_size=2, max_size=8, app_name="JTools"
+)

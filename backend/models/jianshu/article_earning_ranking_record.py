@@ -6,7 +6,7 @@ from psycopg import sql
 from sshared.postgres import Table
 from sshared.strict_struct import NonEmptyStr, PositiveFloat, PositiveInt
 
-from utils.db import get_jianshu_conn
+from utils.db import jianshu_pool
 
 
 class ArticleEarningRankingRecord(Table, frozen=True):
@@ -28,50 +28,50 @@ class ArticleEarningRankingRecord(Table, frozen=True):
         offset: int,
         limit: int,
     ) -> AsyncGenerator["ArticleEarningRankingRecord"]:
-        conn = await get_jianshu_conn()
-        if order_direction == "ASC":
-            cursor = await conn.execute(
-                sql.SQL(
-                    "SELECT date, ranking, slug, title, author_earning, voter_earning "
-                    "FROM article_earning_ranking_records WHERE author_slug = %s "
-                    "ORDER BY {} OFFSET %s LIMIT %s;"
-                ).format(sql.Identifier(order_by)),
-                (author_slug, offset, limit),
-            )
-        else:
-            cursor = await conn.execute(
-                sql.SQL(
-                    "SELECT date, ranking, slug, title, author_earning, voter_earning "
-                    "FROM article_earning_ranking_records WHERE author_slug = %s "
-                    "ORDER BY {} DESC OFFSET %s LIMIT %s;"
-                ).format(sql.Identifier(order_by)),
-                (author_slug, offset, limit),
-            )
+        async with jianshu_pool.get_conn() as conn:
+            if order_direction == "ASC":
+                cursor = await conn.execute(
+                    sql.SQL(
+                        "SELECT date, ranking, slug, title, author_earning, "
+                        "voter_earning FROM article_earning_ranking_records "
+                        "WHERE author_slug = %s ORDER BY {} OFFSET %s LIMIT %s;"
+                    ).format(sql.Identifier(order_by)),
+                    (author_slug, offset, limit),
+                )
+            else:
+                cursor = await conn.execute(
+                    sql.SQL(
+                        "SELECT date, ranking, slug, title, author_earning, "
+                        "voter_earning FROM article_earning_ranking_records "
+                        "WHERE author_slug = %s ORDER BY {} DESC OFFSET %s LIMIT %s;"
+                    ).format(sql.Identifier(order_by)),
+                    (author_slug, offset, limit),
+                )
 
-        async for item in cursor:
-            yield cls(
-                date=item[0],
-                ranking=item[1],
-                slug=item[2],
-                title=item[3],
-                author_slug=author_slug,
-                author_earning=item[4],
-                voter_earning=item[5],
-            )
+            async for item in cursor:
+                yield cls(
+                    date=item[0],
+                    ranking=item[1],
+                    slug=item[2],
+                    title=item[3],
+                    author_slug=author_slug,
+                    author_earning=item[4],
+                    voter_earning=item[5],
+                )
 
     @classmethod
     async def get_latest_record(
         cls, author_slug: str, minimum_ranking: Optional[int] = None
     ) -> Optional["ArticleEarningRankingRecord"]:
-        conn = await get_jianshu_conn()
-        cursor = await conn.execute(
-            "SELECT date, ranking, slug, title, author_earning, voter_earning "
-            "FROM article_earning_ranking_records WHERE author_slug = %s AND "
-            "ranking <= %s ORDER BY date DESC, ranking DESC LIMIT 1;",
-            (author_slug, minimum_ranking if minimum_ranking else 100),
-        )
+        async with jianshu_pool.get_conn() as conn:
+            cursor = await conn.execute(
+                "SELECT date, ranking, slug, title, author_earning, voter_earning "
+                "FROM article_earning_ranking_records WHERE author_slug = %s AND "
+                "ranking <= %s ORDER BY date DESC, ranking DESC LIMIT 1;",
+                (author_slug, minimum_ranking if minimum_ranking else 100),
+            )
 
-        data = await cursor.fetchone()
+            data = await cursor.fetchone()
         if not data:
             return None
 
@@ -91,22 +91,22 @@ class ArticleEarningRankingRecord(Table, frozen=True):
         base_record: "ArticleEarningRankingRecord",
         minimum_ranking: Optional[int] = None,
     ) -> Optional["ArticleEarningRankingRecord"]:
-        conn = await get_jianshu_conn()
-        cursor = await conn.execute(
-            "SELECT date, ranking, slug, title, author_earning, voter_earning "
-            "FROM article_earning_ranking_records WHERE ( date < %s OR "
-            "( date = %s AND ranking < %s ) ) AND author_slug = %s AND ranking <= %s "
-            "ORDER BY date DESC, ranking DESC LIMIT 1;",
-            (
-                base_record.date,
-                base_record.date,
-                base_record.ranking,
-                base_record.author_slug,
-                minimum_ranking if minimum_ranking else 100,
-            ),
-        )
+        async with jianshu_pool.get_conn() as conn:
+            cursor = await conn.execute(
+                "SELECT date, ranking, slug, title, author_earning, voter_earning "
+                "FROM article_earning_ranking_records WHERE ( date < %s OR "
+                "( date = %s AND ranking < %s ) ) AND author_slug = %s "
+                "AND ranking <= %s ORDER BY date DESC, ranking DESC LIMIT 1;",
+                (
+                    base_record.date,
+                    base_record.date,
+                    base_record.ranking,
+                    base_record.author_slug,
+                    minimum_ranking if minimum_ranking else 100,
+                ),
+            )
 
-        data = await cursor.fetchone()
+            data = await cursor.fetchone()
         if not data:
             return None
 

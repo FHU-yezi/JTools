@@ -4,7 +4,7 @@ from typing import Optional
 from psycopg import sql
 
 from models.tool import Tool
-from utils.db import get_jianshu_conn, get_jpep_conn
+from utils.db import jianshu_pool, jpep_pool
 
 
 async def get_last_update_time(tool_slug: str) -> Optional[datetime]:
@@ -18,19 +18,17 @@ async def get_last_update_time(tool_slug: str) -> Optional[datetime]:
         return None
 
     # TODO
-    if tool_slug == "JPEP-FTN-market-analyzer":
-        conn = await get_jpep_conn()
-    else:
-        conn = await get_jianshu_conn()
-    cursor = await conn.execute(
-        sql.SQL("SELECT {} FROM {} ORDER BY {} DESC LIMIT 1;").format(
-            sql.Identifier(tool.last_update_time_target_field),
-            sql.Identifier(tool.last_update_time_table),
-            sql.Identifier(tool.last_update_time_order_by),
+    pool = jpep_pool if tool_slug == "JPEP-FTN-market-analyzer" else jianshu_pool
+    async with pool.get_conn() as conn:
+        cursor = await conn.execute(
+            sql.SQL("SELECT {} FROM {} ORDER BY {} DESC LIMIT 1;").format(
+                sql.Identifier(tool.last_update_time_target_field),
+                sql.Identifier(tool.last_update_time_table),
+                sql.Identifier(tool.last_update_time_order_by),
+            )
         )
-    )
 
-    data = await cursor.fetchone()
+        data = await cursor.fetchone()
     if not data:  # 数据库中没有数据
         return None
 
@@ -43,16 +41,14 @@ async def get_data_count(tool_slug: str) -> Optional[int]:
         return None
 
     # TODO
-    if tool_slug == "JPEP-FTN-market-analyzer":
-        conn = await get_jpep_conn()
-    else:
-        conn = await get_jianshu_conn()
-    cursor = await conn.execute(
-        sql.SQL("SELECT COUNT(*) FROM {};").format(
-            sql.Identifier(tool.data_count_table)
+    pool = jpep_pool if tool_slug == "JPEP-FTN-market-analyzer" else jianshu_pool
+    async with pool.get_conn() as conn:
+        cursor = await conn.execute(
+            sql.SQL("SELECT COUNT(*) FROM {};").format(
+                sql.Identifier(tool.data_count_table)
+            )
         )
-    )
 
-    data = await cursor.fetchone()
+        data = await cursor.fetchone()
 
     return data[0]  # type: ignore
