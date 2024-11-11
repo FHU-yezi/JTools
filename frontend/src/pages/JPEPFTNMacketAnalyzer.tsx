@@ -302,6 +302,7 @@ function PriceHistory() {
               type: "line",
               name: "买贝（左侧）",
               smooth: true,
+              showSymbol: false,
               data: !buyPriceTrending
                 ? undefined
                 : Object.entries(buyPriceTrending.history),
@@ -311,6 +312,7 @@ function PriceHistory() {
               type: "line",
               name: "卖贝（右侧）",
               smooth: true,
+              showSymbol: false,
               data: !sellPriceTrending
                 ? undefined
                 : Object.entries(sellPriceTrending.history),
@@ -368,6 +370,7 @@ function AmountHistory() {
               type: "line",
               name: "买贝（左侧）",
               smooth: true,
+              showSymbol: false,
               data: !buyAmountTrending
                 ? undefined
                 : Object.entries(buyAmountTrending.history),
@@ -377,6 +380,7 @@ function AmountHistory() {
               type: "line",
               name: "卖贝（右侧）",
               smooth: true,
+              showSymbol: false,
               data: !sellAmountTrending
                 ? undefined
                 : Object.entries(sellAmountTrending.history),
