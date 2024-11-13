@@ -18,24 +18,6 @@ class DebugProjectRecord(Table, frozen=True):
     reward: PositiveInt
 
     @classmethod
-    async def _create_table(cls) -> None:
-        async with jtools_pool.get_conn() as conn:
-            await conn.execute(
-                """
-                CREATE TABLE IF NOT EXISTS debug_project_records (
-                    id SMALLSERIAL CONSTRAINT pk_debug_project_records_id PRIMARY KEY,
-                    date DATE NOT NULL,
-                    type TEXT NOT NULL,
-                    module TEXT NOT NULL,
-                    description TEXT NOT NULL,
-                    user_name TEXT NOT NULL,
-                    user_slug VARCHAR(12) NOT NULL,
-                    reward SMALLINT NOT NULL
-                );
-                """
-            )
-
-    @classmethod
     async def iter(cls) -> AsyncGenerator["DebugProjectRecord", None]:
         async with jtools_pool.get_conn() as conn:
             cursor = await conn.execute(

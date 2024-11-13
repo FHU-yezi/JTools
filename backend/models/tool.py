@@ -2,7 +2,7 @@ from enum import Enum
 from typing import Optional
 
 from psycopg.types.json import Jsonb
-from sshared.postgres import Table, create_enum
+from sshared.postgres import Table
 from sshared.strict_struct import NonEmptyStr
 
 from utils.db import jtools_pool
@@ -25,32 +25,6 @@ class Tool(Table, frozen=True):
     last_update_time_target_field: Optional[NonEmptyStr]
     data_count_table: Optional[NonEmptyStr]
     data_source: Optional[dict[str, str]]
-
-    @classmethod
-    async def _create_enum(cls) -> None:
-        async with jtools_pool.get_conn() as conn:
-            await create_enum(
-                conn=conn, name="enum_tools_status", enum_class=StatusEnum
-            )
-
-    @classmethod
-    async def _create_table(cls) -> None:
-        async with jtools_pool.get_conn() as conn:
-            await conn.execute(
-                """
-                CREATE TABLE IF NOT EXISTS tools (
-                    slug TEXT CONSTRAINT pk_tools_slug PRIMARY KEY,
-                    status enum_tools_status NOT NULL,
-                    status_description TEXT,
-                    data_update_freq TEXT NOT NULL,
-                    last_update_time_table TEXT,
-                    last_update_time_order_by TEXT,
-                    last_update_time_target_field TEXT,
-                    data_count_table TEXT,
-                    data_source JSONB
-                );
-                """
-            )
 
     @classmethod
     async def init(cls) -> None:
