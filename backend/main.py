@@ -3,29 +3,12 @@ from asyncio import run as asyncio_run
 
 from uvicorn import run as uvicorn_run
 
-from models.debug_project_record import DebugProjectRecord
-from models.jianshu.lottery_win_record import LotteryWinRecord
-from models.jianshu.user import User
-from models.tech_stack import TechStack
-from models.tool import Tool
+from models import init_db
 from utils.config import CONFIG
-from utils.db import jianshu_pool, jpep_pool, jtools_pool
 from utils.log import logger
 
 logging.getLogger("httpx").setLevel(logging.CRITICAL)
 logging.getLogger("httpcore").setLevel(logging.CRITICAL)
-
-
-async def init_db() -> None:
-    await jianshu_pool.prepare()
-    await jpep_pool.prepare()
-    await jtools_pool.prepare()
-
-    await DebugProjectRecord.init()
-    await LotteryWinRecord.init()
-    await TechStack.init()
-    await User.init()
-    await Tool.init()
 
 
 if __name__ == "__main__":
