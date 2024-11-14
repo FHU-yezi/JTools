@@ -80,7 +80,11 @@ class User(Table, frozen=True):
     async def iter_similar_names(cls, name: str, limit: int) -> AsyncGenerator[str]:
         async with jianshu_pool.get_conn() as conn:
             cursor = await conn.execute(
-                "SELECT name FROM users WHERE name LIKE %s LIMIT %s;",
+                "SELECT users.name, COUNT(*) FROM users "
+                "JOIN article_earning_ranking_records ON users.slug = "
+                "article_earning_ranking_records.author_slug "
+                "WHERE users.name LIKE %s GROUP BY users.name "
+                "ORDER BY count DESC LIMIT %s;",
                 (f"{name}%", limit),
             )
 

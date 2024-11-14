@@ -4,7 +4,7 @@ click==8.1.7
 colorama==0.4.6 ; platform_system == 'Windows'
 dnspython==2.7.0
 exceptiongroup==1.2.2 ; python_full_version < '3.11'
-faker==30.8.2
+faker==32.1.0
 h11==0.14.0
 h2==4.1.0
 hpack==4.0.0
@@ -37,7 +37,7 @@ six==1.16.0
 sniffio==1.3.1
 sshared==0.18.0
 sspeedup==0.25.1
-tomli==2.0.2
+tomli==2.1.0
 typing-extensions==4.12.2
 tzdata==2024.2 ; sys_platform == 'win32'
 uvicorn==0.32.0

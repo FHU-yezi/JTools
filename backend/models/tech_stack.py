@@ -2,7 +2,7 @@ from collections.abc import AsyncGenerator
 from enum import Enum
 from typing import Optional
 
-from sshared.postgres import Table, create_enum
+from sshared.postgres import Table
 from sshared.strict_struct import NonEmptyStr
 
 from utils.db import jtools_pool
@@ -26,32 +26,6 @@ class TechStack(Table, frozen=True):
     is_self_developed: bool
     description: NonEmptyStr
     url: NonEmptyStr
-
-    @classmethod
-    async def _create_enum(cls) -> None:
-        async with jtools_pool.get_conn() as conn:
-            await create_enum(
-                conn=conn, name="enum_tech_stacks_type", enum_class=TypeEnum
-            )
-            await create_enum(
-                conn=conn, name="enum_tech_stacks_scope", enum_class=ScopeEnum
-            )
-
-    @classmethod
-    async def _create_table(cls) -> None:
-        async with jtools_pool.get_conn() as conn:
-            await conn.execute(
-                """
-                CREATE TABLE IF NOT EXISTS tech_stacks (
-                    name TEXT NOT NULL CONSTRAINT pk_tech_stacks_name PRIMARY KEY,
-                    type enum_tech_stacks_type NOT NULL,
-                    scope enum_tech_stacks_scope NOT NULL,
-                    is_self_developed BOOLEAN NOT NULL,
-                    description TEXT NOT NULL,
-                    url TEXT NOT NULL
-                );
-                """
-            )
 
     @classmethod
     async def iter(

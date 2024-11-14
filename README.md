@@ -7,65 +7,23 @@
 
 ## 数据库准备
 
-本服务的部分模块依赖外部数据源 `jianshu` 和 `jpep` 数据库，您需事先下载并进行导入。
+本服务的部分模块依赖外部数据源 `jianshu` 与 `jpep` 数据库，您需事先下载并进行导入。
 
-创建用户：
+进入 `sql` 目录：
 
-```sql
-CREATE ROLE jtools LOGIN PASSWORD 'jtools';
+```shell
+cd sql
 ```
 
-创建数据库：
+如果您需要修改数据库用户名和密码，请修改 `sql` 目录下的 `0.sql` 和每个子目录下的 `0.sql` 文件。
 
-```sql
-CREATE DATABASE jtools WITH OWNER = jtools;
-CREATE DATABASE logs;
-```
+您需要一个具有创建用户和数据库权限的用户（一般是超级用户）来完成数据库准备。
 
-创建扩展：
+每个目录中的 SQL 脚本均应按照编号顺序执行。
 
-（`jianshu` 数据库）
+首先，执行 `sql` 目录下的脚本。
 
-```sql
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
-```
-
-为用户授权：
-
-（`logs` 数据库）
-
-```sql
-GRANT CREATE ON SCHEMA public TO jtools;
-```
-
-（`jianshu` 数据库）
-
-```sql
-GRANT SELECT ON TABLE article_earning_ranking_records TO jtools;
-GRANT SELECT ON TABLE lottery_win_records TO jtools;
-GRANT SELECT ON TABLE users TO jtools;
-```
-
-（`jpep` 数据库）
-
-```sql
-GRANT SELECT ON TABLE ftn_macket_records TO jtools;
-GRANT SELECT ON TABLE ftn_orders TO jtools;
-```
-
-创建索引：
-
-（`jianshu` 数据库）
-
-```sql
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_article_earning_ranking_records_ranking ON article_earning_ranking_records (ranking);
-
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_lottery_win_records_time ON lottery_win_records (time);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_lottery_win_records_user_slug ON lottery_win_records (user_slug);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_lottery_win_records_award_name ON lottery_win_records (award_name);
-
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_users_name ON users USING gin (name gin_trgm_ops);
-```
+依次切换到与 `sql` 下的子目录（数据库目录）名称相同的数据库中，先执行每个表目录中的 SQL 脚本，再执行数据库目录下的 SQL 脚本。
 
 ## 配置
 
@@ -82,7 +40,7 @@ cp config.example.toml config.toml
 - jpep_postgres.host 填写 `postgres`
 - uvicorn.host 填写 `0.0.0.0`
 
-同时，您需要填写正确的 `postgres.user` 和 `postgres.password`。
+同时，您需要填写正确的 `{db_name}_postgres.user` 和 `{db_name}_postgres.password`。
 
 `word_split_access_key` 为具有 [NLP 服务](https://ai.aliyun.com/nlp) 使用权限的阿里云用户 Access Key，您可在 [RAM 访问控制](https://ram.console.aliyun.com) 中创建用户，并为其赋予 `AliyunNLPReadOnlyAccess` 权限。
 
