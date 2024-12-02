@@ -29,8 +29,6 @@ class Tool(Table, frozen=True):
 
     @classmethod
     async def init(cls) -> None:
-        await super().init()
-
         async with jtools_pool.get_conn() as conn:
             cursor = await conn.execute("SELECT COUNT(*) FROM tools;")
             if (await cursor.fetchone())[0] == 0:  # type: ignore

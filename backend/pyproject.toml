@@ -7,6 +7,7 @@ authors = [{ name = "FHU-yezi", email = "yehaowei20060411@qq.com" }]
 requires-python = ">=3.9"
 dependencies = [
     "httptools>=0.6.0",
+    "httpx<0.28.0",
     "jkit>=3.0.0a16",
     "psycopg[binary]>=3.2.0",
     "sshared[config, postgres]>=0.18.0",

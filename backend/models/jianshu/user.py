@@ -4,7 +4,7 @@ from collections.abc import AsyncGenerator
 from datetime import datetime
 from enum import Enum
 
-from sshared.postgres import Table, create_enum
+from sshared.postgres import Table
 from sshared.strict_struct import NonEmptyStr, PositiveInt
 
 from utils.db import jianshu_pool
@@ -23,13 +23,6 @@ class User(Table, frozen=True):
     name: NonEmptyStr | None
     history_names: list[NonEmptyStr]
     avatar_url: NonEmptyStr | None
-
-    @classmethod
-    async def _create_enum(cls) -> None:
-        async with jianshu_pool.get_conn() as conn:
-            await create_enum(
-                conn=conn, name="enum_users_status", enum_class=StatusEnum
-            )
 
     @classmethod
     async def get_by_slug(cls, slug: str) -> User | None:
