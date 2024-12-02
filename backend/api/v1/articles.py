@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from collections import Counter
 from datetime import date, datetime, timedelta
-from typing import Annotated, Optional
+from typing import Annotated
 
 from jkit.article import Article
 from jkit.constants import ARTICLE_SLUG_REGEX
@@ -31,7 +33,7 @@ splitter = WordSplitter(
 )
 
 
-async def get_earliest_can_recommend_date(author_slug: str) -> Optional[date]:
+async def get_earliest_can_recommend_date(author_slug: str) -> date | None:
     counted_article_slugs = set()
 
     latest_onrank_record = await ArticleEarningRankingRecord.get_latest_record(
@@ -40,7 +42,7 @@ async def get_earliest_can_recommend_date(author_slug: str) -> Optional[date]:
     if not latest_onrank_record:
         return None
 
-    interval_days = 10 if latest_onrank_record.ranking <= 30 else 7
+    interval_days = 10 if latest_onrank_record.ranking <= 30 else 7  # noqa: PLR2004
     counted_article_slugs.add(latest_onrank_record.slug)
 
     now_record = latest_onrank_record
@@ -57,15 +59,15 @@ async def get_earliest_can_recommend_date(author_slug: str) -> Optional[date]:
         counted_article_slugs.add(pervious_record.slug)
 
         if (
-            now_record.ranking <= 30
-            and (now_record.date - pervious_record.date).days + 1 >= 10
+            now_record.ranking <= 30  # noqa: PLR2004
+            and (now_record.date - pervious_record.date).days + 1 >= 10  # noqa: PLR2004
         ) or (
-            now_record.ranking > 30
-            and (now_record.date - pervious_record.date).days + 1 >= 7
+            now_record.ranking > 30  # noqa: PLR2004
+            and (now_record.date - pervious_record.date).days + 1 >= 7  # noqa: PLR2004
         ):
             return latest_onrank_record.date + timedelta(days=interval_days)
 
-        if pervious_record.ranking <= 30:
+        if pervious_record.ranking <= 30:  # noqa: PLR2004
             interval_days += 10
         else:
             interval_days += 7
@@ -135,7 +137,7 @@ class GetLPRecommendCheckResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     article_title: str
     can_recommend_now: bool
     FP_reward: float = field(name="FPReward")
-    next_can_recommend_date: Optional[datetime]
+    next_can_recommend_date: datetime | None
 
 
 @get(
@@ -184,7 +186,7 @@ async def get_LP_recommend_check_handler(  # noqa: N802
     article_fp_reward = article_info.earned_fp_amount
     article_next_can_recommend_date = await get_earliest_can_recommend_date(author_slug)
 
-    can_recommend_now = article_fp_reward < 35 and (
+    can_recommend_now = article_fp_reward < 35 and (  # noqa: PLR2004
         not article_next_can_recommend_date
         or article_next_can_recommend_date <= datetime.now().date()
     )

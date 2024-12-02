@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Annotated, Optional
+from typing import Annotated
 
 from litestar import Response, Router, get
 from litestar.params import Parameter
@@ -51,11 +53,11 @@ async def get_handler() -> Response:
 
 class GetToolStatusResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     status: StatusEnum
-    reason: Optional[str]
-    last_update_time: Optional[datetime]
-    data_update_freq: Optional[str]
-    data_count: Optional[int]
-    data_source: Optional[dict[str, str]]
+    reason: str | None
+    last_update_time: datetime | None
+    data_update_freq: str | None
+    data_count: int | None
+    data_source: dict[str, str] | None
 
 
 @get(

@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Annotated, Literal, Optional
+from typing import Annotated, Literal
 
 from litestar import Response, Router, get
 from litestar.params import Parameter
@@ -78,7 +80,7 @@ class GetTechStacksResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 )
 async def get_tech_stacks_handler(
     scope_: Annotated[
-        Optional[Literal["frontend", "backend", "toolchain"]],
+        Literal["frontend", "backend", "toolchain"] | None,
         Parameter(description="技术栈范围"),
     ] = None,
 ) -> Response:

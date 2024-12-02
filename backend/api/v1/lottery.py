@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from asyncio import gather
 from datetime import datetime, timedelta
-from typing import Annotated, Literal, Optional
+from typing import Annotated, Literal
 
 from jkit.identifier_convert import user_slug_to_url
 from litestar import Response, Router, get
@@ -25,7 +27,7 @@ REWARD_NAMES: list[str] = [
     "锦鲤头像框1年",
 ]
 
-RANGE_TO_TIMEDELTA: dict[str, Optional[timedelta]] = {
+RANGE_TO_TIMEDELTA: dict[str, timedelta | None] = {
     "1d": timedelta(days=1),
     "7d": timedelta(days=7),
     "30d": timedelta(days=30),
@@ -37,17 +39,13 @@ RANGE_TO_TIMEDELTA: dict[str, Optional[timedelta]] = {
 def get_summary_average_wins_count_per_winner(
     wins_count: dict[str, int], winners_count: dict[str, int]
 ) -> dict[str, float]:
-    result: dict[str, float] = {}
+    result: dict[str, float] = dict.fromkeys(wins_count.keys(), 0.0)
 
-    for reward_name in wins_count:
-        # 该奖项无人中奖
-        if wins_count[reward_name] == 0:
-            result[reward_name] = 0
+    for reward_name, wins in wins_count.items():
+        if winners_count[reward_name] == 0:
             continue
 
-        result[reward_name] = round(
-            wins_count[reward_name] / winners_count[reward_name], 3
-        )
+        result[reward_name] = round(wins / winners_count[reward_name], 3)
 
     return result
 
@@ -115,7 +113,7 @@ async def get_records_handler(
     offset: Annotated[int, Parameter(description="分页偏移", ge=0)] = 0,
     limit: Annotated[int, Parameter(description="结果数量", gt=0, lt=100)] = 20,
     excluded_awards: Annotated[
-        Optional[list[str]], Parameter(description="排除奖项列表", max_items=10)
+        list[str] | None, Parameter(description="排除奖项列表", max_items=10)
     ] = None,
 ) -> Response:
     records: list[GetRecordsItem] = []

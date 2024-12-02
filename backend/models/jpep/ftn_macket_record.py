@@ -100,7 +100,7 @@ class FTNMacketRecord(Table, frozen=True):
                             start_time,
                         ),
                     )
-            else:
+            else:  # noqa: PLR5501
                 if resolution == "max":
                     cursor = await conn.execute(
                         "SELECT fetch_time, MAX(price) FROM ftn_macket_records "

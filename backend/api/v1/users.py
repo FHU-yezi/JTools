@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Annotated, Literal, Optional
+from typing import Annotated, Literal
 
 from jkit.constants import USER_SLUG_REGEX
 from jkit.exceptions import ResourceUnavailableError
@@ -28,8 +30,8 @@ from models.jianshu.user import User as DbUser
 class GetVipInfoResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     user_name: str
     is_vip: bool = field(name="isVIP")
-    type: Optional[Literal["铜牌", "银牌", "金牌", "白金"]]
-    expire_date: Optional[datetime]
+    type: Literal["铜牌", "银牌", "金牌", "白金"] | None
+    expire_date: datetime | None
 
 
 @get(
@@ -103,7 +105,7 @@ async def get_lottery_win_records(
     offset: Annotated[int, Parameter(description="分页偏移", ge=0)] = 0,
     limit: Annotated[int, Parameter(description="结果数量", gt=0, lt=100)] = 20,
     excluded_awards: Annotated[
-        Optional[list[str]], Parameter(description="排除奖项列表", max_items=10)
+        list[str] | None, Parameter(description="排除奖项列表", max_items=10)
     ] = None,
 ) -> Response:
     if not is_user_slug(user_slug):
@@ -288,11 +290,11 @@ async def get_on_article_rank_summary_handler(
         limit=100000,  # TODO
     ):
         total += 1
-        if item.ranking <= 10:
+        if item.ranking <= 10:  # noqa: PLR2004
             top10 += 1
-        if item.ranking <= 30:
+        if item.ranking <= 30:  # noqa: PLR2004
             top30 += 1
-        if item.ranking <= 50:
+        if item.ranking <= 50:  # noqa: PLR2004
             top50 += 1
 
     return success(
@@ -334,11 +336,11 @@ async def get_on_article_rank_summary_by_user_name_handler(
         limit=100000,  # TODO
     ):
         total += 1
-        if item.ranking <= 10:
+        if item.ranking <= 10:  # noqa: PLR2004
             top10 += 1
-        if item.ranking <= 30:
+        if item.ranking <= 30:  # noqa: PLR2004
             top30 += 1
-        if item.ranking <= 50:
+        if item.ranking <= 50:  # noqa: PLR2004
             top50 += 1
 
     return success(
@@ -377,7 +379,7 @@ async def get_name_autocomplete_handler(
 
 class GetHistoryNamesOnArticleRankSummaryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     history_names_onrank_summary: dict[str, int]
-    user_url: Optional[str] = None
+    user_url: str | None = None
 
 
 @get(

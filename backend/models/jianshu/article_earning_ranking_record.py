@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from collections.abc import AsyncGenerator
 from datetime import date
-from typing import Literal, Optional
+from typing import Literal
 
 from psycopg import sql
 from sshared.postgres import Table
@@ -12,9 +14,9 @@ from utils.db import jianshu_pool
 class ArticleEarningRankingRecord(Table, frozen=True):
     date: date
     ranking: PositiveInt
-    slug: Optional[NonEmptyStr]
-    title: Optional[NonEmptyStr]
-    author_slug: Optional[NonEmptyStr]
+    slug: NonEmptyStr | None
+    title: NonEmptyStr | None
+    author_slug: NonEmptyStr | None
 
     author_earning: PositiveFloat
     voter_earning: PositiveFloat
@@ -27,7 +29,7 @@ class ArticleEarningRankingRecord(Table, frozen=True):
         order_direction: Literal["ASC", "DESC"],
         offset: int,
         limit: int,
-    ) -> AsyncGenerator["ArticleEarningRankingRecord"]:
+    ) -> AsyncGenerator[ArticleEarningRankingRecord]:
         async with jianshu_pool.get_conn() as conn:
             if order_direction == "ASC":
                 cursor = await conn.execute(
@@ -61,8 +63,8 @@ class ArticleEarningRankingRecord(Table, frozen=True):
 
     @classmethod
     async def get_latest_record(
-        cls, author_slug: str, minimum_ranking: Optional[int] = None
-    ) -> Optional["ArticleEarningRankingRecord"]:
+        cls, author_slug: str, minimum_ranking: int | None = None
+    ) -> ArticleEarningRankingRecord | None:
         async with jianshu_pool.get_conn() as conn:
             cursor = await conn.execute(
                 "SELECT date, ranking, slug, title, author_earning, voter_earning "
@@ -88,9 +90,9 @@ class ArticleEarningRankingRecord(Table, frozen=True):
     @classmethod
     async def get_pervious_record(
         cls,
-        base_record: "ArticleEarningRankingRecord",
-        minimum_ranking: Optional[int] = None,
-    ) -> Optional["ArticleEarningRankingRecord"]:
+        base_record: ArticleEarningRankingRecord,
+        minimum_ranking: int | None = None,
+    ) -> ArticleEarningRankingRecord | None:
         async with jianshu_pool.get_conn() as conn:
             cursor = await conn.execute(
                 "SELECT date, ranking, slug, title, author_earning, voter_earning "

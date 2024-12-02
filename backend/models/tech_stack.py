@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 from collections.abc import AsyncGenerator
 from enum import Enum
-from typing import Optional
 
 from sshared.postgres import Table
 from sshared.strict_struct import NonEmptyStr
@@ -29,8 +30,8 @@ class TechStack(Table, frozen=True):
 
     @classmethod
     async def iter(
-        cls, scope: Optional[ScopeEnum] = None
-    ) -> AsyncGenerator["TechStack", None]:
+        cls, scope: ScopeEnum | None = None
+    ) -> AsyncGenerator[TechStack, None]:
         async with jtools_pool.get_conn() as conn:
             if scope:
                 cursor = await conn.execute(

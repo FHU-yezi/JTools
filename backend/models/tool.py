@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from enum import Enum
-from typing import Optional
 
 from psycopg.types.json import Jsonb
 from sshared.postgres import Table
@@ -18,13 +19,13 @@ class StatusEnum(Enum):
 class Tool(Table, frozen=True):
     slug: NonEmptyStr
     status: StatusEnum
-    status_description: Optional[NonEmptyStr]
+    status_description: NonEmptyStr | None
     data_update_freq: NonEmptyStr
-    last_update_time_table: Optional[NonEmptyStr]
-    last_update_time_order_by: Optional[NonEmptyStr]
-    last_update_time_target_field: Optional[NonEmptyStr]
-    data_count_table: Optional[NonEmptyStr]
-    data_source: Optional[dict[str, str]]
+    last_update_time_table: NonEmptyStr | None
+    last_update_time_order_by: NonEmptyStr | None
+    last_update_time_target_field: NonEmptyStr | None
+    data_count_table: NonEmptyStr | None
+    data_source: dict[str, str] | None
 
     @classmethod
     async def init(cls) -> None:
@@ -71,7 +72,7 @@ class Tool(Table, frozen=True):
             )
 
     @classmethod
-    async def get_by_slug(cls, slug: str) -> Optional["Tool"]:
+    async def get_by_slug(cls, slug: str) -> Tool | None:
         async with jtools_pool.get_conn() as conn:
             cursor = await conn.execute(
                 "SELECT status, status_description, data_update_freq, "

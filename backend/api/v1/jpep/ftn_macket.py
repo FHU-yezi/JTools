@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from asyncio import gather
 from datetime import datetime
-from typing import Annotated, Literal, Optional
+from typing import Annotated, Literal
 
 from jkit.jpep.platform_settings import PlatformSettings
 from litestar import Response, Router, get
@@ -55,8 +57,8 @@ async def get_rules_handler() -> Response:
 
 
 class GetCurrentPriceResponse(Struct, **RESPONSE_STRUCT_CONFIG):
-    buy_price: Optional[float]
-    sell_price: Optional[float]
+    buy_price: float | None
+    sell_price: float | None
 
 
 @get(
@@ -81,8 +83,8 @@ async def get_current_price_handler() -> Response:
 
 
 class GetCurrentAmountResponse(Struct, **RESPONSE_STRUCT_CONFIG):
-    buy_amount: Optional[int]
-    sell_amount: Optional[int]
+    buy_amount: int | None
+    sell_amount: int | None
 
 
 @get(
