@@ -123,7 +123,7 @@ async def get_price_history_handler(
     type_: Annotated[
         Literal["buy", "sell"], Parameter(description="交易单类型", query="type")
     ],
-    range: Annotated[  # noqa: A002
+    range: Annotated[
         Literal["24h", "7d", "15d", "30d"], Parameter(description="时间范围")
     ],
     resolution: Annotated[Literal["5m", "1h", "1d"], Parameter(description="统计粒度")],
@@ -156,7 +156,7 @@ async def get_amount_history_handler(
     type_: Annotated[
         Literal["buy", "sell"], Parameter(description="交易单类型", query="type")
     ],
-    range: Annotated[  # noqa: A002
+    range: Annotated[
         Literal["24h", "7d", "15d", "30d"], Parameter(description="时间范围")
     ],
     resolution: Annotated[Literal["5m", "1h", "1d"], Parameter(description="统计粒度")],

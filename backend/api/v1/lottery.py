@@ -166,7 +166,7 @@ class GetSummaryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     },
 )
 async def get_summary_handler(
-    range: Annotated[  # noqa: A002
+    range: Annotated[
         Literal["1d", "7d", "30d", "all"], Parameter(description="时间范围")
     ],
 ) -> Response:
@@ -214,7 +214,7 @@ class GetRewardWinsHistoryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     },
 )
 async def get_reward_wins_history_handler(
-    range: Annotated[Literal["1d", "30d", "60d"], Parameter(description="时间范围")],  # noqa: A002
+    range: Annotated[Literal["1d", "30d", "60d"], Parameter(description="时间范围")],
     resolution: Annotated[Literal["1h", "1d"], Parameter(description="统计粒度")],
 ) -> Response:
     history = await LotteryWinRecord.get_wins_history(
