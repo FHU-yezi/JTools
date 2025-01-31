@@ -19,8 +19,8 @@ class User(Table, frozen=True):
     slug: NonEmptyStr
     status: StatusEnum
     update_time: datetime
-    id: PositiveInt | None
-    name: NonEmptyStr | None
+    id: PositiveInt
+    name: NonEmptyStr
     history_names: list[NonEmptyStr]
     avatar_url: NonEmptyStr | None
 
