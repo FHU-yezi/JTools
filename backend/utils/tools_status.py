@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Optional
 
 from psycopg import sql
 
@@ -7,7 +8,7 @@ from models.tool import Tool
 from utils.db import jianshu_pool, jpep_pool
 
 
-async def get_last_update_time(tool_slug: str) -> Optional[datetime]:
+async def get_last_update_time(tool_slug: str) -> datetime | None:
     tool = await Tool.get_by_slug(tool_slug)
     if (
         not tool
@@ -35,7 +36,7 @@ async def get_last_update_time(tool_slug: str) -> Optional[datetime]:
     return data[0]
 
 
-async def get_data_count(tool_slug: str) -> Optional[int]:
+async def get_data_count(tool_slug: str) -> int | None:
     tool = await Tool.get_by_slug(tool_slug)
     if not tool or not tool.data_count_table:
         return None

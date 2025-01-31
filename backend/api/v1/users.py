@@ -1,11 +1,14 @@
-from datetime import datetime
-from typing import Annotated, Literal, Optional
+from __future__ import annotations
 
+from datetime import datetime
+from typing import Annotated, Literal
+
+from jkit.config import CONFIG as JKIT_CONFIG
 from jkit.constants import USER_SLUG_REGEX
 from jkit.exceptions import ResourceUnavailableError
 from jkit.identifier_check import is_user_slug
 from jkit.identifier_convert import article_slug_to_url, user_slug_to_url
-from jkit.user import MembershipEnum, User
+from jkit.user import MembershipType, User
 from litestar import Response, Router, get
 from litestar.params import Parameter
 from litestar.status_codes import HTTP_400_BAD_REQUEST
@@ -23,13 +26,30 @@ from models.jianshu.article_earning_ranking_record import (
 )
 from models.jianshu.lottery_win_record import LotteryWinRecord
 from models.jianshu.user import User as DbUser
+from utils.config import CONFIG
+
+if CONFIG.jianshu_endpoint:
+    JKIT_CONFIG.datasources.jianshu.endpoint = CONFIG.jianshu_endpoint
+
+MembershipTextType = Literal[
+    "铜牌", "银牌", "金牌", "白金", "（旧版）普通会员", "（旧版）尊享会员"
+]
+
+MEMBERSHIP_TYPE_TO_TEXT: dict[MembershipType, MembershipTextType] = {
+    "BRONZE": "铜牌",
+    "SILVER": "银牌",
+    "GOLD": "金牌",
+    "PLATINA": "白金",
+    "LEGACY_ORDINARY": "（旧版）普通会员",
+    "LEGACY_DISTINGUISHED": "（旧版）尊享会员",
+}
 
 
 class GetVipInfoResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     user_name: str
     is_vip: bool = field(name="isVIP")
-    type: Optional[Literal["铜牌", "银牌", "金牌", "白金"]]
-    expire_date: Optional[datetime]
+    type: Literal["铜牌", "银牌", "金牌", "白金"] | None
+    expire_date: datetime | None
 
 
 @get(
@@ -65,9 +85,9 @@ async def get_vip_info_handler(
     user_name = user_info.name
     membership_info = user_info.membership_info
 
-    is_vip = membership_info.type != MembershipEnum.NONE
-    type_ = membership_info.type.value.replace("会员", "")
-    expire_date = membership_info.expired_at
+    is_vip = membership_info.type != "NONE"
+    type_ = MEMBERSHIP_TYPE_TO_TEXT[membership_info.type]
+    expire_date = membership_info.expire_time
 
     return success(
         data=GetVipInfoResponse(
@@ -103,7 +123,7 @@ async def get_lottery_win_records(
     offset: Annotated[int, Parameter(description="分页偏移", ge=0)] = 0,
     limit: Annotated[int, Parameter(description="结果数量", gt=0, lt=100)] = 20,
     excluded_awards: Annotated[
-        Optional[list[str]], Parameter(description="排除奖项列表", max_items=10)
+        list[str] | None, Parameter(description="排除奖项列表", max_items=10)
     ] = None,
 ) -> Response:
     if not is_user_slug(user_slug):
@@ -288,11 +308,11 @@ async def get_on_article_rank_summary_handler(
         limit=100000,  # TODO
     ):
         total += 1
-        if item.ranking <= 10:
+        if item.ranking <= 10:  # noqa: PLR2004
             top10 += 1
-        if item.ranking <= 30:
+        if item.ranking <= 30:  # noqa: PLR2004
             top30 += 1
-        if item.ranking <= 50:
+        if item.ranking <= 50:  # noqa: PLR2004
             top50 += 1
 
     return success(
@@ -334,11 +354,11 @@ async def get_on_article_rank_summary_by_user_name_handler(
         limit=100000,  # TODO
     ):
         total += 1
-        if item.ranking <= 10:
+        if item.ranking <= 10:  # noqa: PLR2004
             top10 += 1
-        if item.ranking <= 30:
+        if item.ranking <= 30:  # noqa: PLR2004
             top30 += 1
-        if item.ranking <= 50:
+        if item.ranking <= 50:  # noqa: PLR2004
             top50 += 1
 
     return success(
@@ -377,7 +397,7 @@ async def get_name_autocomplete_handler(
 
 class GetHistoryNamesOnArticleRankSummaryResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     history_names_onrank_summary: dict[str, int]
-    user_url: Optional[str] = None
+    user_url: str | None = None
 
 
 @get(

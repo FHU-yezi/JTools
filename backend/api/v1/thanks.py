@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Annotated, Literal, Optional
+from typing import Annotated, Literal
 
 from litestar import Response, Router, get
 from litestar.params import Parameter
@@ -11,7 +13,7 @@ from sspeedup.api.litestar import (
 )
 
 from models.debug_project_record import DebugProjectRecord
-from models.tech_stack import ScopeEnum, TechStack, TypeEnum
+from models.tech_stack import ScopeType, TechStack, TechType
 
 
 class GetDebugProjectRecordsResponseRecordsItem(Struct, **RESPONSE_STRUCT_CONFIG):
@@ -60,8 +62,8 @@ async def get_debug_project_records_handler() -> Response:
 
 class GetTechStacksResponseRecordsItem(Struct, **RESPONSE_STRUCT_CONFIG):
     name: str
-    type: TypeEnum
-    scope: ScopeEnum
+    type: TechType
+    scope: ScopeType
     is_self_developed: bool
     description: str
     url: str
@@ -78,7 +80,7 @@ class GetTechStacksResponse(Struct, **RESPONSE_STRUCT_CONFIG):
 )
 async def get_tech_stacks_handler(
     scope_: Annotated[
-        Optional[Literal["frontend", "backend", "toolchain"]],
+        Literal["frontend", "backend", "toolchain"] | None,
         Parameter(description="技术栈范围"),
     ] = None,
 ) -> Response:
@@ -94,7 +96,7 @@ async def get_tech_stacks_handler(
                     url=item.url,
                 )
                 async for item in TechStack.iter(
-                    scope=ScopeEnum(scope_.upper()) if scope_ else None
+                    scope=scope_.upper() if scope_ else None  # type: ignore
                 )
             ]
         )

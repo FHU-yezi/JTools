@@ -1,37 +1,28 @@
+from __future__ import annotations
+
 from collections.abc import AsyncGenerator
 from datetime import datetime
-from enum import Enum
-from typing import Optional
+from typing import Literal
 
-from sshared.postgres import Table, create_enum
+from sshared.postgres import Table
 from sshared.strict_struct import NonEmptyStr, PositiveInt
 
 from utils.db import jianshu_pool
 
-
-class StatusEnum(Enum):
-    NORMAL = "NORMAL"
-    INACCESSIBLE = "INACCESSIBLE"
+StatusType = Literal["NORMAL", "INACCESSIBLE"]
 
 
 class User(Table, frozen=True):
     slug: NonEmptyStr
-    status: StatusEnum
+    status: StatusType
     update_time: datetime
-    id: Optional[PositiveInt]
-    name: Optional[NonEmptyStr]
+    id: PositiveInt
+    name: NonEmptyStr
     history_names: list[NonEmptyStr]
-    avatar_url: Optional[NonEmptyStr]
+    avatar_url: NonEmptyStr | None
 
     @classmethod
-    async def _create_enum(cls) -> None:
-        async with jianshu_pool.get_conn() as conn:
-            await create_enum(
-                conn=conn, name="enum_users_status", enum_class=StatusEnum
-            )
-
-    @classmethod
-    async def get_by_slug(cls, slug: str) -> Optional["User"]:
+    async def get_by_slug(cls, slug: str) -> User | None:
         async with jianshu_pool.get_conn() as conn:
             cursor = await conn.execute(
                 "SELECT status, update_time, id, name, history_names, "
@@ -54,7 +45,7 @@ class User(Table, frozen=True):
         )
 
     @classmethod
-    async def get_by_name(cls, name: str) -> Optional["User"]:
+    async def get_by_name(cls, name: str) -> User | None:
         async with jianshu_pool.get_conn() as conn:
             cursor = await conn.execute(
                 "SELECT slug, status, update_time, id, history_names, "

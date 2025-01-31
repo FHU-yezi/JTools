@@ -1,5 +1,6 @@
-**/node_modules
-**/dist
-**/dev-dist
+.ruff_cache
+.venv
 **/__pycache__
+**/node_modules
+
 config.toml

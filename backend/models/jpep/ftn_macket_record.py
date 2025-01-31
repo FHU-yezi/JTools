@@ -18,7 +18,7 @@ class FTNMacketRecord(Table, frozen=True):
     minimum_trade_amount: PositiveInt
 
     @classmethod
-    async def get_current_price(cls, type: Literal["BUY", "SELL"]) -> float:  # noqa: A002
+    async def get_current_price(cls, type: Literal["BUY", "SELL"]) -> float:
         async with jpep_pool.get_conn() as conn:
             if type == "BUY":
                 cursor = await conn.execute(
@@ -38,7 +38,7 @@ class FTNMacketRecord(Table, frozen=True):
             return (await cursor.fetchone())[0]  # type: ignore
 
     @classmethod
-    async def get_current_amount(cls, type: Literal["BUY", "SELL"]) -> int:  # noqa: A002
+    async def get_current_amount(cls, type: Literal["BUY", "SELL"]) -> int:
         async with jpep_pool.get_conn() as conn:
             cursor = await conn.execute(
                 "SELECT SUM(remaining_amount) FROM ftn_macket_records "
@@ -53,7 +53,7 @@ class FTNMacketRecord(Table, frozen=True):
     @classmethod
     async def get_current_amount_distribution(
         cls,
-        type: Literal["BUY", "SELL"],  # noqa: A002
+        type: Literal["BUY", "SELL"],
         limit: int,
     ) -> dict[float, int]:
         async with jpep_pool.get_conn() as conn:
@@ -75,7 +75,7 @@ class FTNMacketRecord(Table, frozen=True):
     @classmethod
     async def get_price_history(
         cls,
-        type: Literal["BUY", "SELL"],  # noqa: A002
+        type: Literal["BUY", "SELL"],
         start_time: datetime,
         resolution: Literal["max", "hour", "day"],
     ) -> dict[datetime, float]:
@@ -100,7 +100,7 @@ class FTNMacketRecord(Table, frozen=True):
                             start_time,
                         ),
                     )
-            else:
+            else:  # noqa: PLR5501
                 if resolution == "max":
                     cursor = await conn.execute(
                         "SELECT fetch_time, MAX(price) FROM ftn_macket_records "
@@ -130,7 +130,7 @@ class FTNMacketRecord(Table, frozen=True):
     @classmethod
     async def get_amount_history(
         cls,
-        type: Literal["BUY", "SELL"],  # noqa: A002
+        type: Literal["BUY", "SELL"],
         start_time: datetime,
         resolution: Literal["max", "hour", "day"],
     ) -> dict[datetime, int]:

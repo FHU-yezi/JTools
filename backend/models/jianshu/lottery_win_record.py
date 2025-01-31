@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 from collections.abc import AsyncGenerator
 from datetime import datetime, timedelta
-from typing import Optional
 
 from sshared.postgres import Table
 from sshared.strict_struct import NonEmptyStr, PositiveInt
@@ -25,7 +26,7 @@ class LotteryWinRecord(Table, frozen=True):
     @classmethod
     async def iter_by_excluded_awards(
         cls, excluded_awards: list[str], offset: int, limit: int
-    ) -> AsyncGenerator["LotteryWinRecord"]:
+    ) -> AsyncGenerator[LotteryWinRecord]:
         async with jianshu_pool.get_conn() as conn:
             cursor = await conn.execute(
                 "SELECT id, time, user_slug, award_name FROM lottery_win_records "
@@ -44,7 +45,7 @@ class LotteryWinRecord(Table, frozen=True):
     @classmethod
     async def iter_by_slug_and_excluded_awards(
         cls, slug: str, excluded_awards: list[str], offset: int, limit: int
-    ) -> AsyncGenerator["LotteryWinRecord"]:
+    ) -> AsyncGenerator[LotteryWinRecord]:
         async with jianshu_pool.get_conn() as conn:
             cursor = await conn.execute(
                 "SELECT id, time, award_name FROM lottery_win_records "
@@ -62,7 +63,7 @@ class LotteryWinRecord(Table, frozen=True):
                 )
 
     @classmethod
-    async def get_summary_wins_count(cls, td: Optional[timedelta]) -> dict[str, int]:
+    async def get_summary_wins_count(cls, td: timedelta | None) -> dict[str, int]:
         async with jianshu_pool.get_conn() as conn:
             if td:
                 cursor = await conn.execute(
@@ -81,7 +82,7 @@ class LotteryWinRecord(Table, frozen=True):
         return result
 
     @classmethod
-    async def get_summary_winners_count(cls, td: Optional[timedelta]) -> dict[str, int]:
+    async def get_summary_winners_count(cls, td: timedelta | None) -> dict[str, int]:
         async with jianshu_pool.get_conn() as conn:
             if td:
                 cursor = await conn.execute(

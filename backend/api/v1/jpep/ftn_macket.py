@@ -1,12 +1,14 @@
+from __future__ import annotations
+
 from asyncio import gather
 from datetime import datetime
-from typing import Annotated, Literal, Optional
+from typing import Annotated, Literal
 
-from jkit.jpep.platform_settings import PlatformSettings
+from jkit.jpep.rules import Rules
 from litestar import Response, Router, get
 from litestar.params import Parameter
 from msgspec import Struct, field
-from sshared.time import get_datetime_before_now, parse_td_str
+from sshared.time import get_past_datetime_from_now, parse_td_str
 from sspeedup.api.litestar import (
     RESPONSE_STRUCT_CONFIG,
     generate_response_spec,
@@ -21,7 +23,7 @@ RESOLUTION_MAPPING: dict[str, Literal["max", "hour", "day"]] = {
     "1d": "day",
 }
 
-PLATFORM_SETTINGS = PlatformSettings()
+RULES = Rules()
 
 
 class GetRulesResponse(Struct, **RESPONSE_STRUCT_CONFIG):
@@ -40,23 +42,23 @@ class GetRulesResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     },
 )
 async def get_rules_handler() -> Response:
-    settings = await PLATFORM_SETTINGS.get_data()
+    rules = await RULES.get_rules()
 
     return success(
         data=GetRulesResponse(
-            is_open=settings.opening,
+            is_open=rules.opening,
             # TODO
-            buy_order_minimum_price=settings.ftn_sell_trade_minimum_price,
-            sell_order_minimum_price=settings.ftn_buy_trade_minimum_price,
-            FTN_order_fee=settings.ftn_trade_fee,
-            goods_order_fee=settings.goods_trade_fee,
+            buy_order_minimum_price=rules.ftn_buy_trade_minimum_price,
+            sell_order_minimum_price=rules.ftn_buy_trade_minimum_price,
+            FTN_order_fee=rules.ftn_trade_fee,
+            goods_order_fee=rules.goods_trade_fee,
         )
     )
 
 
 class GetCurrentPriceResponse(Struct, **RESPONSE_STRUCT_CONFIG):
-    buy_price: Optional[float]
-    sell_price: Optional[float]
+    buy_price: float | None
+    sell_price: float | None
 
 
 @get(
@@ -81,8 +83,8 @@ async def get_current_price_handler() -> Response:
 
 
 class GetCurrentAmountResponse(Struct, **RESPONSE_STRUCT_CONFIG):
-    buy_amount: Optional[int]
-    sell_amount: Optional[int]
+    buy_amount: int | None
+    sell_amount: int | None
 
 
 @get(
@@ -121,14 +123,14 @@ async def get_price_history_handler(
     type_: Annotated[
         Literal["buy", "sell"], Parameter(description="交易单类型", query="type")
     ],
-    range: Annotated[  # noqa: A002
+    range: Annotated[
         Literal["24h", "7d", "15d", "30d"], Parameter(description="时间范围")
     ],
     resolution: Annotated[Literal["5m", "1h", "1d"], Parameter(description="统计粒度")],
 ) -> Response:
     history = await FTNMacketRecord.get_price_history(
         type=type_.upper(),  # type: ignore
-        start_time=get_datetime_before_now(parse_td_str(range)),
+        start_time=get_past_datetime_from_now(parse_td_str(range)),
         resolution=RESOLUTION_MAPPING[resolution],
     )
 
@@ -154,14 +156,14 @@ async def get_amount_history_handler(
     type_: Annotated[
         Literal["buy", "sell"], Parameter(description="交易单类型", query="type")
     ],
-    range: Annotated[  # noqa: A002
+    range: Annotated[
         Literal["24h", "7d", "15d", "30d"], Parameter(description="时间范围")
     ],
     resolution: Annotated[Literal["5m", "1h", "1d"], Parameter(description="统计粒度")],
 ) -> Response:
     history = await FTNMacketRecord.get_amount_history(
         type=type_.upper(),  # type: ignore
-        start_time=get_datetime_before_now(parse_td_str(range)),
+        start_time=get_past_datetime_from_now(parse_td_str(range)),
         resolution=RESOLUTION_MAPPING[resolution],
     )
 

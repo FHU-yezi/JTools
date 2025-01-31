@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Annotated, Optional
+from typing import Annotated
 
 from litestar import Response, Router, get
 from litestar.params import Parameter
@@ -13,7 +15,7 @@ from sspeedup.api.litestar import (
     success,
 )
 
-from models.tool import StatusEnum, Tool
+from models.tool import StatusType, Tool
 from utils.config import CONFIG
 from utils.tools_status import (
     get_data_count,
@@ -39,23 +41,19 @@ async def get_handler() -> Response:
     return success(
         data=GetResponse(
             version=VERSION,
-            downgraded_tools=list(
-                await Tool.get_tools_slugs_by_status(StatusEnum.DOWNGRADED)
-            ),
-            unavailable_tools=list(
-                await Tool.get_tools_slugs_by_status(StatusEnum.UNAVAILABLE)
-            ),
+            downgraded_tools=list(await Tool.get_tools_slugs_by_status("DOWNGRADED")),
+            unavailable_tools=list(await Tool.get_tools_slugs_by_status("UNAVAILABLE")),
         )
     )
 
 
 class GetToolStatusResponse(Struct, **RESPONSE_STRUCT_CONFIG):
-    status: StatusEnum
-    reason: Optional[str]
-    last_update_time: Optional[datetime]
-    data_update_freq: Optional[str]
-    data_count: Optional[int]
-    data_source: Optional[dict[str, str]]
+    status: StatusType
+    reason: str | None
+    last_update_time: datetime | None
+    data_update_freq: str | None
+    data_count: int | None
+    data_source: dict[str, str] | None
 
 
 @get(
@@ -83,7 +81,7 @@ async def get_tool_status_handler(
     # 处理未填写 word_split_access_key 配置项的情况
     if (
         tool_name == "article-wordcloud-generator"
-        and tool.status == StatusEnum.NORMAL.value
+        and tool.status == "NORMAL"
         and not (
             CONFIG.word_split_access_key.access_key_id
             and CONFIG.word_split_access_key.access_key_secret
@@ -91,7 +89,7 @@ async def get_tool_status_handler(
     ):
         return success(
             data=GetToolStatusResponse(
-                status=StatusEnum.UNAVAILABLE,
+                status="UNAVAILABLE",
                 reason="后端未设置分词服务凭据",
                 last_update_time=last_update_time,
                 data_update_freq=tool.data_update_freq,
