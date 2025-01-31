@@ -121,7 +121,7 @@ async def get_word_freq_handler(
 
     article_info = await article.info
     title = article_info.title
-    text = article_info.text_content
+    text = article_info.content_text
 
     word_freq = dict(Counter(await splitter.split(text)).most_common(100))
 

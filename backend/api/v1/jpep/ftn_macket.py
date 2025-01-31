@@ -4,7 +4,7 @@ from asyncio import gather
 from datetime import datetime
 from typing import Annotated, Literal
 
-from jkit.jpep.platform_settings import PlatformSettings
+from jkit.jpep.rules import Rules
 from litestar import Response, Router, get
 from litestar.params import Parameter
 from msgspec import Struct, field
@@ -23,7 +23,7 @@ RESOLUTION_MAPPING: dict[str, Literal["max", "hour", "day"]] = {
     "1d": "day",
 }
 
-PLATFORM_SETTINGS = PlatformSettings()
+RULES = Rules()
 
 
 class GetRulesResponse(Struct, **RESPONSE_STRUCT_CONFIG):
@@ -42,16 +42,16 @@ class GetRulesResponse(Struct, **RESPONSE_STRUCT_CONFIG):
     },
 )
 async def get_rules_handler() -> Response:
-    settings = await PLATFORM_SETTINGS.get_data()
+    rules = await RULES.get_rules()
 
     return success(
         data=GetRulesResponse(
-            is_open=settings.opening,
+            is_open=rules.opening,
             # TODO
-            buy_order_minimum_price=settings.ftn_sell_trade_minimum_price,
-            sell_order_minimum_price=settings.ftn_buy_trade_minimum_price,
-            FTN_order_fee=settings.ftn_trade_fee,
-            goods_order_fee=settings.goods_trade_fee,
+            buy_order_minimum_price=rules.ftn_buy_trade_minimum_price,
+            sell_order_minimum_price=rules.ftn_buy_trade_minimum_price,
+            FTN_order_fee=rules.ftn_trade_fee,
+            goods_order_fee=rules.goods_trade_fee,
         )
     )
 

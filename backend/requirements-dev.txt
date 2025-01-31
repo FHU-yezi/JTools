@@ -10,11 +10,11 @@ h2==4.1.0
 hpack==4.0.0
 httpcore==1.0.7
 httptools==0.6.4
-httpx==0.27.2
+httpx==0.28.1
 hyperframe==6.0.1
 idna==3.10
 importlib-metadata==8.5.0 ; python_full_version < '3.10'
-jkit==3.0.0a16
+jkit==3.0.0b2
 litestar==2.13.0
 litestar-htmx==0.4.0
 markdown-it-py==3.0.0

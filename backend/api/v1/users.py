@@ -7,7 +7,7 @@ from jkit.constants import USER_SLUG_REGEX
 from jkit.exceptions import ResourceUnavailableError
 from jkit.identifier_check import is_user_slug
 from jkit.identifier_convert import article_slug_to_url, user_slug_to_url
-from jkit.user import MembershipEnum, User
+from jkit.user import MembershipType, User
 from litestar import Response, Router, get
 from litestar.params import Parameter
 from litestar.status_codes import HTTP_400_BAD_REQUEST
@@ -25,6 +25,19 @@ from models.jianshu.article_earning_ranking_record import (
 )
 from models.jianshu.lottery_win_record import LotteryWinRecord
 from models.jianshu.user import User as DbUser
+
+MembershipTextType = Literal[
+    "铜牌", "银牌", "金牌", "白金", "（旧版）普通会员", "（旧版）尊享会员"
+]
+
+MEMBERSHIP_TYPE_TO_TEXT: dict[MembershipType, MembershipTextType] = {
+    "BRONZE": "铜牌",
+    "SILVER": "银牌",
+    "GOLD": "金牌",
+    "PLATINA": "白金",
+    "LEGACY_ORDINARY": "（旧版）普通会员",
+    "LEGACY_DISTINGUISHED": "（旧版）尊享会员",
+}
 
 
 class GetVipInfoResponse(Struct, **RESPONSE_STRUCT_CONFIG):
@@ -67,9 +80,9 @@ async def get_vip_info_handler(
     user_name = user_info.name
     membership_info = user_info.membership_info
 
-    is_vip = membership_info.type != MembershipEnum.NONE
-    type_ = membership_info.type.value.replace("会员", "")
-    expire_date = membership_info.expired_at
+    is_vip = membership_info.type != "NONE"
+    type_ = MEMBERSHIP_TYPE_TO_TEXT[membership_info.type]
+    expire_date = membership_info.expire_time
 
     return success(
         data=GetVipInfoResponse(
