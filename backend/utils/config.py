@@ -8,6 +8,7 @@ from sshared.config.blocks import (
 
 
 class _Config(ConfigBase, frozen=True):
+    jianshu_endpoint: str
     jtools_postgres: PostgresBlock
     jianshu_postgres: PostgresBlock
     jpep_postgres: PostgresBlock

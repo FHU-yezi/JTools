@@ -5,6 +5,7 @@ from datetime import date, datetime, timedelta
 from typing import Annotated
 
 from jkit.article import Article
+from jkit.config import CONFIG as JKIT_CONFIG
 from jkit.constants import ARTICLE_SLUG_REGEX
 from jkit.exceptions import ResourceUnavailableError
 from litestar import Response, Router, get
@@ -26,6 +27,9 @@ from models.jianshu.article_earning_ranking_record import (
     ArticleEarningRankingRecord,
 )
 from utils.config import CONFIG
+
+if CONFIG.jianshu_endpoint:
+    JKIT_CONFIG.datasources.jianshu.endpoint = CONFIG.jianshu_endpoint
 
 splitter = WordSplitter(
     access_key_id=CONFIG.word_split_access_key.access_key_id,

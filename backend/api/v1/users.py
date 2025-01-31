@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Annotated, Literal
 
+from jkit.config import CONFIG as JKIT_CONFIG
 from jkit.constants import USER_SLUG_REGEX
 from jkit.exceptions import ResourceUnavailableError
 from jkit.identifier_check import is_user_slug
@@ -25,6 +26,10 @@ from models.jianshu.article_earning_ranking_record import (
 )
 from models.jianshu.lottery_win_record import LotteryWinRecord
 from models.jianshu.user import User as DbUser
+from utils.config import CONFIG
+
+if CONFIG.jianshu_endpoint:
+    JKIT_CONFIG.datasources.jianshu.endpoint = CONFIG.jianshu_endpoint
 
 MembershipTextType = Literal[
     "铜牌", "银牌", "金牌", "白金", "（旧版）普通会员", "（旧版）尊享会员"

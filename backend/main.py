@@ -49,6 +49,12 @@ app = Litestar(
 )
 
 if __name__ == "__main__":
+    # TODO: 集中管理 JKit 简书数据源 Endpoint 配置
+    if CONFIG.jianshu_endpoint:
+        logger.debug("已成功配置 JKit 简书数据源 Endpoint")
+    else:
+        logger.warn("未配置 JKit 简书数据源 Endpoint，可能出现限流错误")
+
     logger.info("启动 API 服务")
     uvicorn_run(
         app="main:app",
