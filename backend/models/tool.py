@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from enum import Enum
+from typing import Literal
 
 from psycopg.types.json import Jsonb
 from sshared.postgres import Table
@@ -9,16 +9,12 @@ from sshared.strict_struct import NonEmptyStr
 from utils.db import jtools_pool
 from utils.log import logger
 
-
-class StatusEnum(Enum):
-    NORMAL = "NORMAL"
-    DOWNGRADED = "DOWNGRADED"
-    UNAVAILABLE = "UNAVAILABLE"
+StatusType = Literal["NORMAL", "DOWNGRADED", "UNAVAILABLE"]
 
 
 class Tool(Table, frozen=True):
     slug: NonEmptyStr
-    status: StatusEnum
+    status: StatusType
     status_description: NonEmptyStr | None
     data_update_freq: NonEmptyStr
     last_update_time_table: NonEmptyStr | None
@@ -36,7 +32,7 @@ class Tool(Table, frozen=True):
                 for tool_slug in TOOL_SLUGS:
                     await cls(
                         slug=tool_slug,
-                        status=StatusEnum.NORMAL,
+                        status="NORMAL",
                         status_description=None,
                         data_update_freq="未知",
                         last_update_time_table=None,
@@ -96,7 +92,7 @@ class Tool(Table, frozen=True):
         )
 
     @classmethod
-    async def get_tools_slugs_by_status(cls, status: StatusEnum) -> tuple[str, ...]:
+    async def get_tools_slugs_by_status(cls, status: StatusType) -> tuple[str, ...]:
         async with jtools_pool.get_conn() as conn:
             cursor = await conn.execute(
                 "SELECT slug FROM tools WHERE status = %s", (status,)

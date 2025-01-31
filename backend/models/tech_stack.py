@@ -1,36 +1,30 @@
 from __future__ import annotations
 
 from collections.abc import AsyncGenerator
-from enum import Enum
+from typing import Literal
 
 from sshared.postgres import Table
 from sshared.strict_struct import NonEmptyStr
 
 from utils.db import jtools_pool
 
-
-class TypeEnum(Enum):
-    LIBRARY = "LIBRARY"
-    EXTERNAL_SERVICE = "EXTERNAL_SERVICE"
+TechType = Literal["LIBRARY", "EXTERNAL_SERVICE"]
+ScopeType = Literal["FRONTEND", "BACKEND", "TOOLCHAIN"]
 
 
-class ScopeEnum(Enum):
-    FRONTEND = "FRONTEND"
-    BACKEND = "BACKEND"
-    TOOLCHAIN = "TOOLCHAIN"
 
 
 class TechStack(Table, frozen=True):
     name: NonEmptyStr
-    type: TypeEnum
-    scope: ScopeEnum
+    type: TechType
+    scope: ScopeType
     is_self_developed: bool
     description: NonEmptyStr
     url: NonEmptyStr
 
     @classmethod
     async def iter(
-        cls, scope: ScopeEnum | None = None
+        cls, scope: ScopeType | None = None
     ) -> AsyncGenerator[TechStack, None]:
         async with jtools_pool.get_conn() as conn:
             if scope:
