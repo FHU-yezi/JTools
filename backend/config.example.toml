@@ -31,10 +31,8 @@
 [uvicorn]
     host = "localhost"
     port = 8902
-    log_level = "warning"
+    mode = "PROD"
     workers = 1
-    reload = false
-    access_log = false
 
 [word_split_access_key]
     access_key_id = ""

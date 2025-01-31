@@ -8,7 +8,7 @@ from jkit.jpep.rules import Rules
 from litestar import Response, Router, get
 from litestar.params import Parameter
 from msgspec import Struct, field
-from sshared.time import get_datetime_before_now, parse_td_str
+from sshared.time import get_past_datetime_from_now, parse_td_str
 from sspeedup.api.litestar import (
     RESPONSE_STRUCT_CONFIG,
     generate_response_spec,
@@ -130,7 +130,7 @@ async def get_price_history_handler(
 ) -> Response:
     history = await FTNMacketRecord.get_price_history(
         type=type_.upper(),  # type: ignore
-        start_time=get_datetime_before_now(parse_td_str(range)),
+        start_time=get_past_datetime_from_now(parse_td_str(range)),
         resolution=RESOLUTION_MAPPING[resolution],
     )
 
@@ -163,7 +163,7 @@ async def get_amount_history_handler(
 ) -> Response:
     history = await FTNMacketRecord.get_amount_history(
         type=type_.upper(),  # type: ignore
-        start_time=get_datetime_before_now(parse_td_str(range)),
+        start_time=get_past_datetime_from_now(parse_td_str(range)),
         resolution=RESOLUTION_MAPPING[resolution],
     )
 
