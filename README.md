@@ -1,3 +1,5 @@
+
+
 # 部署
 
 ## 环境
@@ -77,7 +79,7 @@ pip install uv
 安装依赖库（将自动创建虚拟环境）：
 
 ```shell
-uv install
+uv sync
 ```
 
 下载前端运行时 [Bun](https://bun.sh/)：
